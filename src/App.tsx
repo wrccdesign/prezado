@@ -7,6 +7,7 @@ import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import History from "./pages/History";
+import Petition from "./pages/Petition";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
