@@ -41,6 +41,33 @@ export type Database = {
         }
         Relationships: []
       }
+      petitions: {
+        Row: {
+          created_at: string
+          form_data: Json
+          generated_text: string
+          id: string
+          petition_type: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          form_data?: Json
+          generated_text?: string
+          id?: string
+          petition_type: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          form_data?: Json
+          generated_text?: string
+          id?: string
+          petition_type?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
