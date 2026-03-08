@@ -1,1 +1,7 @@
 project_id = "hfhzkvuoywgxjklpiydq"
+
+[functions.analyze-legal-text]
+verify_jwt = false
+
+[functions.parse-document]
+verify_jwt = false
