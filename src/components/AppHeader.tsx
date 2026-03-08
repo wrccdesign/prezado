@@ -28,7 +28,15 @@ export function AppHeader() {
             onClick={() => navigate("/")}
           >
             <Plus className="mr-1.5 h-4 w-4" />
-            Nova Análise
+            Análise
+          </Button>
+          <Button
+            variant={location.pathname === "/peticao" ? "default" : "ghost"}
+            size="sm"
+            onClick={() => navigate("/peticao")}
+          >
+            <FileSignature className="mr-1.5 h-4 w-4" />
+            Petição
           </Button>
           <Button
             variant={location.pathname === "/historico" ? "default" : "ghost"}
