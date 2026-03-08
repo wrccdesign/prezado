@@ -1,6 +1,6 @@
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
-import { Scale, History, LogOut, Plus } from "lucide-react";
+import { Scale, History, LogOut, Plus, FileSignature } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
 
 export function AppHeader() {
@@ -28,7 +28,15 @@ export function AppHeader() {
             onClick={() => navigate("/")}
           >
             <Plus className="mr-1.5 h-4 w-4" />
-            Nova Análise
+            Análise
+          </Button>
+          <Button
+            variant={location.pathname === "/peticao" ? "default" : "ghost"}
+            size="sm"
+            onClick={() => navigate("/peticao")}
+          >
+            <FileSignature className="mr-1.5 h-4 w-4" />
+            Petição
           </Button>
           <Button
             variant={location.pathname === "/historico" ? "default" : "ghost"}
