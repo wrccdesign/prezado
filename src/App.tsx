@@ -13,6 +13,7 @@ import Chat from "./pages/Chat";
 import Calculators from "./pages/Calculators";
 import LawyerDashboard from "./pages/LawyerDashboard";
 import Diagnostico from "./pages/Diagnostico";
+import LandingPage from "./pages/LandingPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -22,6 +23,13 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
   if (loading) return <div className="flex min-h-screen items-center justify-center"><div className="animate-pulse text-muted-foreground">Carregando...</div></div>;
   if (!user) return <Navigate to="/auth" replace />;
   return <>{children}</>;
+}
+
+function HomeRoute() {
+  const { user, loading } = useAuth();
+  if (loading) return <div className="flex min-h-screen items-center justify-center"><div className="animate-pulse text-muted-foreground">Carregando...</div></div>;
+  if (!user) return <LandingPage />;
+  return <Index />;
 }
 
 const App = () => (
@@ -34,7 +42,7 @@ const App = () => (
           <UserProfileProvider>
             <Routes>
               <Route path="/auth" element={<Auth />} />
-              <Route path="/" element={<ProtectedRoute><Index /></ProtectedRoute>} />
+              <Route path="/" element={<HomeRoute />} />
               <Route path="/peticao" element={<ProtectedRoute><Petition /></ProtectedRoute>} />
               <Route path="/chat" element={<ProtectedRoute><Chat /></ProtectedRoute>} />
               <Route path="/historico" element={<ProtectedRoute><History /></ProtectedRoute>} />
