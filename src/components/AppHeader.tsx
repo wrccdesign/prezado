@@ -2,7 +2,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useUserProfile } from "@/contexts/UserProfileContext";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Scale, History, LogOut, Plus, FileSignature, MessageCircle, Briefcase, User } from "lucide-react";
+import { Scale, History, LogOut, Plus, FileSignature, MessageCircle, Briefcase, User, Calculator } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
 
 export function AppHeader() {
