@@ -12,6 +12,7 @@ import Petition from "./pages/Petition";
 import Chat from "./pages/Chat";
 import Calculators from "./pages/Calculators";
 import LawyerDashboard from "./pages/LawyerDashboard";
+import Diagnostico from "./pages/Diagnostico";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
