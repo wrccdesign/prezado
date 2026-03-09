@@ -193,6 +193,7 @@ export default function Petition() {
           </CardContent>
         </Card>
       </main>
+      <AppFooter />
     </div>
   );
 }
