@@ -1,36 +1,105 @@
-import { createContext, useContext, useState, useEffect, type ReactNode } from "react";
+import { createContext, useContext, useState, useEffect, useCallback, type ReactNode } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "./AuthContext";
 
-type UserProfile = "cidadao" | "advogado";
+export type ProfileType = "cidadao" | "advogado";
+
+export interface ProfileData {
+  id: string;
+  user_id: string;
+  profile_type: ProfileType;
+  oab_number: string | null;
+  oab_state: string | null;
+  specialties: string[];
+  office_name: string | null;
+  created_at: string;
+  updated_at: string;
+}
 
 interface UserProfileContextType {
-  profile: UserProfile;
-  setProfile: (p: UserProfile) => void;
+  profile: ProfileType;
+  profileData: ProfileData | null;
   isLawyer: boolean;
+  loading: boolean;
+  updateProfile: (data: Partial<Omit<ProfileData, "id" | "user_id" | "created_at" | "updated_at">>) => Promise<void>;
+  refreshProfile: () => Promise<void>;
 }
 
 const UserProfileContext = createContext<UserProfileContextType | undefined>(undefined);
 
-const STORAGE_KEY = "jurisai-user-profile";
-
 export function UserProfileProvider({ children }: { children: ReactNode }) {
-  const [profile, setProfileState] = useState<UserProfile>(() => {
-    try {
-      const stored = localStorage.getItem(STORAGE_KEY);
-      return stored === "advogado" ? "advogado" : "cidadao";
-    } catch {
-      return "cidadao";
-    }
-  });
+  const { user } = useAuth();
+  const [profileData, setProfileData] = useState<ProfileData | null>(null);
+  const [loading, setLoading] = useState(true);
 
-  const setProfile = (p: UserProfile) => {
-    setProfileState(p);
+  const fetchProfile = useCallback(async () => {
+    if (!user) {
+      setProfileData(null);
+      setLoading(false);
+      return;
+    }
+
     try {
-      localStorage.setItem(STORAGE_KEY, p);
-    } catch {}
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("*")
+        .eq("user_id", user.id)
+        .single();
+
+      if (error && error.code !== "PGRST116") {
+        console.error("Error fetching profile:", error);
+      }
+
+      if (data) {
+        setProfileData({
+          ...data,
+          profile_type: data.profile_type as ProfileType,
+          specialties: data.specialties || [],
+        });
+      } else {
+        // Profile doesn't exist yet (shouldn't happen with trigger, but fallback)
+        setProfileData(null);
+      }
+    } catch (err) {
+      console.error("Error fetching profile:", err);
+    } finally {
+      setLoading(false);
+    }
+  }, [user]);
+
+  useEffect(() => {
+    setLoading(true);
+    fetchProfile();
+  }, [fetchProfile]);
+
+  const updateProfile = async (data: Partial<Omit<ProfileData, "id" | "user_id" | "created_at" | "updated_at">>) => {
+    if (!user) throw new Error("User not authenticated");
+
+    const { error } = await supabase
+      .from("profiles")
+      .upsert({
+        user_id: user.id,
+        ...data,
+        updated_at: new Date().toISOString(),
+      }, { onConflict: "user_id" });
+
+    if (error) throw error;
+
+    await fetchProfile();
   };
 
+  const profile = profileData?.profile_type ?? "cidadao";
+  const isLawyer = profile === "advogado";
+
   return (
-    <UserProfileContext.Provider value={{ profile, setProfile, isLawyer: profile === "advogado" }}>
+    <UserProfileContext.Provider value={{ 
+      profile, 
+      profileData, 
+      isLawyer, 
+      loading, 
+      updateProfile,
+      refreshProfile: fetchProfile 
+    }}>
       {children}
     </UserProfileContext.Provider>
   );
