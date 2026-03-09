@@ -169,6 +169,7 @@ export default function Calculators() {
           </div>
         )}
       </main>
+      <AppFooter />
     </div>
   );
 }
