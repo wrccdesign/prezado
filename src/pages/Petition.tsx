@@ -11,6 +11,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2, FileSignature } from "lucide-react";
+import { AppFooter } from "@/components/AppFooter";
 
 const PETITION_TYPES = [
   "Petição Inicial Cível",
@@ -192,6 +193,7 @@ export default function Petition() {
           </CardContent>
         </Card>
       </main>
+      <AppFooter />
     </div>
   );
 }

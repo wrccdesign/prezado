@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Card } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
+import { AppFooter } from "@/components/AppFooter";
 import { Send, Loader2, Scale, User } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 
@@ -313,6 +314,7 @@ export default function Chat() {
           </div>
         </div>
       </main>
+      <AppFooter />
     </div>
   );
 }

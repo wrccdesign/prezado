@@ -10,6 +10,7 @@ import { ClientsTab } from "@/components/lawyer-dashboard/ClientsTab";
 import { PetitionsTab } from "@/components/lawyer-dashboard/PetitionsTab";
 import { TemplatesTab } from "@/components/lawyer-dashboard/TemplatesTab";
 import { SettingsTab } from "@/components/lawyer-dashboard/SettingsTab";
+import { AppFooter } from "@/components/AppFooter";
 
 export default function LawyerDashboard() {
   const { isLawyer, loading } = useUserProfile();
@@ -75,6 +76,7 @@ export default function LawyerDashboard() {
           <TabsContent value="settings"><SettingsTab /></TabsContent>
         </Tabs>
       </main>
+      <AppFooter />
     </div>
   );
 }

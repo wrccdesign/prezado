@@ -567,13 +567,24 @@ export default function LandingPage() {
             </div>
           </div>
 
-          <div className="border-t pt-6 flex flex-col sm:flex-row items-center justify-between gap-4" style={{ borderColor: "hsl(var(--gold) / 0.1)" }}>
+          <div className="border-t pt-5 flex flex-col items-center gap-2 text-center" style={{ borderColor: "hsl(var(--gold) / 0.1)" }}>
             <p className="text-xs text-white/30">© {new Date().getFullYear()} JurisAI. Todos os direitos reservados.</p>
             <div className="flex gap-4 text-xs text-white/30">
               <span className="hover:text-gold transition-colors cursor-default">LGPD</span>
               <span className="hover:text-gold transition-colors cursor-default">Privacidade</span>
               <span className="hover:text-gold transition-colors cursor-default">Termos</span>
             </div>
+            <p className="text-xs text-white/25">
+              Desenvolvido por{" "}
+              <a
+                href="https://www.wrcc.design"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:text-gold transition-colors underline underline-offset-2"
+              >
+                WRCC Design
+              </a>
+            </p>
           </div>
         </div>
       </footer>

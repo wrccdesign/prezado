@@ -9,6 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { Upload, Search, FileText, Loader2, X } from "lucide-react";
+import { AppFooter } from "@/components/AppFooter";
 import type { LegalAnalysis } from "@/types/analysis";
 
 export default function Index() {
@@ -107,6 +108,7 @@ export default function Index() {
           <h2 className="mb-4 sm:mb-6 text-xl sm:text-2xl font-bold text-foreground">Resultado da Análise</h2>
           <AnalysisResult result={result} onNewAnalysis={handleNewAnalysis} />
         </main>
+        <AppFooter />
       </div>
     );
   }
@@ -185,6 +187,7 @@ export default function Index() {
           </CardContent>
         </Card>
       </main>
+      <AppFooter />
     </div>
   );
 }
