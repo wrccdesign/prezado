@@ -18,3 +18,20 @@ export interface AnalysisRecord {
   result: LegalAnalysis;
   created_at: string;
 }
+
+export interface PetitionFormData {
+  autor: string;
+  reu: string;
+  fatos: string;
+  pedidos: string;
+  fundamentacao?: string;
+}
+
+export interface PetitionRecord {
+  id: string;
+  user_id: string;
+  petition_type: string;
+  form_data: PetitionFormData;
+  generated_text: string;
+  created_at: string;
+}
