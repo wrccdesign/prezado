@@ -12,6 +12,11 @@ export interface ProfileData {
   oab_state: string | null;
   specialties: string[];
   office_name: string | null;
+  office_address: string | null;
+  office_phone: string | null;
+  office_email: string | null;
+  office_logo_url: string | null;
+  formatting_preferences: any;
   created_at: string;
   updated_at: string;
 }

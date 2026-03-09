@@ -71,8 +71,81 @@ export type Database = {
         }
         Relationships: []
       }
+      clients: {
+        Row: {
+          area: string | null
+          contact: string | null
+          created_at: string | null
+          document: string | null
+          email: string | null
+          id: string
+          name: string
+          notes: string | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          area?: string | null
+          contact?: string | null
+          created_at?: string | null
+          document?: string | null
+          email?: string | null
+          id?: string
+          name: string
+          notes?: string | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          area?: string | null
+          contact?: string | null
+          created_at?: string | null
+          document?: string | null
+          email?: string | null
+          id?: string
+          name?: string
+          notes?: string | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      petition_templates: {
+        Row: {
+          area: string | null
+          created_at: string | null
+          form_data: Json | null
+          generated_text: string | null
+          id: string
+          name: string
+          petition_type: string
+          user_id: string
+        }
+        Insert: {
+          area?: string | null
+          created_at?: string | null
+          form_data?: Json | null
+          generated_text?: string | null
+          id?: string
+          name: string
+          petition_type: string
+          user_id: string
+        }
+        Update: {
+          area?: string | null
+          created_at?: string | null
+          form_data?: Json | null
+          generated_text?: string | null
+          id?: string
+          name?: string
+          petition_type?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       petitions: {
         Row: {
+          client_id: string | null
           created_at: string
           form_data: Json
           generated_text: string
@@ -81,6 +154,7 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          client_id?: string | null
           created_at?: string
           form_data?: Json
           generated_text?: string
@@ -89,6 +163,7 @@ export type Database = {
           user_id: string
         }
         Update: {
+          client_id?: string | null
           created_at?: string
           form_data?: Json
           generated_text?: string
@@ -96,15 +171,28 @@ export type Database = {
           petition_type?: string
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "petitions_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       profiles: {
         Row: {
           created_at: string | null
+          formatting_preferences: Json | null
           id: string
           oab_number: string | null
           oab_state: string | null
+          office_address: string | null
+          office_email: string | null
+          office_logo_url: string | null
           office_name: string | null
+          office_phone: string | null
           profile_type: string
           specialties: string[] | null
           updated_at: string | null
@@ -112,10 +200,15 @@ export type Database = {
         }
         Insert: {
           created_at?: string | null
+          formatting_preferences?: Json | null
           id?: string
           oab_number?: string | null
           oab_state?: string | null
+          office_address?: string | null
+          office_email?: string | null
+          office_logo_url?: string | null
           office_name?: string | null
+          office_phone?: string | null
           profile_type?: string
           specialties?: string[] | null
           updated_at?: string | null
@@ -123,10 +216,15 @@ export type Database = {
         }
         Update: {
           created_at?: string | null
+          formatting_preferences?: Json | null
           id?: string
           oab_number?: string | null
           oab_state?: string | null
+          office_address?: string | null
+          office_email?: string | null
+          office_logo_url?: string | null
           office_name?: string | null
+          office_phone?: string | null
           profile_type?: string
           specialties?: string[] | null
           updated_at?: string | null
