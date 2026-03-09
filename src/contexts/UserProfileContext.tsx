@@ -51,13 +51,49 @@ export function UserProfileProvider({ children }: { children: ReactNode }) {
       }
 
       if (data) {
+        // Check if there's a pending lawyer profile to apply (set during signup)
+        const pendingProfileKey = "jurisai-pending-lawyer-profile";
+        const pendingProfile = localStorage.getItem(pendingProfileKey);
+        
+        if (pendingProfile) {
+          try {
+            const pendingData = JSON.parse(pendingProfile);
+            localStorage.removeItem(pendingProfileKey);
+            // Apply the pending lawyer profile
+            await supabase
+              .from("profiles")
+              .upsert({
+                user_id: user.id,
+                ...pendingData,
+                updated_at: new Date().toISOString(),
+              }, { onConflict: "user_id" });
+            
+            // Fetch again with updated data
+            const { data: updatedData } = await supabase
+              .from("profiles")
+              .select("*")
+              .eq("user_id", user.id)
+              .single();
+            
+            if (updatedData) {
+              setProfileData({
+                ...updatedData,
+                profile_type: updatedData.profile_type as ProfileType,
+                specialties: updatedData.specialties || [],
+              });
+              return;
+            }
+          } catch (err) {
+            console.error("Error applying pending profile:", err);
+          }
+        }
+
         setProfileData({
           ...data,
           profile_type: data.profile_type as ProfileType,
           specialties: data.specialties || [],
         });
       } else {
-        // Profile doesn't exist yet (shouldn't happen with trigger, but fallback)
         setProfileData(null);
       }
     } catch (err) {
