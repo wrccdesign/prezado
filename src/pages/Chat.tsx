@@ -1,9 +1,11 @@
 import { useState, useRef, useEffect } from "react";
 import { AppHeader } from "@/components/AppHeader";
+import { LegalDisclaimer } from "@/components/LegalDisclaimer";
+import { useUserProfile } from "@/contexts/UserProfileContext";
+import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { Switch } from "@/components/ui/switch";
-import { Label } from "@/components/ui/label";
 import { Card } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { Send, Loader2, Scale, User } from "lucide-react";
@@ -13,25 +15,71 @@ type Message = { role: "user" | "assistant"; content: string };
 
 const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/chat-juris`;
 
+// Extract metadata from AI response
+function extractMetadata(text: string): { area?: string; leis: string[] } {
+  const metaMatch = text.match(/<!--\s*META:\s*(\{.*?\})\s*-->/s);
+  if (metaMatch) {
+    try {
+      const meta = JSON.parse(metaMatch[1]);
+      return { area: meta.area, leis: meta.leis || [] };
+    } catch {}
+  }
+  
+  // Fallback: extract law mentions with regex
+  const leis: string[] = [];
+  const leiRegex = /(?:Lei|Decreto-Lei|Código)\s+(?:nº\s+)?[\d.]+\/\d{4}/gi;
+  const matches = text.match(leiRegex);
+  if (matches) leis.push(...[...new Set(matches)]);
+  
+  return { leis };
+}
+
+// Strip metadata comments from display text
+function stripMeta(text: string): string {
+  return text.replace(/<!--\s*META:.*?-->/gs, "").trim();
+}
+
 export default function Chat() {
   const { toast } = useToast();
+  const { isLawyer } = useUserProfile();
+  const { user } = useAuth();
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [isLawyer, setIsLawyer] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
+
+  // Save conversation metadata after AI responds
+  const saveConversationMetadata = async (allMessages: Message[]) => {
+    if (!user) return;
+    const lastAssistant = [...allMessages].reverse().find(m => m.role === "assistant");
+    if (!lastAssistant) return;
+
+    const meta = extractMetadata(lastAssistant.content);
+    const firstUserMsg = allMessages.find(m => m.role === "user");
+
+    try {
+      await supabase.from("chat_conversations").insert({
+        user_id: user.id,
+        area_do_direito: meta.area || null,
+        leis_citadas: meta.leis,
+        mensagem_resumo: firstUserMsg?.content?.slice(0, 200) || null,
+      } as any);
+    } catch (e) {
+      console.error("Failed to save chat metadata:", e);
+    }
+  };
 
   const handleSend = async () => {
     const trimmed = input.trim();
     if (!trimmed || isLoading) return;
 
     const userMsg: Message = { role: "user", content: trimmed };
-    setMessages((prev) => [...prev, userMsg]);
+    const newMessages = [...messages, userMsg];
+    setMessages(newMessages);
     setInput("");
     setIsLoading(true);
 
@@ -39,14 +87,15 @@ export default function Chat() {
 
     const upsertAssistant = (chunk: string) => {
       assistantSoFar += chunk;
+      const displayText = stripMeta(assistantSoFar);
       setMessages((prev) => {
         const last = prev[prev.length - 1];
         if (last?.role === "assistant") {
           return prev.map((m, i) =>
-            i === prev.length - 1 ? { ...m, content: assistantSoFar } : m
+            i === prev.length - 1 ? { ...m, content: displayText } : m
           );
         }
-        return [...prev, { role: "assistant", content: assistantSoFar }];
+        return [...prev, { role: "assistant", content: displayText }];
       });
     };
 
@@ -58,7 +107,7 @@ export default function Chat() {
           Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
         },
         body: JSON.stringify({
-          messages: [...messages, userMsg],
+          messages: newMessages,
           isLawyer,
         }),
       });
@@ -125,6 +174,11 @@ export default function Chat() {
           } catch { /* ignore */ }
         }
       }
+
+      // Save metadata after complete response
+      const finalMeta = extractMetadata(assistantSoFar);
+      const finalMessages: Message[] = [...newMessages, { role: "assistant", content: stripMeta(assistantSoFar) }];
+      saveConversationMetadata([...newMessages, { role: "assistant", content: assistantSoFar }]);
     } catch (err: any) {
       toast({
         title: "Erro",
@@ -146,20 +200,13 @@ export default function Chat() {
   return (
     <div className="flex min-h-screen flex-col bg-background">
       <AppHeader />
+      <LegalDisclaimer />
       <main className="flex flex-1 flex-col container max-w-3xl py-4">
-        {/* Lawyer toggle */}
-        <div className="mb-4 flex items-center justify-between">
+        <div className="mb-4">
           <h2 className="text-xl font-bold text-foreground">Chat Jurídico</h2>
-          <div className="flex items-center gap-2">
-            <Label htmlFor="lawyer-toggle" className="text-sm text-muted-foreground">
-              Sou advogado(a)
-            </Label>
-            <Switch
-              id="lawyer-toggle"
-              checked={isLawyer}
-              onCheckedChange={setIsLawyer}
-            />
-          </div>
+          <p className="text-xs text-muted-foreground">
+            {isLawyer ? "Modo Advogado — respostas técnicas" : "Modo Cidadão — linguagem acessível"}
+          </p>
         </div>
 
         {/* Messages */}
@@ -196,7 +243,22 @@ export default function Chat() {
               >
                 {msg.role === "assistant" ? (
                   <div className="prose prose-sm max-w-none dark:prose-invert">
-                    <ReactMarkdown>{msg.content}</ReactMarkdown>
+                    <ReactMarkdown
+                      components={{
+                        a: ({ href, children }) => (
+                          <a
+                            href={href}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-primary underline decoration-primary/30 hover:decoration-primary font-medium"
+                          >
+                            {children}
+                          </a>
+                        ),
+                      }}
+                    >
+                      {msg.content}
+                    </ReactMarkdown>
                   </div>
                 ) : (
                   <p className="text-sm whitespace-pre-wrap">{msg.content}</p>
@@ -228,7 +290,6 @@ export default function Chat() {
         <div className="sticky bottom-0 border-t bg-background pt-4">
           <div className="flex gap-2">
             <Textarea
-              ref={textareaRef}
               placeholder="Digite sua dúvida jurídica..."
               value={input}
               onChange={(e) => setInput(e.target.value)}

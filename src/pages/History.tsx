@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { AppHeader } from "@/components/AppHeader";
+import { LegalDisclaimer } from "@/components/LegalDisclaimer";
 import { AnalysisResult } from "@/components/AnalysisResult";
 import { PetitionResult } from "@/components/PetitionResult";
 import { Card, CardContent } from "@/components/ui/card";
@@ -84,6 +85,7 @@ export default function History() {
     return (
       <div className="min-h-screen bg-background">
         <AppHeader />
+        <LegalDisclaimer />
         <main className="container max-w-3xl py-8">
           <Button variant="ghost" onClick={() => setSelectedAnalysis(null)} className="mb-4">
             <ChevronLeft className="mr-1.5 h-4 w-4" />
@@ -109,6 +111,7 @@ export default function History() {
     return (
       <div className="min-h-screen bg-background">
         <AppHeader />
+        <LegalDisclaimer />
         <main className="container max-w-3xl py-8">
           <Button variant="ghost" onClick={() => setSelectedPetition(null)} className="mb-4">
             <ChevronLeft className="mr-1.5 h-4 w-4" />
@@ -149,6 +152,7 @@ export default function History() {
   return (
     <div className="min-h-screen bg-background">
       <AppHeader />
+      <LegalDisclaimer />
       <main className="container max-w-3xl py-8">
         <h2 className="mb-6 text-2xl font-bold text-foreground">Histórico</h2>
 

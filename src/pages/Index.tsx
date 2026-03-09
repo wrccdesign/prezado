@@ -2,6 +2,7 @@ import { useState, useRef } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { AppHeader } from "@/components/AppHeader";
+import { LegalDisclaimer } from "@/components/LegalDisclaimer";
 import { AnalysisResult } from "@/components/AnalysisResult";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -101,6 +102,7 @@ export default function Index() {
     return (
       <div className="min-h-screen bg-background">
         <AppHeader />
+        <LegalDisclaimer />
         <main className="container max-w-3xl py-8">
           <h2 className="mb-6 text-2xl font-bold text-foreground">Resultado da Análise</h2>
           <AnalysisResult result={result} onNewAnalysis={handleNewAnalysis} />
@@ -112,6 +114,7 @@ export default function Index() {
   return (
     <div className="min-h-screen bg-background">
       <AppHeader />
+      <LegalDisclaimer />
       <main className="container max-w-3xl py-8">
         <div className="mb-8 animate-fade-in">
           <h2 className="text-2xl font-bold text-foreground">Nova Análise Jurídica</h2>

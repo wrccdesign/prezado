@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { AppHeader } from "@/components/AppHeader";
+import { LegalDisclaimer } from "@/components/LegalDisclaimer";
 import { PetitionResult } from "@/components/PetitionResult";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -90,6 +91,7 @@ export default function Petition() {
     return (
       <div className="min-h-screen bg-background">
         <AppHeader />
+        <LegalDisclaimer />
         <main className="container max-w-4xl py-8">
           <PetitionResult text={generatedText} onNewPetition={handleNewPetition} />
         </main>
@@ -100,6 +102,7 @@ export default function Petition() {
   return (
     <div className="min-h-screen bg-background">
       <AppHeader />
+      <LegalDisclaimer />
       <main className="container max-w-3xl py-8">
         <div className="mb-8 animate-fade-in">
           <h2 className="text-2xl font-bold text-foreground">Nova Petição</h2>

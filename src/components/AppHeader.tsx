@@ -1,10 +1,13 @@
 import { useAuth } from "@/contexts/AuthContext";
+import { useUserProfile } from "@/contexts/UserProfileContext";
 import { Button } from "@/components/ui/button";
-import { Scale, History, LogOut, Plus, FileSignature, MessageCircle } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Scale, History, LogOut, Plus, FileSignature, MessageCircle, Briefcase, User } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
 
 export function AppHeader() {
-  const { signOut, user } = useAuth();
+  const { signOut } = useAuth();
+  const { profile, setProfile, isLawyer } = useUserProfile();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -22,6 +25,25 @@ export function AppHeader() {
         </button>
 
         <div className="flex items-center gap-2">
+          {/* Profile Toggle */}
+          <button
+            onClick={() => setProfile(isLawyer ? "cidadao" : "advogado")}
+            className="flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-medium transition-colors hover:bg-muted"
+            title={isLawyer ? "Modo Advogado ativo" : "Modo Cidadão ativo"}
+          >
+            {isLawyer ? (
+              <>
+                <Briefcase className="h-3.5 w-3.5 text-primary" />
+                <span className="text-primary">Advogado</span>
+              </>
+            ) : (
+              <>
+                <User className="h-3.5 w-3.5 text-muted-foreground" />
+                <span className="text-muted-foreground">Cidadão</span>
+              </>
+            )}
+          </button>
+
           <Button
             variant={location.pathname === "/" ? "default" : "ghost"}
             size="sm"
