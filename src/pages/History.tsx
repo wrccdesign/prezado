@@ -152,6 +152,7 @@ export default function History() {
   return (
     <div className="min-h-screen bg-background">
       <AppHeader />
+      <LegalDisclaimer />
       <main className="container max-w-3xl py-8">
         <h2 className="mb-6 text-2xl font-bold text-foreground">Histórico</h2>
 

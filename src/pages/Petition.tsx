@@ -102,6 +102,7 @@ export default function Petition() {
   return (
     <div className="min-h-screen bg-background">
       <AppHeader />
+      <LegalDisclaimer />
       <main className="container max-w-3xl py-8">
         <div className="mb-8 animate-fade-in">
           <h2 className="text-2xl font-bold text-foreground">Nova Petição</h2>
