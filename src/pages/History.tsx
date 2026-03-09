@@ -111,6 +111,7 @@ export default function History() {
     return (
       <div className="min-h-screen bg-background">
         <AppHeader />
+        <LegalDisclaimer />
         <main className="container max-w-3xl py-8">
           <Button variant="ghost" onClick={() => setSelectedPetition(null)} className="mb-4">
             <ChevronLeft className="mr-1.5 h-4 w-4" />
