@@ -185,6 +185,7 @@ export default function Index() {
           </CardContent>
         </Card>
       </main>
+      <AppFooter />
     </div>
   );
 }
