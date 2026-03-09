@@ -41,6 +41,36 @@ export type Database = {
         }
         Relationships: []
       }
+      chat_conversations: {
+        Row: {
+          area_do_direito: string | null
+          created_at: string
+          id: string
+          leis_citadas: string[] | null
+          mensagem_resumo: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          area_do_direito?: string | null
+          created_at?: string
+          id?: string
+          leis_citadas?: string[] | null
+          mensagem_resumo?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          area_do_direito?: string | null
+          created_at?: string
+          id?: string
+          leis_citadas?: string[] | null
+          mensagem_resumo?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       petitions: {
         Row: {
           created_at: string
