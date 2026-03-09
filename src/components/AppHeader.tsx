@@ -2,12 +2,12 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useUserProfile } from "@/contexts/UserProfileContext";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Scale, History, LogOut, Plus, FileSignature, MessageCircle, Briefcase, User, Calculator } from "lucide-react";
+import { Scale, History, LogOut, Plus, FileSignature, MessageCircle, Briefcase, User, Calculator, LayoutDashboard } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
 
 export function AppHeader() {
   const { signOut } = useAuth();
-  const { profile, setProfile, isLawyer } = useUserProfile();
+  const { profile, isLawyer, loading } = useUserProfile();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -25,24 +25,25 @@ export function AppHeader() {
         </button>
 
         <div className="flex items-center gap-2">
-          {/* Profile Toggle */}
-          <button
-            onClick={() => setProfile(isLawyer ? "cidadao" : "advogado")}
-            className="flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-medium transition-colors hover:bg-muted"
-            title={isLawyer ? "Modo Advogado ativo" : "Modo Cidadão ativo"}
-          >
-            {isLawyer ? (
-              <>
-                <Briefcase className="h-3.5 w-3.5 text-primary" />
-                <span className="text-primary">Advogado</span>
-              </>
-            ) : (
-              <>
-                <User className="h-3.5 w-3.5 text-muted-foreground" />
-                <span className="text-muted-foreground">Cidadão</span>
-              </>
-            )}
-          </button>
+          {/* Profile Badge (read-only) */}
+          {!loading && (
+            <Badge 
+              variant={isLawyer ? "default" : "secondary"} 
+              className="flex items-center gap-1.5"
+            >
+              {isLawyer ? (
+                <>
+                  <Briefcase className="h-3 w-3" />
+                  <span>Advogado</span>
+                </>
+              ) : (
+                <>
+                  <User className="h-3 w-3" />
+                  <span>Cidadão</span>
+                </>
+              )}
+            </Badge>
+          )}
 
           <Button
             variant={location.pathname === "/" ? "default" : "ghost"}
@@ -76,6 +77,19 @@ export function AppHeader() {
             <Calculator className="mr-1.5 h-4 w-4" />
             Calculadoras
           </Button>
+          
+          {/* Lawyer Dashboard - only visible for lawyers */}
+          {isLawyer && (
+            <Button
+              variant={location.pathname === "/painel-advogado" ? "default" : "ghost"}
+              size="sm"
+              onClick={() => navigate("/painel-advogado")}
+            >
+              <LayoutDashboard className="mr-1.5 h-4 w-4" />
+              Painel
+            </Button>
+          )}
+          
           <Button
             variant={location.pathname === "/historico" ? "default" : "ghost"}
             size="sm"
