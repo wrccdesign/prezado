@@ -125,7 +125,7 @@ export default function LandingPage() {
               </a>
             ))}
             <div className="flex gap-2 pt-2">
-              <Button variant="outline" className="flex-1 border-white/20 text-white hover:bg-white/10" asChild>
+              <Button className="flex-1 bg-transparent border border-white/20 text-white hover:bg-white/10" asChild>
                 <Link to="/auth">Entrar</Link>
               </Button>
               <Button className="flex-1 bg-gold text-navy hover:bg-gold-light" asChild>
@@ -182,7 +182,7 @@ export default function LandingPage() {
                     Começar Grátis <ArrowRight className="ml-2 h-5 w-5" />
                   </Link>
                 </Button>
-                <Button size="lg" variant="outline" className="border-white/20 text-white hover:bg-white/10 text-base" asChild>
+                <Button size="lg" className="bg-transparent border border-white/20 text-white hover:bg-white/10 text-base" asChild>
                   <a href="#funcionalidades">Ver Funcionalidades</a>
                 </Button>
               </div>
@@ -498,7 +498,7 @@ export default function LandingPage() {
               <Button size="lg" className="bg-gold text-navy hover:bg-gold-light font-semibold text-base px-8" asChild>
                 <Link to="/auth">Criar Conta Grátis <ArrowRight className="ml-2 h-5 w-5" /></Link>
               </Button>
-              <Button size="lg" variant="outline" className="border-white/20 text-white hover:bg-white/10 text-base" asChild>
+              <Button size="lg" className="bg-transparent border border-white/20 text-white hover:bg-white/10 text-base" asChild>
                 <a href="#funcionalidades">Conhecer a Plataforma</a>
               </Button>
             </div>
