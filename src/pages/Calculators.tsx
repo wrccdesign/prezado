@@ -8,6 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { ArrowLeft, Briefcase, Users, Calendar, DollarSign } from "lucide-react";
 import { RescisaoCalc } from "@/components/calculators/RescisaoCalc";
 import { PensaoCalc } from "@/components/calculators/PensaoCalc";
+import { PrazoCalc } from "@/components/calculators/PrazoCalc";
 
 type CalculatorType = null | "rescisao" | "pensao" | "prazo" | "correcao";
 
