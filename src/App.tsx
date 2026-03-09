@@ -12,6 +12,7 @@ import Petition from "./pages/Petition";
 import Chat from "./pages/Chat";
 import Calculators from "./pages/Calculators";
 import LawyerDashboard from "./pages/LawyerDashboard";
+import Diagnostico from "./pages/Diagnostico";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -38,6 +39,7 @@ const App = () => (
               <Route path="/chat" element={<ProtectedRoute><Chat /></ProtectedRoute>} />
               <Route path="/historico" element={<ProtectedRoute><History /></ProtectedRoute>} />
               <Route path="/calculadoras" element={<ProtectedRoute><Calculators /></ProtectedRoute>} />
+              <Route path="/diagnostico" element={<ProtectedRoute><Diagnostico /></ProtectedRoute>} />
               <Route path="/painel-advogado" element={<ProtectedRoute><LawyerDashboard /></ProtectedRoute>} />
               <Route path="*" element={<NotFound />} />
             </Routes>
