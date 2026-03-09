@@ -98,6 +98,42 @@ export type Database = {
         }
         Relationships: []
       }
+      profiles: {
+        Row: {
+          created_at: string | null
+          id: string
+          oab_number: string | null
+          oab_state: string | null
+          office_name: string | null
+          profile_type: string
+          specialties: string[] | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          oab_number?: string | null
+          oab_state?: string | null
+          office_name?: string | null
+          profile_type?: string
+          specialties?: string[] | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          oab_number?: string | null
+          oab_state?: string | null
+          office_name?: string | null
+          profile_type?: string
+          specialties?: string[] | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
