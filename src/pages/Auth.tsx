@@ -49,8 +49,8 @@ export default function Auth() {
           <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-primary">
             <Scale className="h-8 w-8 text-primary-foreground" />
           </div>
-          <h1 className="text-3xl font-bold text-foreground">Assistente Jurídico</h1>
-          <p className="mt-2 text-muted-foreground">Análise inteligente de textos legais</p>
+          <h1 className="text-3xl font-bold text-foreground">JurisAI</h1>
+          <p className="mt-2 text-muted-foreground">Assistente jurídico inteligente para o Direito brasileiro</p>
         </div>
 
         <Card>

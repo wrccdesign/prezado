@@ -1,6 +1,6 @@
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
-import { Scale, History, LogOut, Plus, FileSignature } from "lucide-react";
+import { Scale, History, LogOut, Plus, FileSignature, MessageCircle } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
 
 export function AppHeader() {
@@ -18,7 +18,7 @@ export function AppHeader() {
           <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary">
             <Scale className="h-5 w-5 text-primary-foreground" />
           </div>
-          <span className="text-lg font-bold font-serif text-foreground">Assistente Jurídico</span>
+          <span className="text-lg font-bold font-serif text-foreground">JurisAI</span>
         </button>
 
         <div className="flex items-center gap-2">
@@ -37,6 +37,14 @@ export function AppHeader() {
           >
             <FileSignature className="mr-1.5 h-4 w-4" />
             Petição
+          </Button>
+          <Button
+            variant={location.pathname === "/chat" ? "default" : "ghost"}
+            size="sm"
+            onClick={() => navigate("/chat")}
+          >
+            <MessageCircle className="mr-1.5 h-4 w-4" />
+            Chat
           </Button>
           <Button
             variant={location.pathname === "/historico" ? "default" : "ghost"}
