@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ArrowLeft, Briefcase, Users, Calendar, DollarSign } from "lucide-react";
 import { RescisaoCalc } from "@/components/calculators/RescisaoCalc";
+import { PensaoCalc } from "@/components/calculators/PensaoCalc";
 
 type CalculatorType = null | "rescisao" | "pensao" | "prazo" | "correcao";
 
@@ -23,50 +24,7 @@ function fmt(v: number) {
 
 // RescisaoCalc is now imported from @/components/calculators/RescisaoCalc
 
-// ── Pensão Alimentícia ──
-function PensaoCalc() {
-  const [renda, setRenda] = useState("");
-  const [filhos, setFilhos] = useState("1");
-  const [percentual, setPercentual] = useState("30");
-  const [result, setResult] = useState<{ porFilho: number; total: number } | null>(null);
-
-  const calcular = () => {
-    const r = parseFloat(renda) || 0;
-    const f = parseInt(filhos) || 1;
-    const p = parseFloat(percentual) || 30;
-    const total = r * (p / 100);
-    setResult({ total, porFilho: total / f });
-  };
-
-  return (
-    <div className="space-y-6">
-      <div className="grid gap-4 sm:grid-cols-3">
-        <div className="space-y-2">
-          <Label>Renda Líquida do Alimentante (R$)</Label>
-          <Input type="number" placeholder="5000" value={renda} onChange={e => setRenda(e.target.value)} />
-        </div>
-        <div className="space-y-2">
-          <Label>Número de Filhos</Label>
-          <Input type="number" min={1} placeholder="1" value={filhos} onChange={e => setFilhos(e.target.value)} />
-        </div>
-        <div className="space-y-2">
-          <Label>Percentual (%)</Label>
-          <Input type="number" min={1} max={100} placeholder="30" value={percentual} onChange={e => setPercentual(e.target.value)} />
-        </div>
-      </div>
-      <Button onClick={calcular} className="w-full sm:w-auto">Calcular Pensão</Button>
-
-      {result && (
-        <Card className="border-primary/20 bg-primary/5">
-          <CardContent className="pt-6 space-y-2 text-sm">
-            <div className="flex justify-between"><span>Valor Total da Pensão</span><span className="font-semibold">{fmt(result.total)}</span></div>
-            <div className="flex justify-between"><span>Valor por Filho</span><span className="font-semibold">{fmt(result.porFilho)}</span></div>
-          </CardContent>
-        </Card>
-      )}
-    </div>
-  );
-}
+// PensaoCalc imported from @/components/calculators/PensaoCalc
 
 // ── Prazo Processual ──
 function PrazoCalc() {
