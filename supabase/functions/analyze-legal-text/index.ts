@@ -6,6 +6,61 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
+const SENADO_API_BASE = "https://legis.senado.leg.br/dadosabertos";
+
+interface NormaResumo {
+  tipoNorma: string;
+  numero: string;
+  ano: string;
+  ementa: string;
+  url: string;
+}
+
+async function fetchLegislation(termos: string[]): Promise<NormaResumo[]> {
+  const allNormas: NormaResumo[] = [];
+  const seen = new Set<string>();
+
+  for (const termo of termos.slice(0, 3)) {
+    try {
+      const url = `${SENADO_API_BASE}/legislacao/lista?termos=${encodeURIComponent(termo)}&p=1`;
+      const response = await fetch(url, { headers: { Accept: "application/json" } });
+      if (!response.ok) continue;
+
+      const data = await response.json();
+      const documentos =
+        data?.PesquisaLegislacao?.Documentos?.Documento ||
+        data?.ListaDocumentos?.Documentos?.Documento ||
+        [];
+      const docs = Array.isArray(documentos) ? documentos : documentos ? [documentos] : [];
+
+      for (const doc of docs.slice(0, 3)) {
+        const key = `${doc.TipoNorma || ""}-${doc.Numero || ""}-${doc.Ano || ""}`;
+        if (seen.has(key)) continue;
+        seen.add(key);
+        allNormas.push({
+          tipoNorma: doc.TipoNorma || doc.DescricaoTipoNorma || "",
+          numero: doc.Numero || doc.NumeroDocumento || "",
+          ano: doc.Ano || doc.AnoDocumento || "",
+          ementa: doc.Ementa || doc.DescricaoEmenta || "",
+          url: doc.UrlDocumento || doc.Url || `https://legis.senado.leg.br/norma/${doc.Codigo || ""}`,
+        });
+      }
+    } catch (e) {
+      console.error(`Legislation search error for "${termo}":`, e);
+    }
+  }
+
+  return allNormas.slice(0, 5);
+}
+
+function buildLegislationContext(normas: NormaResumo[]): string {
+  if (normas.length === 0) return "";
+  const items = normas.map(
+    (n) => `- ${n.tipoNorma} nº ${n.numero}/${n.ano}: ${n.ementa} (${n.url})`
+  ).join("\n");
+  return `\n\nLEGISLAÇÃO ATUALIZADA ENCONTRADA (dados do Senado Federal):\n${items}\n\nUse estas normas como referência quando pertinente na análise.`;
+}
+
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
@@ -17,7 +72,6 @@ serve(async (req) => {
     const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const supabase = createClient(supabaseUrl, supabaseKey);
 
-    // Get user from token
     const token = authHeader.replace("Bearer ", "");
     const { data: { user }, error: userError } = await supabase.auth.getUser(token);
     if (userError || !user) throw new Error("Unauthorized");
@@ -30,6 +84,39 @@ serve(async (req) => {
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY not configured");
 
+    // Step 1: Extract keywords using AI
+    const keywordResponse = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${LOVABLE_API_KEY}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        model: "google/gemini-2.5-flash-lite",
+        messages: [
+          {
+            role: "system",
+            content: "Extraia de 1 a 3 termos jurídicos principais do texto para busca em base de legislação. Retorne APENAS os termos separados por vírgula, sem explicação. Ex: trabalho, rescisão contratual, CLT",
+          },
+          { role: "user", content: text.trim().slice(0, 3000) },
+        ],
+      }),
+    });
+
+    let legislationContext = "";
+    if (keywordResponse.ok) {
+      const kwData = await keywordResponse.json();
+      const keywords = kwData.choices?.[0]?.message?.content?.split(",").map((k: string) => k.trim()).filter(Boolean) || [];
+      console.log("Extracted keywords:", keywords);
+
+      if (keywords.length > 0) {
+        const normas = await fetchLegislation(keywords);
+        legislationContext = buildLegislationContext(normas);
+        console.log(`Found ${normas.length} relevant legislation items`);
+      }
+    }
+
+    // Step 2: Main analysis with legislation context
     const systemPrompt = `Você é um assistente jurídico especializado em direito brasileiro. 
 Analise o texto jurídico fornecido pelo usuário e retorne uma análise estruturada.
 
@@ -45,7 +132,7 @@ Ao fornecer portais_relevantes, inclua links reais de sites úteis como:
 - https://www.cnj.jus.br (CNJ)
 - Tribunais estaduais quando pertinente
 
-Para prazo_estimado, considere os prazos processuais brasileiros e a duração média de processos similares.`;
+Para prazo_estimado, considere os prazos processuais brasileiros e a duração média de processos similares.${legislationContext}`;
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
@@ -140,7 +227,6 @@ Para prazo_estimado, considere os prazos processuais brasileiros e a duração m
 
     const result = JSON.parse(toolCall.function.arguments);
 
-    // Save to database
     const { error: insertError } = await supabase.from("analyses").insert({
       user_id: user.id,
       input_text: text.trim().slice(0, 50000),
