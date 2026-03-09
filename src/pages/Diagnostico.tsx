@@ -281,6 +281,7 @@ export default function Diagnostico() {
           </div>
         )}
       </main>
+      <AppFooter />
     </div>
   );
 }
