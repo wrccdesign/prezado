@@ -21,6 +21,14 @@ const PETITION_TYPES = [
   "Mandado de Segurança",
   "Agravo de Instrumento",
   "Petição Inicial Criminal",
+  "Recurso Inominado (Juizado Especial)",
+  "Notificação Extrajudicial",
+  "Contrato de Prestação de Serviços",
+  "Ação de Divórcio Consensual",
+  "Reclamação Trabalhista",
+  "Embargos de Declaração",
+  "Ação de Indenização por Danos Morais e Materiais",
+  "Réplica / Resposta à Contestação",
 ];
 
 export default function Petition() {
