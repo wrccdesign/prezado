@@ -10,6 +10,7 @@ import Auth from "./pages/Auth";
 import History from "./pages/History";
 import Petition from "./pages/Petition";
 import Chat from "./pages/Chat";
+import Calculators from "./pages/Calculators";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
