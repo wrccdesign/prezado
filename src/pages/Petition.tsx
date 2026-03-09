@@ -91,6 +91,7 @@ export default function Petition() {
     return (
       <div className="min-h-screen bg-background">
         <AppHeader />
+        <LegalDisclaimer />
         <main className="container max-w-4xl py-8">
           <PetitionResult text={generatedText} onNewPetition={handleNewPetition} />
         </main>
