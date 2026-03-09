@@ -69,6 +69,14 @@ export function AppHeader() {
             Chat
           </Button>
           <Button
+            variant={location.pathname === "/calculadoras" ? "default" : "ghost"}
+            size="sm"
+            onClick={() => navigate("/calculadoras")}
+          >
+            <Calculator className="mr-1.5 h-4 w-4" />
+            Calculadoras
+          </Button>
+          <Button
             variant={location.pathname === "/historico" ? "default" : "ghost"}
             size="sm"
             onClick={() => navigate("/historico")}

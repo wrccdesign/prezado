@@ -36,6 +36,7 @@ const App = () => (
               <Route path="/peticao" element={<ProtectedRoute><Petition /></ProtectedRoute>} />
               <Route path="/chat" element={<ProtectedRoute><Chat /></ProtectedRoute>} />
               <Route path="/historico" element={<ProtectedRoute><History /></ProtectedRoute>} />
+              <Route path="/calculadoras" element={<ProtectedRoute><Calculators /></ProtectedRoute>} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </UserProfileProvider>
