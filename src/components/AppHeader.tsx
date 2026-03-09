@@ -2,7 +2,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useUserProfile } from "@/contexts/UserProfileContext";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Scale, History, LogOut, Plus, FileSignature, MessageCircle, Briefcase, User } from "lucide-react";
+import { Scale, History, LogOut, Plus, FileSignature, MessageCircle, Briefcase, User, Calculator } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
 
 export function AppHeader() {
@@ -67,6 +67,14 @@ export function AppHeader() {
           >
             <MessageCircle className="mr-1.5 h-4 w-4" />
             Chat
+          </Button>
+          <Button
+            variant={location.pathname === "/calculadoras" ? "default" : "ghost"}
+            size="sm"
+            onClick={() => navigate("/calculadoras")}
+          >
+            <Calculator className="mr-1.5 h-4 w-4" />
+            Calculadoras
           </Button>
           <Button
             variant={location.pathname === "/historico" ? "default" : "ghost"}
