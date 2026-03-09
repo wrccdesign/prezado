@@ -75,6 +75,7 @@ export default function LawyerDashboard() {
           <TabsContent value="settings"><SettingsTab /></TabsContent>
         </Tabs>
       </main>
+      <AppFooter />
     </div>
   );
 }
