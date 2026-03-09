@@ -29,6 +29,15 @@ const PETITION_TYPES = [
   "Embargos de Declaração",
   "Ação de Indenização por Danos Morais e Materiais",
   "Réplica / Resposta à Contestação",
+  "Ação de Cobrança",
+  "Ação de Indenização por Danos Morais",
+  "Ação de Indenização por Danos Materiais",
+  "Ação Revisional de Contrato",
+  "Ação de Despejo",
+  "Usucapião",
+  "Ação de Alimentos",
+  "Ação de Guarda e Visitação",
+  "Inventário e Partilha",
 ];
 
 export default function Petition() {
