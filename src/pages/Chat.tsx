@@ -313,6 +313,7 @@ export default function Chat() {
           </div>
         </div>
       </main>
+      <AppFooter />
     </div>
   );
 }
