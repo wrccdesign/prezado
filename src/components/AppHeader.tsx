@@ -26,6 +26,22 @@ const navItems: NavItem[] = [
   { path: "/historico", label: "Histórico", icon: History },
 ];
 
+function NavButton({ item, active, onClick }: { item: NavItem; active: boolean; onClick: () => void }) {
+  return (
+    <button
+      onClick={onClick}
+      className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
+        active
+          ? "bg-white/10 text-white"
+          : "text-white/60 hover:text-white hover:bg-white/5"
+      }`}
+    >
+      <item.icon className="h-4 w-4" />
+      {item.label}
+    </button>
+  );
+}
+
 export function AppHeader() {
   const { signOut } = useAuth();
   const { profile, isLawyer, loading } = useUserProfile();
@@ -42,244 +58,151 @@ export function AppHeader() {
     setSheetOpen(false);
   };
 
+  const profileBadge = (variant: "small" | "full" = "full") => {
+    if (loading) return null;
+    return (
+      <span className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-medium ${
+        isLawyer ? "bg-gold/20 text-gold-light" : "bg-white/10 text-white/70"
+      }`}>
+        {isLawyer ? <Briefcase className="h-3 w-3" /> : <User className="h-3 w-3" />}
+        {variant === "full" && <span>{isLawyer ? "Advogado" : "Cidadão"}</span>}
+      </span>
+    );
+  };
+
+  const sheetNav = (items: NavItem[], label: string) => (
+    <>
+      <div className="text-xs font-semibold text-white/40 px-2 mb-2 tracking-wider">{label}</div>
+      {items.map((item) => (
+        <button
+          key={item.path}
+          onClick={() => handleNavigate(item.path)}
+          className={`flex items-center gap-3 w-full px-3 py-2.5 rounded-md text-sm font-medium transition-colors ${
+            location.pathname === item.path
+              ? "bg-white/10 text-white"
+              : "text-white/60 hover:text-white hover:bg-white/5"
+          }`}
+        >
+          <item.icon className="h-5 w-5" />
+          {item.label}
+        </button>
+      ))}
+    </>
+  );
+
   return (
-    <header className="border-b bg-card sticky top-0 z-50">
+    <header className="sticky top-0 z-50 bg-navy border-b border-gold/20">
       <div className="container flex h-14 sm:h-16 items-center justify-between px-4">
         {/* Logo */}
         <button
           onClick={() => navigate("/")}
           className="flex items-center gap-2 sm:gap-2.5 flex-shrink-0"
         >
-          <div className="flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center rounded-lg bg-primary">
-            <Scale className="h-4 w-4 sm:h-5 sm:w-5 text-primary-foreground" />
+          <div className="flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center rounded-lg bg-gold">
+            <Scale className="h-4 w-4 sm:h-5 sm:w-5 text-navy" />
           </div>
-          <span className="text-base sm:text-lg font-bold font-serif text-foreground">JurisAI</span>
+          <span className="text-base sm:text-lg font-bold font-serif text-white">
+            Juris<span className="text-gold">AI</span>
+          </span>
         </button>
 
-        {/* Desktop Navigation (lg and up - 1024px+) */}
+        {/* Desktop Navigation (lg+) */}
         <nav className="hidden lg:flex items-center gap-1 xl:gap-2">
-          {/* Profile Badge */}
-          {!loading && (
-            <Badge 
-              variant={isLawyer ? "default" : "secondary"} 
-              className="flex items-center gap-1.5 mr-2"
-            >
-              {isLawyer ? (
-                <>
-                  <Briefcase className="h-3 w-3" />
-                  <span>Advogado</span>
-                </>
-              ) : (
-                <>
-                  <User className="h-3 w-3" />
-                  <span>Cidadão</span>
-                </>
-              )}
-            </Badge>
-          )}
-
+          {profileBadge("full")}
+          <div className="w-px h-6 bg-white/10 mx-1" />
           {filteredNavItems.map((item) => (
-            <Button
+            <NavButton
               key={item.path}
-              variant={location.pathname === item.path ? "default" : "ghost"}
-              size="sm"
+              item={item}
+              active={location.pathname === item.path}
               onClick={() => navigate(item.path)}
-            >
-              <item.icon className="mr-1.5 h-4 w-4" />
-              {item.label}
-            </Button>
+            />
           ))}
-
-          <Button variant="ghost" size="sm" onClick={signOut}>
-            <LogOut className="mr-1.5 h-4 w-4" />
+          <div className="w-px h-6 bg-white/10 mx-1" />
+          <button
+            onClick={signOut}
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm font-medium text-white/40 hover:text-red-400 hover:bg-white/5 transition-colors"
+          >
+            <LogOut className="h-4 w-4" />
             Sair
-          </Button>
+          </button>
         </nav>
 
-        {/* Tablet Navigation (md - 768px to 1023px) - Only primary items */}
+        {/* Tablet Navigation (md to lg) */}
         <nav className="hidden md:flex lg:hidden items-center gap-1">
-          {/* Profile Badge */}
-          {!loading && (
-            <Badge 
-              variant={isLawyer ? "default" : "secondary"} 
-              className="flex items-center gap-1 text-xs mr-1"
-            >
-              {isLawyer ? <Briefcase className="h-3 w-3" /> : <User className="h-3 w-3" />}
-            </Badge>
-          )}
-
+          {profileBadge("small")}
           {primaryItems.map((item) => (
-            <Button
+            <NavButton
               key={item.path}
-              variant={location.pathname === item.path ? "default" : "ghost"}
-              size="sm"
+              item={item}
+              active={location.pathname === item.path}
               onClick={() => navigate(item.path)}
-            >
-              <item.icon className="mr-1.5 h-4 w-4" />
-              {item.label}
-            </Button>
+            />
           ))}
-
-          {/* More menu for secondary items */}
           <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
             <SheetTrigger asChild>
-              <Button variant="ghost" size="sm">
-                <Menu className="h-4 w-4 mr-1.5" />
+              <button className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm font-medium text-white/60 hover:text-white hover:bg-white/5 transition-colors">
+                <Menu className="h-4 w-4" />
                 Mais
-              </Button>
+              </button>
             </SheetTrigger>
-            <SheetContent side="right" className="w-72">
+            <SheetContent side="right" className="w-72 bg-navy border-l border-gold/20 p-6">
               <SheetHeader className="text-left">
-                <SheetTitle className="flex items-center gap-2">
-                  <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary">
-                    <Scale className="h-4 w-4 text-primary-foreground" />
+                <SheetTitle className="flex items-center gap-2 text-white">
+                  <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gold">
+                    <Scale className="h-4 w-4 text-navy" />
                   </div>
-                  <span className="font-serif">JurisAI</span>
+                  <span className="font-serif">Juris<span className="text-gold">AI</span></span>
                 </SheetTitle>
               </SheetHeader>
-
-              {!loading && (
-                <div className="mt-4 flex items-center gap-2 px-1">
-                  <Badge 
-                    variant={isLawyer ? "default" : "secondary"} 
-                    className="flex items-center gap-1.5"
-                  >
-                    {isLawyer ? (
-                      <>
-                        <Briefcase className="h-3 w-3" />
-                        <span>Advogado</span>
-                      </>
-                    ) : (
-                      <>
-                        <User className="h-3 w-3" />
-                        <span>Cidadão</span>
-                      </>
-                    )}
-                  </Badge>
-                </div>
-              )}
-
+              <div className="mt-4">{profileBadge("full")}</div>
               <nav className="mt-6 flex flex-col gap-1">
-                <div className="text-xs font-semibold text-muted-foreground px-2 mb-2">FERRAMENTAS</div>
-                {secondaryItems.map((item) => (
-                  <Button
-                    key={item.path}
-                    variant={location.pathname === item.path ? "default" : "ghost"}
-                    className="justify-start h-11"
-                    onClick={() => handleNavigate(item.path)}
-                  >
-                    <item.icon className="mr-3 h-5 w-5" />
-                    {item.label}
-                  </Button>
-                ))}
-                
-                <Separator className="my-2" />
-                
-                <Button 
-                  variant="ghost" 
-                  className="justify-start h-11 text-destructive hover:text-destructive hover:bg-destructive/10"
-                  onClick={() => {
-                    signOut();
-                    setSheetOpen(false);
-                  }}
+                {sheetNav(secondaryItems, "FERRAMENTAS")}
+                <div className="h-px bg-white/10 my-3" />
+                <button
+                  onClick={() => { signOut(); setSheetOpen(false); }}
+                  className="flex items-center gap-3 w-full px-3 py-2.5 rounded-md text-sm font-medium text-red-400/80 hover:text-red-400 hover:bg-white/5 transition-colors"
                 >
-                  <LogOut className="mr-3 h-5 w-5" />
+                  <LogOut className="h-5 w-5" />
                   Sair
-                </Button>
+                </button>
               </nav>
             </SheetContent>
           </Sheet>
         </nav>
 
-        {/* Mobile Navigation - Full Burger Menu (< 768px) */}
+        {/* Mobile Navigation (<768px) */}
         <div className="flex md:hidden items-center gap-2">
-          {!loading && (
-            <Badge 
-              variant={isLawyer ? "default" : "secondary"} 
-              className="flex items-center gap-1 text-xs"
-            >
-              {isLawyer ? <Briefcase className="h-3 w-3" /> : <User className="h-3 w-3" />}
-            </Badge>
-          )}
-
+          {profileBadge("small")}
           <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
             <SheetTrigger asChild>
-              <Button variant="ghost" size="icon" className="h-9 w-9">
+              <button className="h-9 w-9 inline-flex items-center justify-center rounded-md text-white/70 hover:text-white hover:bg-white/5 transition-colors">
                 <Menu className="h-5 w-5" />
                 <span className="sr-only">Abrir menu</span>
-              </Button>
+              </button>
             </SheetTrigger>
-            <SheetContent side="right" className="w-72 sm:w-80">
+            <SheetContent side="right" className="w-72 sm:w-80 bg-navy border-l border-gold/20 p-6">
               <SheetHeader className="text-left">
-                <SheetTitle className="flex items-center gap-2">
-                  <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary">
-                    <Scale className="h-4 w-4 text-primary-foreground" />
+                <SheetTitle className="flex items-center gap-2 text-white">
+                  <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gold">
+                    <Scale className="h-4 w-4 text-navy" />
                   </div>
-                  <span className="font-serif">JurisAI</span>
+                  <span className="font-serif">Juris<span className="text-gold">AI</span></span>
                 </SheetTitle>
               </SheetHeader>
-              
-              {!loading && (
-                <div className="mt-4 flex items-center gap-2 px-1">
-                  <Badge 
-                    variant={isLawyer ? "default" : "secondary"} 
-                    className="flex items-center gap-1.5"
-                  >
-                    {isLawyer ? (
-                      <>
-                        <Briefcase className="h-3 w-3" />
-                        <span>Advogado</span>
-                      </>
-                    ) : (
-                      <>
-                        <User className="h-3 w-3" />
-                        <span>Cidadão</span>
-                      </>
-                    )}
-                  </Badge>
-                </div>
-              )}
-
+              <div className="mt-4">{profileBadge("full")}</div>
               <nav className="mt-6 flex flex-col gap-1">
-                <div className="text-xs font-semibold text-muted-foreground px-2 mb-2">PRINCIPAIS</div>
-                {primaryItems.map((item) => (
-                  <Button
-                    key={item.path}
-                    variant={location.pathname === item.path ? "default" : "ghost"}
-                    className="justify-start h-11"
-                    onClick={() => handleNavigate(item.path)}
-                  >
-                    <item.icon className="mr-3 h-5 w-5" />
-                    {item.label}
-                  </Button>
-                ))}
-
-                <div className="text-xs font-semibold text-muted-foreground px-2 mb-2 mt-4">FERRAMENTAS</div>
-                {secondaryItems.map((item) => (
-                  <Button
-                    key={item.path}
-                    variant={location.pathname === item.path ? "default" : "ghost"}
-                    className="justify-start h-11"
-                    onClick={() => handleNavigate(item.path)}
-                  >
-                    <item.icon className="mr-3 h-5 w-5" />
-                    {item.label}
-                  </Button>
-                ))}
-                
-                <Separator className="my-2" />
-                
-                <Button 
-                  variant="ghost" 
-                  className="justify-start h-11 text-destructive hover:text-destructive hover:bg-destructive/10"
-                  onClick={() => {
-                    signOut();
-                    setSheetOpen(false);
-                  }}
+                {sheetNav(primaryItems, "PRINCIPAIS")}
+                <div className="mt-4" />
+                {sheetNav(secondaryItems, "FERRAMENTAS")}
+                <div className="h-px bg-white/10 my-3" />
+                <button
+                  onClick={() => { signOut(); setSheetOpen(false); }}
+                  className="flex items-center gap-3 w-full px-3 py-2.5 rounded-md text-sm font-medium text-red-400/80 hover:text-red-400 hover:bg-white/5 transition-colors"
                 >
-                  <LogOut className="mr-3 h-5 w-5" />
+                  <LogOut className="h-5 w-5" />
                   Sair
-                </Button>
+                </button>
               </nav>
             </SheetContent>
           </Sheet>
