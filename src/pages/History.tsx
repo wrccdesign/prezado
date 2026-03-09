@@ -289,6 +289,7 @@ export default function History() {
           </TabsContent>
         </Tabs>
       </main>
+      <AppFooter />
     </div>
   );
 }
