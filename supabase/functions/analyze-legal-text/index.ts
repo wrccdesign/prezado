@@ -6,8 +6,6 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
-const SENADO_API_BASE = "https://legis.senado.leg.br/dadosabertos";
-
 interface NormaResumo {
   tipoNorma: string;
   numero: string;
@@ -16,41 +14,118 @@ interface NormaResumo {
   url: string;
 }
 
-async function fetchLegislation(termos: string[]): Promise<NormaResumo[]> {
-  const allNormas: NormaResumo[] = [];
+function getLegislationByKeywords(keywords: string[]): NormaResumo[] {
+  const staticLaws: Record<string, NormaResumo[]> = {
+    trabalho: [
+      { tipoNorma: "Decreto-Lei", numero: "5.452", ano: "1943", ementa: "Consolidação das Leis do Trabalho - CLT", url: "https://www.planalto.gov.br/ccivil_03/decreto-lei/del5452.htm" },
+      { tipoNorma: "Lei", numero: "13.467", ano: "2017", ementa: "Reforma Trabalhista", url: "https://www.planalto.gov.br/ccivil_03/_ato2015-2018/2017/lei/l13467.htm" },
+    ],
+    clt: [
+      { tipoNorma: "Decreto-Lei", numero: "5.452", ano: "1943", ementa: "Consolidação das Leis do Trabalho - CLT", url: "https://www.planalto.gov.br/ccivil_03/decreto-lei/del5452.htm" },
+    ],
+    consumidor: [
+      { tipoNorma: "Lei", numero: "8.078", ano: "1990", ementa: "Código de Defesa do Consumidor", url: "https://www.planalto.gov.br/ccivil_03/leis/l8078compilado.htm" },
+    ],
+    cdc: [
+      { tipoNorma: "Lei", numero: "8.078", ano: "1990", ementa: "Código de Defesa do Consumidor", url: "https://www.planalto.gov.br/ccivil_03/leis/l8078compilado.htm" },
+    ],
+    civil: [
+      { tipoNorma: "Lei", numero: "10.406", ano: "2002", ementa: "Código Civil", url: "https://www.planalto.gov.br/ccivil_03/leis/2002/l10406compilada.htm" },
+    ],
+    contrato: [
+      { tipoNorma: "Lei", numero: "10.406", ano: "2002", ementa: "Código Civil - Parte Especial: Contratos", url: "https://www.planalto.gov.br/ccivil_03/leis/2002/l10406compilada.htm" },
+    ],
+    processo: [
+      { tipoNorma: "Lei", numero: "13.105", ano: "2015", ementa: "Código de Processo Civil", url: "https://www.planalto.gov.br/ccivil_03/_ato2015-2018/2015/lei/l13105.htm" },
+    ],
+    cpc: [
+      { tipoNorma: "Lei", numero: "13.105", ano: "2015", ementa: "Código de Processo Civil", url: "https://www.planalto.gov.br/ccivil_03/_ato2015-2018/2015/lei/l13105.htm" },
+    ],
+    penal: [
+      { tipoNorma: "Decreto-Lei", numero: "2.848", ano: "1940", ementa: "Código Penal", url: "https://www.planalto.gov.br/ccivil_03/decreto-lei/del2848compilado.htm" },
+      { tipoNorma: "Decreto-Lei", numero: "3.689", ano: "1941", ementa: "Código de Processo Penal", url: "https://www.planalto.gov.br/ccivil_03/decreto-lei/del3689compilado.htm" },
+    ],
+    crime: [
+      { tipoNorma: "Decreto-Lei", numero: "2.848", ano: "1940", ementa: "Código Penal", url: "https://www.planalto.gov.br/ccivil_03/decreto-lei/del2848compilado.htm" },
+    ],
+    familia: [
+      { tipoNorma: "Lei", numero: "10.406", ano: "2002", ementa: "Código Civil - Livro IV (Direito de Família)", url: "https://www.planalto.gov.br/ccivil_03/leis/2002/l10406compilada.htm" },
+      { tipoNorma: "Lei", numero: "8.069", ano: "1990", ementa: "Estatuto da Criança e do Adolescente", url: "https://www.planalto.gov.br/ccivil_03/leis/l8069.htm" },
+    ],
+    divorcio: [
+      { tipoNorma: "Lei", numero: "10.406", ano: "2002", ementa: "Código Civil - Livro IV (Direito de Família)", url: "https://www.planalto.gov.br/ccivil_03/leis/2002/l10406compilada.htm" },
+    ],
+    alimentos: [
+      { tipoNorma: "Lei", numero: "5.478", ano: "1968", ementa: "Lei de Alimentos", url: "https://www.planalto.gov.br/ccivil_03/leis/l5478.htm" },
+    ],
+    tributario: [
+      { tipoNorma: "Lei", numero: "5.172", ano: "1966", ementa: "Código Tributário Nacional", url: "https://www.planalto.gov.br/ccivil_03/leis/l5172compilado.htm" },
+    ],
+    imposto: [
+      { tipoNorma: "Lei", numero: "5.172", ano: "1966", ementa: "Código Tributário Nacional", url: "https://www.planalto.gov.br/ccivil_03/leis/l5172compilado.htm" },
+    ],
+    administrativo: [
+      { tipoNorma: "Lei", numero: "14.133", ano: "2021", ementa: "Nova Lei de Licitações", url: "https://www.planalto.gov.br/ccivil_03/_ato2019-2022/2021/lei/l14133.htm" },
+      { tipoNorma: "Lei", numero: "9.784", ano: "1999", ementa: "Lei do Processo Administrativo Federal", url: "https://www.planalto.gov.br/ccivil_03/leis/l9784.htm" },
+    ],
+    licitacao: [
+      { tipoNorma: "Lei", numero: "14.133", ano: "2021", ementa: "Nova Lei de Licitações", url: "https://www.planalto.gov.br/ccivil_03/_ato2019-2022/2021/lei/l14133.htm" },
+    ],
+    constituicao: [
+      { tipoNorma: "Constituição", numero: "", ano: "1988", ementa: "Constituição da República Federativa do Brasil", url: "https://www.planalto.gov.br/ccivil_03/constituicao/constituicao.htm" },
+    ],
+    indenizacao: [
+      { tipoNorma: "Lei", numero: "10.406", ano: "2002", ementa: "Código Civil - Responsabilidade Civil", url: "https://www.planalto.gov.br/ccivil_03/leis/2002/l10406compilada.htm" },
+    ],
+    dano: [
+      { tipoNorma: "Lei", numero: "10.406", ano: "2002", ementa: "Código Civil - Responsabilidade Civil", url: "https://www.planalto.gov.br/ccivil_03/leis/2002/l10406compilada.htm" },
+    ],
+    locacao: [
+      { tipoNorma: "Lei", numero: "8.245", ano: "1991", ementa: "Lei do Inquilinato", url: "https://www.planalto.gov.br/ccivil_03/leis/l8245.htm" },
+    ],
+    inquilinato: [
+      { tipoNorma: "Lei", numero: "8.245", ano: "1991", ementa: "Lei do Inquilinato", url: "https://www.planalto.gov.br/ccivil_03/leis/l8245.htm" },
+    ],
+    previdencia: [
+      { tipoNorma: "Lei", numero: "8.213", ano: "1991", ementa: "Lei de Benefícios da Previdência Social", url: "https://www.planalto.gov.br/ccivil_03/leis/l8213cons.htm" },
+    ],
+    aposentadoria: [
+      { tipoNorma: "Lei", numero: "8.213", ano: "1991", ementa: "Lei de Benefícios da Previdência Social", url: "https://www.planalto.gov.br/ccivil_03/leis/l8213cons.htm" },
+    ],
+    falencia: [
+      { tipoNorma: "Lei", numero: "11.101", ano: "2005", ementa: "Lei de Recuperação Judicial e Falência", url: "https://www.planalto.gov.br/ccivil_03/_ato2004-2006/2005/lei/l11101.htm" },
+    ],
+    recuperacao: [
+      { tipoNorma: "Lei", numero: "11.101", ano: "2005", ementa: "Lei de Recuperação Judicial e Falência", url: "https://www.planalto.gov.br/ccivil_03/_ato2004-2006/2005/lei/l11101.htm" },
+    ],
+    execucao: [
+      { tipoNorma: "Lei", numero: "13.105", ano: "2015", ementa: "Código de Processo Civil - Livro II: Execução", url: "https://www.planalto.gov.br/ccivil_03/_ato2015-2018/2015/lei/l13105.htm" },
+    ],
+    ambiental: [
+      { tipoNorma: "Lei", numero: "9.605", ano: "1998", ementa: "Lei de Crimes Ambientais", url: "https://www.planalto.gov.br/ccivil_03/leis/l9605.htm" },
+      { tipoNorma: "Lei", numero: "12.651", ano: "2012", ementa: "Código Florestal", url: "https://www.planalto.gov.br/ccivil_03/_ato2011-2014/2012/lei/l12651.htm" },
+    ],
+  };
+
+  const results: NormaResumo[] = [];
   const seen = new Set<string>();
 
-  for (const termo of termos.slice(0, 3)) {
-    try {
-      const url = `${SENADO_API_BASE}/legislacao/lista?termos=${encodeURIComponent(termo)}&p=1`;
-      const response = await fetch(url, { headers: { Accept: "application/json" } });
-      if (!response.ok) continue;
-
-      const data = await response.json();
-      const documentos =
-        data?.PesquisaLegislacao?.Documentos?.Documento ||
-        data?.ListaDocumentos?.Documentos?.Documento ||
-        [];
-      const docs = Array.isArray(documentos) ? documentos : documentos ? [documentos] : [];
-
-      for (const doc of docs.slice(0, 3)) {
-        const key = `${doc.TipoNorma || ""}-${doc.Numero || ""}-${doc.Ano || ""}`;
-        if (seen.has(key)) continue;
-        seen.add(key);
-        allNormas.push({
-          tipoNorma: doc.TipoNorma || doc.DescricaoTipoNorma || "",
-          numero: doc.Numero || doc.NumeroDocumento || "",
-          ano: doc.Ano || doc.AnoDocumento || "",
-          ementa: doc.Ementa || doc.DescricaoEmenta || "",
-          url: doc.UrlDocumento || doc.Url || `https://legis.senado.leg.br/norma/${doc.Codigo || ""}`,
-        });
+  for (const keyword of keywords) {
+    const kw = keyword.toLowerCase().trim();
+    for (const [key, laws] of Object.entries(staticLaws)) {
+      if (kw.includes(key) || key.includes(kw)) {
+        for (const law of laws) {
+          const lawKey = `${law.tipoNorma}-${law.numero}-${law.ano}`;
+          if (!seen.has(lawKey)) {
+            seen.add(lawKey);
+            results.push(law);
+          }
+        }
       }
-    } catch (e) {
-      console.error(`Legislation search error for "${termo}":`, e);
     }
   }
 
-  return allNormas.slice(0, 5);
+  return results.slice(0, 5);
 }
 
 function buildLegislationContext(normas: NormaResumo[]): string {
@@ -58,7 +133,7 @@ function buildLegislationContext(normas: NormaResumo[]): string {
   const items = normas.map(
     (n) => `- ${n.tipoNorma} nº ${n.numero}/${n.ano}: ${n.ementa} (${n.url})`
   ).join("\n");
-  return `\n\nLEGISLAÇÃO ATUALIZADA ENCONTRADA (dados do Senado Federal):\n${items}\n\nUse estas normas como referência quando pertinente na análise.`;
+  return `\n\nLEGISLAÇÃO RELACIONADA (referência para consulta):\n${items}\n\nConsidere estas normas como referência quando pertinente na análise.`;
 }
 
 serve(async (req) => {
@@ -85,38 +160,41 @@ serve(async (req) => {
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY not configured");
 
     // Step 1: Extract keywords using AI
-    const keywordResponse = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${LOVABLE_API_KEY}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        model: "google/gemini-2.5-flash-lite",
-        messages: [
-          {
-            role: "system",
-            content: "Extraia de 1 a 3 termos jurídicos principais do texto para busca em base de legislação. Retorne APENAS os termos separados por vírgula, sem explicação. Ex: trabalho, rescisão contratual, CLT",
-          },
-          { role: "user", content: text.trim().slice(0, 3000) },
-        ],
-      }),
-    });
+    let keywords: string[] = [];
+    try {
+      const keywordResponse = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${LOVABLE_API_KEY}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          model: "google/gemini-2.5-flash-lite",
+          messages: [
+            {
+              role: "system",
+              content: "Extraia de 2 a 5 termos jurídicos principais do texto para identificar a área do direito. Retorne APENAS os termos separados por vírgula, sem explicação. Ex: trabalho, rescisão, CLT, indenização",
+            },
+            { role: "user", content: text.trim().slice(0, 3000) },
+          ],
+        }),
+      });
 
-    let legislationContext = "";
-    if (keywordResponse.ok) {
-      const kwData = await keywordResponse.json();
-      const keywords = kwData.choices?.[0]?.message?.content?.split(",").map((k: string) => k.trim()).filter(Boolean) || [];
-      console.log("Extracted keywords:", keywords);
-
-      if (keywords.length > 0) {
-        const normas = await fetchLegislation(keywords);
-        legislationContext = buildLegislationContext(normas);
-        console.log(`Found ${normas.length} relevant legislation items`);
+      if (keywordResponse.ok) {
+        const kwData = await keywordResponse.json();
+        keywords = kwData.choices?.[0]?.message?.content?.split(",").map((k: string) => k.trim()).filter(Boolean) || [];
+        console.log("Extracted keywords:", keywords);
       }
+    } catch (e) {
+      console.error("Keyword extraction failed:", e);
     }
 
-    // Step 2: Main analysis with legislation context
+    // Step 2: Get relevant legislation based on keywords
+    const normas = getLegislationByKeywords(keywords);
+    const legislationContext = buildLegislationContext(normas);
+    console.log(`Found ${normas.length} relevant legislation items`);
+
+    // Step 3: Main analysis with legislation context
     const systemPrompt = `Você é um assistente jurídico especializado em direito brasileiro. 
 Analise o texto jurídico fornecido pelo usuário e retorne uma análise estruturada.
 
