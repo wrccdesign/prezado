@@ -11,3 +11,9 @@ verify_jwt = false
 
 [functions.search-legislation]
 verify_jwt = false
+
+[functions.diagnostico-juridico]
+verify_jwt = false
+
+[functions.chat-juris]
+verify_jwt = false

@@ -18,6 +18,7 @@ interface NavItem {
 
 const navItems: NavItem[] = [
   { path: "/", label: "Análise", icon: Plus, primary: true },
+  { path: "/diagnostico", label: "Diagnóstico", icon: Stethoscope, primary: true },
   { path: "/peticao", label: "Petição", icon: FileSignature, primary: true },
   { path: "/chat", label: "Chat", icon: MessageCircle },
   { path: "/calculadoras", label: "Calculadoras", icon: Calculator },
