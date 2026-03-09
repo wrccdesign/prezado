@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { AppHeader } from "@/components/AppHeader";
+import { LegalDisclaimer } from "@/components/LegalDisclaimer";
 import { PetitionResult } from "@/components/PetitionResult";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
