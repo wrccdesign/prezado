@@ -110,7 +110,7 @@ export default function Petition() {
         <AppHeader />
         <LegalDisclaimer />
         <main className="container max-w-4xl py-8">
-          <PetitionResult text={generatedText} onNewPetition={handleNewPetition} />
+          <PetitionResult text={generatedText} petitionType={petitionType} onNewPetition={handleNewPetition} />
         </main>
       </div>
     );
