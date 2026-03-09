@@ -8,6 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { ArrowLeft, Briefcase, Users, Calendar, DollarSign } from "lucide-react";
 import { RescisaoCalc } from "@/components/calculators/RescisaoCalc";
 import { PensaoCalc } from "@/components/calculators/PensaoCalc";
+import { PrazoCalc } from "@/components/calculators/PrazoCalc";
 
 type CalculatorType = null | "rescisao" | "pensao" | "prazo" | "correcao";
 
@@ -26,73 +27,8 @@ function fmt(v: number) {
 
 // PensaoCalc imported from @/components/calculators/PensaoCalc
 
-// ── Prazo Processual ──
-function PrazoCalc() {
-  const [dataInicial, setDataInicial] = useState("");
-  const [dias, setDias] = useState("");
-  const [tipoDias, setTipoDias] = useState("uteis");
-  const [result, setResult] = useState<string | null>(null);
+// PrazoCalc imported from @/components/calculators/PrazoCalc
 
-  const calcular = () => {
-    const d = new Date(dataInicial);
-    const n = parseInt(dias) || 0;
-    if (isNaN(d.getTime()) || !n) return;
-
-    // Start counting from the next day
-    let date = new Date(d);
-    date.setDate(date.getDate() + 1);
-
-    if (tipoDias === "corridos") {
-      date.setDate(date.getDate() + n - 1);
-    } else {
-      let counted = 0;
-      while (counted < n) {
-        const dow = date.getDay();
-        if (dow !== 0 && dow !== 6) {
-          counted++;
-        }
-        if (counted < n) date.setDate(date.getDate() + 1);
-      }
-    }
-
-    setResult(date.toLocaleDateString("pt-BR", { weekday: "long", day: "2-digit", month: "long", year: "numeric" }));
-  };
-
-  return (
-    <div className="space-y-6">
-      <div className="grid gap-4 sm:grid-cols-3">
-        <div className="space-y-2">
-          <Label>Data da Intimação/Publicação</Label>
-          <Input type="date" value={dataInicial} onChange={e => setDataInicial(e.target.value)} />
-        </div>
-        <div className="space-y-2">
-          <Label>Prazo (dias)</Label>
-          <Input type="number" min={1} placeholder="15" value={dias} onChange={e => setDias(e.target.value)} />
-        </div>
-        <div className="space-y-2">
-          <Label>Tipo de Dias</Label>
-          <Select value={tipoDias} onValueChange={setTipoDias}>
-            <SelectTrigger><SelectValue /></SelectTrigger>
-            <SelectContent>
-              <SelectItem value="uteis">Dias Úteis</SelectItem>
-              <SelectItem value="corridos">Dias Corridos</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-      </div>
-      <Button onClick={calcular} className="w-full sm:w-auto">Calcular Prazo</Button>
-
-      {result && (
-        <Card className="border-primary/20 bg-primary/5">
-          <CardContent className="pt-6">
-            <p className="text-sm text-muted-foreground">Data final do prazo:</p>
-            <p className="text-lg font-semibold capitalize text-primary">{result}</p>
-          </CardContent>
-        </Card>
-      )}
-    </div>
-  );
-}
 
 // ── Correção Monetária ──
 function CorrecaoCalc() {
