@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ArrowLeft, Briefcase, Users, Calendar, DollarSign } from "lucide-react";
+import { RescisaoCalc } from "@/components/calculators/RescisaoCalc";
 
 type CalculatorType = null | "rescisao" | "pensao" | "prazo" | "correcao";
 
