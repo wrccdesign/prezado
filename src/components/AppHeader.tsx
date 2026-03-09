@@ -1,6 +1,6 @@
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
-import { Scale, History, LogOut, Plus, FileSignature } from "lucide-react";
+import { Scale, History, LogOut, Plus, FileSignature, MessageCircle } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
 
 export function AppHeader() {
