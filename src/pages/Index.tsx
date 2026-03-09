@@ -9,6 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { Upload, Search, FileText, Loader2, X } from "lucide-react";
+import { AppFooter } from "@/components/AppFooter";
 import type { LegalAnalysis } from "@/types/analysis";
 
 export default function Index() {
