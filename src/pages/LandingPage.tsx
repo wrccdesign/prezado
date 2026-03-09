@@ -125,7 +125,7 @@ export default function LandingPage() {
               </a>
             ))}
             <div className="flex gap-2 pt-2">
-              <Button variant="outline" className="flex-1 border-white/20 text-white hover:bg-white/10" asChild>
+              <Button className="flex-1 bg-transparent border border-white/20 text-white hover:bg-white/10" asChild>
                 <Link to="/auth">Entrar</Link>
               </Button>
               <Button className="flex-1 bg-gold text-navy hover:bg-gold-light" asChild>
