@@ -133,6 +133,7 @@ export default function History() {
           </div>
           <PetitionResult 
             text={selectedPetition.generated_text} 
+            petitionType={selectedPetition.petition_type}
             onNewPetition={() => setSelectedPetition(null)} 
           />
         </main>
