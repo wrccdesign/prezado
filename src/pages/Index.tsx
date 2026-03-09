@@ -116,7 +116,7 @@ export default function Index() {
         <div className="mb-8 animate-fade-in">
           <h2 className="text-2xl font-bold text-foreground">Nova Análise Jurídica</h2>
           <p className="mt-1 text-muted-foreground">
-            Insira o texto ou faça upload de um documento para receber uma análise estruturada.
+            Insira o texto ou faça upload de um documento para receber uma análise estruturada pelo JurisAI.
           </p>
         </div>
 

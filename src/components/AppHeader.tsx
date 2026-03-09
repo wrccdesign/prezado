@@ -39,6 +39,14 @@ export function AppHeader() {
             Petição
           </Button>
           <Button
+            variant={location.pathname === "/chat" ? "default" : "ghost"}
+            size="sm"
+            onClick={() => navigate("/chat")}
+          >
+            <MessageCircle className="mr-1.5 h-4 w-4" />
+            Chat
+          </Button>
+          <Button
             variant={location.pathname === "/historico" ? "default" : "ghost"}
             size="sm"
             onClick={() => navigate("/historico")}
