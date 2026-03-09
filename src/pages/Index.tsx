@@ -103,8 +103,8 @@ export default function Index() {
       <div className="min-h-screen bg-background">
         <AppHeader />
         <LegalDisclaimer />
-        <main className="container max-w-3xl py-8">
-          <h2 className="mb-6 text-2xl font-bold text-foreground">Resultado da Análise</h2>
+        <main className="container max-w-3xl py-6 sm:py-8 px-4 sm:px-6">
+          <h2 className="mb-4 sm:mb-6 text-xl sm:text-2xl font-bold text-foreground">Resultado da Análise</h2>
           <AnalysisResult result={result} onNewAnalysis={handleNewAnalysis} />
         </main>
       </div>
