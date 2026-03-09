@@ -9,6 +9,7 @@ import { ArrowLeft, Briefcase, Users, Calendar, DollarSign } from "lucide-react"
 import { RescisaoCalc } from "@/components/calculators/RescisaoCalc";
 import { PensaoCalc } from "@/components/calculators/PensaoCalc";
 import { PrazoCalc } from "@/components/calculators/PrazoCalc";
+import { AppFooter } from "@/components/AppFooter";
 
 type CalculatorType = null | "rescisao" | "pensao" | "prazo" | "correcao";
 

@@ -108,6 +108,7 @@ export default function Index() {
           <h2 className="mb-4 sm:mb-6 text-xl sm:text-2xl font-bold text-foreground">Resultado da Análise</h2>
           <AnalysisResult result={result} onNewAnalysis={handleNewAnalysis} />
         </main>
+        <AppFooter />
       </div>
     );
   }
