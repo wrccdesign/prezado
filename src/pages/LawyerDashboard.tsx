@@ -44,32 +44,32 @@ export default function LawyerDashboard() {
       <AppHeader />
       <LegalDisclaimer />
 
-      <main className="flex-1 container py-8">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold font-serif text-foreground">Painel do Advogado</h1>
-          <p className="text-muted-foreground mt-1">Gerencie seus clientes, petições e modelos</p>
+      <main className="flex-1 container py-6 sm:py-8 px-4 sm:px-6">
+        <div className="mb-6 sm:mb-8">
+          <h1 className="text-2xl sm:text-3xl font-bold font-serif text-foreground">Painel do Advogado</h1>
+          <p className="text-sm sm:text-base text-muted-foreground mt-1">Gerencie seus clientes, petições e modelos</p>
         </div>
 
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-4 sm:gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
           {/* Profile Card */}
-          <Card className="lg:col-span-1">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Briefcase className="h-5 w-5 text-primary" />
+          <Card>
+            <CardHeader className="pb-3 sm:pb-6">
+              <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
+                <Briefcase className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
                 Meu Perfil
               </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4">
+            <CardContent className="space-y-3 sm:space-y-4">
               {profileData?.oab_number && profileData?.oab_state && (
                 <div className="flex items-center gap-2 text-sm">
-                  <Award className="h-4 w-4 text-muted-foreground" />
+                  <Award className="h-4 w-4 text-muted-foreground flex-shrink-0" />
                   <span className="font-medium">OAB {profileData.oab_number}/{profileData.oab_state}</span>
                 </div>
               )}
               {profileData?.office_name && (
                 <div className="flex items-center gap-2 text-sm">
-                  <MapPin className="h-4 w-4 text-muted-foreground" />
-                  <span>{profileData.office_name}</span>
+                  <MapPin className="h-4 w-4 text-muted-foreground flex-shrink-0" />
+                  <span className="break-words">{profileData.office_name}</span>
                 </div>
               )}
               {profileData?.specialties && profileData.specialties.length > 0 && (
@@ -85,16 +85,16 @@ export default function LawyerDashboard() {
           </Card>
 
           {/* Client Management Placeholder */}
-          <Card className="lg:col-span-1">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Users className="h-5 w-5 text-primary" />
+          <Card>
+            <CardHeader className="pb-3 sm:pb-6">
+              <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
+                <Users className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
                 Gestão de Clientes
               </CardTitle>
-              <CardDescription>Gerencie seus clientes e casos</CardDescription>
+              <CardDescription className="text-xs sm:text-sm">Gerencie seus clientes e casos</CardDescription>
             </CardHeader>
             <CardContent>
-              <p className="text-sm text-muted-foreground mb-4">
+              <p className="text-xs sm:text-sm text-muted-foreground mb-3 sm:mb-4">
                 Em breve você poderá cadastrar e gerenciar seus clientes aqui.
               </p>
               <Button variant="outline" disabled className="w-full">
@@ -104,16 +104,16 @@ export default function LawyerDashboard() {
           </Card>
 
           {/* Saved Templates Placeholder */}
-          <Card className="lg:col-span-1">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <FileText className="h-5 w-5 text-primary" />
+          <Card>
+            <CardHeader className="pb-3 sm:pb-6">
+              <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
+                <FileText className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
                 Modelos Salvos
               </CardTitle>
-              <CardDescription>Seus modelos de petição favoritos</CardDescription>
+              <CardDescription className="text-xs sm:text-sm">Seus modelos de petição favoritos</CardDescription>
             </CardHeader>
             <CardContent>
-              <p className="text-sm text-muted-foreground mb-4">
+              <p className="text-xs sm:text-sm text-muted-foreground mb-3 sm:mb-4">
                 Salve e reutilize modelos de petições frequentes.
               </p>
               <Button variant="outline" disabled className="w-full">
@@ -123,16 +123,16 @@ export default function LawyerDashboard() {
           </Card>
 
           {/* Petition History */}
-          <Card className="lg:col-span-3">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <History className="h-5 w-5 text-primary" />
+          <Card className="md:col-span-2 lg:col-span-3">
+            <CardHeader className="pb-3 sm:pb-6">
+              <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
+                <History className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
                 Histórico de Petições
               </CardTitle>
-              <CardDescription>Acesse todas as suas petições geradas</CardDescription>
+              <CardDescription className="text-xs sm:text-sm">Acesse todas as suas petições geradas</CardDescription>
             </CardHeader>
             <CardContent>
-              <p className="text-sm text-muted-foreground mb-4">
+              <p className="text-xs sm:text-sm text-muted-foreground mb-3 sm:mb-4">
                 Visualize e baixe novamente petições criadas anteriormente.
               </p>
               <Button onClick={() => navigate("/historico")} className="w-full sm:w-auto">

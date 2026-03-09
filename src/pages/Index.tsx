@@ -103,8 +103,8 @@ export default function Index() {
       <div className="min-h-screen bg-background">
         <AppHeader />
         <LegalDisclaimer />
-        <main className="container max-w-3xl py-8">
-          <h2 className="mb-6 text-2xl font-bold text-foreground">Resultado da Análise</h2>
+        <main className="container max-w-3xl py-6 sm:py-8 px-4 sm:px-6">
+          <h2 className="mb-4 sm:mb-6 text-xl sm:text-2xl font-bold text-foreground">Resultado da Análise</h2>
           <AnalysisResult result={result} onNewAnalysis={handleNewAnalysis} />
         </main>
       </div>
@@ -115,18 +115,18 @@ export default function Index() {
     <div className="min-h-screen bg-background">
       <AppHeader />
       <LegalDisclaimer />
-      <main className="container max-w-3xl py-8">
-        <div className="mb-8 animate-fade-in">
-          <h2 className="text-2xl font-bold text-foreground">Nova Análise Jurídica</h2>
-          <p className="mt-1 text-muted-foreground">
+      <main className="container max-w-3xl py-6 sm:py-8 px-4 sm:px-6">
+        <div className="mb-6 sm:mb-8 animate-fade-in">
+          <h2 className="text-xl sm:text-2xl font-bold text-foreground">Nova Análise Jurídica</h2>
+          <p className="mt-1 text-sm sm:text-base text-muted-foreground">
             Insira o texto ou faça upload de um documento para receber uma análise estruturada pelo JurisAI.
           </p>
         </div>
 
         <Card className="animate-fade-in">
-          <CardHeader>
-            <CardTitle className="text-lg">Texto para Análise</CardTitle>
-            <CardDescription>Cole o texto jurídico ou envie um arquivo PDF/DOCX</CardDescription>
+          <CardHeader className="pb-3 sm:pb-6">
+            <CardTitle className="text-base sm:text-lg">Texto para Análise</CardTitle>
+            <CardDescription className="text-xs sm:text-sm">Cole o texto jurídico ou envie um arquivo PDF/DOCX</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <Textarea

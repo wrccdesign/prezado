@@ -123,28 +123,28 @@ export default function Calculators() {
   return (
     <div className="min-h-screen bg-background">
       <AppHeader />
-      <main className="container py-8 space-y-8">
+      <main className="container py-6 sm:py-8 px-4 sm:px-6 space-y-6 sm:space-y-8">
         <div>
-          <h1 className="text-3xl font-bold font-serif text-foreground">Calculadoras Jurídicas</h1>
-          <p className="text-muted-foreground mt-1">Ferramentas de cálculo para auxiliar na prática jurídica.</p>
+          <h1 className="text-2xl sm:text-3xl font-bold font-serif text-foreground">Calculadoras Jurídicas</h1>
+          <p className="text-sm sm:text-base text-muted-foreground mt-1">Ferramentas de cálculo para auxiliar na prática jurídica.</p>
         </div>
 
         {!active && (
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
             {calculators.map(c => (
               <Card
                 key={c.id}
                 className="cursor-pointer transition-all hover:shadow-md hover:border-primary/40 group"
                 onClick={() => setActive(c.id)}
               >
-                <CardHeader className="pb-3">
-                  <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10 text-primary mb-2 group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
-                    <c.icon className="h-6 w-6" />
+                <CardHeader className="pb-2 sm:pb-3">
+                  <div className="flex h-10 w-10 sm:h-12 sm:w-12 items-center justify-center rounded-lg bg-primary/10 text-primary mb-2 group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
+                    <c.icon className="h-5 w-5 sm:h-6 sm:w-6" />
                   </div>
-                  <CardTitle className="text-base">{c.emoji} {c.title}</CardTitle>
+                  <CardTitle className="text-sm sm:text-base">{c.emoji} {c.title}</CardTitle>
                 </CardHeader>
-                <CardContent>
-                  <p className="text-sm text-muted-foreground">{c.desc}</p>
+                <CardContent className="pt-0">
+                  <p className="text-xs sm:text-sm text-muted-foreground">{c.desc}</p>
                 </CardContent>
               </Card>
             ))}
