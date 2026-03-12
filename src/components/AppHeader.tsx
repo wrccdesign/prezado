@@ -144,11 +144,8 @@ export function AppHeader() {
             </SheetTrigger>
             <SheetContent side="right" className="w-72 bg-navy border-l border-gold/20 p-6">
               <SheetHeader className="text-left">
-                <SheetTitle className="flex items-center gap-2 text-white">
-                  <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gold">
-                    <Scale className="h-4 w-4 text-navy" />
-                  </div>
-                  <span className="font-serif">Juris<span className="text-gold">AI</span></span>
+                <SheetTitle className="flex items-center text-white">
+                  <img src={logoImg} alt="JurisAI" className="h-8" />
                 </SheetTitle>
               </SheetHeader>
               <div className="mt-4">{profileBadge("full")}</div>
