@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { Scale } from "lucide-react";
+import logo from "@/assets/logo.png";
 
 export function AppFooter() {
   return (
