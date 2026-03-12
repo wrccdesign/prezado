@@ -3,8 +3,9 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import {
   Search, FileText, MessageSquare, Calculator, Stethoscope, LayoutDashboard,
-  ArrowRight, Check, Star, Scale, ChevronRight, Menu, X
+  ArrowRight, Check, Star, ChevronRight, Menu, X
 } from "lucide-react";
+import logo from "@/assets/logo.png";
 
 function useScrollReveal() {
   const ref = useRef<HTMLDivElement>(null);
