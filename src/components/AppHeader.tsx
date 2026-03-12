@@ -97,14 +97,9 @@ export function AppHeader() {
         {/* Logo */}
         <button
           onClick={() => navigate("/")}
-          className="flex items-center gap-2 sm:gap-2.5 flex-shrink-0"
+          className="flex items-center flex-shrink-0"
         >
-          <div className="flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center rounded-lg bg-gold">
-            <Scale className="h-4 w-4 sm:h-5 sm:w-5 text-navy" />
-          </div>
-          <span className="text-base sm:text-lg font-bold font-serif text-white">
-            Juris<span className="text-gold">AI</span>
-          </span>
+          <img src={logoImg} alt="JurisAI" className="h-8 sm:h-9" />
         </button>
 
         {/* Desktop Navigation (lg+) */}
