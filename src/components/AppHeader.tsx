@@ -5,7 +5,8 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Separator } from "@/components/ui/separator";
-import { Scale, History, LogOut, Plus, FileSignature, MessageCircle, Briefcase, User, Calculator, LayoutDashboard, Menu, Stethoscope } from "lucide-react";
+import { History, LogOut, Plus, FileSignature, MessageCircle, Briefcase, User, Calculator, LayoutDashboard, Menu, Stethoscope, Scale } from "lucide-react";
+import logoImg from "@/assets/logo.png";
 import { useNavigate, useLocation } from "react-router-dom";
 
 interface NavItem {
