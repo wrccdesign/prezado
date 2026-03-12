@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { Scale } from "lucide-react";
+import logo from "@/assets/logo.png";
 
 export function AppFooter() {
   return (
@@ -49,11 +49,8 @@ export function AppFooter() {
           {/* Sobre */}
           <div>
             <h4 className="font-sans font-semibold text-white text-sm mb-4">Sobre</h4>
-            <div className="flex items-center gap-2 mb-3">
-              <Scale className="h-4 w-4" style={{ color: "hsl(var(--gold))" }} />
-              <span className="font-serif text-base font-bold text-white">
-                Juris<span style={{ color: "hsl(var(--gold))" }}>AI</span>
-              </span>
+            <div className="mb-3">
+              <img src={logo} alt="JurisAI" className="h-7" />
             </div>
             <p className="text-sm text-white/40 leading-relaxed">
               Inteligência Artificial Jurídica Brasileira. Ferramentas de análise, petições e consultoria com IA para advogados e cidadãos.
