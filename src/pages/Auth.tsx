@@ -100,11 +100,11 @@ export default function Auth() {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center px-4 py-8 bg-accent">
+    <div className="flex min-h-screen items-center justify-center px-4 py-8 bg-slate-900">
       <div className="w-full max-w-md animate-fade-in">
         <div className="mb-8 text-center">
           <img src={logo} alt="JurisAI" className="h-12 mx-auto mb-4" />
-          <p className="mt-2 text-muted-foreground">Assistente jurídico inteligente para o Direito brasileiro</p>
+          <p className="mt-2 text-white">Assistente jurídico inteligente para o Direito brasileiro</p>
         </div>
 
         <Card>
