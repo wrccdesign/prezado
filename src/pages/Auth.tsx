@@ -103,10 +103,7 @@ export default function Auth() {
     <div className="flex min-h-screen items-center justify-center bg-background px-4 py-8">
       <div className="w-full max-w-md animate-fade-in">
         <div className="mb-8 text-center">
-          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-primary">
-            <Scale className="h-8 w-8 text-primary-foreground" />
-          </div>
-          <h1 className="text-3xl font-bold text-foreground">JurisAI</h1>
+          <img src={logo} alt="JurisAI" className="h-12 mx-auto mb-4" />
           <p className="mt-2 text-muted-foreground">Assistente jurídico inteligente para o Direito brasileiro</p>
         </div>
 

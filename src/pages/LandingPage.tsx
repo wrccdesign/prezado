@@ -510,9 +510,8 @@ export default function LandingPage() {
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-10 mb-12">
             {/* Brand */}
             <div>
-              <Link to="/" className="flex items-center gap-2 mb-4">
-                <Scale className="h-5 w-5 text-gold" />
-                <span className="font-serif text-lg font-bold text-white">Juris<span className="text-gold">AI</span></span>
+              <Link to="/" className="flex items-center mb-4">
+                <img src={logo} alt="JurisAI" className="h-7" />
               </Link>
               <p className="text-sm text-white/40 leading-relaxed">
                 Plataforma de inteligência artificial jurídica desenvolvida para o direito brasileiro.
