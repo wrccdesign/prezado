@@ -85,11 +85,8 @@ export default function LandingPage() {
         }}
       >
         <div className="container mx-auto flex items-center justify-between px-4 sm:px-6">
-          <Link to="/" className="flex items-center gap-2">
-            <Scale className="h-6 w-6 text-gold" />
-            <span className="font-serif text-xl font-bold text-white">
-              Juris<span className="text-gold">AI</span>
-            </span>
+          <Link to="/" className="flex items-center">
+            <img src={logo} alt="JurisAI" className="h-8" />
           </Link>
 
           <div className="hidden md:flex items-center gap-6">
