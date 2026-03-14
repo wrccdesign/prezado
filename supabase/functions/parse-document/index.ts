@@ -19,11 +19,26 @@ function sanitizeText(raw: string): string {
 }
 
 /**
- * Lightweight PDF text extraction - single pass, avoids CPU timeout
+ * Check if a string looks like readable text (not binary garbage)
+ */
+function isReadableText(text: string): boolean {
+  if (!text || text.length < 5) return false;
+  // Count printable Latin chars (letters, digits, spaces, common punctuation)
+  const printable = text.match(/[a-zA-ZÀ-ÿ0-9\s.,;:!?()'"\/\-]/g);
+  const ratio = (printable?.length || 0) / text.length;
+  return ratio > 0.6; // At least 60% readable characters
+}
+
+/**
+ * Lightweight PDF text extraction - strips compressed streams first
  */
 function extractPdfText(bytes: Uint8Array): string {
   try {
     const raw = new TextDecoder("latin1").decode(bytes);
+    
+    // Strip compressed stream data (FlateDecode etc.) which is binary garbage
+    const cleaned = raw.replace(/stream[\r\n][\s\S]*?endstream/gi, " ");
+    
     const parts: string[] = [];
     const seen = new Set<string>();
     const MAX_ITERATIONS = 50000;
@@ -32,10 +47,10 @@ function extractPdfText(bytes: Uint8Array): string {
     // Pass 1: simple (text) Tj
     const tjRegex = /\(([^)]{1,500})\)\s*Tj/gi;
     let match;
-    while ((match = tjRegex.exec(raw)) !== null && iterations < MAX_ITERATIONS) {
+    while ((match = tjRegex.exec(cleaned)) !== null && iterations < MAX_ITERATIONS) {
       iterations++;
-      const t = match[1].replace(/\\[nrt]/g, " ").trim();
-      if (t.length > 1 && !seen.has(t)) {
+      const t = match[1].replace(/\\[nrt]/g, " ").replace(/\\(.)/g, "$1").trim();
+      if (t.length > 1 && isReadableText(t) && !seen.has(t)) {
         seen.add(t);
         parts.push(t);
       }
@@ -43,17 +58,17 @@ function extractPdfText(bytes: Uint8Array): string {
 
     // Pass 2: [...] TJ arrays
     const arrayRegex = /\[([^\]]{1,5000})\]\s*TJ/gi;
-    while ((match = arrayRegex.exec(raw)) !== null && iterations < MAX_ITERATIONS) {
+    while ((match = arrayRegex.exec(cleaned)) !== null && iterations < MAX_ITERATIONS) {
       iterations++;
       const innerRegex = /\(([^)]*)\)/g;
       let inner;
       const lineParts: string[] = [];
       while ((inner = innerRegex.exec(match[1])) !== null) {
-        const t = inner[1].replace(/\\[nrt]/g, " ");
+        const t = inner[1].replace(/\\[nrt]/g, " ").replace(/\\(.)/g, "$1");
         if (t.trim()) lineParts.push(t);
       }
       const line = lineParts.join("").trim();
-      if (line.length > 1 && !seen.has(line)) {
+      if (line.length > 1 && isReadableText(line) && !seen.has(line)) {
         seen.add(line);
         parts.push(line);
       }
