@@ -14,17 +14,18 @@ function sanitizeText(raw: string): string {
   let text = raw.replace(/[^\x20-\x7E\xA0-\xFF\u00C0-\u024F\n\r\t]/g, " ");
   
   // (b) Fix common encoding artifacts from CP1252/ISO-8859-1
-  const encodingFixes: Record<string, string> = {
-    "Ã¡": "á", "Ã ": "à", "Ã¢": "â", "Ã£": "ã", "Ã¤": "ä",
-    "Ã©": "é", "Ã¨": "è", "Ãª": "ê", "Ã«": "ë",
-    "Ã­": "í", "Ã¬": "ì", "Ã®": "î", "Ã¯": "ï",
-    "Ã³": "ó", "Ã²": "ò", "Ã´": "ô", "Ãµ": "õ", "Ã¶": "ö",
-    "Ãº": "ú", "Ã¹": "ù", "Ã»": "û", "Ã¼": "ü",
-    "Ã§": "ç", "Ã‡": "Ç", "Ã±": "ñ", "Ã'": "Ñ",
-    "Ã": "Á", "Ã‰": "É", "Ã": "Í", "Ã"": "Ó", "Ãš": "Ú",
-    "Ã€": "À", "Ã‚": "Â", "Ãƒ": "Ã", "ÃŠ": "Ê", "Ã"": "Ô", "Ã•": "Õ",
-    "\u0000": "", "\ufffd": "",
-  };
+  // Build encoding fixes map programmatically to avoid parser issues with special chars
+  const encodingFixes = new Map<string, string>([
+    ["\u00C3\u00A1", "á"], ["\u00C3\u00A0", "à"], ["\u00C3\u00A2", "â"],
+    ["\u00C3\u00A3", "ã"], ["\u00C3\u00A4", "ä"], ["\u00C3\u00A9", "é"],
+    ["\u00C3\u00A8", "è"], ["\u00C3\u00AA", "ê"], ["\u00C3\u00AB", "ë"],
+    ["\u00C3\u00AD", "í"], ["\u00C3\u00AC", "ì"], ["\u00C3\u00AE", "î"],
+    ["\u00C3\u00AF", "ï"], ["\u00C3\u00B3", "ó"], ["\u00C3\u00B2", "ò"],
+    ["\u00C3\u00B4", "ô"], ["\u00C3\u00B5", "õ"], ["\u00C3\u00B6", "ö"],
+    ["\u00C3\u00BA", "ú"], ["\u00C3\u00B9", "ù"], ["\u00C3\u00BB", "û"],
+    ["\u00C3\u00BC", "ü"], ["\u00C3\u00A7", "ç"], ["\u00C3\u00B1", "ñ"],
+    ["\u0000", ""], ["\uFFFD", ""],
+  ]);
   for (const [bad, good] of Object.entries(encodingFixes)) {
     text = text.split(bad).join(good);
   }
