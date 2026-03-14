@@ -4,7 +4,6 @@ import { AppHeader } from "@/components/AppHeader";
 import { LegalDisclaimer } from "@/components/LegalDisclaimer";
 import { PetitionResult } from "@/components/PetitionResult";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -13,50 +12,40 @@ import { useToast } from "@/hooks/use-toast";
 import { Loader2, FileSignature } from "lucide-react";
 import { AppFooter } from "@/components/AppFooter";
 
-const PETITION_TYPES = [
-  "Petição Inicial Cível",
-  "Petição Inicial Trabalhista",
-  "Contestação",
-  "Recurso de Apelação",
-  "Habeas Corpus",
-  "Mandado de Segurança",
-  "Agravo de Instrumento",
-  "Petição Inicial Criminal",
-  "Recurso Inominado (Juizado Especial)",
-  "Notificação Extrajudicial",
-  "Contrato de Prestação de Serviços",
-  "Ação de Divórcio Consensual",
-  "Reclamação Trabalhista",
-  "Embargos de Declaração",
-  "Ação de Indenização por Danos Morais e Materiais",
-  "Réplica / Resposta à Contestação",
-  "Ação de Cobrança",
-  "Ação de Indenização por Danos Morais",
-  "Ação de Indenização por Danos Materiais",
-  "Ação Revisional de Contrato",
-  "Ação de Despejo",
-  "Usucapião",
-  "Ação de Alimentos",
-  "Ação de Guarda e Visitação",
-  "Inventário e Partilha",
+const TIPO_ACAO = [
+  "Indenização por danos morais e/ou materiais",
+  "Revisão contratual",
+  "Obrigação de fazer / não fazer",
+  "Rescisão contratual",
+  "Reclamação trabalhista",
+  "Ação de alimentos",
+  "Ação de despejo",
+  "Ação de cobrança",
+  "Outro",
+];
+
+const VARA_JUIZO = [
+  "Cível",
+  "Consumidor",
+  "Trabalho",
+  "Federal",
+  "Família",
+  "Juizado Especial",
+  "Outro",
 ];
 
 export default function Petition() {
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
   const [generatedText, setGeneratedText] = useState<string | null>(null);
-  const [petitionType, setPetitionType] = useState("");
-  const [autor, setAutor] = useState("");
-  const [reu, setReu] = useState("");
+  const [tipoAcao, setTipoAcao] = useState("");
+  const [varaJuizo, setVaraJuizo] = useState("");
   const [fatos, setFatos] = useState("");
-  const [fundamentos, setFundamentos] = useState("");
   const [pedidos, setPedidos] = useState("");
-  const [comarca, setComarca] = useState("");
-  const [vara, setVara] = useState("");
 
   const handleGenerate = async () => {
-    if (!petitionType || !autor.trim() || !reu.trim() || !fatos.trim() || !pedidos.trim()) {
-      toast({ title: "Campos obrigatórios", description: "Preencha tipo, partes, fatos e pedidos.", variant: "destructive" });
+    if (!tipoAcao || !fatos.trim() || !pedidos.trim()) {
+      toast({ title: "Campos obrigatórios", description: "Preencha tipo de ação, fatos e pedido principal.", variant: "destructive" });
       return;
     }
 
@@ -66,14 +55,10 @@ export default function Petition() {
     try {
       const { data, error } = await supabase.functions.invoke("generate-petition", {
         body: {
-          petition_type: petitionType,
-          autor: autor.trim(),
-          reu: reu.trim(),
+          tipo_acao: tipoAcao,
+          vara_juizo: varaJuizo,
           fatos: fatos.trim(),
-          fundamentos: fundamentos.trim(),
           pedidos: pedidos.trim(),
-          comarca: comarca.trim(),
-          vara: vara.trim(),
         },
       });
 
@@ -95,14 +80,10 @@ export default function Petition() {
 
   const handleNewPetition = () => {
     setGeneratedText(null);
-    setPetitionType("");
-    setAutor("");
-    setReu("");
+    setTipoAcao("");
+    setVaraJuizo("");
     setFatos("");
-    setFundamentos("");
     setPedidos("");
-    setComarca("");
-    setVara("");
   };
 
   if (generatedText) {
@@ -111,7 +92,7 @@ export default function Petition() {
         <AppHeader />
         <LegalDisclaimer />
         <main className="container max-w-4xl py-8">
-          <PetitionResult text={generatedText} petitionType={petitionType} onNewPetition={handleNewPetition} />
+          <PetitionResult text={generatedText} petitionType={tipoAcao} onNewPetition={handleNewPetition} />
         </main>
       </div>
     );
@@ -125,68 +106,77 @@ export default function Petition() {
         <div className="mb-8 animate-fade-in">
           <h2 className="text-2xl font-bold text-foreground">Nova Petição</h2>
           <p className="mt-1 text-muted-foreground">
-            Preencha os dados do caso para gerar uma petição jurídica completa.
+            Descreva os fatos do caso e a IA vai gerar a petição com fundamentação jurídica completa.
           </p>
         </div>
 
         <Card className="animate-fade-in">
           <CardHeader>
-            <CardTitle className="text-lg">Dados da Petição</CardTitle>
-            <CardDescription>Todos os campos marcados com * são obrigatórios</CardDescription>
+            <CardTitle className="text-lg">Dados do Caso</CardTitle>
+            <CardDescription>Todos os campos marcados com * são obrigatórios. A IA irá inferir e sugerir os fundamentos jurídicos.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-5">
-            <div className="space-y-2">
-              <Label>Tipo de Petição *</Label>
-              <Select value={petitionType} onValueChange={setPetitionType} disabled={loading}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Selecione o tipo de petição" />
-                </SelectTrigger>
-                <SelectContent>
-                  {PETITION_TYPES.map((type) => (
-                    <SelectItem key={type} value={type}>{type}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="space-y-2">
-                <Label>Comarca</Label>
-                <Input placeholder="Ex: São Paulo - SP" value={comarca} onChange={(e) => setComarca(e.target.value)} disabled={loading} />
+                <Label>Tipo de Ação *</Label>
+                <Select value={tipoAcao} onValueChange={setTipoAcao} disabled={loading}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Selecione o tipo de ação" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {TIPO_ACAO.map((type) => (
+                      <SelectItem key={type} value={type}>{type}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
-              <div className="space-y-2">
-                <Label>Vara</Label>
-                <Input placeholder="Ex: 3ª Vara Cível" value={vara} onChange={(e) => setVara(e.target.value)} disabled={loading} />
-              </div>
-            </div>
 
-            <div className="grid gap-4 sm:grid-cols-2">
               <div className="space-y-2">
-                <Label>Autor / Requerente *</Label>
-                <Textarea placeholder="Nome completo, CPF/CNPJ, endereço..." value={autor} onChange={(e) => setAutor(e.target.value)} disabled={loading} className="min-h-[100px]" />
-              </div>
-              <div className="space-y-2">
-                <Label>Réu / Requerido *</Label>
-                <Textarea placeholder="Nome completo, CPF/CNPJ, endereço..." value={reu} onChange={(e) => setReu(e.target.value)} disabled={loading} className="min-h-[100px]" />
+                <Label>Vara / Juízo *</Label>
+                <Select value={varaJuizo} onValueChange={setVaraJuizo} disabled={loading}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Selecione a vara" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {VARA_JUIZO.map((vara) => (
+                      <SelectItem key={vara} value={vara}>{vara}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
             </div>
 
             <div className="space-y-2">
-              <Label>Fatos *</Label>
-              <Textarea placeholder="Descreva os fatos relevantes do caso em ordem cronológica..." value={fatos} onChange={(e) => setFatos(e.target.value)} disabled={loading} className="min-h-[150px]" />
+              <Label>Descreva o que aconteceu *</Label>
+              <Textarea 
+                placeholder="Descreva os fatos relevantes do caso em ordem cronológica. Inclua datas, valores, nomes das partes envolvidas e qualquer detalhe relevante..."
+                value={fatos} 
+                onChange={(e) => setFatos(e.target.value)} 
+                disabled={loading} 
+                className="min-h-[200px]" 
+              />
+              <p className="text-xs text-muted-foreground">
+                Quanto mais detalhes você fornecer, melhor será a petição gerada. A IA irá identificar e sugerir a fundamentação jurídica adequada.
+              </p>
             </div>
 
             <div className="space-y-2">
-              <Label>Fundamentos Jurídicos</Label>
-              <Textarea placeholder="Cite leis, artigos e jurisprudência aplicáveis (opcional — a IA irá complementar)..." value={fundamentos} onChange={(e) => setFundamentos(e.target.value)} disabled={loading} className="min-h-[100px]" />
+              <Label>O que seu cliente quer? *</Label>
+              <Textarea 
+                placeholder="Ex: Indenização por danos morais no valor de R$ 20.000,00; rescisão do contrato com devolução dos valores pagos; condenação ao pagamento de multa contratual..."
+                value={pedidos} 
+                onChange={(e) => setPedidos(e.target.value)} 
+                disabled={loading} 
+                className="min-h-[120px]" 
+              />
             </div>
 
-            <div className="space-y-2">
-              <Label>Pedidos *</Label>
-              <Textarea placeholder="Liste os pedidos que deseja fazer ao juízo..." value={pedidos} onChange={(e) => setPedidos(e.target.value)} disabled={loading} className="min-h-[120px]" />
-            </div>
-
-            <Button className="w-full" size="lg" onClick={handleGenerate} disabled={loading || !petitionType || !autor.trim() || !reu.trim() || !fatos.trim() || !pedidos.trim()}>
+            <Button 
+              className="w-full" 
+              size="lg" 
+              onClick={handleGenerate} 
+              disabled={loading || !tipoAcao || !fatos.trim() || !pedidos.trim()}
+            >
               {loading ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : <FileSignature className="mr-2 h-5 w-5" />}
               {loading ? "Gerando Petição..." : "Gerar Petição"}
             </Button>

@@ -1,7 +1,10 @@
 export interface LegalAnalysis {
   tipo_de_causa: string;
   resumo: string;
+  pontos_fracos?: string[];
+  fundamentacao_sugerida?: Array<{ lei: string; artigos: string[] }>;
   legislacao_aplicavel: Array<{ lei: string; artigos: string[] }>;
+  riscos_processuais?: string[];
   jurisdicao_competente: string;
   direcionamentos: string[];
   portais_relevantes: Array<{ nome: string; url: string }>;
@@ -20,11 +23,13 @@ export interface AnalysisRecord {
 }
 
 export interface PetitionFormData {
-  autor: string;
-  reu: string;
+  autor?: string;
+  reu?: string;
   fatos: string;
   pedidos: string;
   fundamentacao?: string;
+  tipo_acao?: string;
+  vara_juizo?: string;
 }
 
 export interface PetitionRecord {
