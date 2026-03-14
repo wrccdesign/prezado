@@ -173,7 +173,13 @@ serve(async (req) => {
         extractedText = extractPdfText(bytes);
         extractedText = sanitizeText(extractedText);
         
-        // Step 2: If too little text, fallback to OCR via Gemini vision
+        // Validate overall quality, not just length
+        if (extractedText && extractedText.length >= 50 && !isReadableText(extractedText)) {
+          console.log(`Extracted text failed readability check (${extractedText.length} chars), falling back to OCR...`);
+          extractedText = "";
+        }
+        
+        // Step 2: If too little text or unreadable, fallback to OCR via Gemini vision
         if (!extractedText || extractedText.length < 50) {
           console.log(`Regex extraction yielded ${extractedText.length} chars, falling back to OCR...`);
           const ocrText = await ocrWithVision(bytes, file.name);
