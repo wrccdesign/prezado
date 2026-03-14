@@ -284,7 +284,6 @@ export default function DecisaoDetalhe() {
     );
   }
 
-  const [copied, setCopied] = useState(false);
   const instanciaLabel = decision.instancia === "1grau" ? "1º Grau" : decision.instancia === "2grau" ? "2º Grau" : decision.instancia === "superior" ? "Superior" : decision.instancia;
 
   const handleCopyCitation = async () => {
