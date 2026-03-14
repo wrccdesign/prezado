@@ -45,38 +45,20 @@ export function PensaoCalc() {
       return;
     }
 
-    // Base percentages per number of children (STJ guidelines)
     let baseMin: number, baseSug: number, baseMax: number;
-    if (f === 1) {
-      baseMin = 0.15; baseSug = 0.20; baseMax = 0.25;
-    } else if (f === 2) {
-      baseMin = 0.25; baseSug = 0.30; baseMax = 0.35;
-    } else if (f === 3) {
-      baseMin = 0.30; baseSug = 0.35; baseMax = 0.40;
-    } else {
-      baseMin = 0.33; baseSug = 0.40; baseMax = 0.50;
-    }
+    if (f === 1) { baseMin = 0.15; baseSug = 0.20; baseMax = 0.25; }
+    else if (f === 2) { baseMin = 0.25; baseSug = 0.30; baseMax = 0.35; }
+    else if (f === 3) { baseMin = 0.30; baseSug = 0.35; baseMax = 0.40; }
+    else { baseMin = 0.33; baseSug = 0.40; baseMax = 0.50; }
 
-    // Living standard adjustment
-    if (padrao === "baixa") {
-      baseMin *= 0.90; baseSug *= 0.90; baseMax *= 0.95;
-    } else if (padrao === "alto") {
-      baseMin *= 1.05; baseSug *= 1.10; baseMax *= 1.10;
-    }
+    if (padrao === "baixa") { baseMin *= 0.90; baseSug *= 0.90; baseMax *= 0.95; }
+    else if (padrao === "alto") { baseMin *= 1.05; baseSug *= 1.10; baseMax *= 1.10; }
 
-    // Custody adjustment
-    if (moradia === "sim") {
-      baseMin *= 0.60; baseSug *= 0.60; baseMax *= 0.65;
-    } else if (moradia === "parcial") {
-      baseMin *= 0.75; baseSug *= 0.75; baseMax *= 0.80;
-    }
+    if (moradia === "sim") { baseMin *= 0.60; baseSug *= 0.60; baseMax *= 0.65; }
+    else if (moradia === "parcial") { baseMin *= 0.75; baseSug *= 0.75; baseMax *= 0.80; }
 
-    // Other obligations adjustment
-    if (outrasObrigacoes) {
-      baseMin *= 0.85; baseSug *= 0.88; baseMax *= 0.90;
-    }
+    if (outrasObrigacoes) { baseMin *= 0.85; baseSug *= 0.88; baseMax *= 0.90; }
 
-    // Cap at 50%
     baseMax = Math.min(baseMax, 0.50);
     baseSug = Math.min(baseSug, baseMax);
     baseMin = Math.min(baseMin, baseSug);
@@ -87,12 +69,8 @@ export function PensaoCalc() {
 
     setResult({
       minimo, sugerido, maximo,
-      porFilhoMin: minimo / f,
-      porFilhoSug: sugerido / f,
-      porFilhoMax: maximo / f,
-      percentualMin: baseMin * 100,
-      percentualSug: baseSug * 100,
-      percentualMax: baseMax * 100,
+      porFilhoMin: minimo / f, porFilhoSug: sugerido / f, porFilhoMax: maximo / f,
+      percentualMin: baseMin * 100, percentualSug: baseSug * 100, percentualMax: baseMax * 100,
     });
   };
 
@@ -103,7 +81,7 @@ export function PensaoCalc() {
     const f = parseInt(filhos) || 1;
 
     doc.setFontSize(16);
-    doc.text("Relatório de Pensão Alimentícia — JurisAI", 14, 20);
+    doc.text("Relatório de Pensão Alimentícia — Prezado.ai", 14, 20);
     doc.setFontSize(10);
     doc.text(`Data: ${new Date().toLocaleDateString("pt-BR")}`, 14, 28);
 
@@ -134,34 +112,25 @@ export function PensaoCalc() {
     ];
 
     linhas.forEach((row, i) => {
-      const bold = i === 0;
-      if (bold) doc.setFont("helvetica", "bold");
+      if (i === 0) doc.setFont("helvetica", "bold");
       else doc.setFont("helvetica", "normal");
-      doc.text(row[0], 14, y);
-      doc.text(row[1], 100, y);
-      doc.text(row[2], 155, y);
-      y += 7;
+      doc.text(row[0], 14, y); doc.text(row[1], 100, y); doc.text(row[2], 155, y); y += 7;
     });
 
     y += 8;
-    doc.setFontSize(9);
-    doc.setFont("helvetica", "italic");
+    doc.setFontSize(9); doc.setFont("helvetica", "italic");
     doc.text("Art. 1.694 CC: A pensão deve atender às necessidades do alimentando,", 14, y);
     doc.text("na proporção das possibilidades do alimentante.", 14, y + 5);
     y += 14;
     doc.text("Este é um valor de referência. O juiz decidirá com base nas necessidades", 14, y);
     doc.text("e possibilidades das partes.", 14, y + 5);
 
-    doc.save("pensao-alimenticia-jurisai.pdf");
+    doc.save("pensao-alimenticia-prezado.pdf");
     toast.success("PDF gerado com sucesso!");
   };
 
-  const moradiaLabel = moradia === "nao" ? "Não" : moradia === "sim" ? "Sim" : "Parcialmente (guarda compartilhada)";
-  const padraoLabel = padrao === "baixa" ? "Baixa renda" : padrao === "medio" ? "Médio" : "Alto padrão";
-
   return (
     <div className="space-y-6">
-      {/* Inputs */}
       <div className="grid gap-4 sm:grid-cols-2">
         <div className="space-y-2">
           <Label>Renda Líquida do Alimentante (R$)</Label>
@@ -202,10 +171,8 @@ export function PensaoCalc() {
 
       <Button onClick={calcular} className="w-full sm:w-auto">Calcular Pensão</Button>
 
-      {/* Result */}
       {result && (
         <div className="space-y-4">
-          {/* Highlighted suggested value */}
           <Card className="border-primary/30 bg-primary/5">
             <CardContent className="pt-6 text-center space-y-1">
               <p className="text-sm text-muted-foreground">Valor Sugerido</p>
@@ -214,7 +181,6 @@ export function PensaoCalc() {
             </CardContent>
           </Card>
 
-          {/* Table */}
           <div className="rounded-md border overflow-x-auto">
             <Table>
               <TableHeader>
@@ -225,52 +191,27 @@ export function PensaoCalc() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                <TableRow>
-                  <TableCell>Faixa Mínima</TableCell>
-                  <TableCell className="text-right">{fmt(result.minimo)}</TableCell>
-                  <TableCell className="text-right">{result.percentualMin.toFixed(1)}%</TableCell>
-                </TableRow>
-                <TableRow className="bg-primary/5 font-semibold">
-                  <TableCell>Valor Sugerido</TableCell>
-                  <TableCell className="text-right">{fmt(result.sugerido)}</TableCell>
-                  <TableCell className="text-right">{result.percentualSug.toFixed(1)}%</TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell>Faixa Máxima</TableCell>
-                  <TableCell className="text-right">{fmt(result.maximo)}</TableCell>
-                  <TableCell className="text-right">{result.percentualMax.toFixed(1)}%</TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell>Valor por Filho (sugerido)</TableCell>
-                  <TableCell className="text-right">{fmt(result.porFilhoSug)}</TableCell>
-                  <TableCell className="text-right">—</TableCell>
-                </TableRow>
+                <TableRow><TableCell>Faixa Mínima</TableCell><TableCell className="text-right">{fmt(result.minimo)}</TableCell><TableCell className="text-right">{result.percentualMin.toFixed(1)}%</TableCell></TableRow>
+                <TableRow className="bg-primary/5 font-semibold"><TableCell>Valor Sugerido</TableCell><TableCell className="text-right">{fmt(result.sugerido)}</TableCell><TableCell className="text-right">{result.percentualSug.toFixed(1)}%</TableCell></TableRow>
+                <TableRow><TableCell>Faixa Máxima</TableCell><TableCell className="text-right">{fmt(result.maximo)}</TableCell><TableCell className="text-right">{result.percentualMax.toFixed(1)}%</TableCell></TableRow>
+                <TableRow><TableCell>Valor por Filho (sugerido)</TableCell><TableCell className="text-right">{fmt(result.porFilhoSug)}</TableCell><TableCell className="text-right">—</TableCell></TableRow>
               </TableBody>
             </Table>
           </div>
 
-          {/* Legal explanation */}
           <Card className="bg-muted/50">
             <CardContent className="pt-6 text-sm text-muted-foreground space-y-2">
               <p className="font-semibold text-foreground">Como o juiz calcula a pensão?</p>
-              <p>
-                O valor da pensão alimentícia é definido pelo juiz com base no <strong>binômio necessidade × possibilidade</strong> (art. 1.694 do Código Civil). Isso significa que o juiz avalia quanto o alimentando precisa para manter suas necessidades básicas (alimentação, moradia, educação, saúde) e quanto o alimentante pode pagar sem comprometer seu próprio sustento.
-              </p>
-              <p>
-                Na prática, a jurisprudência do STJ costuma fixar entre <strong>15% e 30%</strong> da renda líquida por filho, podendo variar conforme o padrão de vida, guarda compartilhada e outras obrigações do alimentante.
-              </p>
+              <p>O valor da pensão alimentícia é definido pelo juiz com base no <strong>binômio necessidade × possibilidade</strong> (art. 1.694 do Código Civil).</p>
+              <p>Na prática, a jurisprudência do STJ costuma fixar entre <strong>15% e 30%</strong> da renda líquida por filho.</p>
             </CardContent>
           </Card>
 
-          {/* Warning */}
           <div className="flex items-start gap-2 rounded-md border border-yellow-500/30 bg-yellow-500/10 p-4">
             <AlertTriangle className="h-5 w-5 shrink-0 text-yellow-600 mt-0.5" />
-            <p className="text-sm text-yellow-800 dark:text-yellow-200">
-              Este é um valor de referência. O juiz decidirá com base nas necessidades e possibilidades das partes.
-            </p>
+            <p className="text-sm text-yellow-800 dark:text-yellow-200">Este é um valor de referência. O juiz decidirá com base nas necessidades e possibilidades das partes.</p>
           </div>
 
-          {/* PDF */}
           <Button variant="outline" onClick={gerarPDF} className="w-full sm:w-auto">
             <FileText className="mr-2 h-4 w-4" /> Gerar Relatório PDF
           </Button>

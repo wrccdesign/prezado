@@ -6,6 +6,7 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
+// Extend the NormaResumo interface to include a 'fonte' property
 interface NormaResumo {
   tipoNorma: string;
   numero: string;
@@ -105,6 +106,15 @@ function getLegislationByKeywords(keywords: string[]): NormaResumo[] {
       { tipoNorma: "Lei", numero: "9.605", ano: "1998", ementa: "Lei de Crimes Ambientais", url: "https://www.planalto.gov.br/ccivil_03/leis/l9605.htm" },
       { tipoNorma: "Lei", numero: "12.651", ano: "2012", ementa: "Código Florestal", url: "https://www.planalto.gov.br/ccivil_03/_ato2011-2014/2012/lei/l12651.htm" },
     ],
+    rescisao: [
+      { tipoNorma: "Decreto-Lei", numero: "5.452", ano: "1943", ementa: "CLT - Rescisão de Contrato de Trabalho", url: "https://www.planalto.gov.br/ccivil_03/decreto-lei/del5452.htm" },
+    ],
+    despejo: [
+      { tipoNorma: "Lei", numero: "8.245", ano: "1991", ementa: "Lei do Inquilinato - Ação de Despejo", url: "https://www.planalto.gov.br/ccivil_03/leis/l8245.htm" },
+    ],
+    cobranca: [
+      { tipoNorma: "Lei", numero: "13.105", ano: "2015", ementa: "Código de Processo Civil - Ação de Cobrança", url: "https://www.planalto.gov.br/ccivil_03/_ato2015-2018/2015/lei/l13105.htm" },
+    ],
   };
 
   const results: NormaResumo[] = [];
@@ -194,22 +204,21 @@ serve(async (req) => {
     const legislationContext = buildLegislationContext(normas);
     console.log(`Found ${normas.length} relevant legislation items`);
 
-    // Step 3: Main analysis with legislation context
-    const systemPrompt = `Você é JurisAI, especialista em análise de documentos jurídicos brasileiros.
+    // Step 3: Main analysis with deeper diagnostic prompt
+    const systemPrompt = `Você é um advogado sênior brasileiro com 20 anos de experiência analisando petições e documentos jurídicos pela Prezado.ai.
 
 ## SUA TAREFA
-Analise o texto jurídico fornecido pelo usuário com profundidade técnica e clareza, retornando uma análise estruturada.
+Analise o texto jurídico fornecido pelo usuário com profundidade técnica REAL. Não repita simplesmente o que já está no texto. Seu valor está em identificar o que NÃO está lá.
 
-## ESTRUTURA OBRIGATÓRIA DA ANÁLISE
-Organize sua análise mental nos seguintes blocos antes de preencher o resultado:
+## ANÁLISE OBRIGATÓRIA
 
-1. **TIPO DE DOCUMENTO** - Identifique: petição inicial, contrato, sentença, acórdão, recurso, notificação, etc.
-2. **PARTES ENVOLVIDAS** - Liste: autor/réu, contratante/contratado, recorrente/recorrido, etc.
-3. **OBJETO PRINCIPAL** - Resuma em 2-3 linhas o que o documento trata.
-4. **FUNDAMENTOS LEGAIS IDENTIFICADOS** - Liste todos os artigos, leis, súmulas e jurisprudências mencionadas. Verifique se as citações estão corretas e atuais.
-5. **PONTOS CRÍTICOS / RISCOS** - Aponte: cláusulas abusivas (se contrato), vícios processuais (se peça processual), prazos importantes, inconsistências jurídicas.
-6. **LEGISLAÇÃO COMPLEMENTAR SUGERIDA** - Indique legislação adicional relevante não citada no texto.
-7. **RECOMENDAÇÕES** - Sugira ações ou melhorias objetivas.
+1. **PONTOS FRACOS**: Identifique argumentos que podem ser contestados pela parte contrária, omissões de fatos relevantes, e fundamentação jurídica insuficiente.
+
+2. **FUNDAMENTAÇÃO SUGERIDA**: Liste os artigos de lei, súmulas e jurisprudência que DEVERIAM ser citados mas não foram.
+
+3. **RISCOS PROCESSUAIS**: Aponte possíveis extinções sem julgamento de mérito, ilegitimidade de parte, prescrição ou decadência, incompetência do juízo, e outros riscos.
+
+4. **RECOMENDAÇÕES CONCRETAS**: Sugira ações específicas que o advogado deve tomar antes de protocolar.
 
 ## FONTES OBRIGATÓRIAS
 Baseie suas respostas SEMPRE em:
@@ -222,19 +231,9 @@ Baseie suas respostas SEMPRE em:
 - NUNCA invente artigos, leis, números de processos ou ementas de decisões.
 - NUNCA afirme que uma lei existe se não tiver certeza da sua vigência atual.
 - Cite sempre: Lei nº X/ANO, art. Y, inciso Z
-  Exemplo: "conforme o art. 7º, inciso XIII, da Constituição Federal de 1988..."
 - Se não tiver certeza sobre a atualização de uma norma, sinalize: "verifique a redação vigente no Planalto (planalto.gov.br)"
-- Se receber contexto de legislação via RAG, priorize essas informações.
-
-## FORMATO DE SAÍDA
-- Use linguagem técnica para advogados, simplificada para cidadãos.
-- Ao fornecer portais_relevantes, inclua links reais:
-  - https://www.planalto.gov.br (Legislação Federal)
-  - https://www.stf.jus.br (STF)
-  - https://www.stj.jus.br (STJ)
-  - https://www.tst.jus.br (TST)
-  - https://www.cnj.jus.br (CNJ)
-- Para prazo_estimado, considere prazos processuais brasileiros e duração média de processos similares.
+- NUNCA gere URLs dinâmicas. Use apenas os portais fixos de consulta.
+- NUNCA repita simplesmente o que já está no texto.
 
 Responda sempre em português brasileiro.${legislationContext}`;
 
@@ -260,7 +259,24 @@ Responda sempre em português brasileiro.${legislationContext}`;
                 type: "object",
                 properties: {
                   tipo_de_causa: { type: "string", description: "Tipo/categoria da causa jurídica" },
-                  resumo: { type: "string", description: "Resumo claro e conciso da situação jurídica" },
+                  resumo: { type: "string", description: "Resumo claro e conciso da situação jurídica, focando nos pontos críticos identificados" },
+                  pontos_fracos: {
+                    type: "array",
+                    items: { type: "string" },
+                    description: "Pontos fracos e vulnerabilidades identificados no texto que podem ser contestados pela parte contrária",
+                  },
+                  fundamentacao_sugerida: {
+                    type: "array",
+                    items: {
+                      type: "object",
+                      properties: {
+                        lei: { type: "string", description: "Nome da lei (ex: Código Civil)" },
+                        artigos: { type: "array", items: { type: "string" }, description: "Artigos específicos que DEVERIAM ser citados" },
+                      },
+                      required: ["lei", "artigos"],
+                      additionalProperties: false,
+                    },
+                  },
                   legislacao_aplicavel: {
                     type: "array",
                     items: {
@@ -273,31 +289,25 @@ Responda sempre em português brasileiro.${legislationContext}`;
                       additionalProperties: false,
                     },
                   },
+                  riscos_processuais: {
+                    type: "array",
+                    items: { type: "string" },
+                    description: "Riscos processuais identificados: extinção sem mérito, prescrição, ilegitimidade, incompetência, etc.",
+                  },
                   jurisdicao_competente: { type: "string", description: "Jurisdição competente para julgar" },
                   direcionamentos: {
                     type: "array",
                     items: { type: "string" },
-                    description: "Passos recomendados para o caso",
-                  },
-                  portais_relevantes: {
-                    type: "array",
-                    items: {
-                      type: "object",
-                      properties: {
-                        nome: { type: "string" },
-                        url: { type: "string" },
-                      },
-                      required: ["nome", "url"],
-                      additionalProperties: false,
-                    },
+                    description: "Recomendações concretas e ações específicas que o advogado deve tomar",
                   },
                   complexidade: { type: "string", enum: ["simples", "moderado", "complexo"] },
                   urgencia: { type: "boolean", description: "Se o caso requer atenção urgente" },
                   prazo_estimado: { type: "string", description: "Prazo estimado para resolução" },
                 },
                 required: [
-                  "tipo_de_causa", "resumo", "legislacao_aplicavel", "jurisdicao_competente",
-                  "direcionamentos", "portais_relevantes", "complexidade", "urgencia", "prazo_estimado",
+                  "tipo_de_causa", "resumo", "pontos_fracos", "fundamentacao_sugerida",
+                  "legislacao_aplicavel", "riscos_processuais", "jurisdicao_competente",
+                  "direcionamentos", "complexidade", "urgencia", "prazo_estimado",
                 ],
                 additionalProperties: false,
               },
@@ -330,6 +340,15 @@ Responda sempre em português brasileiro.${legislationContext}`;
     if (!toolCall) throw new Error("A IA não retornou uma análise válida");
 
     const result = JSON.parse(toolCall.function.arguments);
+
+    // Add fixed portals (never dynamic)
+    result.portais_relevantes = [
+      { nome: "STJ Jurisprudência", url: "https://scon.stj.jus.br/SCON/" },
+      { nome: "STF Jurisprudência", url: "https://jurisprudencia.stf.jus.br/" },
+      { nome: "JusBrasil", url: "https://www.jusbrasil.com.br/jurisprudencia" },
+      { nome: "Planalto (Legislação)", url: "https://www.planalto.gov.br" },
+      { nome: "CNJ", url: "https://www.cnj.jus.br" },
+    ];
 
     const { error: insertError } = await supabase.from("analyses").insert({
       user_id: user.id,

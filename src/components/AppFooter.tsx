@@ -9,7 +9,6 @@ export function AppFooter() {
     >
       <div className="container mx-auto px-4 sm:px-6">
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-10 mb-10">
-          {/* Plataforma */}
           <div>
             <h4 className="font-sans font-semibold text-white text-sm mb-4">Plataforma</h4>
             <ul className="space-y-2">
@@ -28,7 +27,6 @@ export function AppFooter() {
             </ul>
           </div>
 
-          {/* Recursos */}
           <div>
             <h4 className="font-sans font-semibold text-white text-sm mb-4">Recursos</h4>
             <ul className="space-y-2">
@@ -46,11 +44,10 @@ export function AppFooter() {
             </ul>
           </div>
 
-          {/* Sobre */}
           <div>
             <h4 className="font-sans font-semibold text-white text-sm mb-4">Sobre</h4>
             <div className="mb-3">
-              <img src={logo} alt="JurisAI" className="h-7" />
+              <img src={logo} alt="Prezado.ai" className="h-7" />
             </div>
             <p className="text-sm text-white/40 leading-relaxed">
               Inteligência Artificial Jurídica Brasileira. Ferramentas de análise, petições e consultoria com IA para advogados e cidadãos.
@@ -58,13 +55,12 @@ export function AppFooter() {
           </div>
         </div>
 
-        {/* Copyright */}
         <div
           className="border-t pt-5 flex flex-col items-center gap-2 text-center"
           style={{ borderColor: "hsl(var(--gold) / 0.1)" }}
         >
           <p className="text-xs text-white/30">
-            © {new Date().getFullYear()} JurisAI. Todos os direitos reservados.
+            © {new Date().getFullYear()} Prezado.ai. Todos os direitos reservados.
           </p>
           <p className="text-xs text-white/25">
             Desenvolvido por{" "}

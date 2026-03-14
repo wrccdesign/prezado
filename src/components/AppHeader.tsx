@@ -2,10 +2,8 @@ import { useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useUserProfile } from "@/contexts/UserProfileContext";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
-import { Separator } from "@/components/ui/separator";
-import { History, LogOut, Plus, FileSignature, MessageCircle, Briefcase, User, Calculator, LayoutDashboard, Menu, Stethoscope, Scale } from "lucide-react";
+import { History, LogOut, Plus, FileSignature, MessageCircle, Briefcase, User, Calculator, LayoutDashboard, Menu, Stethoscope } from "lucide-react";
 import logoImg from "@/assets/logo.png";
 import { useNavigate, useLocation } from "react-router-dom";
 
@@ -94,12 +92,8 @@ export function AppHeader() {
   return (
     <header className="sticky top-0 z-50 bg-navy border-b border-gold/20">
       <div className="container flex h-14 sm:h-16 items-center justify-between px-4">
-        {/* Logo */}
-        <button
-          onClick={() => navigate("/")}
-          className="flex items-center flex-shrink-0"
-        >
-          <img src={logoImg} alt="JurisAI" className="h-8 sm:h-9" />
+        <button onClick={() => navigate("/")} className="flex items-center flex-shrink-0">
+          <img src={logoImg} alt="Prezado.ai" className="h-8 sm:h-9" />
         </button>
 
         {/* Desktop Navigation (lg+) */}
@@ -107,18 +101,10 @@ export function AppHeader() {
           {profileBadge("full")}
           <div className="w-px h-6 bg-white/10 mx-1" />
           {filteredNavItems.map((item) => (
-            <NavButton
-              key={item.path}
-              item={item}
-              active={location.pathname === item.path}
-              onClick={() => navigate(item.path)}
-            />
+            <NavButton key={item.path} item={item} active={location.pathname === item.path} onClick={() => navigate(item.path)} />
           ))}
           <div className="w-px h-6 bg-white/10 mx-1" />
-          <button
-            onClick={signOut}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm font-medium text-white/40 hover:text-red-400 hover:bg-white/5 transition-colors"
-          >
+          <button onClick={signOut} className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm font-medium text-white/40 hover:text-red-400 hover:bg-white/5 transition-colors">
             <LogOut className="h-4 w-4" />
             Sair
           </button>
@@ -128,12 +114,7 @@ export function AppHeader() {
         <nav className="hidden md:flex lg:hidden items-center gap-1">
           {profileBadge("small")}
           {primaryItems.map((item) => (
-            <NavButton
-              key={item.path}
-              item={item}
-              active={location.pathname === item.path}
-              onClick={() => navigate(item.path)}
-            />
+            <NavButton key={item.path} item={item} active={location.pathname === item.path} onClick={() => navigate(item.path)} />
           ))}
           <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
             <SheetTrigger asChild>
@@ -145,17 +126,14 @@ export function AppHeader() {
             <SheetContent side="right" className="w-72 bg-navy border-l border-gold/20 p-6">
               <SheetHeader className="text-left">
                 <SheetTitle className="flex items-center text-white">
-                  <img src={logoImg} alt="JurisAI" className="h-8" />
+                  <img src={logoImg} alt="Prezado.ai" className="h-8" />
                 </SheetTitle>
               </SheetHeader>
               <div className="mt-4">{profileBadge("full")}</div>
               <nav className="mt-6 flex flex-col gap-1">
                 {sheetNav(secondaryItems, "FERRAMENTAS")}
                 <div className="h-px bg-white/10 my-3" />
-                <button
-                  onClick={() => { signOut(); setSheetOpen(false); }}
-                  className="flex items-center gap-3 w-full px-3 py-2.5 rounded-md text-sm font-medium text-red-400/80 hover:text-red-400 hover:bg-white/5 transition-colors"
-                >
+                <button onClick={() => { signOut(); setSheetOpen(false); }} className="flex items-center gap-3 w-full px-3 py-2.5 rounded-md text-sm font-medium text-red-400/80 hover:text-red-400 hover:bg-white/5 transition-colors">
                   <LogOut className="h-5 w-5" />
                   Sair
                 </button>
@@ -177,7 +155,7 @@ export function AppHeader() {
             <SheetContent side="right" className="w-72 sm:w-80 bg-navy border-l border-gold/20 p-6">
               <SheetHeader className="text-left">
                 <SheetTitle className="flex items-center text-white">
-                  <img src={logoImg} alt="JurisAI" className="h-8" />
+                  <img src={logoImg} alt="Prezado.ai" className="h-8" />
                 </SheetTitle>
               </SheetHeader>
               <div className="mt-4">{profileBadge("full")}</div>
@@ -186,10 +164,7 @@ export function AppHeader() {
                 <div className="mt-4" />
                 {sheetNav(secondaryItems, "FERRAMENTAS")}
                 <div className="h-px bg-white/10 my-3" />
-                <button
-                  onClick={() => { signOut(); setSheetOpen(false); }}
-                  className="flex items-center gap-3 w-full px-3 py-2.5 rounded-md text-sm font-medium text-red-400/80 hover:text-red-400 hover:bg-white/5 transition-colors"
-                >
+                <button onClick={() => { signOut(); setSheetOpen(false); }} className="flex items-center gap-3 w-full px-3 py-2.5 rounded-md text-sm font-medium text-red-400/80 hover:text-red-400 hover:bg-white/5 transition-colors">
                   <LogOut className="h-5 w-5" />
                   Sair
                 </button>

@@ -6,7 +6,7 @@ import { Separator } from "@/components/ui/separator";
 import {
   Scale, AlertTriangle, Clock, ExternalLink, Copy, ChevronRight,
   BookOpen, MapPin, ListOrdered, Globe, Gauge, FileText, Users,
-  AlertCircle, Lightbulb, Gavel, CheckCircle2
+  AlertCircle, Lightbulb, Gavel, CheckCircle2, ShieldAlert, BookMarked
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
@@ -26,13 +26,14 @@ function SectionCard({
   icon: React.ElementType; 
   title: string; 
   description?: string;
-  variant?: "default" | "highlight" | "warning";
+  variant?: "default" | "highlight" | "warning" | "danger";
   children: React.ReactNode;
 }) {
   const variantClasses = {
     default: "border-border",
     highlight: "border-primary/30 bg-primary/5",
     warning: "border-amber-500/30 bg-amber-500/5",
+    danger: "border-rose-500/30 bg-rose-500/5",
   };
 
   return (
@@ -52,6 +53,15 @@ function SectionCard({
     </Card>
   );
 }
+
+// Fixed consultation sources - never dynamically generated
+const FIXED_SOURCES = [
+  { nome: "STJ Jurisprudência", url: "https://scon.stj.jus.br/SCON/" },
+  { nome: "STF Jurisprudência", url: "https://jurisprudencia.stf.jus.br/" },
+  { nome: "JusBrasil", url: "https://www.jusbrasil.com.br/jurisprudencia" },
+  { nome: "Planalto (Legislação)", url: "https://www.planalto.gov.br" },
+  { nome: "CNJ", url: "https://www.cnj.jus.br" },
+];
 
 export function AnalysisResult({ result, onNewAnalysis }: { result: LegalAnalysis; onNewAnalysis?: () => void }) {
   const { toast } = useToast();
@@ -109,6 +119,72 @@ export function AnalysisResult({ result, onNewAnalysis }: { result: LegalAnalysi
           </SectionCard>
         </div>
 
+        {/* Pontos Fracos - NEW */}
+        {result.pontos_fracos && result.pontos_fracos.length > 0 && (
+          <div className="md:col-span-2">
+            <SectionCard 
+              icon={ShieldAlert} 
+              title="Pontos Fracos Identificados" 
+              description="Vulnerabilidades que podem ser exploradas pela parte contrária"
+              variant="danger"
+            >
+              <div className="space-y-2">
+                {result.pontos_fracos.map((ponto, i) => (
+                  <div key={i} className="flex items-start gap-3 rounded-lg border border-rose-200 dark:border-rose-800/30 bg-rose-50 dark:bg-rose-950/20 p-3">
+                    <AlertTriangle className="h-4 w-4 shrink-0 text-rose-500 mt-0.5" />
+                    <p className="text-sm text-foreground">{ponto}</p>
+                  </div>
+                ))}
+              </div>
+            </SectionCard>
+          </div>
+        )}
+
+        {/* Riscos Processuais - NEW */}
+        {result.riscos_processuais && result.riscos_processuais.length > 0 && (
+          <div className="md:col-span-2">
+            <SectionCard 
+              icon={AlertCircle} 
+              title="Riscos Processuais" 
+              description="Possíveis obstáculos ao prosseguimento do processo"
+              variant="warning"
+            >
+              <div className="space-y-2">
+                {result.riscos_processuais.map((risco, i) => (
+                  <div key={i} className="flex items-start gap-3 rounded-lg border border-amber-200 dark:border-amber-800/30 bg-amber-50 dark:bg-amber-950/20 p-3">
+                    <AlertCircle className="h-4 w-4 shrink-0 text-amber-500 mt-0.5" />
+                    <p className="text-sm text-foreground">{risco}</p>
+                  </div>
+                ))}
+              </div>
+            </SectionCard>
+          </div>
+        )}
+
+        {/* Fundamentação Sugerida - NEW */}
+        {result.fundamentacao_sugerida && result.fundamentacao_sugerida.length > 0 && (
+          <SectionCard 
+            icon={BookMarked} 
+            title="Fundamentação Sugerida" 
+            description="Legislação que deveria ser citada"
+          >
+            <div className="space-y-3">
+              {result.fundamentacao_sugerida.map((leg, i) => (
+                <div key={i} className="rounded-lg border bg-emerald-50 dark:bg-emerald-950/20 border-emerald-200 dark:border-emerald-800/30 p-3">
+                  <p className="font-medium text-sm text-foreground">{leg.lei}</p>
+                  <div className="mt-2 flex flex-wrap gap-1.5">
+                    {leg.artigos.map((art, j) => (
+                      <Badge key={j} variant="secondary" className="text-xs font-mono bg-emerald-100 dark:bg-emerald-900/30">
+                        {art}
+                      </Badge>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </SectionCard>
+        )}
+
         {/* Legislação Aplicável */}
         <SectionCard 
           icon={Scale} 
@@ -149,8 +225,8 @@ export function AnalysisResult({ result, onNewAnalysis }: { result: LegalAnalysi
       {/* Direcionamentos - Passos */}
       <SectionCard 
         icon={ListOrdered} 
-        title="Direcionamentos Recomendados"
-        description="Próximos passos sugeridos para o caso"
+        title="Recomendações Concretas"
+        description="Ações específicas a tomar antes de protocolar"
       >
         <div className="space-y-3">
           {result.direcionamentos.map((step, i) => (
@@ -164,14 +240,14 @@ export function AnalysisResult({ result, onNewAnalysis }: { result: LegalAnalysi
         </div>
       </SectionCard>
 
-      {/* Portais Relevantes */}
+      {/* Fontes de Consulta Recomendadas - FIXED LINKS */}
       <SectionCard 
         icon={Globe} 
-        title="Portais e Recursos"
-        description="Links úteis para consulta"
+        title="Fontes de Consulta Recomendadas"
+        description="Portais oficiais para pesquisa jurídica"
       >
         <div className="grid gap-2 sm:grid-cols-2">
-          {result.portais_relevantes.map((portal, i) => (
+          {FIXED_SOURCES.map((portal, i) => (
             <a
               key={i}
               href={portal.url}

@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
-import { Upload, Search, FileText, Loader2, X } from "lucide-react";
+import { Upload, Search, FileText, Loader2, X, Eye, ChevronDown, ChevronUp } from "lucide-react";
 import { AppFooter } from "@/components/AppFooter";
 import type { LegalAnalysis } from "@/types/analysis";
 
@@ -20,6 +20,7 @@ export default function Index() {
   const [loading, setLoading] = useState(false);
   const [parsing, setParsing] = useState(false);
   const [result, setResult] = useState<LegalAnalysis | null>(null);
+  const [showPreview, setShowPreview] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
 
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -53,7 +54,8 @@ export default function Index() {
       if (!response.ok) throw new Error("Falha ao processar documento");
       const data = await response.json();
       setText(data.text);
-      toast({ title: "Documento processado!", description: `Texto extraído de ${file.name}` });
+      setShowPreview(true); // Show preview after extraction
+      toast({ title: "Documento processado!", description: `Texto extraído de ${file.name}. Verifique o preview abaixo.` });
     } catch (err) {
       toast({ title: "Erro ao processar", description: "Não foi possível extrair o texto do arquivo.", variant: "destructive" });
       setFileName(null);
@@ -97,6 +99,7 @@ export default function Index() {
     setText("");
     setFileName(null);
     setResult(null);
+    setShowPreview(false);
   };
 
   if (result) {
@@ -121,7 +124,7 @@ export default function Index() {
         <div className="mb-6 sm:mb-8 animate-fade-in">
           <h2 className="text-xl sm:text-2xl font-bold text-foreground">Nova Análise Jurídica</h2>
           <p className="mt-1 text-sm sm:text-base text-muted-foreground">
-            Insira o texto ou faça upload de um documento para receber uma análise estruturada pelo JurisAI.
+            Insira o texto ou faça upload de um documento para receber uma análise estruturada pela Prezado.ai.
           </p>
         </div>
 
@@ -139,11 +142,40 @@ export default function Index() {
               disabled={loading || parsing}
             />
 
+            {/* Text Preview after PDF extraction */}
+            {fileName && text && (
+              <div className="rounded-lg border border-primary/20 bg-primary/5 p-3">
+                <button
+                  onClick={() => setShowPreview(!showPreview)}
+                  className="flex items-center gap-2 w-full text-left text-sm font-medium text-foreground"
+                >
+                  <Eye className="h-4 w-4 text-primary" />
+                  Preview do texto extraído de {fileName}
+                  {showPreview ? <ChevronUp className="h-4 w-4 ml-auto" /> : <ChevronDown className="h-4 w-4 ml-auto" />}
+                </button>
+                {showPreview && (
+                  <div className="mt-3 max-h-[300px] overflow-y-auto rounded border bg-background p-3 text-xs font-mono whitespace-pre-wrap text-muted-foreground">
+                    {text.slice(0, 3000)}
+                    {text.length > 3000 && (
+                      <p className="mt-2 text-primary font-sans font-medium">
+                        ... e mais {text.length - 3000} caracteres
+                      </p>
+                    )}
+                  </div>
+                )}
+                {text.startsWith("[Não foi possível") && (
+                  <p className="mt-2 text-xs text-destructive">
+                    ⚠️ A extração pode ter falhado. Tente copiar e colar o texto manualmente.
+                  </p>
+                )}
+              </div>
+            )}
+
             <div className="flex flex-wrap items-center gap-3">
               <input
                 ref={fileRef}
                 type="file"
-                accept=".pdf,.docx,.doc"
+                accept=".pdf,.docx,.doc,.txt"
                 onChange={handleFileUpload}
                 className="hidden"
               />
@@ -164,7 +196,7 @@ export default function Index() {
                 <div className="flex items-center gap-2 rounded-md bg-muted px-3 py-1.5 text-sm">
                   <FileText className="h-4 w-4 text-muted-foreground" />
                   <span className="text-foreground">{fileName}</span>
-                  <button onClick={() => { setFileName(null); }} className="text-muted-foreground hover:text-foreground">
+                  <button onClick={() => { setFileName(null); setShowPreview(false); }} className="text-muted-foreground hover:text-foreground">
                     <X className="h-3.5 w-3.5" />
                   </button>
                 </div>
