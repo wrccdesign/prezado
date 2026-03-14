@@ -29,8 +29,8 @@ const SPECIALTIES = [
 ];
 
 export default function Auth() {
-  const { user, loading } = useAuth();
-  const { updateProfile } = useUserProfile();
+  const { user, loading, signUp, signIn } = useAuth();
+  const { toast } = useToast();
   const [isSignUp, setIsSignUp] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -41,9 +41,6 @@ export default function Auth() {
   const [oabState, setOabState] = useState("");
   const [selectedSpecialties, setSelectedSpecialties] = useState<string[]>([]);
   const [officeName, setOfficeName] = useState("");
-
-  const { signUp, signIn } = useAuth();
-  const { toast } = useToast();
 
   if (loading) {
     return (

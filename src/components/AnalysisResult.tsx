@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import {
   Scale, AlertTriangle, Clock, ExternalLink, Copy, ChevronRight,
-  BookOpen, ListOrdered, Globe,
+  BookOpen, MapPin, ListOrdered, Globe,
   AlertCircle, Gavel, CheckCircle2, ShieldAlert, BookMarked
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
