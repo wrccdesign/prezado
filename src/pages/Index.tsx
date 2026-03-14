@@ -101,6 +101,7 @@ export default function Index() {
       }
       setFileName(null);
     } finally {
+      clearTimeout(timeoutId);
       setTimeout(() => {
         setParsing(false);
         setParseProgress(0);

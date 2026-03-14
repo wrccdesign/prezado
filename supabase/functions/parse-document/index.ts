@@ -196,15 +196,25 @@ serve(async (req) => {
         }
         
         // Step 2: If too little text or unreadable, fallback to OCR via Gemini vision
+        let ocrTimedOut = false;
         if (!extractedText || extractedText.length < 50) {
           console.log(`Regex extraction yielded ${extractedText.length} chars, falling back to OCR...`);
-          const ocrText = await ocrWithVision(bytes, file.name);
-          if (ocrText && ocrText.length > 20) {
-            extractedText = ocrText;
+          const ocrResult = await ocrWithVision(bytes, file.name);
+          if (ocrResult.timedOut) {
+            ocrTimedOut = true;
+          } else if (ocrResult.text && ocrResult.text.length > 20) {
+            extractedText = ocrResult.text;
             usedOcr = true;
           }
         }
         
+        if (ocrTimedOut && (!extractedText || extractedText.length < 20)) {
+          return new Response(
+            JSON.stringify({ text: "", ocr: false, ocr_timeout: true }),
+            { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+          );
+        }
+
         if (!extractedText || extractedText.length < 20) {
           extractedText = "[Não foi possível extrair texto do PDF. O documento pode estar protegido ou corrompido. Tente copiar e colar o texto manualmente.]";
         }
