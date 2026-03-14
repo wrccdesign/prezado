@@ -121,12 +121,8 @@ serve(async (req) => {
         query: {
           bool: {
             should: [
-              { match: { "assuntos.nome": { query, boost: 3 } } },
-              { match: { "classeProcessual.nome": { query, boost: 2 } } },
-              { match: { "orgaoJulgador.nome": query } },
-              { match: { "movimentos.nome": query } },
-              { match: { "movimentos.complementosTabelados.nome": query } },
-              { match: { "movimentos.complementosTabelados.valor": query } },
+              { match: { "assuntos.nome": query } },
+              { match: { "classeProcessual.nome": query } },
             ],
             minimum_should_match: 1,
           },
