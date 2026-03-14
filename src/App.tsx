@@ -17,6 +17,7 @@ import Jurisprudencia from "./pages/Jurisprudencia";
 import DecisaoDetalhe from "./pages/DecisaoDetalhe";
 import LandingPage from "./pages/LandingPage";
 import AdminIngestao from "./pages/AdminIngestao";
+import Comparativo from "./pages/Comparativo";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
