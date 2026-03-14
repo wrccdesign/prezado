@@ -56,32 +56,26 @@ const EXTRACTION_TOOL = {
   },
 };
 
-// Map tribunal siglas to DataJud API endpoint names
+// Map tribunal siglas to DataJud API endpoint names (91 endpoints)
 function getDatajudEndpoint(tribunal: string): string {
-  const map: Record<string, string> = {
-    tjsp: "api_publica_tjsp",
-    tjrj: "api_publica_tjrj",
-    tjmg: "api_publica_tjmg",
-    tjrs: "api_publica_tjrs",
-    tjpr: "api_publica_tjpr",
-    tjsc: "api_publica_tjsc",
-    tjba: "api_publica_tjba",
-    tjpe: "api_publica_tjpe",
-    tjce: "api_publica_tjce",
-    tjgo: "api_publica_tjgo",
+  const sigla = tribunal.toLowerCase().replace(/[-_\s]/g, "");
+
+  // Explicit special cases
+  const explicit: Record<string, string> = {
     tjdf: "api_publica_tjdft",
     tjdft: "api_publica_tjdft",
-    tst: "api_publica_tst",
-    stj: "api_publica_stj",
-    stf: "api_publica_stf",
-    trf1: "api_publica_trf1",
-    trf2: "api_publica_trf2",
-    trf3: "api_publica_trf3",
-    trf4: "api_publica_trf4",
-    trf5: "api_publica_trf5",
-    trf6: "api_publica_trf6",
+    tjmmg: "api_publica_tjmmg",
+    tjmrs: "api_publica_tjmrs",
+    tjmsp: "api_publica_tjmsp",
   };
-  return map[tribunal.toLowerCase()] || `api_publica_${tribunal.toLowerCase()}`;
+  if (explicit[sigla]) return explicit[sigla];
+
+  // TREs: tresp → api_publica_tre-sp, treac → api_publica_tre-ac
+  const treMatch = sigla.match(/^tre([a-z]{2})$/);
+  if (treMatch) return `api_publica_tre-${treMatch[1]}`;
+
+  // All others (TJs, TRFs, TRTs, STF, STJ, STM, TST, TSE) follow api_publica_{sigla}
+  return `api_publica_${sigla}`;
 }
 
 serve(async (req) => {
