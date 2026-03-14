@@ -54,6 +54,7 @@ const App = () => (
               <Route path="/jurisprudencia" element={<Jurisprudencia />} />
               <Route path="/decisao/:id" element={<DecisaoDetalhe />} />
               <Route path="/painel-advogado" element={<ProtectedRoute><LawyerDashboard /></ProtectedRoute>} />
+              <Route path="/admin/ingestao" element={<ProtectedRoute><AdminIngestao /></ProtectedRoute>} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </UserProfileProvider>
