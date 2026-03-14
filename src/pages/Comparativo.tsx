@@ -64,7 +64,7 @@ export default function Comparativo() {
             <Button asChild size="lg" className="rounded-full font-sans font-semibold text-sm px-8" style={{ background: "hsl(var(--gold))", color: "hsl(var(--navy))" }}>
               <Link to="/auth">Criar conta grátis</Link>
             </Button>
-            <Button variant="outline" size="lg" onClick={handleShare} className="rounded-full font-sans font-semibold text-sm px-8 gap-2 border-white/20 hover:border-white/40" style={{ color: "hsl(var(--cream))" }}>
+            <Button variant="outline" size="lg" onClick={handleShare} className="rounded-full font-sans font-semibold text-sm px-8 gap-2 border-white/20 hover:border-white/40 bg-transparent" style={{ color: "hsl(var(--cream))" }}>
               <Share2 className="h-4 w-4" /> Compartilhar
             </Button>
           </div>
