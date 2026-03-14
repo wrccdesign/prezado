@@ -208,13 +208,23 @@ export default function Index() {
                 onClick={() => fileRef.current?.click()}
                 disabled={loading || parsing}
               >
-                {parsing ? (
+              {parsing ? (
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                 ) : (
                   <Upload className="mr-2 h-4 w-4" />
                 )}
                 {parsing ? "Processando..." : "Upload de Arquivo"}
               </Button>
+
+              {parsing && (
+                <div className="flex-1 min-w-[200px] space-y-1">
+                  <div className="flex items-center justify-between text-xs text-muted-foreground">
+                    <span>{parseStage}</span>
+                    <span>{parseProgress}%</span>
+                  </div>
+                  <Progress value={parseProgress} className="h-2" />
+                </div>
+              )}
 
               {fileName && (
                 <div className="flex items-center gap-2 rounded-md bg-muted px-3 py-1.5 text-sm">
