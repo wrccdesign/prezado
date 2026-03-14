@@ -22,29 +22,33 @@ function sanitizeText(raw: string): string {
  * Lightweight PDF text extraction - single pass, avoids CPU timeout
  */
 function extractPdfText(bytes: Uint8Array): string {
-  const raw = new TextDecoder("latin1").decode(bytes);
-  const parts: string[] = [];
-  const seen = new Set<string>();
-  
-  const regex = /\(([^)]{1,500})\)\s*Tj|\[((?:\([^)]*\)|[^\]]*){1,2000})\]\s*TJ/gi;
-  let match;
-  let iterations = 0;
-  const MAX_ITERATIONS = 50000;
-  
-  while ((match = regex.exec(raw)) !== null && iterations < MAX_ITERATIONS) {
-    iterations++;
-    
-    if (match[1]) {
+  try {
+    const raw = new TextDecoder("latin1").decode(bytes);
+    const parts: string[] = [];
+    const seen = new Set<string>();
+    const MAX_ITERATIONS = 50000;
+    let iterations = 0;
+
+    // Pass 1: simple (text) Tj
+    const tjRegex = /\(([^)]{1,500})\)\s*Tj/gi;
+    let match;
+    while ((match = tjRegex.exec(raw)) !== null && iterations < MAX_ITERATIONS) {
+      iterations++;
       const t = match[1].replace(/\\[nrt]/g, " ").trim();
       if (t.length > 1 && !seen.has(t)) {
         seen.add(t);
         parts.push(t);
       }
-    } else if (match[2]) {
+    }
+
+    // Pass 2: [...] TJ arrays
+    const arrayRegex = /\[([^\]]{1,5000})\]\s*TJ/gi;
+    while ((match = arrayRegex.exec(raw)) !== null && iterations < MAX_ITERATIONS) {
+      iterations++;
       const innerRegex = /\(([^)]*)\)/g;
       let inner;
       const lineParts: string[] = [];
-      while ((inner = innerRegex.exec(match[2])) !== null) {
+      while ((inner = innerRegex.exec(match[1])) !== null) {
         const t = inner[1].replace(/\\[nrt]/g, " ");
         if (t.trim()) lineParts.push(t);
       }
@@ -54,9 +58,12 @@ function extractPdfText(bytes: Uint8Array): string {
         parts.push(line);
       }
     }
+
+    return parts.join(" ");
+  } catch (e) {
+    console.error("extractPdfText failed, falling back to OCR:", e);
+    return "";
   }
-  
-  return parts.join(" ");
 }
 
 /**
