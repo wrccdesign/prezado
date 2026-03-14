@@ -16,6 +16,7 @@ import Diagnostico from "./pages/Diagnostico";
 import Jurisprudencia from "./pages/Jurisprudencia";
 import DecisaoDetalhe from "./pages/DecisaoDetalhe";
 import LandingPage from "./pages/LandingPage";
+import AdminIngestao from "./pages/AdminIngestao";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -53,6 +54,7 @@ const App = () => (
               <Route path="/jurisprudencia" element={<Jurisprudencia />} />
               <Route path="/decisao/:id" element={<DecisaoDetalhe />} />
               <Route path="/painel-advogado" element={<ProtectedRoute><LawyerDashboard /></ProtectedRoute>} />
+              <Route path="/admin/ingestao" element={<ProtectedRoute><AdminIngestao /></ProtectedRoute>} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </UserProfileProvider>
