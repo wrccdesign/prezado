@@ -26,7 +26,7 @@ function sanitizeText(raw: string): string {
     ["\u00C3\u00BC", "ü"], ["\u00C3\u00A7", "ç"], ["\u00C3\u00B1", "ñ"],
     ["\u0000", ""], ["\uFFFD", ""],
   ]);
-  for (const [bad, good] of Object.entries(encodingFixes)) {
+  for (const [bad, good] of encodingFixes) {
     text = text.split(bad).join(good);
   }
   
