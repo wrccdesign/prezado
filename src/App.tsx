@@ -13,6 +13,7 @@ import Chat from "./pages/Chat";
 import Calculators from "./pages/Calculators";
 import LawyerDashboard from "./pages/LawyerDashboard";
 import Diagnostico from "./pages/Diagnostico";
+import Jurisprudencia from "./pages/Jurisprudencia";
 import LandingPage from "./pages/LandingPage";
 import NotFound from "./pages/NotFound";
 
@@ -48,6 +49,7 @@ const App = () => (
               <Route path="/historico" element={<ProtectedRoute><History /></ProtectedRoute>} />
               <Route path="/calculadoras" element={<ProtectedRoute><Calculators /></ProtectedRoute>} />
               <Route path="/diagnostico" element={<ProtectedRoute><Diagnostico /></ProtectedRoute>} />
+              <Route path="/jurisprudencia" element={<ProtectedRoute><Jurisprudencia /></ProtectedRoute>} />
               <Route path="/painel-advogado" element={<ProtectedRoute><LawyerDashboard /></ProtectedRoute>} />
               <Route path="*" element={<NotFound />} />
             </Routes>

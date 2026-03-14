@@ -3,7 +3,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useUserProfile } from "@/contexts/UserProfileContext";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
-import { History, LogOut, Plus, FileSignature, MessageCircle, Briefcase, User, Calculator, LayoutDashboard, Menu, Stethoscope } from "lucide-react";
+import { History, LogOut, Plus, FileSignature, MessageCircle, Briefcase, User, Calculator, LayoutDashboard, Menu, Stethoscope, Scale } from "lucide-react";
 import logoImg from "@/assets/logo.png";
 import { useNavigate, useLocation } from "react-router-dom";
 
@@ -19,6 +19,7 @@ const navItems: NavItem[] = [
   { path: "/", label: "Análise", icon: Plus, primary: true },
   { path: "/diagnostico", label: "Diagnóstico", icon: Stethoscope, primary: true },
   { path: "/peticao", label: "Petição", icon: FileSignature, primary: true },
+  { path: "/jurisprudencia", label: "Jurisprudência", icon: Scale, primary: true },
   { path: "/chat", label: "Chat", icon: MessageCircle },
   { path: "/calculadoras", label: "Calculadoras", icon: Calculator },
   { path: "/painel-advogado", label: "Painel", icon: LayoutDashboard, lawyerOnly: true },

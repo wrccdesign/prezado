@@ -110,6 +110,114 @@ export type Database = {
         }
         Relationships: []
       }
+      decisions: {
+        Row: {
+          argumentos_principais: string[] | null
+          autor_recorrente: string | null
+          comarca: string | null
+          comarca_pequena: boolean | null
+          created_at: string | null
+          data_decisao: string | null
+          embedding: string | null
+          ementa: string | null
+          external_id: string | null
+          full_text: string | null
+          id: string
+          instancia: string | null
+          jurisprudencias_citadas: string[] | null
+          legislacao_citada: string[] | null
+          numero_processo: string | null
+          ramos_direito: string[] | null
+          relator: string | null
+          resultado: string | null
+          resultado_descricao: string | null
+          resumo_ia: string | null
+          reu_recorrido: string | null
+          score_utilidade: number | null
+          source: string
+          source_url: string | null
+          temas_juridicos: string[] | null
+          tipo_decisao: string | null
+          tribunal: string | null
+          uf: string | null
+          updated_at: string | null
+          upvotes: number | null
+          vara: string | null
+          verified: boolean | null
+          view_count: number | null
+        }
+        Insert: {
+          argumentos_principais?: string[] | null
+          autor_recorrente?: string | null
+          comarca?: string | null
+          comarca_pequena?: boolean | null
+          created_at?: string | null
+          data_decisao?: string | null
+          embedding?: string | null
+          ementa?: string | null
+          external_id?: string | null
+          full_text?: string | null
+          id?: string
+          instancia?: string | null
+          jurisprudencias_citadas?: string[] | null
+          legislacao_citada?: string[] | null
+          numero_processo?: string | null
+          ramos_direito?: string[] | null
+          relator?: string | null
+          resultado?: string | null
+          resultado_descricao?: string | null
+          resumo_ia?: string | null
+          reu_recorrido?: string | null
+          score_utilidade?: number | null
+          source?: string
+          source_url?: string | null
+          temas_juridicos?: string[] | null
+          tipo_decisao?: string | null
+          tribunal?: string | null
+          uf?: string | null
+          updated_at?: string | null
+          upvotes?: number | null
+          vara?: string | null
+          verified?: boolean | null
+          view_count?: number | null
+        }
+        Update: {
+          argumentos_principais?: string[] | null
+          autor_recorrente?: string | null
+          comarca?: string | null
+          comarca_pequena?: boolean | null
+          created_at?: string | null
+          data_decisao?: string | null
+          embedding?: string | null
+          ementa?: string | null
+          external_id?: string | null
+          full_text?: string | null
+          id?: string
+          instancia?: string | null
+          jurisprudencias_citadas?: string[] | null
+          legislacao_citada?: string[] | null
+          numero_processo?: string | null
+          ramos_direito?: string[] | null
+          relator?: string | null
+          resultado?: string | null
+          resultado_descricao?: string | null
+          resumo_ia?: string | null
+          reu_recorrido?: string | null
+          score_utilidade?: number | null
+          source?: string
+          source_url?: string | null
+          temas_juridicos?: string[] | null
+          tipo_decisao?: string | null
+          tribunal?: string | null
+          uf?: string | null
+          updated_at?: string | null
+          upvotes?: number | null
+          vara?: string | null
+          verified?: boolean | null
+          view_count?: number | null
+        }
+        Relationships: []
+      }
       petition_templates: {
         Row: {
           area: string | null
@@ -237,7 +345,42 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      search_decisions: {
+        Args: {
+          filter_comarca_pequena?: boolean
+          filter_instancia?: string
+          filter_ramo?: string
+          filter_tribunal?: string
+          filter_uf?: string
+          result_limit?: number
+          result_offset?: number
+          search_query: string
+        }
+        Returns: {
+          comarca: string
+          comarca_pequena: boolean
+          created_at: string
+          data_decisao: string
+          ementa: string
+          id: string
+          instancia: string
+          numero_processo: string
+          ramos_direito: string[]
+          rank: number
+          relator: string
+          resultado: string
+          resultado_descricao: string
+          resumo_ia: string
+          score_utilidade: number
+          source_url: string
+          temas_juridicos: string[]
+          tipo_decisao: string
+          tribunal: string
+          uf: string
+          upvotes: number
+          view_count: number
+        }[]
+      }
     }
     Enums: {
       [_ in never]: never
