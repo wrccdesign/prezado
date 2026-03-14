@@ -283,7 +283,16 @@ export default function DecisaoDetalhe() {
     );
   }
 
+  const [copied, setCopied] = useState(false);
   const instanciaLabel = decision.instancia === "1grau" ? "1º Grau" : decision.instancia === "2grau" ? "2º Grau" : decision.instancia === "superior" ? "Superior" : decision.instancia;
+
+  const handleCopyCitation = async () => {
+    const citation = formatCitation(decision);
+    await navigator.clipboard.writeText(citation);
+    setCopied(true);
+    toast({ title: "Citação copiada!", description: "Formatada no padrão processual brasileiro." });
+    setTimeout(() => setCopied(false), 2000);
+  };
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
