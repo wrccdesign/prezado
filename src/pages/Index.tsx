@@ -41,12 +41,21 @@ export default function Index() {
     setParseProgress(10);
     setParseStage("Enviando arquivo...");
 
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 90000);
+
     try {
       const formData = new FormData();
       formData.append("file", file);
 
       setParseProgress(30);
       setParseStage("Extraindo texto do documento...");
+
+      // Start a timer to update stage if taking long (OCR)
+      const ocrStageTimer = setTimeout(() => {
+        setParseProgress(50);
+        setParseStage("Aplicando OCR em documento escaneado (pode levar até 1 min)...");
+      }, 8000);
 
       const response = await fetch(
         `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/parse-document`,
@@ -56,15 +65,23 @@ export default function Index() {
             Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
           },
           body: formData,
+          signal: controller.signal,
         }
       );
 
+      clearTimeout(ocrStageTimer);
       setParseProgress(80);
       setParseStage("Finalizando processamento...");
 
       if (!response.ok) throw new Error("Falha ao processar documento");
       const data = await response.json();
       
+      if (data.ocr_timeout) {
+        toast({ title: "OCR expirou", description: "O documento é muito pesado para OCR. Tente um PDF menor ou cole o texto manualmente.", variant: "destructive" });
+        setFileName(null);
+        return;
+      }
+
       if (data.ocr) {
         setParseProgress(90);
         setParseStage("OCR aplicado em documento escaneado...");
@@ -76,8 +93,12 @@ export default function Index() {
       setShowPreview(true);
       const ocrNote = data.ocr ? " (via OCR — documento escaneado)" : "";
       toast({ title: "Documento processado!", description: `Texto extraído de ${file.name}${ocrNote}. Verifique o preview abaixo.` });
-    } catch (err) {
-      toast({ title: "Erro ao processar", description: "Não foi possível extrair o texto do arquivo.", variant: "destructive" });
+    } catch (err: any) {
+      if (err?.name === "AbortError") {
+        toast({ title: "Timeout no upload", description: "O processamento demorou demais. Tente um PDF menor, TXT ou cole o texto manualmente.", variant: "destructive" });
+      } else {
+        toast({ title: "Erro ao processar", description: "Não foi possível extrair o texto do arquivo.", variant: "destructive" });
+      }
       setFileName(null);
     } finally {
       setTimeout(() => {
