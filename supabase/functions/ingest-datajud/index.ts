@@ -56,6 +56,19 @@ const EXTRACTION_TOOL = {
   },
 };
 
+// Sanitize date strings from AI/DataJud into YYYY-MM-DD
+function sanitizeDate(raw: string | null | undefined): string | null {
+  if (!raw) return null;
+  const stripped = raw.replace(/[-/\s:T]/g, "");
+  const match = stripped.match(/^(\d{4})(\d{2})(\d{2})/);
+  if (match) {
+    const [, y, m, d] = match;
+    if (+m >= 1 && +m <= 12 && +d >= 1 && +d <= 31) return `${y}-${m}-${d}`;
+  }
+  if (/^\d{4}-\d{2}-\d{2}/.test(raw)) return raw.substring(0, 10);
+  return null;
+}
+
 // Map tribunal siglas to DataJud API endpoint names (91 endpoints)
 function getDatajudEndpoint(tribunal: string): string {
   const sigla = tribunal.toLowerCase().replace(/[-_\s]/g, "");
