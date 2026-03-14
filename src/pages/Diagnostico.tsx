@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
-import { Separator } from "@/components/ui/separator";
+
 import { AppFooter } from "@/components/AppFooter";
 import { Search, Scale, ClipboardList, DollarSign, Building2, Zap, ArrowRight, MessageCircle, Loader2, Stethoscope } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
