@@ -84,11 +84,11 @@ function extractPdfText(bytes: Uint8Array): string {
 /**
  * OCR fallback: send the raw PDF as base64 to Gemini vision for text extraction
  */
-async function ocrWithVision(bytes: Uint8Array, fileName: string): Promise<string> {
+async function ocrWithVision(bytes: Uint8Array, fileName: string): Promise<{ text: string; timedOut: boolean }> {
   const apiKey = Deno.env.get("LOVABLE_API_KEY");
   if (!apiKey) {
     console.error("LOVABLE_API_KEY not available for OCR fallback");
-    return "";
+    return { text: "", timedOut: false };
   }
 
   // Convert PDF bytes to base64
@@ -100,45 +100,61 @@ async function ocrWithVision(bytes: Uint8Array, fileName: string): Promise<strin
   }
   base64 = btoa(base64);
 
-  const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
-    method: "POST",
-    headers: {
-      "Authorization": `Bearer ${apiKey}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      model: "google/gemini-2.5-flash",
-      messages: [
-        {
-          role: "user",
-          content: [
-            {
-              type: "text",
-              text: `Extraia TODO o texto deste documento PDF escaneado (${fileName}). Retorne APENAS o texto extraído, sem comentários, explicações ou formatação markdown. Mantenha a estrutura original de parágrafos. Se houver tabelas, formate-as de forma legível. Texto em português do Brasil.`,
-            },
-            {
-              type: "image_url",
-              image_url: {
-                url: `data:application/pdf;base64,${base64}`,
+  const ocrController = new AbortController();
+  const ocrTimeout = setTimeout(() => ocrController.abort(), 45000);
+
+  try {
+    const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${apiKey}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        model: "google/gemini-2.5-flash",
+        messages: [
+          {
+            role: "user",
+            content: [
+              {
+                type: "text",
+                text: `Extraia TODO o texto deste documento PDF escaneado (${fileName}). Retorne APENAS o texto extraído, sem comentários, explicações ou formatação markdown. Mantenha a estrutura original de parágrafos. Se houver tabelas, formate-as de forma legível. Texto em português do Brasil.`,
               },
-            },
-          ],
-        },
-      ],
-      max_tokens: 16000,
-      temperature: 0.1,
-    }),
-  });
+              {
+                type: "image_url",
+                image_url: {
+                  url: `data:application/pdf;base64,${base64}`,
+                },
+              },
+            ],
+          },
+        ],
+        max_tokens: 16000,
+        temperature: 0.1,
+      }),
+      signal: ocrController.signal,
+    });
 
-  if (!response.ok) {
-    const errText = await response.text();
-    console.error(`OCR vision API error [${response.status}]:`, errText);
-    return "";
+    clearTimeout(ocrTimeout);
+
+    if (!response.ok) {
+      const errText = await response.text();
+      console.error(`OCR vision API error [${response.status}]:`, errText);
+      return { text: "", timedOut: false };
+    }
+
+    const data = await response.json();
+    const text = data?.choices?.[0]?.message?.content || "";
+    return { text: text.trim(), timedOut: false };
+  } catch (e) {
+    clearTimeout(ocrTimeout);
+    if (e instanceof DOMException && e.name === "AbortError") {
+      console.error("OCR timed out after 45s");
+      return { text: "", timedOut: true };
+    }
+    console.error("OCR fetch error:", e);
+    return { text: "", timedOut: false };
   }
-
-  const data = await response.json();
-  const text = data?.choices?.[0]?.message?.content || "";
-  return text.trim();
 }
 
 serve(async (req) => {
@@ -180,15 +196,25 @@ serve(async (req) => {
         }
         
         // Step 2: If too little text or unreadable, fallback to OCR via Gemini vision
+        let ocrTimedOut = false;
         if (!extractedText || extractedText.length < 50) {
           console.log(`Regex extraction yielded ${extractedText.length} chars, falling back to OCR...`);
-          const ocrText = await ocrWithVision(bytes, file.name);
-          if (ocrText && ocrText.length > 20) {
-            extractedText = ocrText;
+          const ocrResult = await ocrWithVision(bytes, file.name);
+          if (ocrResult.timedOut) {
+            ocrTimedOut = true;
+          } else if (ocrResult.text && ocrResult.text.length > 20) {
+            extractedText = ocrResult.text;
             usedOcr = true;
           }
         }
         
+        if (ocrTimedOut && (!extractedText || extractedText.length < 20)) {
+          return new Response(
+            JSON.stringify({ text: "", ocr: false, ocr_timeout: true }),
+            { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+          );
+        }
+
         if (!extractedText || extractedText.length < 20) {
           extractedText = "[Não foi possível extrair texto do PDF. O documento pode estar protegido ou corrompido. Tente copiar e colar o texto manualmente.]";
         }
