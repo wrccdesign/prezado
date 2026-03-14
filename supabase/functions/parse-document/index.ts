@@ -5,132 +5,61 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
-/**
- * Sanitize extracted text for Brazilian legal documents
- * Handles encoding issues from tribunais (CP1252, ISO-8859-1)
- */
 function sanitizeText(raw: string): string {
-  // (a) Remove control characters and strange symbols, keep Latin Extended + accented chars
   let text = raw.replace(/[^\x20-\x7E\xA0-\xFF\u00C0-\u024F\n\r\t]/g, " ");
-  
-  // (b) Fix common encoding artifacts from CP1252/ISO-8859-1
-  // Build encoding fixes map programmatically to avoid parser issues with special chars
-  const encodingFixes = new Map<string, string>([
-    ["\u00C3\u00A1", "á"], ["\u00C3\u00A0", "à"], ["\u00C3\u00A2", "â"],
-    ["\u00C3\u00A3", "ã"], ["\u00C3\u00A4", "ä"], ["\u00C3\u00A9", "é"],
-    ["\u00C3\u00A8", "è"], ["\u00C3\u00AA", "ê"], ["\u00C3\u00AB", "ë"],
-    ["\u00C3\u00AD", "í"], ["\u00C3\u00AC", "ì"], ["\u00C3\u00AE", "î"],
-    ["\u00C3\u00AF", "ï"], ["\u00C3\u00B3", "ó"], ["\u00C3\u00B2", "ò"],
-    ["\u00C3\u00B4", "ô"], ["\u00C3\u00B5", "õ"], ["\u00C3\u00B6", "ö"],
-    ["\u00C3\u00BA", "ú"], ["\u00C3\u00B9", "ù"], ["\u00C3\u00BB", "û"],
-    ["\u00C3\u00BC", "ü"], ["\u00C3\u00A7", "ç"], ["\u00C3\u00B1", "ñ"],
-    ["\u0000", ""], ["\uFFFD", ""],
-  ]);
-  for (const [bad, good] of encodingFixes) {
-    text = text.split(bad).join(good);
-  }
-  
-  // (c) Remove page break artifacts
-  text = text.replace(/\.{5,}/g, " "); // sequences of dots
-  text = text.replace(/_{5,}/g, " "); // sequences of underscores
-  text = text.replace(/\s*-{5,}\s*/g, "\n"); // long dashes
-  text = text.replace(/^\s*\d+\s*$/gm, ""); // isolated page numbers
-  text = text.replace(/^\s*Página\s+\d+\s*(de\s+\d+)?\s*$/gim, ""); // "Página X de Y"
-  
-  // (d) Normalize whitespace
-  text = text.replace(/[ \t]+/g, " "); // multiple spaces to single
-  text = text.replace(/\n{3,}/g, "\n\n"); // 3+ newlines to double
-  text = text.replace(/^\s+$/gm, ""); // blank lines with only spaces
-  
+  text = text.replace(/\.{5,}/g, " ");
+  text = text.replace(/_{5,}/g, " ");
+  text = text.replace(/\s*-{5,}\s*/g, "\n");
+  text = text.replace(/^\s*\d+\s*$/gm, "");
+  text = text.replace(/^\s*Página\s+\d+\s*(de\s+\d+)?\s*$/gim, "");
+  text = text.replace(/[ \t]+/g, " ");
+  text = text.replace(/\n{3,}/g, "\n\n");
+  text = text.replace(/^\s+$/gm, "");
   return text.trim();
 }
 
 /**
- * Extract text from PDF using multiple strategies and encodings
+ * Lightweight PDF text extraction - single pass, avoids CPU timeout
  */
 function extractPdfText(bytes: Uint8Array): string {
-  const textParts: string[] = [];
+  const raw = new TextDecoder("latin1").decode(bytes);
+  const parts: string[] = [];
+  const seen = new Set<string>();
   
-  // Try multiple decodings
-  const decodings = [
-    new TextDecoder("utf-8", { fatal: false }),
-    new TextDecoder("latin1"),
-    new TextDecoder("windows-1252", { fatal: false }),
-  ];
+  // Single combined regex pass for Tj and TJ operators
+  const regex = /\(([^)]{1,500})\)\s*Tj|\[((?:\([^)]*\)|[^\]]*){1,2000})\]\s*TJ/gi;
+  let match;
+  let iterations = 0;
+  const MAX_ITERATIONS = 50000; // Safety limit
   
-  let bestText = "";
-  let bestScore = -1;
-  
-  for (const decoder of decodings) {
-    try {
-      const raw = decoder.decode(bytes);
-      const parts: string[] = [];
-      
-      // Strategy 1: Extract from PDF content streams - Tj operator
-      const tjRegex = /\(([^)]*)\)\s*Tj/g;
-      let match;
-      while ((match = tjRegex.exec(raw)) !== null) {
-        const t = match[1].replace(/\\n/g, "\n").replace(/\\r/g, "\r").replace(/\\t/g, "\t");
-        if (t.trim()) parts.push(t);
+  while ((match = regex.exec(raw)) !== null && iterations < MAX_ITERATIONS) {
+    iterations++;
+    
+    if (match[1]) {
+      // Simple Tj
+      const t = match[1].replace(/\\[nrt]/g, " ").trim();
+      if (t.length > 1 && !seen.has(t)) {
+        seen.add(t);
+        parts.push(t);
       }
-      
-      // Strategy 2: TJ array operator (most common in modern PDFs)
-      const tjArrayRegex = /\[((?:\([^)]*\)|[^\]]*)*)\]\s*TJ/gi;
-      while ((match = tjArrayRegex.exec(raw)) !== null) {
-        const arrayContent = match[1];
-        const innerRegex = /\(([^)]*)\)/g;
-        let innerMatch;
-        const lineParts: string[] = [];
-        while ((innerMatch = innerRegex.exec(arrayContent)) !== null) {
-          const t = innerMatch[1].replace(/\\n/g, "\n").replace(/\\r/g, "\r").replace(/\\t/g, "\t");
-          if (t.trim()) lineParts.push(t);
-        }
-        if (lineParts.length) parts.push(lineParts.join(""));
+    } else if (match[2]) {
+      // TJ array
+      const innerRegex = /\(([^)]*)\)/g;
+      let inner;
+      const lineParts: string[] = [];
+      while ((inner = innerRegex.exec(match[2])) !== null) {
+        const t = inner[1].replace(/\\[nrt]/g, " ");
+        if (t.trim()) lineParts.push(t);
       }
-      
-      // Strategy 3: BT...ET text blocks
-      const btRegex = /BT\s*([\s\S]*?)\s*ET/g;
-      while ((match = btRegex.exec(raw)) !== null) {
-        const block = match[1];
-        const textInBlock = /\(([^)]*)\)/g;
-        let tMatch;
-        while ((tMatch = textInBlock.exec(block)) !== null) {
-          const t = tMatch[1].replace(/\\n/g, "\n").replace(/\\r/g, "\r");
-          if (t.trim() && !parts.includes(t)) parts.push(t);
-        }
+      const line = lineParts.join("").trim();
+      if (line.length > 1 && !seen.has(line)) {
+        seen.add(line);
+        parts.push(line);
       }
-      
-      // Strategy 4: Look for Unicode text markers (hex encoded)
-      const hexRegex = /<([0-9A-Fa-f\s]+)>\s*Tj/g;
-      while ((match = hexRegex.exec(raw)) !== null) {
-        const hex = match[1].replace(/\s/g, "");
-        if (hex.length >= 4) {
-          let decoded = "";
-          for (let i = 0; i < hex.length; i += 4) {
-            const charCode = parseInt(hex.substring(i, i + 4), 16);
-            if (charCode > 0 && charCode < 65536) decoded += String.fromCharCode(charCode);
-          }
-          if (decoded.trim()) parts.push(decoded);
-        }
-      }
-      
-      const combined = parts.join(" ");
-      
-      // Score: prefer the decoding that produces the most readable Portuguese text
-      const ptChars = (combined.match(/[a-zA-ZáàâãéèêíìîóòôõúùûçÁÀÂÃÉÈÊÍÌÎÓÒÔÕÚÙÛÇ]/g) || []).length;
-      const totalChars = combined.length || 1;
-      const score = ptChars / totalChars * combined.length;
-      
-      if (score > bestScore) {
-        bestScore = score;
-        bestText = combined;
-      }
-    } catch {
-      continue;
     }
   }
   
-  return bestText;
+  return parts.join(" ");
 }
 
 serve(async (req) => {
@@ -167,7 +96,6 @@ serve(async (req) => {
           extractedText = "[Não foi possível extrair texto do PDF. O documento pode conter apenas imagens escaneadas ou estar protegido. Tente copiar e colar o texto manualmente.]";
         }
       } else if (fileName.endsWith(".docx") || fileName.endsWith(".doc")) {
-        // DOCX text extraction from XML content
         const text = new TextDecoder("utf-8", { fatal: false }).decode(bytes);
         const xmlTextRegex = /<w:t[^>]*>([^<]*)<\/w:t>/g;
         const parts: string[] = [];
