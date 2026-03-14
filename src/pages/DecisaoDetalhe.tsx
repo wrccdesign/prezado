@@ -235,6 +235,7 @@ export default function DecisaoDetalhe() {
   const { id } = useParams<{ id: string }>();
   const [decision, setDecision] = useState<Decision | null>(null);
   const [loadingDec, setLoadingDec] = useState(true);
+  const [copied, setCopied] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
