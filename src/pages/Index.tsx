@@ -38,10 +38,15 @@ export default function Index() {
 
     setParsing(true);
     setFileName(file.name);
+    setParseProgress(10);
+    setParseStage("Enviando arquivo...");
 
     try {
       const formData = new FormData();
       formData.append("file", file);
+
+      setParseProgress(30);
+      setParseStage("Extraindo texto do documento...");
 
       const response = await fetch(
         `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/parse-document`,
@@ -54,8 +59,19 @@ export default function Index() {
         }
       );
 
+      setParseProgress(80);
+      setParseStage("Finalizando processamento...");
+
       if (!response.ok) throw new Error("Falha ao processar documento");
       const data = await response.json();
+      
+      if (data.ocr) {
+        setParseProgress(90);
+        setParseStage("OCR aplicado em documento escaneado...");
+      }
+      
+      setParseProgress(100);
+      setParseStage("Concluído!");
       setText(data.text);
       setShowPreview(true);
       const ocrNote = data.ocr ? " (via OCR — documento escaneado)" : "";
