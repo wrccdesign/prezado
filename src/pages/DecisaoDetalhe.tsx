@@ -14,8 +14,9 @@ import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import {
   ArrowLeft, Calendar, MapPin, Scale, Send, Loader2, Sparkles, MessageCircle,
-  ExternalLink, BookOpen, FileText, Lightbulb,
+  ExternalLink, BookOpen, FileText, Lightbulb, Copy, Check,
 } from "lucide-react";
+import { formatCitation } from "@/lib/citation";
 
 type Msg = { role: "user" | "assistant"; content: string };
 
@@ -234,6 +235,7 @@ export default function DecisaoDetalhe() {
   const { id } = useParams<{ id: string }>();
   const [decision, setDecision] = useState<Decision | null>(null);
   const [loadingDec, setLoadingDec] = useState(true);
+  const [copied, setCopied] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -284,6 +286,14 @@ export default function DecisaoDetalhe() {
 
   const instanciaLabel = decision.instancia === "1grau" ? "1º Grau" : decision.instancia === "2grau" ? "2º Grau" : decision.instancia === "superior" ? "Superior" : decision.instancia;
 
+  const handleCopyCitation = async () => {
+    const citation = formatCitation(decision);
+    await navigator.clipboard.writeText(citation);
+    setCopied(true);
+    toast({ title: "Citação copiada!", description: "Formatada no padrão processual brasileiro." });
+    setTimeout(() => setCopied(false), 2000);
+  };
+
   return (
     <div className="min-h-screen flex flex-col bg-background">
       <AppHeader />
@@ -307,9 +317,20 @@ export default function DecisaoDetalhe() {
               )}
             </div>
 
-            {decision.numero_processo && (
-              <h1 className="font-serif text-xl font-bold mb-1">{decision.numero_processo}</h1>
-            )}
+            <div className="flex items-center gap-2 mb-1">
+              {decision.numero_processo && (
+                <h1 className="font-serif text-xl font-bold">{decision.numero_processo}</h1>
+              )}
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleCopyCitation}
+                className="h-8 gap-1.5 text-xs flex-shrink-0"
+              >
+                {copied ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
+                {copied ? "Copiado!" : "Copiar Citação"}
+              </Button>
+            </div>
 
             <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-muted-foreground mb-4">
               {decision.relator && <span>Rel. {decision.relator}</span>}

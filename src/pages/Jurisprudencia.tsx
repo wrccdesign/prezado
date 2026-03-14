@@ -8,7 +8,8 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Search, Filter, MapPin, Calendar, Scale, ChevronDown, ChevronUp, ExternalLink, Loader2, Sparkles } from "lucide-react";
+import { Search, Filter, MapPin, Calendar, Scale, ChevronDown, ChevronUp, ExternalLink, Loader2, Sparkles, Copy, Check } from "lucide-react";
+import { formatCitation } from "@/lib/citation";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
@@ -65,7 +66,18 @@ export default function Jurisprudencia() {
   const [showFilters, setShowFilters] = useState(false);
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [hasSearched, setHasSearched] = useState(false);
+  const [copiedId, setCopiedId] = useState<string | null>(null);
   const { toast } = useToast();
+
+  const handleCopyCitation = (e: React.MouseEvent, d: Decision) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const citation = formatCitation(d);
+    navigator.clipboard.writeText(citation);
+    setCopiedId(d.id);
+    toast({ title: "Citação copiada!", description: "Formatada no padrão processual brasileiro." });
+    setTimeout(() => setCopiedId(null), 2000);
+  };
 
   // Filters
   const [tribunal, setTribunal] = useState<string>("");
@@ -341,6 +353,14 @@ export default function Jurisprudencia() {
                     </button>
 
                     <div className="flex items-center gap-3">
+                      <button
+                        onClick={(e) => handleCopyCitation(e, d)}
+                        className="text-xs text-muted-foreground hover:text-accent flex items-center gap-1 transition-colors"
+                        title="Copiar citação formatada"
+                      >
+                        {copiedId === d.id ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
+                        {copiedId === d.id ? "Copiado" : "Citar"}
+                      </button>
                       {d.comarca && d.uf && (
                         <span className="text-xs text-muted-foreground flex items-center gap-1">
                           <MapPin className="h-3 w-3" />
