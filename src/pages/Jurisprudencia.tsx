@@ -255,7 +255,8 @@ export default function Jurisprudencia() {
           {/* Decision Cards */}
           <div className="space-y-3">
             {results.map((d) => (
-              <Card key={d.id} className="overflow-hidden hover:shadow-md transition-shadow">
+              <Link key={d.id} to={`/decisao/${d.id}`} className="block">
+              <Card className="overflow-hidden hover:shadow-md transition-shadow">
                 <CardHeader className="pb-2 px-4 pt-4">
                   <div className="flex items-start justify-between gap-2">
                     <div className="flex flex-wrap items-center gap-1.5">
