@@ -244,7 +244,7 @@ serve(async (req) => {
           comarca_pequena: metadata.comarca_pequena ?? false,
           vara: metadata.vara || source.orgaoJulgador?.nome || null,
           numero_processo: metadata.numero_processo || source.numeroProcesso || null,
-          data_decisao: metadata.data_decisao || source.dataAjuizamento || null,
+          data_decisao: sanitizeDate(metadata.data_decisao) || sanitizeDate(source.dataAjuizamento) || null,
           relator: metadata.relator || null,
           tipo_decisao: metadata.tipo_decisao || source.classeProcessual?.nome || null,
           resultado: metadata.resultado || null,
