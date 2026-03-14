@@ -80,7 +80,11 @@ export default function Index() {
       toast({ title: "Erro ao processar", description: "Não foi possível extrair o texto do arquivo.", variant: "destructive" });
       setFileName(null);
     } finally {
-      setParsing(false);
+      setTimeout(() => {
+        setParsing(false);
+        setParseProgress(0);
+        setParseStage("");
+      }, 500);
       if (fileRef.current) fileRef.current.value = "";
     }
   };
