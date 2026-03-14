@@ -66,7 +66,18 @@ export default function Jurisprudencia() {
   const [showFilters, setShowFilters] = useState(false);
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [hasSearched, setHasSearched] = useState(false);
+  const [copiedId, setCopiedId] = useState<string | null>(null);
   const { toast } = useToast();
+
+  const handleCopyCitation = (e: React.MouseEvent, d: Decision) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const citation = formatCitation(d);
+    navigator.clipboard.writeText(citation);
+    setCopiedId(d.id);
+    toast({ title: "Citação copiada!", description: "Formatada no padrão processual brasileiro." });
+    setTimeout(() => setCopiedId(null), 2000);
+  };
 
   // Filters
   const [tribunal, setTribunal] = useState<string>("");
