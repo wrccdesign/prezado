@@ -54,8 +54,9 @@ export default function Index() {
       if (!response.ok) throw new Error("Falha ao processar documento");
       const data = await response.json();
       setText(data.text);
-      setShowPreview(true); // Show preview after extraction
-      toast({ title: "Documento processado!", description: `Texto extraído de ${file.name}. Verifique o preview abaixo.` });
+      setShowPreview(true);
+      const ocrNote = data.ocr ? " (via OCR — documento escaneado)" : "";
+      toast({ title: "Documento processado!", description: `Texto extraído de ${file.name}${ocrNote}. Verifique o preview abaixo.` });
     } catch (err) {
       toast({ title: "Erro ao processar", description: "Não foi possível extrair o texto do arquivo.", variant: "destructive" });
       setFileName(null);
