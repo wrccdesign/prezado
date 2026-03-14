@@ -120,12 +120,14 @@ serve(async (req) => {
         size,
         query: {
           bool: {
-            must: [
-              { match: { _all: query } },
+            should: [
+              { match: { "assuntos.nome": query } },
+              { match: { "classeProcessual.nome": query } },
             ],
+            minimum_should_match: 1,
           },
         },
-        sort: [{ dataHoraUltimaAtualizacao: { order: "desc" } }],
+        sort: [{ "@timestamp": { order: "desc" } }],
       }),
     });
 
