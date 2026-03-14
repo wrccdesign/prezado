@@ -317,9 +317,20 @@ export default function DecisaoDetalhe() {
               )}
             </div>
 
-            {decision.numero_processo && (
-              <h1 className="font-serif text-xl font-bold mb-1">{decision.numero_processo}</h1>
-            )}
+            <div className="flex items-center gap-2 mb-1">
+              {decision.numero_processo && (
+                <h1 className="font-serif text-xl font-bold">{decision.numero_processo}</h1>
+              )}
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleCopyCitation}
+                className="h-8 gap-1.5 text-xs flex-shrink-0"
+              >
+                {copied ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
+                {copied ? "Copiado!" : "Copiar Citação"}
+              </Button>
+            </div>
 
             <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-muted-foreground mb-4">
               {decision.relator && <span>Rel. {decision.relator}</span>}

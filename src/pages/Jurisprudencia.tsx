@@ -353,6 +353,14 @@ export default function Jurisprudencia() {
                     </button>
 
                     <div className="flex items-center gap-3">
+                      <button
+                        onClick={(e) => handleCopyCitation(e, d)}
+                        className="text-xs text-muted-foreground hover:text-accent flex items-center gap-1 transition-colors"
+                        title="Copiar citação formatada"
+                      >
+                        {copiedId === d.id ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
+                        {copiedId === d.id ? "Copiado" : "Citar"}
+                      </button>
                       {d.comarca && d.uf && (
                         <span className="text-xs text-muted-foreground flex items-center gap-1">
                           <MapPin className="h-3 w-3" />
