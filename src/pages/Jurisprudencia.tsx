@@ -8,7 +8,8 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Search, Filter, MapPin, Calendar, Scale, ChevronDown, ChevronUp, ExternalLink, Loader2, Sparkles } from "lucide-react";
+import { Search, Filter, MapPin, Calendar, Scale, ChevronDown, ChevronUp, ExternalLink, Loader2, Sparkles, Copy, Check } from "lucide-react";
+import { formatCitation } from "@/lib/citation";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
