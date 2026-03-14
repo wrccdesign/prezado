@@ -362,6 +362,7 @@ export default function Jurisprudencia() {
                   </div>
                 </CardContent>
               </Card>
+              </Link>
             ))}
           </div>
 

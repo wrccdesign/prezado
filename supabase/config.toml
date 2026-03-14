@@ -17,3 +17,9 @@ verify_jwt = false
 
 [functions.chat-juris]
 verify_jwt = false
+
+[functions.chat-decisao]
+verify_jwt = false
+
+[functions.search-jurisprudencia]
+verify_jwt = false
