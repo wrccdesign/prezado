@@ -9,6 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { Upload, Search, FileText, Loader2, X, Eye, ChevronDown, ChevronUp } from "lucide-react";
+import { Progress } from "@/components/ui/progress";
 import { AppFooter } from "@/components/AppFooter";
 import type { LegalAnalysis } from "@/types/analysis";
 
@@ -19,6 +20,8 @@ export default function Index() {
   const [fileName, setFileName] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [parsing, setParsing] = useState(false);
+  const [parseProgress, setParseProgress] = useState(0);
+  const [parseStage, setParseStage] = useState("");
   const [result, setResult] = useState<LegalAnalysis | null>(null);
   const [showPreview, setShowPreview] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
@@ -35,10 +38,15 @@ export default function Index() {
 
     setParsing(true);
     setFileName(file.name);
+    setParseProgress(10);
+    setParseStage("Enviando arquivo...");
 
     try {
       const formData = new FormData();
       formData.append("file", file);
+
+      setParseProgress(30);
+      setParseStage("Extraindo texto do documento...");
 
       const response = await fetch(
         `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/parse-document`,
@@ -51,8 +59,19 @@ export default function Index() {
         }
       );
 
+      setParseProgress(80);
+      setParseStage("Finalizando processamento...");
+
       if (!response.ok) throw new Error("Falha ao processar documento");
       const data = await response.json();
+      
+      if (data.ocr) {
+        setParseProgress(90);
+        setParseStage("OCR aplicado em documento escaneado...");
+      }
+      
+      setParseProgress(100);
+      setParseStage("Concluído!");
       setText(data.text);
       setShowPreview(true);
       const ocrNote = data.ocr ? " (via OCR — documento escaneado)" : "";
@@ -61,7 +80,11 @@ export default function Index() {
       toast({ title: "Erro ao processar", description: "Não foi possível extrair o texto do arquivo.", variant: "destructive" });
       setFileName(null);
     } finally {
-      setParsing(false);
+      setTimeout(() => {
+        setParsing(false);
+        setParseProgress(0);
+        setParseStage("");
+      }, 500);
       if (fileRef.current) fileRef.current.value = "";
     }
   };
@@ -185,13 +208,23 @@ export default function Index() {
                 onClick={() => fileRef.current?.click()}
                 disabled={loading || parsing}
               >
-                {parsing ? (
+              {parsing ? (
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                 ) : (
                   <Upload className="mr-2 h-4 w-4" />
                 )}
                 {parsing ? "Processando..." : "Upload de Arquivo"}
               </Button>
+
+              {parsing && (
+                <div className="flex-1 min-w-[200px] space-y-1">
+                  <div className="flex items-center justify-between text-xs text-muted-foreground">
+                    <span>{parseStage}</span>
+                    <span>{parseProgress}%</span>
+                  </div>
+                  <Progress value={parseProgress} className="h-2" />
+                </div>
+              )}
 
               {fileName && (
                 <div className="flex items-center gap-2 rounded-md bg-muted px-3 py-1.5 text-sm">
