@@ -71,7 +71,7 @@ export default function Auth() {
         toast({ title: "Erro", description: error.message, variant: "destructive" });
       } else {
         if (isLawyer && oabNumber && oabState) {
-          localStorage.setItem("prezado-pending-lawyer-profile", JSON.stringify({
+          localStorage.setItem("jurisai-pending-lawyer-profile", JSON.stringify({
             profile_type: "advogado",
             oab_number: oabNumber,
             oab_state: oabState,

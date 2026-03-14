@@ -261,7 +261,7 @@ export default function Diagnostico() {
               </CardContent>
             </Card>
 
-            <Separator />
+            <div className="border-t border-border" />
 
             {/* Action Buttons */}
             <div className="grid gap-3 sm:grid-cols-2">
