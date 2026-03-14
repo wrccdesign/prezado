@@ -13,6 +13,7 @@ import Chat from "./pages/Chat";
 import Calculators from "./pages/Calculators";
 import LawyerDashboard from "./pages/LawyerDashboard";
 import Diagnostico from "./pages/Diagnostico";
+import Jurisprudencia from "./pages/Jurisprudencia";
 import LandingPage from "./pages/LandingPage";
 import NotFound from "./pages/NotFound";
 
