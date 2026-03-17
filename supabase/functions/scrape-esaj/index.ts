@@ -114,7 +114,7 @@ serve(async (req) => {
     // so we search Google for indexed results from the tribunal's domain
     const tribunalDomain = new URL(baseUrl).hostname;
     const searchQuery = `site:${tribunalDomain} ${query} acórdão ementa`;
-    const searchUrl = `https://esaj.tjsp.jus.br/cjsg/resultadoCompleta.do`; // for source_url reference
+    // source_url now comes from each decision's url_decisao extracted by AI
     console.log(`Searching via Firecrawl: "${searchQuery}" (size=${size})`);
 
     // Step 2: Search with Firecrawl (returns results with scraped content)
