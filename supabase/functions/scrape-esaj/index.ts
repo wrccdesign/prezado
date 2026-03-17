@@ -208,7 +208,7 @@ serve(async (req) => {
     }
 
     const decisions = (parsedDecisions.decisions || []) as any[];
-    console.log(`AI extracted ${decisions.length} decisions`);
+    console.log(`AI extracted ${decisions.length} decisions. Raw args first 500:`, toolCall.function.arguments.substring(0, 500));
 
     // Step 4: Upsert decisions into database
     let ingested = 0;
