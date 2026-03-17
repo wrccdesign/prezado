@@ -15,18 +15,24 @@ const ESAJ_URLS: Record<string, string> = {
   TJRN: "https://esaj.tjrn.jus.br/cjsg/consultaCompleta.do",
 };
 
-const EXTRACTION_SYSTEM_PROMPT = `Você é um especialista em direito brasileiro. Analise o conteúdo HTML/markdown de uma página de resultados de jurisprudência do e-SAJ e extraia as decisões judiciais encontradas.
+const EXTRACTION_SYSTEM_PROMPT = `Você é um especialista em direito brasileiro. Analise o conteúdo markdown de resultados de jurisprudência do e-SAJ e extraia as decisões judiciais encontradas.
 
-Regras:
+Regras OBRIGATÓRIAS:
 - Extraia TODAS as decisões listadas na página
 - tribunal: APENAS a sigla oficial (ex: TJSP, TJCE). NUNCA nome extenso.
-- numero_processo: número unificado CNJ quando disponível
-- data_decisao: formato YYYY-MM-DD
+- numero_processo: OBRIGATÓRIO no formato CNJ (NNNNNNN-DD.AAAA.J.TT.OOOO). Se não encontrar neste formato, tente extrair do texto.
+- data_decisao: formato YYYY-MM-DD. Se não encontrar, retorne null.
+- orgao_julgador: nome completo da câmara ou turma (ex: "3ª Câmara de Direito Privado"). Se não encontrar, retorne null. NUNCA retorne "<UNKNOWN>" ou similar.
+- relator: nome completo do relator/desembargador. Se não encontrar, retorne null. NUNCA retorne "<UNKNOWN>" ou similar.
 - ementa: texto completo da ementa
 - resumo_ia: máximo 3 frases resumindo a decisão
 - resultado: use termos padronizados (Provido, Desprovido, Parcialmente Provido, etc.)
 - temas_juridicos e ramos_direito: termos técnicos padronizados
-- legislacao_citada: artigos e leis mencionados na ementa`;
+- legislacao_citada: artigos e leis mencionados na ementa
+- comarca: cidade/comarca de origem. Extraia do número do processo, cabeçalho ou texto. Se não encontrar, retorne null.
+- url_decisao: cada bloco de resultado é precedido por "--- RESULTADO DE: <url> ---". Use essa URL como url_decisao da decisão extraída daquele bloco. NUNCA use a URL genérica de busca.
+
+IMPORTANTE: Para campos não encontrados, retorne null. NUNCA invente dados ou use placeholders como "<UNKNOWN>", "Não informado", etc.`;
 
 const EXTRACTION_TOOL = {
   name: "extract_decisions",
@@ -41,21 +47,23 @@ const EXTRACTION_TOOL = {
           type: "object",
           properties: {
             tribunal: { type: "string", description: "Sigla do tribunal (ex: TJSP)" },
-            orgao_julgador: { type: "string", description: "Câmara ou turma julgadora" },
-            numero_processo: { type: "string", description: "Número unificado CNJ do processo" },
-            data_decisao: { type: "string", description: "Data da decisão YYYY-MM-DD" },
-            relator: { type: "string", description: "Nome do relator" },
+            orgao_julgador: { type: ["string", "null"], description: "Nome completo da câmara ou turma julgadora. null se não encontrado." },
+            numero_processo: { type: "string", description: "Número unificado CNJ no formato NNNNNNN-DD.AAAA.J.TT.OOOO" },
+            data_decisao: { type: ["string", "null"], description: "Data da decisão YYYY-MM-DD. null se não encontrada." },
+            relator: { type: ["string", "null"], description: "Nome completo do relator. null se não encontrado." },
             tipo_decisao: { type: "string", description: "Tipo (Acórdão, Sentença, etc.)" },
             resultado: { type: "string", description: "Resultado padronizado" },
             resultado_descricao: { type: "string", description: "Descrição breve do resultado" },
-            ementa: { type: "string", description: "Texto da ementa" },
+            ementa: { type: "string", description: "Texto completo da ementa" },
             resumo_ia: { type: "string", description: "Resumo em até 3 frases" },
             temas_juridicos: { type: "array", items: { type: "string" } },
             ramos_direito: { type: "array", items: { type: "string" } },
             legislacao_citada: { type: "array", items: { type: "string" } },
             argumentos_principais: { type: "array", items: { type: "string" } },
+            comarca: { type: ["string", "null"], description: "Cidade/comarca de origem. null se não encontrada." },
+            url_decisao: { type: ["string", "null"], description: "URL específica da página da decisão (do cabeçalho '--- RESULTADO DE: <url> ---'). null se não encontrada." },
           },
-          required: ["tribunal", "ementa", "resumo_ia"],
+          required: ["tribunal", "numero_processo", "ementa", "resumo_ia"],
         },
       },
     },
@@ -106,7 +114,7 @@ serve(async (req) => {
     // so we search Google for indexed results from the tribunal's domain
     const tribunalDomain = new URL(baseUrl).hostname;
     const searchQuery = `site:${tribunalDomain} ${query} acórdão ementa`;
-    const searchUrl = `https://esaj.tjsp.jus.br/cjsg/resultadoCompleta.do`; // for source_url reference
+    // source_url now comes from each decision's url_decisao extracted by AI
     console.log(`Searching via Firecrawl: "${searchQuery}" (size=${size})`);
 
     // Step 2: Search with Firecrawl (returns results with scraped content)
@@ -245,7 +253,8 @@ serve(async (req) => {
           legislacao_citada: dec.legislacao_citada || [],
           argumentos_principais: dec.argumentos_principais || [],
           full_text: dec.ementa || null,
-          source_url: searchUrl,
+          comarca: dec.comarca || null,
+          source_url: dec.url_decisao || null,
         };
 
         if (decisionData.numero_processo) {
