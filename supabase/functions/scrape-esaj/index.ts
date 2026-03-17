@@ -101,14 +101,16 @@ serve(async (req) => {
     const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
-    // Step 1: Build e-SAJ search URL
+    // Step 1: Build e-SAJ results URL (resultadoCompleta.do, not consultaCompleta.do)
+    const resultsBaseUrl = baseUrl.replace("consultaCompleta.do", "resultadoCompleta.do");
     const searchParams = new URLSearchParams({
+      "conversationId": "",
       "dados.buscaInteiroTeor": query,
-      "pesquisarPor": "ementa",
-      "tipoDecisao": "A", // Acórdãos
+      "dados.pesquisarPor": "ementa",
+      "dados.tipoDecisao": "A", // Acórdãos
       "nuPagina": "0",
     });
-    const searchUrl = `${baseUrl}?${searchParams.toString()}`;
+    const searchUrl = `${resultsBaseUrl}?${searchParams.toString()}`;
     console.log(`Scraping e-SAJ: ${searchUrl}`);
 
     // Step 2: Scrape with Firecrawl
