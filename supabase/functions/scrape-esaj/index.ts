@@ -253,7 +253,8 @@ serve(async (req) => {
           legislacao_citada: dec.legislacao_citada || [],
           argumentos_principais: dec.argumentos_principais || [],
           full_text: dec.ementa || null,
-          source_url: searchUrl,
+          comarca: dec.comarca || null,
+          source_url: dec.url_decisao || null,
         };
 
         if (decisionData.numero_processo) {
