@@ -214,7 +214,7 @@ serve(async (req) => {
     let ingested = 0;
     let skipped = 0;
     const errors: string[] = [];
-    const tribunalUpper = tribunal.toUpperCase();
+    // tribunalUpper already defined above
 
     for (const dec of decisions.slice(0, size)) {
       try {
