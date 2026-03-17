@@ -146,6 +146,8 @@ serve(async (req) => {
 
     console.log(`Firecrawl returned ${markdown.length} chars of markdown`);
 
+    const tribunalUpper = tribunal.toUpperCase();
+
     // Step 3: Extract decisions with Lovable AI gateway (Gemini)
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY not configured");
