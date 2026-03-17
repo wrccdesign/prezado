@@ -343,6 +343,42 @@ export type Database = {
         }
         Relationships: []
       }
+      tj_scraping_config: {
+        Row: {
+          created_at: string | null
+          last_scraped_at: string | null
+          nome_completo: string
+          portal_url: string | null
+          priority: number | null
+          scraping_frequency: string | null
+          sistema: string
+          status: string | null
+          tribunal: string
+        }
+        Insert: {
+          created_at?: string | null
+          last_scraped_at?: string | null
+          nome_completo: string
+          portal_url?: string | null
+          priority?: number | null
+          scraping_frequency?: string | null
+          sistema?: string
+          status?: string | null
+          tribunal: string
+        }
+        Update: {
+          created_at?: string | null
+          last_scraped_at?: string | null
+          nome_completo?: string
+          portal_url?: string | null
+          priority?: number | null
+          scraping_frequency?: string | null
+          sistema?: string
+          status?: string | null
+          tribunal?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
