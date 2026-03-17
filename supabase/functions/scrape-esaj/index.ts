@@ -144,7 +144,7 @@ serve(async (req) => {
       });
     }
 
-    console.log(`Firecrawl returned ${markdown.length} chars of markdown`);
+    console.log(`Firecrawl returned ${markdown.length} chars. First 500:`, markdown.substring(0, 500));
 
     const tribunalUpper = tribunal.toUpperCase();
 
