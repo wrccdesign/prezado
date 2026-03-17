@@ -192,7 +192,7 @@ serve(async (req) => {
           { role: "system", content: EXTRACTION_SYSTEM_PROMPT },
           {
             role: "user",
-            content: `Extraia todas as decisões judiciais desta página de resultados do e-SAJ do ${tribunalUpper}. Retorne no máximo ${size} decisões.\n\n${markdown.substring(0, 50000)}`,
+            content: `Extraia todas as decisões judiciais destes resultados de jurisprudência do ${tribunalUpper}. Retorne no máximo ${size} decisões.\n\n${combinedMarkdown.substring(0, 50000)}`,
           },
         ],
         tools: [OPENAI_TOOL],
