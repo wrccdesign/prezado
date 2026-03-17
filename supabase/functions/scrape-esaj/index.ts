@@ -118,7 +118,7 @@ serve(async (req) => {
       },
       body: JSON.stringify({
         query: searchQuery,
-        limit: size * 2, // get more results to filter
+        limit: Math.min(size * 2, 6), // cap to avoid timeout
         lang: "pt-br",
         country: "BR",
         scrapeOptions: {
@@ -187,7 +187,7 @@ serve(async (req) => {
         messages: [
           {
             role: "user",
-            content: `Extraia todas as decisões judiciais destes resultados de jurisprudência do ${tribunalUpper}. Retorne no máximo ${size} decisões.\n\n${combinedMarkdown.substring(0, 50000)}`,
+            content: `Extraia todas as decisões judiciais destes resultados de jurisprudência do ${tribunalUpper}. Retorne no máximo ${size} decisões.\n\n${combinedMarkdown.substring(0, 25000)}`,
           },
         ],
       }),
@@ -215,7 +215,7 @@ serve(async (req) => {
     const parsedDecisions = toolUseBlock.input;
 
     const decisions = (parsedDecisions.decisions || []) as any[];
-    console.log(`AI extracted ${decisions.length} decisions. Raw args first 500:`, toolCall.function.arguments.substring(0, 500));
+    console.log(`AI extracted ${decisions.length} decisions`);
 
     // Step 4: Upsert decisions into database
     let ingested = 0;
