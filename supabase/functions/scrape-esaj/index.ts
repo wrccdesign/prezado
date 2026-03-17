@@ -148,41 +148,49 @@ serve(async (req) => {
 
     console.log(`Firecrawl returned ${markdown.length} chars of markdown`);
 
-    // Step 3: Extract decisions with Anthropic Claude
-    const anthropicResponse = await fetch("https://api.anthropic.com/v1/messages", {
+    // Step 3: Extract decisions with Lovable AI gateway (Gemini)
+    const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
+    if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY not configured");
+
+    const OPENAI_TOOL = {
+      type: "function",
+      function: {
+        name: EXTRACTION_TOOL.name,
+        description: EXTRACTION_TOOL.description,
+        parameters: EXTRACTION_TOOL.input_schema,
+      },
+    };
+
+    const aiResponse = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
       headers: {
-        "x-api-key": ANTHROPIC_API_KEY,
-        "anthropic-version": "2023-06-01",
+        "Authorization": `Bearer ${LOVABLE_API_KEY}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "claude-sonnet-4-20250514",
-        max_tokens: 8192,
-        system: EXTRACTION_SYSTEM_PROMPT,
+        model: "google/gemini-2.5-flash",
         messages: [
+          { role: "system", content: EXTRACTION_SYSTEM_PROMPT },
           {
             role: "user",
-            content: `Extraia todas as decisões judiciais desta página de resultados do e-SAJ do ${tribunal.toUpperCase()}. Retorne no máximo ${size} decisões.\n\n${markdown.substring(0, 50000)}`,
+            content: `Extraia todas as decisões judiciais desta página de resultados do e-SAJ do ${tribunalUpper}. Retorne no máximo ${size} decisões.\n\n${markdown.substring(0, 50000)}`,
           },
         ],
-        tools: [EXTRACTION_TOOL],
-        tool_choice: { type: "tool", name: "extract_decisions" },
+        tools: [OPENAI_TOOL],
+        tool_choice: { type: "function", function: { name: "extract_decisions" } },
       }),
     });
 
-    if (!anthropicResponse.ok) {
-      const errText = await anthropicResponse.text();
-      console.error("Anthropic error:", anthropicResponse.status, errText);
-      throw new Error(`Anthropic retornou ${anthropicResponse.status}`);
+    if (!aiResponse.ok) {
+      const errText = await aiResponse.text();
+      console.error("AI error:", aiResponse.status, errText);
+      throw new Error(`AI retornou ${aiResponse.status}`);
     }
 
-    const anthropicResult = await anthropicResponse.json();
-
-    // Extract tool use result from Anthropic response
-    const toolUseBlock = anthropicResult.content?.find((b: any) => b.type === "tool_use");
-    if (!toolUseBlock?.input?.decisions) {
-      console.error("Anthropic did not return tool_use block:", JSON.stringify(anthropicResult.content));
+    const aiResult = await aiResponse.json();
+    const toolCall = aiResult.choices?.[0]?.message?.tool_calls?.[0];
+    if (!toolCall?.function?.arguments) {
+      console.error("AI did not return tool call:", JSON.stringify(aiResult.choices?.[0]?.message));
       return new Response(JSON.stringify({
         ingested: 0, skipped: 0,
         errors: ["AI não retornou decisões estruturadas"],
@@ -192,7 +200,14 @@ serve(async (req) => {
       });
     }
 
-    const decisions = toolUseBlock.input.decisions as any[];
+    let parsedDecisions: any;
+    try {
+      parsedDecisions = JSON.parse(toolCall.function.arguments);
+    } catch {
+      throw new Error("JSON inválido retornado pela AI");
+    }
+
+    const decisions = (parsedDecisions.decisions || []) as any[];
     console.log(`AI extracted ${decisions.length} decisions`);
 
     // Step 4: Upsert decisions into database
