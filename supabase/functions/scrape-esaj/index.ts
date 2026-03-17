@@ -187,7 +187,7 @@ serve(async (req) => {
         messages: [
           {
             role: "user",
-            content: `Extraia todas as decisões judiciais destes resultados de jurisprudência do ${tribunalUpper}. Retorne no máximo ${size} decisões.\n\n${combinedMarkdown.substring(0, 50000)}`,
+            content: `Extraia todas as decisões judiciais destes resultados de jurisprudência do ${tribunalUpper}. Retorne no máximo ${size} decisões.\n\n${combinedMarkdown.substring(0, 25000)}`,
           },
         ],
       }),
