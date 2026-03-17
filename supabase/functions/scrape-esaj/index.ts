@@ -118,7 +118,7 @@ serve(async (req) => {
       },
       body: JSON.stringify({
         query: searchQuery,
-        limit: size * 2, // get more results to filter
+        limit: Math.min(size * 2, 6), // cap to avoid timeout
         lang: "pt-br",
         country: "BR",
         scrapeOptions: {
