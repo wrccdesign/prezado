@@ -101,30 +101,30 @@ serve(async (req) => {
     const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
-    // Step 1: Build e-SAJ results URL (resultadoCompleta.do, not consultaCompleta.do)
-    const resultsBaseUrl = baseUrl.replace("consultaCompleta.do", "resultadoCompleta.do");
-    const searchParams = new URLSearchParams({
-      "conversationId": "",
-      "dados.buscaInteiroTeor": query,
-      "dados.pesquisarPor": "ementa",
-      "dados.tipoDecisao": "A", // Acórdãos
-      "nuPagina": "0",
-    });
-    const searchUrl = `${resultsBaseUrl}?${searchParams.toString()}`;
-    console.log(`Scraping e-SAJ: ${searchUrl}`);
+    // Step 1: Use Firecrawl search to find indexed jurisprudence via Google
+    // e-SAJ requires POST form submission which scrape can't handle,
+    // so we search Google for indexed results from the tribunal's domain
+    const tribunalDomain = new URL(baseUrl).hostname;
+    const searchQuery = `site:${tribunalDomain} ${query} acórdão ementa`;
+    const searchUrl = `https://esaj.tjsp.jus.br/cjsg/resultadoCompleta.do`; // for source_url reference
+    console.log(`Searching via Firecrawl: "${searchQuery}" (size=${size})`);
 
-    // Step 2: Scrape with Firecrawl
-    const firecrawlResponse = await fetch("https://api.firecrawl.dev/v1/scrape", {
+    // Step 2: Search with Firecrawl (returns results with scraped content)
+    const firecrawlResponse = await fetch("https://api.firecrawl.dev/v1/search", {
       method: "POST",
       headers: {
         "Authorization": `Bearer ${FIRECRAWL_API_KEY}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        url: searchUrl,
-        formats: ["markdown"],
-        onlyMainContent: true,
-        waitFor: 3000, // e-SAJ pages are slow to render
+        query: searchQuery,
+        limit: size * 2, // get more results to filter
+        lang: "pt-br",
+        country: "BR",
+        scrapeOptions: {
+          formats: ["markdown"],
+          onlyMainContent: true,
+        },
       }),
     });
 
@@ -135,12 +135,29 @@ serve(async (req) => {
     }
 
     const firecrawlData = await firecrawlResponse.json();
-    const markdown = firecrawlData.data?.markdown || firecrawlData.markdown || "";
+    const searchResults = firecrawlData.data || [];
 
-    if (!markdown || markdown.length < 100) {
+    if (!searchResults.length) {
       return new Response(JSON.stringify({
-        ingested: 0, skipped: 0, errors: ["Página retornou conteúdo vazio ou insuficiente"],
-        total_found: 0, raw_length: markdown.length,
+        ingested: 0, skipped: 0, errors: ["Nenhum resultado encontrado na busca"],
+        total_found: 0,
+      }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    // Combine all scraped content into one markdown block for AI extraction
+    const combinedMarkdown = searchResults
+      .filter((r: any) => r.markdown && r.markdown.length > 200)
+      .map((r: any) => `--- RESULTADO DE: ${r.url || "unknown"} ---\n${r.markdown}`)
+      .join("\n\n");
+
+    console.log(`Firecrawl returned ${searchResults.length} results, combined ${combinedMarkdown.length} chars`);
+
+    if (combinedMarkdown.length < 200) {
+      return new Response(JSON.stringify({
+        ingested: 0, skipped: 0, errors: ["Conteúdo insuficiente nos resultados da busca"],
+        total_found: 0,
       }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
