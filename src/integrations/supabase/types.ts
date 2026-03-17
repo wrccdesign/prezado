@@ -127,6 +127,7 @@ export type Database = {
           jurisprudencias_citadas: string[] | null
           legislacao_citada: string[] | null
           numero_processo: string | null
+          orgao_julgador: string | null
           ramos_direito: string[] | null
           relator: string | null
           resultado: string | null
@@ -162,6 +163,7 @@ export type Database = {
           jurisprudencias_citadas?: string[] | null
           legislacao_citada?: string[] | null
           numero_processo?: string | null
+          orgao_julgador?: string | null
           ramos_direito?: string[] | null
           relator?: string | null
           resultado?: string | null
@@ -197,6 +199,7 @@ export type Database = {
           jurisprudencias_citadas?: string[] | null
           legislacao_citada?: string[] | null
           numero_processo?: string | null
+          orgao_julgador?: string | null
           ramos_direito?: string[] | null
           relator?: string | null
           resultado?: string | null

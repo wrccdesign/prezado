@@ -13,6 +13,8 @@ const EXTRACTION_SYSTEM_PROMPT = `Você é um especialista em direito brasileiro
 
 Regras:
 - Extraia APENAS informações presentes no texto. Não invente dados.
+- tribunal: APENAS a sigla oficial (ex: TJSP, STJ, TST, TRT2, TRF1). NUNCA inclua UF, nome do gabinete, nome por extenso ou qualquer texto além da sigla. Exemplos corretos: "STJ" (não "STJ, UF: DF"), "TJSP" (não "Tribunal de Justiça de São Paulo").
+- orgao_julgador: câmara, turma ou órgão julgador (ex: "3ª Câmara Cível", "2ª Turma", "Gabinete do Ministro X"). Separar do tribunal.
 - comarca_pequena: true se a comarca tiver menos de 100 mil habitantes (use seu conhecimento geral)
 - resultado: use termos padronizados como "Provido", "Desprovido", "Parcialmente Provido", "Extinto", "Procedente", "Improcedente"
 - resumo_ia: máximo 3 frases objetivas resumindo a decisão
@@ -28,7 +30,8 @@ const EXTRACTION_TOOL = {
     parameters: {
       type: "object",
       properties: {
-        tribunal: { type: "string", description: "Sigla do tribunal (ex: TJSP, TST, STJ)" },
+        tribunal: { type: "string", description: "Sigla OFICIAL do tribunal, apenas letras e números (ex: TJSP, STJ, TST, TRT2). Sem UF, sem nome extenso, sem gabinete." },
+        orgao_julgador: { type: "string", description: "Câmara, turma ou órgão julgador (ex: '3ª Câmara Cível', '2ª Turma', 'Gabinete do Ministro X')" },
         instancia: { type: "string", description: "Instância (1ª Instância, 2ª Instância, Superior)" },
         uf: { type: "string", description: "UF do tribunal (ex: SP, RJ, MG)" },
         comarca: { type: "string", description: "Nome da comarca" },
@@ -69,11 +72,18 @@ function sanitizeDate(raw: string | null | undefined): string | null {
   return null;
 }
 
+// Normalize tribunal sigla: strip everything after comma, keep only uppercase alphanumeric
+function normalizeTribunal(raw: string | null | undefined): string | null {
+  if (!raw) return null;
+  const beforeComma = raw.split(",")[0].trim();
+  const clean = beforeComma.replace(/[^A-Za-z0-9]/g, "").toUpperCase();
+  return clean || null;
+}
+
 // Map tribunal siglas to DataJud API endpoint names (91 endpoints)
 function getDatajudEndpoint(tribunal: string): string {
   const sigla = tribunal.toLowerCase().replace(/[-_\s]/g, "");
 
-  // Explicit special cases
   const explicit: Record<string, string> = {
     tjdf: "api_publica_tjdft",
     tjdft: "api_publica_tjdft",
@@ -83,12 +93,46 @@ function getDatajudEndpoint(tribunal: string): string {
   };
   if (explicit[sigla]) return explicit[sigla];
 
-  // TREs: tresp → api_publica_tre-sp, treac → api_publica_tre-ac
   const treMatch = sigla.match(/^tre([a-z]{2})$/);
   if (treMatch) return `api_publica_tre-${treMatch[1]}`;
 
-  // All others (TJs, TRFs, TRTs, STF, STJ, STM, TST, TSE) follow api_publica_{sigla}
   return `api_publica_${sigla}`;
+}
+
+// Build upsert data, preferring non-null new values over existing nulls
+function buildDecisionData(metadata: any, source: any, tribunal: string, externalId: string) {
+  const sourceUrl = source.numeroProcesso
+    ? `https://processo.stj.jus.br/processo/pesquisa/?tipoPesquisa=tipoPesquisaNumeroUnico&termo=${source.numeroProcesso}`
+    : null;
+
+  return {
+    external_id: externalId,
+    source: "datajud",
+    source_url: sourceUrl,
+    tribunal: normalizeTribunal(metadata.tribunal) || normalizeTribunal(source.tribunal) || tribunal.toUpperCase(),
+    orgao_julgador: metadata.orgao_julgador || source.orgaoJulgador?.nome || null,
+    instancia: metadata.instancia || (source.grau === "G1" ? "1ª Instância" : source.grau === "G2" ? "2ª Instância" : source.grau === "SUP" ? "Superior" : null),
+    uf: metadata.uf || null,
+    comarca: metadata.comarca || null,
+    comarca_pequena: metadata.comarca_pequena ?? false,
+    vara: metadata.vara || source.orgaoJulgador?.nome || null,
+    numero_processo: metadata.numero_processo || source.numeroProcesso || null,
+    data_decisao: sanitizeDate(metadata.data_decisao) || sanitizeDate(source.dataAjuizamento) || null,
+    relator: metadata.relator || null,
+    tipo_decisao: metadata.tipo_decisao || source.classeProcessual?.nome || null,
+    resultado: metadata.resultado || null,
+    resultado_descricao: metadata.resultado_descricao || null,
+    ementa: metadata.ementa || null,
+    resumo_ia: metadata.resumo_ia || null,
+    full_text: null as string | null, // set by caller
+    temas_juridicos: metadata.temas_juridicos || [],
+    ramos_direito: metadata.ramos_direito || [],
+    argumentos_principais: metadata.argumentos_principais || [],
+    legislacao_citada: metadata.legislacao_citada || [],
+    jurisprudencias_citadas: metadata.jurisprudencias_citadas || [],
+    autor_recorrente: metadata.autor_recorrente || null,
+    reu_recorrido: metadata.reu_recorrido || null,
+  };
 }
 
 serve(async (req) => {
@@ -150,15 +194,17 @@ serve(async (req) => {
 
     let ingested = 0;
     let skipped = 0;
+    let updated = 0;
     const errors: string[] = [];
 
     // Step 2: Process each hit
     for (const hit of hits) {
       const source = hit._source || {};
       const externalId = `datajud_${hit._id || source.numeroProcesso || ""}`;
+      const numeroProcesso = source.numeroProcesso || null;
 
       try {
-        // Check for duplicates
+        // Fast pre-filter: skip if external_id already exists (avoids unnecessary AI calls)
         const { data: existing } = await supabase
           .from("decisions")
           .select("id")
@@ -206,17 +252,17 @@ serve(async (req) => {
         if (!aiResponse.ok) {
           const status = aiResponse.status;
           if (status === 429) {
-            errors.push(`Rate limited na extração do processo ${source.numeroProcesso || externalId}`);
+            errors.push(`Rate limited na extração do processo ${numeroProcesso || externalId}`);
             continue;
           }
-          errors.push(`AI error ${status} para ${source.numeroProcesso || externalId}`);
+          errors.push(`AI error ${status} para ${numeroProcesso || externalId}`);
           continue;
         }
 
         const aiResult = await aiResponse.json();
         const toolCall = aiResult.choices?.[0]?.message?.tool_calls?.[0];
         if (!toolCall?.function?.arguments) {
-          errors.push(`AI não retornou tool call para ${source.numeroProcesso || externalId}`);
+          errors.push(`AI não retornou tool call para ${numeroProcesso || externalId}`);
           continue;
         }
 
@@ -224,50 +270,41 @@ serve(async (req) => {
         try {
           metadata = JSON.parse(toolCall.function.arguments);
         } catch {
-          errors.push(`JSON inválido da AI para ${source.numeroProcesso || externalId}`);
+          errors.push(`JSON inválido da AI para ${numeroProcesso || externalId}`);
           continue;
         }
 
-        // Step 4: Insert into decisions table
-        const sourceUrl = source.numeroProcesso
-          ? `https://processo.stj.jus.br/processo/pesquisa/?tipoPesquisa=tipoPesquisaNumeroUnico&termo=${source.numeroProcesso}`
-          : null;
+        // Step 4: Upsert into decisions table (ON CONFLICT numero_processo)
+        const decisionData = buildDecisionData(metadata, source, tribunal, externalId);
+        decisionData.full_text = rawText;
 
-        const { error: insertError } = await supabase.from("decisions").insert({
-          external_id: externalId,
-          source: "datajud",
-          source_url: sourceUrl,
-          tribunal: metadata.tribunal || source.tribunal || tribunal.toUpperCase(),
-          instancia: metadata.instancia || (source.grau === "G1" ? "1ª Instância" : source.grau === "G2" ? "2ª Instância" : source.grau === "SUP" ? "Superior" : null),
-          uf: metadata.uf || null,
-          comarca: metadata.comarca || null,
-          comarca_pequena: metadata.comarca_pequena ?? false,
-          vara: metadata.vara || source.orgaoJulgador?.nome || null,
-          numero_processo: metadata.numero_processo || source.numeroProcesso || null,
-          data_decisao: sanitizeDate(metadata.data_decisao) || sanitizeDate(source.dataAjuizamento) || null,
-          relator: metadata.relator || null,
-          tipo_decisao: metadata.tipo_decisao || source.classeProcessual?.nome || null,
-          resultado: metadata.resultado || null,
-          resultado_descricao: metadata.resultado_descricao || null,
-          ementa: metadata.ementa || null,
-          resumo_ia: metadata.resumo_ia || null,
-          full_text: rawText,
-          temas_juridicos: metadata.temas_juridicos || [],
-          ramos_direito: metadata.ramos_direito || [],
-          argumentos_principais: metadata.argumentos_principais || [],
-          legislacao_citada: metadata.legislacao_citada || [],
-          jurisprudencias_citadas: metadata.jurisprudencias_citadas || [],
-          autor_recorrente: metadata.autor_recorrente || null,
-          reu_recorrido: metadata.reu_recorrido || null,
-        });
+        if (!decisionData.numero_processo) {
+          // No numero_processo — do a simple insert (can't upsert without the conflict key)
+          const { error: insertError } = await supabase.from("decisions").insert(decisionData);
+          if (insertError) {
+            console.error("Insert error:", insertError);
+            errors.push(`Erro ao inserir ${numeroProcesso || externalId}: ${insertError.message}`);
+            continue;
+          }
+          ingested++;
+        } else {
+          // Upsert: insert or update if numero_processo already exists
+          const { error: upsertError } = await supabase
+            .from("decisions")
+            .upsert(decisionData, { onConflict: "numero_processo" });
 
-        if (insertError) {
-          console.error("Insert error:", insertError);
-          errors.push(`Erro ao inserir ${source.numeroProcesso || externalId}: ${insertError.message}`);
-          continue;
+          if (upsertError) {
+            console.error("Upsert error:", upsertError);
+            errors.push(`Erro ao upsert ${numeroProcesso}: ${upsertError.message}`);
+            continue;
+          }
+          // We count as ingested for new, updated for existing
+          if (existing) {
+            updated++;
+          } else {
+            ingested++;
+          }
         }
-
-        ingested++;
       } catch (e) {
         errors.push(`Erro processando ${externalId}: ${e instanceof Error ? e.message : "desconhecido"}`);
       }
@@ -276,6 +313,7 @@ serve(async (req) => {
     return new Response(JSON.stringify({
       ingested,
       skipped,
+      updated,
       errors,
       total_hits: datajudData.hits?.total?.value || hits.length,
     }), {
