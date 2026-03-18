@@ -174,10 +174,10 @@ serve(async (req) => {
       });
     }
 
-    // Combine all scraped content into one markdown block for AI extraction
+    // Combine all scraped content, truncating each result to 3000 chars to avoid timeouts
     const combinedMarkdown = searchResults
       .filter((r: any) => r.markdown && r.markdown.length > 200)
-      .map((r: any) => `--- RESULTADO DE: ${r.url || "unknown"} ---\n${r.markdown}`)
+      .map((r: any) => `--- RESULTADO DE: ${r.url || "unknown"} ---\n${r.markdown.substring(0, 3000)}`)
       .join("\n\n");
 
     console.log(`[scrape-tj-proprio] Firecrawl returned ${searchResults.length} results, combined ${combinedMarkdown.length} chars`);
