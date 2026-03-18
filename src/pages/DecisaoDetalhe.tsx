@@ -38,6 +38,7 @@ interface Decision {
   ementa: string | null;
   resumo_ia: string | null;
   full_text: string | null;
+  orgao_julgador: string | null;
   source_url: string | null;
   comarca_pequena: boolean | null;
 }
