@@ -95,7 +95,8 @@ serve(async (req) => {
       });
     }
 
-    const baseUrl = ESAJ_URLS[tribunal.toUpperCase()];
+    const tribunalUpper = tribunal.toUpperCase();
+    const baseUrl = ESAJ_URLS[tribunalUpper];
     if (!baseUrl) {
       return new Response(JSON.stringify({ error: `Tribunal ${tribunal} não suportado para e-SAJ. Suportados: ${Object.keys(ESAJ_URLS).join(", ")}` }), {
         status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -110,14 +111,10 @@ serve(async (req) => {
     const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
     // Step 1: Use Firecrawl search to find indexed jurisprudence via Google
-    // e-SAJ requires POST form submission which scrape can't handle,
-    // so we search Google for indexed results from the tribunal's domain
     const tribunalDomain = new URL(baseUrl).hostname;
     const searchQuery = `site:${tribunalDomain} ${query} acórdão ementa`;
-    // source_url now comes from each decision's url_decisao extracted by AI
     console.log(`Searching via Firecrawl: "${searchQuery}" (size=${size})`);
 
-    // Step 2: Search with Firecrawl (returns results with scraped content)
     const firecrawlResponse = await fetch("https://api.firecrawl.dev/v1/search", {
       method: "POST",
       headers: {
@@ -126,7 +123,7 @@ serve(async (req) => {
       },
       body: JSON.stringify({
         query: searchQuery,
-        limit: Math.min(size * 2, 6), // cap to avoid timeout
+        limit: Math.min(size * 2, 6),
         lang: "pt-br",
         country: "BR",
         scrapeOptions: {
@@ -171,11 +168,7 @@ serve(async (req) => {
       });
     }
 
-    // (removed old debug log)
-
-    const tribunalUpper = tribunal.toUpperCase();
-
-    // Step 3: Extract decisions with Anthropic Claude
+    // Step 2: Extract decisions with Anthropic Claude
     const ANTHROPIC_API_KEY = Deno.env.get("ANTHROPIC_API_KEY");
     if (!ANTHROPIC_API_KEY) throw new Error("ANTHROPIC_API_KEY not configured");
 
@@ -220,16 +213,13 @@ serve(async (req) => {
       });
     }
 
-    const parsedDecisions = toolUseBlock.input;
-
-    const decisions = (parsedDecisions.decisions || []) as any[];
+    const decisions = (toolUseBlock.input.decisions || []) as any[];
     console.log(`AI extracted ${decisions.length} decisions`);
 
-    // Step 4: Upsert decisions into database
+    // Step 3: Upsert decisions into database
     let ingested = 0;
     let skipped = 0;
     const errors: string[] = [];
-    // tribunalUpper already defined above
 
     for (const dec of decisions.slice(0, size)) {
       try {
