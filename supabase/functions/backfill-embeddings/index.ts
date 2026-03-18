@@ -11,7 +11,7 @@ serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   try {
-    const { batch_size = 20 } = await req.json().catch(() => ({}));
+    const { batch_size = 3 } = await req.json().catch(() => ({}));
 
     const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
     const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
@@ -44,6 +44,11 @@ serve(async (req) => {
       }
 
       try {
+        // Rate limit: wait 22s between calls (3 RPM)
+        if (processed > 0 || errors > 0) {
+          await new Promise(resolve => setTimeout(resolve, 22000));
+        }
+
         const embedding = await generateEmbedding(text);
         const embeddingStr = `[${embedding.join(",")}]`;
 
@@ -64,16 +69,23 @@ serve(async (req) => {
       }
     }
 
-    // Count remaining
-    const { count } = await supabase
+    // Count remaining without embedding
+    const { count: remaining } = await supabase
       .from("decisions")
       .select("id", { count: "exact", head: true })
       .is("embedding", null);
 
+    // Count already processed
+    const { count: withEmbedding } = await supabase
+      .from("decisions")
+      .select("id", { count: "exact", head: true })
+      .not("embedding", "is", null);
+
     return new Response(JSON.stringify({
       processed,
       errors,
-      remaining: count || 0,
+      remaining: remaining || 0,
+      with_embedding: withEmbedding || 0,
       error_details: errorDetails.slice(0, 10),
     }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
