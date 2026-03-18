@@ -6,16 +6,16 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
-// e-SAJ tribunal URL mapping
+// e-SAJ tribunal URL templates with query placeholder
 const ESAJ_URLS: Record<string, string> = {
-  TJSP: "https://esaj.tjsp.jus.br/cjsg/consultaCompleta.do",
-  TJCE: "https://esaj.tjce.jus.br/cjsg/consultaCompleta.do",
-  TJAM: "https://consultasaj.tjam.jus.br/cjsg/consultaCompleta.do",
-  TJMS: "https://esaj.tjms.jus.br/cjsg/consultaCompleta.do",
-  TJRN: "https://esaj.tjrn.jus.br/cjsg/consultaCompleta.do",
+  TJSP: "https://esaj.tjsp.jus.br/cjsg/consultaCompleta.do?dados.buscaInteiroTeor={query}&pesquisarPor=ementa&tipoDecisao=A",
+  TJCE: "https://esaj.tjce.jus.br/cjsg/consultaCompleta.do?dados.buscaInteiroTeor={query}&pesquisarPor=ementa&tipoDecisao=A",
+  TJAM: "https://consultasaj.tjam.jus.br/cjsg/consultaCompleta.do?dados.buscaInteiroTeor={query}&pesquisarPor=ementa&tipoDecisao=A",
+  TJMS: "https://esaj.tjms.jus.br/cjsg/consultaCompleta.do?dados.buscaInteiroTeor={query}&pesquisarPor=ementa&tipoDecisao=A",
+  TJRN: "https://esaj.tjrn.jus.br/cjsg/consultaCompleta.do?dados.buscaInteiroTeor={query}&pesquisarPor=ementa&tipoDecisao=A",
 };
 
-const EXTRACTION_SYSTEM_PROMPT = `Você é um especialista em direito brasileiro. Analise o conteúdo markdown de resultados de jurisprudência do e-SAJ e extraia as decisões judiciais encontradas.
+const EXTRACTION_SYSTEM_PROMPT = `Você é um especialista em direito brasileiro. Analise o conteúdo markdown de uma página de resultados de jurisprudência do e-SAJ e extraia as decisões judiciais encontradas.
 
 Regras OBRIGATÓRIAS:
 - Extraia TODAS as decisões listadas na página
@@ -30,7 +30,7 @@ Regras OBRIGATÓRIAS:
 - temas_juridicos e ramos_direito: termos técnicos padronizados
 - legislacao_citada: artigos e leis mencionados na ementa
 - comarca: cidade/comarca de origem. Extraia do número do processo, cabeçalho ou texto. Se não encontrar, retorne null.
-- url_decisao: cada bloco de resultado é precedido por "--- RESULTADO DE: <url> ---". Use essa URL como url_decisao da decisão extraída daquele bloco. NUNCA use a URL genérica de busca.
+- url_decisao: extraia URLs de links encontrados no conteúdo que apontem para a página individual de cada decisão (geralmente contêm "getArquivo.do" ou "showSecund498.do" ou similar). Se não encontrar, retorne null.
 
 IMPORTANTE: Para campos não encontrados, retorne null. NUNCA invente dados ou use placeholders como "<UNKNOWN>", "Não informado", etc.`;
 
@@ -61,7 +61,7 @@ const EXTRACTION_TOOL = {
             legislacao_citada: { type: "array", items: { type: "string" } },
             argumentos_principais: { type: "array", items: { type: "string" } },
             comarca: { type: ["string", "null"], description: "Cidade/comarca de origem. null se não encontrada." },
-            url_decisao: { type: ["string", "null"], description: "URL específica da página da decisão (do cabeçalho '--- RESULTADO DE: <url> ---'). null se não encontrada." },
+            url_decisao: { type: ["string", "null"], description: "URL específica da página individual da decisão extraída dos links do conteúdo. null se não encontrada." },
           },
           required: ["tribunal", "numero_processo", "ementa", "resumo_ia"],
         },
@@ -95,8 +95,9 @@ serve(async (req) => {
       });
     }
 
-    const baseUrl = ESAJ_URLS[tribunal.toUpperCase()];
-    if (!baseUrl) {
+    const tribunalUpper = tribunal.toUpperCase();
+    const urlTemplate = ESAJ_URLS[tribunalUpper];
+    if (!urlTemplate) {
       return new Response(JSON.stringify({ error: `Tribunal ${tribunal} não suportado para e-SAJ. Suportados: ${Object.keys(ESAJ_URLS).join(", ")}` }), {
         status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
@@ -109,71 +110,45 @@ serve(async (req) => {
     const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
-    // Step 1: Use Firecrawl search to find indexed jurisprudence via Google
-    // e-SAJ requires POST form submission which scrape can't handle,
-    // so we search Google for indexed results from the tribunal's domain
-    const tribunalDomain = new URL(baseUrl).hostname;
-    const searchQuery = `site:${tribunalDomain} ${query} acórdão ementa`;
-    // source_url now comes from each decision's url_decisao extracted by AI
-    console.log(`Searching via Firecrawl: "${searchQuery}" (size=${size})`);
+    // Step 1: Build the direct e-SAJ search URL
+    const scrapeUrl = urlTemplate.replace("{query}", encodeURIComponent(query));
+    console.log(`Scraping e-SAJ directly: ${scrapeUrl}`);
 
-    // Step 2: Search with Firecrawl (returns results with scraped content)
-    const firecrawlResponse = await fetch("https://api.firecrawl.dev/v1/search", {
+    // Step 2: Scrape the e-SAJ search results page with Firecrawl
+    const firecrawlResponse = await fetch("https://api.firecrawl.dev/v1/scrape", {
       method: "POST",
       headers: {
         "Authorization": `Bearer ${FIRECRAWL_API_KEY}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        query: searchQuery,
-        limit: Math.min(size * 2, 6), // cap to avoid timeout
-        lang: "pt-br",
-        country: "BR",
-        scrapeOptions: {
-          formats: ["markdown"],
-          onlyMainContent: true,
-        },
+        url: scrapeUrl,
+        formats: ["markdown"],
+        waitFor: 3000,
+        onlyMainContent: true,
       }),
     });
 
     if (!firecrawlResponse.ok) {
       const errText = await firecrawlResponse.text();
-      console.error("Firecrawl error:", firecrawlResponse.status, errText);
+      console.error("Firecrawl scrape error:", firecrawlResponse.status, errText);
       throw new Error(`Firecrawl retornou ${firecrawlResponse.status}: ${errText}`);
     }
 
     const firecrawlData = await firecrawlResponse.json();
-    const searchResults = firecrawlData.data || [];
+    const markdown = firecrawlData.data?.markdown || firecrawlData.markdown || "";
 
-    if (!searchResults.length) {
+    console.log(`Firecrawl scraped ${markdown.length} chars of markdown`);
+
+    if (markdown.length < 200) {
       return new Response(JSON.stringify({
-        ingested: 0, skipped: 0, errors: ["Nenhum resultado encontrado na busca"],
+        ingested: 0, skipped: 0,
+        errors: ["Conteúdo insuficiente na página de resultados do e-SAJ. A página pode não ter retornado resultados para esta busca."],
         total_found: 0,
       }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
-
-    // Combine all scraped content into one markdown block for AI extraction
-    const combinedMarkdown = searchResults
-      .filter((r: any) => r.markdown && r.markdown.length > 200)
-      .map((r: any) => `--- RESULTADO DE: ${r.url || "unknown"} ---\n${r.markdown}`)
-      .join("\n\n");
-
-    console.log(`Firecrawl returned ${searchResults.length} results, combined ${combinedMarkdown.length} chars`);
-
-    if (combinedMarkdown.length < 200) {
-      return new Response(JSON.stringify({
-        ingested: 0, skipped: 0, errors: ["Conteúdo insuficiente nos resultados da busca"],
-        total_found: 0,
-      }), {
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
-    }
-
-    // (removed old debug log)
-
-    const tribunalUpper = tribunal.toUpperCase();
 
     // Step 3: Extract decisions with Anthropic Claude
     const ANTHROPIC_API_KEY = Deno.env.get("ANTHROPIC_API_KEY");
@@ -195,7 +170,7 @@ serve(async (req) => {
         messages: [
           {
             role: "user",
-            content: `Extraia todas as decisões judiciais destes resultados de jurisprudência do ${tribunalUpper}. Retorne no máximo ${size} decisões.\n\n${combinedMarkdown.substring(0, 25000)}`,
+            content: `Extraia todas as decisões judiciais desta página de resultados de jurisprudência do ${tribunalUpper}. Retorne no máximo ${size} decisões.\n\nURL da página: ${scrapeUrl}\n\n${markdown.substring(0, 25000)}`,
           },
         ],
       }),
@@ -220,16 +195,13 @@ serve(async (req) => {
       });
     }
 
-    const parsedDecisions = toolUseBlock.input;
-
-    const decisions = (parsedDecisions.decisions || []) as any[];
+    const decisions = (toolUseBlock.input.decisions || []) as any[];
     console.log(`AI extracted ${decisions.length} decisions`);
 
     // Step 4: Upsert decisions into database
     let ingested = 0;
     let skipped = 0;
     const errors: string[] = [];
-    // tribunalUpper already defined above
 
     for (const dec of decisions.slice(0, size)) {
       try {
