@@ -139,7 +139,7 @@ serve(async (req) => {
       },
       body: JSON.stringify({
         query: searchQuery,
-        limit: Math.min(size * 2, 6),
+        limit: Math.min(size, 4),
         lang: "pt-br",
         country: "BR",
         scrapeOptions: {
@@ -159,18 +159,25 @@ serve(async (req) => {
     const searchResults = firecrawlData.data || [];
 
     if (!searchResults.length) {
+      // Mark tribunal as no_index when Firecrawl finds nothing
+      await supabase
+        .from("tj_scraping_config")
+        .update({ status: "no_index" })
+        .eq("tribunal", tribunalUpper);
+
       return new Response(JSON.stringify({
         ingested: 0, skipped: 0, errors: ["Nenhum resultado encontrado na busca"],
         total_found: 0,
+        needs_fallback: true,
       }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
 
-    // Combine all scraped content into one markdown block for AI extraction
+    // Combine all scraped content, truncating each result to 3000 chars to avoid timeouts
     const combinedMarkdown = searchResults
-      .filter((r: any) => r.markdown && r.markdown.length > 200)
-      .map((r: any) => `--- RESULTADO DE: ${r.url || "unknown"} ---\n${r.markdown}`)
+      .filter((r: any) => r.markdown && r.markdown.length > 50)
+      .map((r: any) => `--- RESULTADO DE: ${r.url || "unknown"} ---\n${r.markdown.substring(0, 3000)}`)
       .join("\n\n");
 
     console.log(`[scrape-tj-proprio] Firecrawl returned ${searchResults.length} results, combined ${combinedMarkdown.length} chars`);
