@@ -183,9 +183,16 @@ serve(async (req) => {
     console.log(`[scrape-tj-proprio] Firecrawl returned ${searchResults.length} results, combined ${combinedMarkdown.length} chars`);
 
     if (combinedMarkdown.length < 200) {
+      await supabase
+        .from("tj_scraping_config")
+        .update({ status: "no_index" })
+        .eq("tribunal", tribunalUpper);
+
       return new Response(JSON.stringify({
-        ingested: 0, skipped: 0, errors: ["Conteúdo insuficiente nos resultados da busca"],
+        ingested: 0, skipped: 0,
+        errors: ["Conteúdo insuficiente nos resultados da busca"],
         total_found: 0,
+        needs_fallback: true,
       }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
