@@ -313,6 +313,12 @@ export default function Jurisprudencia() {
                       Rel. {d.relator}
                     </p>
                   )}
+                  {d.orgao_julgador && (
+                    <p className="text-xs text-muted-foreground flex items-center gap-1">
+                      <Gavel className="h-3 w-3" />
+                      {d.orgao_julgador}
+                    </p>
+                  )}
                 </CardHeader>
 
                 <CardContent className="px-4 pb-4">
