@@ -23,3 +23,6 @@ verify_jwt = false
 
 [functions.search-jurisprudencia]
 verify_jwt = false
+
+[functions.scrape-tj-fallback]
+verify_jwt = false
