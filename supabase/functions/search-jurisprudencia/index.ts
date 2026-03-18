@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { generateQueryEmbedding } from "../_shared/embeddings.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -46,6 +47,7 @@ serve(async (req) => {
 
     const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
     const SUPABASE_ANON_KEY = Deno.env.get("SUPABASE_ANON_KEY")!;
+    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
     // Step 1: Use AI to expand the query
     const aiResponse = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
@@ -75,7 +77,6 @@ serve(async (req) => {
         });
       }
       console.error("AI error:", aiResponse.status);
-      // Fall back to direct search without AI expansion
     }
 
     let searchQuery = query;
@@ -85,11 +86,9 @@ serve(async (req) => {
       try {
         const aiResult = await aiResponse.json();
         const content = aiResult.choices?.[0]?.message?.content || "";
-        // Try to parse JSON from the response
         const jsonMatch = content.match(/\{[\s\S]*\}/);
         if (jsonMatch) {
           aiData = JSON.parse(jsonMatch[0]);
-          // Use keywords for full-text search (PostgreSQL websearch format)
           if (aiData.keywords && aiData.keywords.length > 0) {
             searchQuery = aiData.keywords.join(" OR ");
           }
@@ -99,10 +98,8 @@ serve(async (req) => {
       }
     }
 
-    // Step 2: Search using the database function
-    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-    const { data: results, error: dbError } = await supabase.rpc("search_decisions", {
+    // Step 2: FTS search
+    const ftsPromise = supabase.rpc("search_decisions", {
       search_query: searchQuery,
       filter_tribunal: filters?.tribunal || null,
       filter_uf: filters?.uf || null,
@@ -113,16 +110,79 @@ serve(async (req) => {
       result_offset: filters?.offset || 0,
     });
 
+    // Step 3: Vector search (parallel with FTS)
+    let vectorResults: any[] = [];
+    let vectorError: string | null = null;
+    try {
+      const queryEmbedding = await generateQueryEmbedding(aiData?.query_expandida || query);
+      const embeddingStr = `[${queryEmbedding.join(",")}]`;
+      const { data: vResults, error: vErr } = await supabase.rpc("search_decisions_vector", {
+        query_embedding: embeddingStr,
+        match_threshold: 0.25,
+        match_count: 10,
+      });
+      if (vErr) {
+        vectorError = vErr.message;
+        console.error("Vector search error:", vErr);
+      } else {
+        vectorResults = vResults || [];
+      }
+    } catch (e) {
+      vectorError = e instanceof Error ? e.message : "unknown";
+      console.error("Embedding generation failed, using FTS only:", e);
+    }
+
+    // Await FTS results
+    const { data: ftsResults, error: dbError } = await ftsPromise;
     if (dbError) {
       console.error("DB search error:", dbError);
       throw new Error("Erro na busca no banco de dados");
     }
 
+    // Step 4: Merge results using simple RRF (Reciprocal Rank Fusion)
+    const resultMap = new Map<string, any>();
+
+    // Add FTS results with rank score
+    (ftsResults || []).forEach((r: any, idx: number) => {
+      resultMap.set(r.id, {
+        ...r,
+        fts_rank: idx + 1,
+        vector_rank: null,
+        combined_score: 1 / (idx + 1),
+      });
+    });
+
+    // Add/merge vector results
+    vectorResults.forEach((r: any, idx: number) => {
+      const existing = resultMap.get(r.id);
+      if (existing) {
+        existing.vector_rank = idx + 1;
+        existing.combined_score += 1 / (idx + 1);
+      } else {
+        resultMap.set(r.id, {
+          ...r,
+          rank: r.similarity || 0,
+          fts_rank: null,
+          vector_rank: idx + 1,
+          combined_score: 1 / (idx + 1),
+        });
+      }
+    });
+
+    // Sort by combined score descending
+    const mergedResults = Array.from(resultMap.values())
+      .sort((a, b) => b.combined_score - a.combined_score);
+
     return new Response(JSON.stringify({
-      results: results || [],
+      results: mergedResults,
       ai_expansion: aiData,
       query_used: searchQuery,
-      total: results?.length || 0,
+      total: mergedResults.length,
+      search_modes: {
+        fts: (ftsResults || []).length,
+        vector: vectorResults.length,
+        vector_error: vectorError,
+      },
     }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });

@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { generateEmbedding } from "../_shared/embeddings.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -290,6 +291,21 @@ serve(async (req) => {
           }
         }
         ingested++;
+
+        // Generate embedding (non-blocking)
+        try {
+          const embText = [decisionData.ementa, decisionData.resumo_ia].filter(Boolean).join(" ");
+          if (embText.length >= 20) {
+            const embedding = await generateEmbedding(embText);
+            const embeddingStr = `[${embedding.join(",")}]`;
+            await supabase
+              .from("decisions")
+              .update({ embedding: embeddingStr })
+              .eq("external_id", externalId);
+          }
+        } catch (embErr) {
+          console.error(`Embedding error for ${externalId}:`, embErr);
+        }
       } catch (e) {
         errors.push(`Erro processando ${externalId}: ${e instanceof Error ? e.message : "desconhecido"}`);
       }

@@ -29,3 +29,15 @@ verify_jwt = false
 
 [functions.orchestrate-scraping]
 verify_jwt = false
+
+[functions.backfill-embeddings]
+verify_jwt = false
+
+[functions.scrape-esaj]
+verify_jwt = false
+
+[functions.scrape-tj-proprio]
+verify_jwt = false
+
+[functions.ingest-datajud]
+verify_jwt = false
