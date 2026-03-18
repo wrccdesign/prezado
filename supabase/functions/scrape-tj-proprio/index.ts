@@ -139,7 +139,7 @@ serve(async (req) => {
       },
       body: JSON.stringify({
         query: searchQuery,
-        limit: Math.min(size * 2, 6),
+        limit: Math.min(size, 4),
         lang: "pt-br",
         country: "BR",
         scrapeOptions: {
