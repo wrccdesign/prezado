@@ -335,6 +335,12 @@ export default function DecisaoDetalhe() {
 
             <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-muted-foreground mb-4">
               {decision.relator && <span>Rel. {decision.relator}</span>}
+              {decision.orgao_julgador && (
+                <span className="flex items-center gap-1">
+                  <Gavel className="h-3.5 w-3.5" />
+                  {decision.orgao_julgador}
+                </span>
+              )}
               {decision.data_decisao && (
                 <span className="flex items-center gap-1">
                   <Calendar className="h-3.5 w-3.5" />
