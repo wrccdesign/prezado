@@ -125,7 +125,8 @@ serve(async (req) => {
         waitFor: 5000,
         timeout: 60000,
         actions: [
-          { type: "fill", selector: "textarea[name='dados.buscaInteiroTeor'], input[name='dados.buscaInteiroTeor']", value: query },
+          { type: "click", selector: "textarea[name='dados.buscaInteiroTeor'], input[name='dados.buscaInteiroTeor']" },
+          { type: "write", text: query },
           { type: "click", selector: "#pbSubmit, input[type='submit'][value='Pesquisar'], input[name='pbSubmit']" },
           { type: "wait", milliseconds: 5000 },
         ],
