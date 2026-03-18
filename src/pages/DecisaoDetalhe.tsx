@@ -14,7 +14,7 @@ import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import {
   ArrowLeft, Calendar, MapPin, Scale, Send, Loader2, Sparkles, MessageCircle,
-  ExternalLink, BookOpen, FileText, Lightbulb, Copy, Check,
+  ExternalLink, BookOpen, FileText, Lightbulb, Copy, Check, Gavel,
 } from "lucide-react";
 import { formatCitation } from "@/lib/citation";
 
@@ -38,6 +38,7 @@ interface Decision {
   ementa: string | null;
   resumo_ia: string | null;
   full_text: string | null;
+  orgao_julgador: string | null;
   source_url: string | null;
   comarca_pequena: boolean | null;
 }
@@ -334,6 +335,12 @@ export default function DecisaoDetalhe() {
 
             <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-muted-foreground mb-4">
               {decision.relator && <span>Rel. {decision.relator}</span>}
+              {decision.orgao_julgador && (
+                <span className="flex items-center gap-1">
+                  <Gavel className="h-3.5 w-3.5" />
+                  {decision.orgao_julgador}
+                </span>
+              )}
               {decision.data_decisao && (
                 <span className="flex items-center gap-1">
                   <Calendar className="h-3.5 w-3.5" />
