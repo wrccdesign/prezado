@@ -1,15 +1,14 @@
 
 
-## Analysis: CORS in `backfill-embeddings`
+## Plan: Add `orgao_julgador` to search results
 
-After reviewing the file, **the CORS headers are already correctly configured**. No changes are necessary.
+### 1. Database migration — Update `search_decisions` function
+Add `d.orgao_julgador` to the SELECT list in the `search_decisions` function, and update the RETURNS TABLE to include `orgao_julgador text`.
 
-### Current state (all correct):
+### 2. Frontend — `src/pages/Jurisprudencia.tsx`
+- Add `orgao_julgador: string | null` to the `Decision` interface.
+- Add `Gavel` to the lucide-react imports.
+- Below the relator line (~line 305), add a conditional render for `orgao_julgador` with a Gavel icon, matching the existing style (`text-xs text-muted-foreground`).
 
-1. **`corsHeaders` object** (line 5-8): includes `"Access-Control-Allow-Origin": "*"` and a comprehensive `Access-Control-Allow-Headers`.
-2. **OPTIONS preflight** (line 11): returns `Response` with `corsHeaders`.
-3. **Success responses** (lines 29-31, 84-92): all include `...corsHeaders`.
-4. **Error response** (lines 95-98): also includes `...corsHeaders`.
-
-Every response path in the function already returns CORS headers. The function is ready for cross-origin calls.
+No other files or logic changed.
 
