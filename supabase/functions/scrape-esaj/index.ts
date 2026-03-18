@@ -110,8 +110,9 @@ serve(async (req) => {
     const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
-    // Step 1: Scrape the e-SAJ search form page, using actions to fill and submit the form
-    console.log(`Scraping e-SAJ form at ${baseUrl} with query: "${query}"`);
+    // Step 1: Build the direct e-SAJ results URL with query params
+    const scrapeUrl = `${baseUrl}?dados.buscaInteiroTeor=${encodeURIComponent(query)}&pesquisarPor=ementa&tipoDecisao=A`;
+    console.log(`Scraping e-SAJ results at: ${scrapeUrl}`);
 
     const firecrawlResponse = await fetch("https://api.firecrawl.dev/v1/scrape", {
       method: "POST",
@@ -120,22 +121,10 @@ serve(async (req) => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        url: baseUrl,
+        url: scrapeUrl,
         formats: ["markdown"],
         waitFor: 5000,
         timeout: 60000,
-        actions: [
-          {
-            type: "executeJavascript",
-            script: `
-              const textarea = document.querySelector("textarea[name='dados.buscaInteiroTeor']") || document.querySelector("input[name='dados.buscaInteiroTeor']");
-              if (textarea) { textarea.value = ${JSON.stringify(query)}; }
-              const form = document.querySelector("form[name='consultaCompleta']") || document.querySelector("form");
-              if (form) { form.submit(); }
-            `,
-          },
-          { type: "wait", milliseconds: 5000 },
-        ],
       }),
     });
 
