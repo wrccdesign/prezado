@@ -44,6 +44,11 @@ serve(async (req) => {
       }
 
       try {
+        // Rate limit: wait 22s between calls (3 RPM)
+        if (processed > 0 || errors > 0) {
+          await new Promise(resolve => setTimeout(resolve, 22000));
+        }
+
         const embedding = await generateEmbedding(text);
         const embeddingStr = `[${embedding.join(",")}]`;
 
