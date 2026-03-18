@@ -14,7 +14,7 @@ import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import {
   ArrowLeft, Calendar, MapPin, Scale, Send, Loader2, Sparkles, MessageCircle,
-  ExternalLink, BookOpen, FileText, Lightbulb, Copy, Check,
+  ExternalLink, BookOpen, FileText, Lightbulb, Copy, Check, Gavel,
 } from "lucide-react";
 import { formatCitation } from "@/lib/citation";
 
