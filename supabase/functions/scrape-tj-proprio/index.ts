@@ -176,7 +176,7 @@ serve(async (req) => {
 
     // Combine all scraped content, truncating each result to 3000 chars to avoid timeouts
     const combinedMarkdown = searchResults
-      .filter((r: any) => r.markdown && r.markdown.length > 200)
+      .filter((r: any) => r.markdown && r.markdown.length > 50)
       .map((r: any) => `--- RESULTADO DE: ${r.url || "unknown"} ---\n${r.markdown.substring(0, 3000)}`)
       .join("\n\n");
 
