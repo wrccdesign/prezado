@@ -110,9 +110,9 @@ serve(async (req) => {
     const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
-    // Step 1: Build the direct e-SAJ results URL with query params
+    // Step 1: Load e-SAJ form pre-filled via GET params, then click submit
     const scrapeUrl = `${baseUrl}?dados.buscaInteiroTeor=${encodeURIComponent(query)}&pesquisarPor=ementa&tipoDecisao=A`;
-    console.log(`Scraping e-SAJ results at: ${scrapeUrl}`);
+    console.log(`Scraping e-SAJ: ${scrapeUrl}`);
 
     const firecrawlResponse = await fetch("https://api.firecrawl.dev/v1/scrape", {
       method: "POST",
@@ -123,8 +123,11 @@ serve(async (req) => {
       body: JSON.stringify({
         url: scrapeUrl,
         formats: ["markdown"],
-        waitFor: 5000,
         timeout: 60000,
+        actions: [
+          { type: "click", selector: "#pbSubmit" },
+          { type: "wait", milliseconds: 8000 },
+        ],
       }),
     });
 
