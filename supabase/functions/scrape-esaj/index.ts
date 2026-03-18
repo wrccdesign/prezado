@@ -6,13 +6,13 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
-// e-SAJ tribunal base URLs for the search form
+// e-SAJ tribunal result URLs (resultadoCompleta.do accepts GET params)
 const ESAJ_URLS: Record<string, string> = {
-  TJSP: "https://esaj.tjsp.jus.br/cjsg/consultaCompleta.do",
-  TJCE: "https://esaj.tjce.jus.br/cjsg/consultaCompleta.do",
-  TJAM: "https://consultasaj.tjam.jus.br/cjsg/consultaCompleta.do",
-  TJMS: "https://esaj.tjms.jus.br/cjsg/consultaCompleta.do",
-  TJRN: "https://esaj.tjrn.jus.br/cjsg/consultaCompleta.do",
+  TJSP: "https://esaj.tjsp.jus.br/cjsg/resultadoCompleta.do",
+  TJCE: "https://esaj.tjce.jus.br/cjsg/resultadoCompleta.do",
+  TJAM: "https://consultasaj.tjam.jus.br/cjsg/resultadoCompleta.do",
+  TJMS: "https://esaj.tjms.jus.br/cjsg/resultadoCompleta.do",
+  TJRN: "https://esaj.tjrn.jus.br/cjsg/resultadoCompleta.do",
 };
 
 const EXTRACTION_SYSTEM_PROMPT = `Você é um especialista em direito brasileiro. Analise o conteúdo markdown de uma página de resultados de jurisprudência do e-SAJ e extraia as decisões judiciais encontradas.
