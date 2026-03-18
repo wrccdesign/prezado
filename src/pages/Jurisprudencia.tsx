@@ -8,7 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Search, Filter, MapPin, Calendar, Scale, ChevronDown, ChevronUp, ExternalLink, Loader2, Sparkles, Copy, Check } from "lucide-react";
+import { Search, Filter, MapPin, Calendar, Scale, ChevronDown, ChevronUp, ExternalLink, Loader2, Sparkles, Copy, Check, Gavel } from "lucide-react";
 import { formatCitation } from "@/lib/citation";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
@@ -22,6 +22,7 @@ interface Decision {
   numero_processo: string | null;
   data_decisao: string | null;
   relator: string | null;
+  orgao_julgador: string | null;
   tipo_decisao: string | null;
   resultado: string | null;
   resultado_descricao: string | null;
@@ -310,6 +311,12 @@ export default function Jurisprudencia() {
                   {d.relator && (
                     <p className="text-xs text-muted-foreground">
                       Rel. {d.relator}
+                    </p>
+                  )}
+                  {d.orgao_julgador && (
+                    <p className="text-xs text-muted-foreground flex items-center gap-1">
+                      <Gavel className="h-3 w-3" />
+                      {d.orgao_julgador}
                     </p>
                   )}
                 </CardHeader>

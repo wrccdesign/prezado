@@ -404,6 +404,7 @@ export type Database = {
           id: string
           instancia: string
           numero_processo: string
+          orgao_julgador: string
           ramos_direito: string[]
           rank: number
           relator: string
