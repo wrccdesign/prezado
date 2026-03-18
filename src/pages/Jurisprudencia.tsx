@@ -22,6 +22,7 @@ interface Decision {
   numero_processo: string | null;
   data_decisao: string | null;
   relator: string | null;
+  orgao_julgador: string | null;
   tipo_decisao: string | null;
   resultado: string | null;
   resultado_descricao: string | null;
