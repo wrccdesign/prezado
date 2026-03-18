@@ -69,16 +69,23 @@ serve(async (req) => {
       }
     }
 
-    // Count remaining
-    const { count } = await supabase
+    // Count remaining without embedding
+    const { count: remaining } = await supabase
       .from("decisions")
       .select("id", { count: "exact", head: true })
       .is("embedding", null);
 
+    // Count already processed
+    const { count: withEmbedding } = await supabase
+      .from("decisions")
+      .select("id", { count: "exact", head: true })
+      .not("embedding", "is", null);
+
     return new Response(JSON.stringify({
       processed,
       errors,
-      remaining: count || 0,
+      remaining: remaining || 0,
+      with_embedding: withEmbedding || 0,
       error_details: errorDetails.slice(0, 10),
     }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
