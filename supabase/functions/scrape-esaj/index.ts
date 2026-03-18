@@ -125,9 +125,15 @@ serve(async (req) => {
         waitFor: 5000,
         timeout: 60000,
         actions: [
-          { type: "click", selector: "textarea[name='dados.buscaInteiroTeor'], input[name='dados.buscaInteiroTeor']" },
-          { type: "write", text: query },
-          { type: "click", selector: "#pbSubmit, input[type='submit'][value='Pesquisar'], input[name='pbSubmit']" },
+          {
+            type: "executeJavascript",
+            script: `
+              const textarea = document.querySelector("textarea[name='dados.buscaInteiroTeor']") || document.querySelector("input[name='dados.buscaInteiroTeor']");
+              if (textarea) { textarea.value = ${JSON.stringify(query)}; }
+              const form = document.querySelector("form[name='consultaCompleta']") || document.querySelector("form");
+              if (form) { form.submit(); }
+            `,
+          },
           { type: "wait", milliseconds: 5000 },
         ],
       }),
