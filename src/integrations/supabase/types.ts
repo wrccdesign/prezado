@@ -420,6 +420,37 @@ export type Database = {
           view_count: number
         }[]
       }
+      search_decisions_vector: {
+        Args: {
+          match_count?: number
+          match_threshold?: number
+          query_embedding: string
+        }
+        Returns: {
+          comarca: string
+          comarca_pequena: boolean
+          created_at: string
+          data_decisao: string
+          ementa: string
+          id: string
+          instancia: string
+          numero_processo: string
+          ramos_direito: string[]
+          relator: string
+          resultado: string
+          resultado_descricao: string
+          resumo_ia: string
+          score_utilidade: number
+          similarity: number
+          source_url: string
+          temas_juridicos: string[]
+          tipo_decisao: string
+          tribunal: string
+          uf: string
+          upvotes: number
+          view_count: number
+        }[]
+      }
     }
     Enums: {
       [_ in never]: never
