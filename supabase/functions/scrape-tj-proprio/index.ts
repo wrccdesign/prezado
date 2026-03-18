@@ -159,9 +159,16 @@ serve(async (req) => {
     const searchResults = firecrawlData.data || [];
 
     if (!searchResults.length) {
+      // Mark tribunal as no_index when Firecrawl finds nothing
+      await supabase
+        .from("tj_scraping_config")
+        .update({ status: "no_index" })
+        .eq("tribunal", tribunalUpper);
+
       return new Response(JSON.stringify({
         ingested: 0, skipped: 0, errors: ["Nenhum resultado encontrado na busca"],
         total_found: 0,
+        needs_fallback: true,
       }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
