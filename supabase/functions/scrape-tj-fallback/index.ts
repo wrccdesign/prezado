@@ -7,7 +7,6 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
-// CNJ public API key - users can override via DATAJUD_API_KEY secret
 const DEFAULT_DATAJUD_KEY = "cDZHYzlZa0JadVREZDR4N3ZSaTdlQV9ZYVFxdkFvOXlmVkR3LTFpbFJRZkl1alhNd2Fia1REVW5KN0VkUVFMWE1jZ0trQ2dEMHlhcWRCRjVpR3RDOGliSHlsTXBoanExY19kUzZiZlFZMEhSZURMcGNJLUZiQ2RIYl9ORWtGOElQYnN4S2N6YVR6bEdMZWxSUmVfU2lB";
 
 const FALLBACK_TRIBUNAIS = [
@@ -16,53 +15,73 @@ const FALLBACK_TRIBUNAIS = [
   "TJMS", "TJRN", "TJGO",
 ];
 
-const EXTRACTION_SYSTEM_PROMPT = `Você é um especialista em direito brasileiro. Analise o texto judicial fornecido e extraia metadados estruturados usando a função extract_metadata.
+// Formato CNJ: NNNNNNN-DD.AAAA.J.TT.OOOO
+const CNJ_REGEX = /^\d{7}-\d{2}\.\d{4}\.\d\.\d{2}\.\d{4}$/;
 
-Regras:
-- Extraia APENAS informações presentes no texto. Não invente dados.
-- tribunal: APENAS a sigla oficial (ex: TJSP, STJ, TST). NUNCA inclua UF, nome por extenso ou qualquer texto além da sigla.
-- orgao_julgador: câmara, turma ou órgão julgador. Separar do tribunal.
-- comarca_pequena: true se a comarca tiver menos de 100 mil habitantes
-- resultado: use termos padronizados como "Provido", "Desprovido", "Parcialmente Provido", "Procedente", "Improcedente"
-- resumo_ia: máximo 3 frases objetivas resumindo a decisão
-- temas_juridicos e ramos_direito: use termos técnicos padronizados
-- legislacao_citada: liste artigos e leis mencionados
-- argumentos_principais: liste os 3-5 argumentos mais relevantes`;
+// Validar se número de processo é real (formato CNJ)
+function isValidCNJ(num: string | null | undefined): boolean {
+  if (!num) return false;
+  if (num.includes("<UNKNOWN>")) return false;
+  if (num.includes("1234567")) return false; // padrão fictício conhecido
+  const clean = num.replace(/\s/g, "");
+  return CNJ_REGEX.test(clean);
+}
+
+// Validar se nome de relator parece real (não genérico)
+function isValidRelator(name: string | null | undefined): boolean {
+  if (!name) return true; // null é ok, melhor que fictício
+  const genericNames = [
+    "joão almeida", "ana oliveira", "maria silva", "josé santos",
+    "carlos souza", "paulo costa", "pedro ferreira", "nome relator",
+    "relator desconhecido", "não informado",
+  ];
+  return !genericNames.includes(name.toLowerCase().trim());
+}
+
+const EXTRACTION_SYSTEM_PROMPT = `Você é um especialista em direito brasileiro. Analise o texto judicial fornecido e extraia metadados estruturados.
+
+REGRAS CRÍTICAS — NUNCA VIOLE:
+1. Extraia APENAS informações EXPLICITAMENTE presentes no texto. JAMAIS invente, complete ou assuma dados.
+2. Se um campo não estiver no texto, retorne null. NUNCA invente nomes, datas ou números.
+3. tribunal: APENAS a sigla oficial (ex: TJSP, STJ). NUNCA UF, nome extenso ou texto além da sigla.
+4. numero_processo: APENAS se estiver no formato CNJ (NNNNNNN-DD.AAAA.J.TT.OOOO). Se não encontrar, retorne null.
+5. relator: APENAS o nome real do juiz/desembargador que aparece no texto. Se não encontrar, retorne null.
+6. orgao_julgador: câmara ou turma que aparece no texto. Se não encontrar, retorne null.
+7. comarca_pequena: true APENAS se a comarca tiver menos de 100 mil habitantes — use seu conhecimento geográfico.
+8. resultado: use APENAS estes termos: "Provido", "Desprovido", "Parcialmente Provido", "Procedente", "Improcedente", "Não Provido", "Parcialmente Procedente". Se não encontrar, retorne null.
+9. resumo_ia: máximo 3 frases objetivas. Baseie-se APENAS no que está no texto.
+10. NUNCA retorne strings como "<UNKNOWN>", "Não informado", "N/A" — use null.`;
 
 const EXTRACTION_TOOL = {
-  type: "function",
-  function: {
-    name: "extract_metadata",
-    description: "Extrai metadados estruturados de uma decisão judicial brasileira",
-    parameters: {
-      type: "object",
-      properties: {
-        tribunal: { type: "string", description: "Sigla oficial do tribunal (ex: TJRJ, TJBA)" },
-        orgao_julgador: { type: "string", description: "Câmara, turma ou órgão julgador" },
-        instancia: { type: "string", description: "Instância (1ª Instância, 2ª Instância, Superior)" },
-        uf: { type: "string", description: "UF do tribunal (ex: RJ, BA)" },
-        comarca: { type: "string", description: "Nome da comarca" },
-        comarca_pequena: { type: "boolean", description: "Se a comarca tem menos de 100 mil habitantes" },
-        vara: { type: "string", description: "Vara responsável" },
-        numero_processo: { type: "string", description: "Número unificado do processo (CNJ)" },
-        data_decisao: { type: "string", description: "Data da decisão no formato YYYY-MM-DD" },
-        relator: { type: "string", description: "Nome do relator/juiz" },
-        tipo_decisao: { type: "string", description: "Tipo (Acórdão, Sentença, Decisão Interlocutória)" },
-        resultado: { type: "string", description: "Resultado padronizado" },
-        resultado_descricao: { type: "string", description: "Descrição breve do resultado" },
-        ementa: { type: "string", description: "Ementa da decisão" },
-        resumo_ia: { type: "string", description: "Resumo em até 3 frases" },
-        temas_juridicos: { type: "array", items: { type: "string" }, description: "Temas jurídicos abordados" },
-        ramos_direito: { type: "array", items: { type: "string" }, description: "Ramos do direito" },
-        argumentos_principais: { type: "array", items: { type: "string" }, description: "Argumentos principais" },
-        legislacao_citada: { type: "array", items: { type: "string" }, description: "Legislação citada" },
-        jurisprudencias_citadas: { type: "array", items: { type: "string" }, description: "Jurisprudências citadas" },
-        autor_recorrente: { type: "string", description: "Nome do autor/recorrente (anonimizado)" },
-        reu_recorrido: { type: "string", description: "Nome do réu/recorrido (anonimizado)" },
-      },
-      required: ["tribunal", "resumo_ia", "temas_juridicos", "ramos_direito"],
-      additionalProperties: false,
+  name: "extract_metadata",
+  description: "Extrai metadados estruturados de uma decisão judicial brasileira",
+  input_schema: {
+    type: "object" as const,
+    properties: {
+      tribunal: { type: "string", description: "Sigla oficial do tribunal (ex: TJRJ, TJBA)" },
+      orgao_julgador: { type: ["string", "null"], description: "Câmara, turma ou órgão julgador. null se não encontrado." },
+      instancia: { type: ["string", "null"], description: "Instância (1ª Instância, 2ª Instância, Superior). null se não encontrado." },
+      uf: { type: ["string", "null"], description: "UF do tribunal (ex: RJ, BA). null se não encontrado." },
+      comarca: { type: ["string", "null"], description: "Nome da comarca. null se não encontrado." },
+      comarca_pequena: { type: ["boolean", "null"], description: "Se a comarca tem menos de 100 mil habitantes." },
+      vara: { type: ["string", "null"], description: "Vara responsável. null se não encontrado." },
+      numero_processo: { type: ["string", "null"], description: "Número CNJ NNNNNNN-DD.AAAA.J.TT.OOOO. null se não encontrado ou formato inválido." },
+      data_decisao: { type: ["string", "null"], description: "Data YYYY-MM-DD. null se não encontrado." },
+      relator: { type: ["string", "null"], description: "Nome real do relator/juiz presente no texto. null se não encontrado." },
+      tipo_decisao: { type: ["string", "null"], description: "Tipo (Acórdão, Sentença, Decisão Interlocutória). null se não encontrado." },
+      resultado: { type: ["string", "null"], description: "Provido | Desprovido | Parcialmente Provido | Procedente | Improcedente | Não Provido | Parcialmente Procedente. null se não encontrado." },
+      resultado_descricao: { type: ["string", "null"], description: "Descrição breve do resultado. null se não encontrado." },
+      ementa: { type: ["string", "null"], description: "Ementa da decisão. null se não encontrado." },
+      resumo_ia: { type: "string", description: "Resumo em até 3 frases baseado APENAS no texto fornecido." },
+      temas_juridicos: { type: "array", items: { type: "string" }, description: "Temas jurídicos abordados." },
+      ramos_direito: { type: "array", items: { type: "string" }, description: "Ramos do direito." },
+      argumentos_principais: { type: "array", items: { type: "string" }, description: "Argumentos principais." },
+      legislacao_citada: { type: "array", items: { type: "string" }, description: "Legislação citada no texto." },
+      jurisprudencias_citadas: { type: "array", items: { type: "string" }, description: "Jurisprudências citadas no texto." },
+      autor_recorrente: { type: ["string", "null"], description: "Nome anonimizado do autor/recorrente. null se não encontrado." },
+      reu_recorrido: { type: ["string", "null"], description: "Nome anonimizado do réu/recorrido. null se não encontrado." },
     },
+    required: ["tribunal", "resumo_ia", "temas_juridicos", "ramos_direito"],
   },
 };
 
@@ -109,20 +128,19 @@ serve(async (req) => {
 
     const tribunalUpper = tribunal.toUpperCase();
     if (!FALLBACK_TRIBUNAIS.includes(tribunalUpper)) {
-      return new Response(JSON.stringify({ error: `${tribunalUpper} não está na lista de tribunais com fallback DataJud. Use scrape-esaj ou scrape-tj-proprio.` }), {
+      return new Response(JSON.stringify({ error: `${tribunalUpper} não está na lista de tribunais com fallback DataJud.` }), {
         status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
 
-    const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
-    if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY not configured");
+    const ANTHROPIC_API_KEY = Deno.env.get("ANTHROPIC_API_KEY");
+    if (!ANTHROPIC_API_KEY) throw new Error("ANTHROPIC_API_KEY not configured");
 
     const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
     const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const DATAJUD_API_KEY = Deno.env.get("DATAJUD_API_KEY") || DEFAULT_DATAJUD_KEY;
     const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
-    // Step 1: Query DataJud API
     const endpoint = getDatajudEndpoint(tribunalUpper);
     const datajudUrl = `https://api-publica.datajud.cnj.jus.br/${endpoint}/_search`;
 
@@ -162,16 +180,16 @@ serve(async (req) => {
 
     let ingested = 0;
     let skipped = 0;
+    let rejected = 0;
     const errors: string[] = [];
 
-    // Step 2: Process each hit
     for (const hit of hits) {
       const source = hit._source || {};
       const externalId = `datajud_fallback_${hit._id || source.numeroProcesso || ""}`;
       const numeroProcesso = source.numeroProcesso || null;
 
       try {
-        // Skip if already exists
+        // Skip se já existe
         const { data: existing } = await supabase
           .from("decisions")
           .select("id")
@@ -183,7 +201,7 @@ serve(async (req) => {
           continue;
         }
 
-        // Build raw text for AI extraction
+        // Montar texto bruto para extração
         const rawParts = [
           source.classeProcessual?.nome ? `Classe: ${source.classeProcessual.nome}` : "",
           source.numeroProcesso ? `Processo: ${source.numeroProcesso}` : "",
@@ -198,50 +216,61 @@ serve(async (req) => {
 
         const rawText = rawParts.join("\n");
 
-        // Step 3: AI metadata extraction
-        const aiResponse = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+        // Extração via Claude
+        const aiResponse = await fetch("https://api.anthropic.com/v1/messages", {
           method: "POST",
           headers: {
-            Authorization: `Bearer ${LOVABLE_API_KEY}`,
-            "Content-Type": "application/json",
+            "x-api-key": ANTHROPIC_API_KEY,
+            "anthropic-version": "2023-06-01",
+            "content-type": "application/json",
           },
           body: JSON.stringify({
-            model: "google/gemini-2.5-flash",
-            messages: [
-              { role: "system", content: EXTRACTION_SYSTEM_PROMPT },
-              { role: "user", content: `Extraia os metadados desta decisão judicial:\n\n${rawText}` },
-            ],
+            model: "claude-sonnet-4-20250514",
+            max_tokens: 1500,
+            system: EXTRACTION_SYSTEM_PROMPT,
             tools: [EXTRACTION_TOOL],
-            tool_choice: { type: "function", function: { name: "extract_metadata" } },
+            tool_choice: { type: "tool", name: "extract_metadata" },
+            messages: [
+              {
+                role: "user",
+                content: `Extraia os metadados desta decisão judicial. Lembre-se: retorne null para qualquer campo que não esteja explicitamente no texto.\n\n${rawText}`,
+              },
+            ],
           }),
         });
 
         if (!aiResponse.ok) {
           const status = aiResponse.status;
-          if (status === 429) {
-            errors.push(`Rate limited para ${numeroProcesso || externalId}`);
-            continue;
-          }
           errors.push(`AI error ${status} para ${numeroProcesso || externalId}`);
           continue;
         }
 
         const aiResult = await aiResponse.json();
-        const toolCall = aiResult.choices?.[0]?.message?.tool_calls?.[0];
-        if (!toolCall?.function?.arguments) {
-          errors.push(`AI não retornou tool call para ${numeroProcesso || externalId}`);
+        const toolUseBlock = aiResult.content?.find((b: any) => b.type === "tool_use");
+
+        if (!toolUseBlock?.input) {
+          errors.push(`Claude não retornou tool_use para ${numeroProcesso || externalId}`);
           continue;
         }
 
-        let metadata: any;
-        try {
-          metadata = JSON.parse(toolCall.function.arguments);
-        } catch {
-          errors.push(`JSON inválido da AI para ${numeroProcesso || externalId}`);
+        const metadata = toolUseBlock.input as any;
+
+        // VALIDAÇÃO — rejeitar dados suspeitos
+        const finalNumero = metadata.numero_processo || source.numeroProcesso || null;
+        const finalRelator = metadata.relator || null;
+
+        if (finalNumero && !isValidCNJ(finalNumero)) {
+          console.warn(`[scrape-tj-fallback] Rejeitando ${externalId}: número inválido "${finalNumero}"`);
+          rejected++;
           continue;
         }
 
-        // Step 4: Build decision data and upsert
+        if (finalRelator && !isValidRelator(finalRelator)) {
+          console.warn(`[scrape-tj-fallback] Rejeitando relator genérico "${finalRelator}" em ${externalId}`);
+          // Não rejeita o registro, apenas nulifica o relator
+          metadata.relator = null;
+        }
+
         const sourceUrl = source.numeroProcesso
           ? `https://processo.stj.jus.br/processo/pesquisa/?tipoPesquisa=tipoPesquisaNumeroUnico&termo=${source.numeroProcesso}`
           : null;
@@ -257,7 +286,7 @@ serve(async (req) => {
           comarca: metadata.comarca || null,
           comarca_pequena: metadata.comarca_pequena ?? false,
           vara: metadata.vara || source.orgaoJulgador?.nome || null,
-          numero_processo: metadata.numero_processo || source.numeroProcesso || null,
+          numero_processo: finalNumero,
           data_decisao: sanitizeDate(metadata.data_decisao) || sanitizeDate(source.dataAjuizamento) || null,
           relator: metadata.relator || null,
           tipo_decisao: metadata.tipo_decisao || source.classeProcessual?.nome || null,
@@ -280,7 +309,7 @@ serve(async (req) => {
             .from("decisions")
             .upsert(decisionData, { onConflict: "numero_processo" });
           if (upsertError) {
-            errors.push(`Upsert error ${numeroProcesso}: ${upsertError.message}`);
+            errors.push(`Upsert error ${finalNumero}: ${upsertError.message}`);
             continue;
           }
         } else {
@@ -292,7 +321,7 @@ serve(async (req) => {
         }
         ingested++;
 
-        // Generate embedding (non-blocking)
+        // Gerar embedding (não bloqueia)
         try {
           const embText = [decisionData.ementa, decisionData.resumo_ia].filter(Boolean).join(" ");
           if (embText.length >= 20) {
@@ -311,18 +340,18 @@ serve(async (req) => {
       }
     }
 
-    // Step 5: Update tj_scraping_config
     await supabase
       .from("tj_scraping_config")
       .update({ status: "active_datajud", last_scraped_at: new Date().toISOString() })
       .eq("tribunal", tribunalUpper);
 
-    console.log(`[scrape-tj-fallback] Done: ingested=${ingested}, skipped=${skipped}, errors=${errors.length}`);
+    console.log(`[scrape-tj-fallback] Done: ingested=${ingested}, skipped=${skipped}, rejected=${rejected}, errors=${errors.length}`);
 
     return new Response(JSON.stringify({
       tribunal: tribunalUpper,
       ingested,
       skipped,
+      rejected,
       errors,
       total_found: totalFound,
     }), {
