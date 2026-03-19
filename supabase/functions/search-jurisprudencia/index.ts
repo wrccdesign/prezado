@@ -118,7 +118,7 @@ serve(async (req) => {
       const embeddingStr = `[${queryEmbedding.join(",")}]`;
       const { data: vResults, error: vErr } = await supabase.rpc("search_decisions_vector", {
         query_embedding: embeddingStr,
-        match_threshold: 0.25,
+        match_threshold: 0.4,
         match_count: 10,
       });
       if (vErr) {
