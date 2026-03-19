@@ -6,6 +6,7 @@ import {
   ArrowRight, Check, Scale, ChevronRight, Menu, X, MapPin, Database, Users
 } from "lucide-react";
 import logo from "@/assets/logo.png";
+import { supabase } from "@/integrations/supabase/client";
 
 function useScrollReveal() {
   const ref = useRef<HTMLDivElement>(null);
@@ -63,11 +64,54 @@ const tjs = [
   "TJDF","TJCE",
 ];
 
-const mockResults = [
+type LiveResult = {
+  tj: string;
+  resultado: string;
+  interior: boolean;
+  ementa: string;
+  orgao: string;
+  comarca: string;
+  data: string;
+};
+
+const FALLBACK_RESULTS: LiveResult[] = [
   { tj: "TJBA", resultado: "PROCEDENTE", interior: true, ementa: "Apelação Cível — Empréstimo consignado fraudulento. Falha na segurança do sistema financeiro. Dano moral configurado. Repetição em dobro.", orgao: "2ª Câmara Cível", comarca: "Vitória da Conquista", data: "Mar 2025" },
   { tj: "TJPA", resultado: "PROCEDENTE", interior: true, ementa: "Recurso de Apelação — Onerosidade excessiva em contrato bancário. Ausência de assinatura a rogo. Sentença mantida.", orgao: "3ª Turma Cível", comarca: "Santarém", data: "Fev 2025" },
   { tj: "TJMA", resultado: "PROVIDO", interior: false, ementa: "Apelação — Desconto indevido em benefício previdenciário. Falha na prestação de serviço. Indenização por dano extrapatrimonial.", orgao: "1ª Câmara Direito Privado", comarca: "Imperatriz", data: "Jan 2025" },
 ];
+
+function useLiveResults() {
+  const [results, setResults] = useState<LiveResult[]>(FALLBACK_RESULTS);
+
+  useEffect(() => {
+    const queries = ["dano moral", "responsabilidade civil", "direito consumidor", "contrato bancário", "rescisão"];
+    const query = queries[Math.floor(Math.random() * queries.length)];
+
+    supabase
+      .from("decisions")
+      .select("tribunal, resultado, comarca, orgao_julgador, ementa, data_decisao")
+      .ilike("ementa", `%${query}%`)
+      .not("ementa", "is", null)
+      .not("tribunal", "is", null)
+      .order("data_decisao", { ascending: false })
+      .limit(3)
+      .then(({ data }) => {
+        if (!data || data.length < 2) return;
+        const mapped: LiveResult[] = data.map((d) => ({
+          tj: d.tribunal,
+          resultado: d.resultado || "PROCEDENTE",
+          interior: !!(d.comarca && !["São Paulo", "Rio de Janeiro", "Belo Horizonte", "Porto Alegre", "Curitiba", "Salvador", "Fortaleza", "Recife", "Manaus", "Belém"].includes(d.comarca)),
+          ementa: d.ementa?.slice(0, 160) || "",
+          orgao: d.orgao_julgador || "",
+          comarca: d.comarca || "",
+          data: d.data_decisao ? new Date(d.data_decisao).toLocaleDateString("pt-BR", { month: "short", year: "numeric" }) : "",
+        }));
+        setResults(mapped);
+      });
+  }, []);
+
+  return results;
+}
 
 function TJCounter() {
   const [count, setCount] = useState(0);
@@ -114,6 +158,7 @@ export default function LandingPage() {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const revealRef = useScrollReveal();
+  const liveResults = useLiveResults();
 
   useEffect(() => {
     const handler = () => setScrolled(window.scrollY > 20);
@@ -217,7 +262,7 @@ export default function LandingPage() {
                   <span className="ml-auto h-4 w-0.5 bg-gold animate-pulse" />
                 </div>
                 <div className="space-y-3">
-                  {mockResults.map((r, i) => (
+                  {liveResults.map((r, i) => (
                     <div key={i} className="rounded-lg border border-white/8 bg-white/5 p-4 hover:border-gold/30 transition-colors">
                       <div className="flex items-center gap-2 mb-2 flex-wrap">
                         <span className="text-[10px] font-bold px-2 py-0.5 rounded border border-gold/30 text-gold bg-gold/10">{r.tj}</span>
