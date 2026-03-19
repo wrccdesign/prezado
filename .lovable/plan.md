@@ -1,40 +1,34 @@
 
 
-## Plan: UI hierarchy fix + filter junk results
+## Plan: Fix empty-ementa cards + add date filter
 
-### Ajuste 1 — Card hierarchy in `src/pages/Jurisprudencia.tsx`
+### Root cause
 
-Restructure each result card (lines 271-392):
+The `search_decisions` FTS function correctly filters `ementa IS NOT NULL AND length >= 50`. But `search_decisions_vector` has NO such filter — vector results without ementa get merged into the final result set, producing empty cards.
 
-- **Top of card**: badges row — tribunal, resultado, comarca_pequena (Interior), date — unchanged layout, already correct
-- **Ementa as hero**: move ementa up to right after badges, increase to `text-sm font-medium leading-relaxed text-foreground` with `line-clamp-3`
-- **Processo number**: move below ementa, `text-xs font-mono text-muted-foreground`
-- **Relator + orgao_julgador**: small text below processo, same line or stacked, `text-xs text-muted-foreground`
-- **Comarca highlight**: if `comarca_pequena === true`, add a visible `MapPin` + comarca name near relator area
+### Changes
 
-Concrete card structure:
-```
-[Badges: TJSP | Provido | Interior | 2º Grau]     [date]
-Ementa text with line-clamp-3, prominent...
-Proc. 1234567-89.2024.8.26.0001
-Rel. Des. Fulano · 3ª Câmara Cível · Comarca X/SP
-[Ver mais] [Citar] [Fonte]
-```
+**1. Migration: Update `search_decisions_vector` + add date filter to both functions**
 
-### Ajuste 2 — SQL filter in `search_decisions` function
-
-New migration to recreate `search_decisions` adding 3 WHERE conditions:
-
+Add to `search_decisions_vector` WHERE clause:
 ```sql
 AND d.ementa IS NOT NULL
 AND length(d.ementa) >= 50
-AND (d.resultado IS NULL OR d.resultado NOT IN ('Em andamento', 'Distribuição', 'Em Andamento / Distribuição'))
+AND d.numero_processo IS NOT NULL
+AND d.numero_processo NOT LIKE '%<UNKNOWN>%'
 ```
 
-This filters at the database level so junk results never reach the client.
+Add to BOTH functions:
+```sql
+AND (d.data_decisao IS NULL OR d.data_decisao >= '2015-01-01')
+```
+
+**2. Frontend: Show fallback text when ementa is missing (defensive)**
+
+In `src/pages/Jurisprudencia.tsx` line 309, add an else branch so cards without ementa show `"Ementa não disponível"` in muted italic — as a safety net in case edge cases slip through.
 
 ### Files changed
 
-1. `src/pages/Jurisprudencia.tsx` — card layout restructure
-2. New Supabase migration — updated `search_decisions` function
+1. New migration — recreate both `search_decisions` and `search_decisions_vector` with the additional filters
+2. `src/pages/Jurisprudencia.tsx` — add fallback text for missing ementa
 
