@@ -313,7 +313,7 @@ export default function Jurisprudencia() {
                   )}
 
                   {/* Processo number */}
-                  {d.numero_processo && (
+                  {d.numero_processo && !d.numero_processo.includes('<UNKNOWN>') && (
                     <p className="text-xs text-muted-foreground font-mono mt-2">
                       Proc. {d.numero_processo}
                     </p>
