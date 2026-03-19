@@ -1,34 +1,27 @@
 
 
-## Plan: Fix empty-ementa cards + add date filter
+## Plan: Rebalance RRF weights in search-jurisprudencia
 
-### Root cause
+### Changes in `supabase/functions/search-jurisprudencia/index.ts`
 
-The `search_decisions` FTS function correctly filters `ementa IS NOT NULL AND length >= 50`. But `search_decisions_vector` has NO such filter — vector results without ementa get merged into the final result set, producing empty cards.
+**1. Increase vector similarity threshold (line 121)**
+- Change `match_threshold: 0.25` → `match_threshold: 0.4`
 
-### Changes
+**2. Apply weighted RRF with k constants (lines 146-170)**
 
-**1. Migration: Update `search_decisions_vector` + add date filter to both functions**
+Replace the current RRF merge logic:
 
-Add to `search_decisions_vector` WHERE clause:
-```sql
-AND d.ementa IS NOT NULL
-AND length(d.ementa) >= 50
-AND d.numero_processo IS NOT NULL
-AND d.numero_processo NOT LIKE '%<UNKNOWN>%'
+- FTS score: `1 / (k_fts + rank)` where `k_fts = 30` (lower k = higher weight)
+- Vector score: `1 / (k_vec + rank)` where `k_vec = 60` (higher k = lower weight)
+- Vector-only results (no FTS match): only include if `similarity > 0.5`
+
+```text
+FTS results:    combined_score = 1 / (30 + idx)
+Vector results: combined_score += 1 / (60 + idx)   [if already in map]
+Vector-only:    only add if similarity > 0.5, score = 1 / (60 + idx)
 ```
-
-Add to BOTH functions:
-```sql
-AND (d.data_decisao IS NULL OR d.data_decisao >= '2015-01-01')
-```
-
-**2. Frontend: Show fallback text when ementa is missing (defensive)**
-
-In `src/pages/Jurisprudencia.tsx` line 309, add an else branch so cards without ementa show `"Ementa não disponível"` in muted italic — as a safety net in case edge cases slip through.
 
 ### Files changed
 
-1. New migration — recreate both `search_decisions` and `search_decisions_vector` with the additional filters
-2. `src/pages/Jurisprudencia.tsx` — add fallback text for missing ementa
+1. `supabase/functions/search-jurisprudencia/index.ts` — RRF rebalancing + threshold bump
 
