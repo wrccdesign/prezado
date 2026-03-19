@@ -306,10 +306,12 @@ export default function Jurisprudencia() {
 
                 <CardContent className="px-4 pb-4">
                   {/* Ementa — hero element */}
-                  {d.ementa && (
+                  {d.ementa ? (
                     <p className={`text-sm font-medium leading-relaxed text-foreground ${expandedId === d.id ? "" : "line-clamp-3"}`}>
                       {d.ementa}
                     </p>
+                  ) : (
+                    <p className="text-sm italic text-muted-foreground">Ementa não disponível</p>
                   )}
 
                   {/* Processo number */}
