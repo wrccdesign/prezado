@@ -80,17 +80,29 @@ const FALLBACK_RESULTS: LiveResult[] = [
   { tj: "TJMA", resultado: "PROVIDO", interior: false, ementa: "Apelação — Desconto indevido em benefício previdenciário. Falha na prestação de serviço. Indenização por dano extrapatrimonial.", orgao: "1ª Câmara Direito Privado", comarca: "Imperatriz", data: "Jan 2025" },
 ];
 
+const LIVE_QUERIES = [
+  "dano moral consumidor",
+  "responsabilidade civil banco",
+  "rescisão contratual indenização",
+  "plano saúde negativa cobertura",
+  "acidente trânsito indenização",
+  "servidor público concurso direito",
+  "locação despejo inadimplência",
+  "aposentadoria INSS benefício",
+];
+
 function useLiveResults() {
   const [results, setResults] = useState<LiveResult[]>(FALLBACK_RESULTS);
+  const [activeQuery, setActiveQuery] = useState("responsabilidade banco fraude consignado");
 
   useEffect(() => {
-    const queries = ["dano moral", "responsabilidade civil", "direito consumidor", "contrato bancário", "rescisão"];
-    const query = queries[Math.floor(Math.random() * queries.length)];
+    const query = LIVE_QUERIES[Math.floor(Math.random() * LIVE_QUERIES.length)];
+    setActiveQuery(query);
 
     supabase
       .from("decisions")
       .select("tribunal, resultado, comarca, orgao_julgador, ementa, data_decisao")
-      .ilike("ementa", `%${query}%`)
+      .ilike("ementa", `%${query.split(" ")[0]}%`)
       .not("ementa", "is", null)
       .not("tribunal", "is", null)
       .order("data_decisao", { ascending: false })
@@ -110,7 +122,7 @@ function useLiveResults() {
       });
   }, []);
 
-  return results;
+  return { results, activeQuery };
 }
 
 function TJCounter() {
@@ -158,7 +170,7 @@ export default function LandingPage() {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const revealRef = useScrollReveal();
-  const liveResults = useLiveResults();
+  const { results: liveResults, activeQuery } = useLiveResults();
 
   useEffect(() => {
     const handler = () => setScrolled(window.scrollY > 20);
@@ -258,7 +270,7 @@ export default function LandingPage() {
                 <div className="text-xs text-white/30 uppercase tracking-widest mb-4">Busca Semântica — Ao Vivo</div>
                 <div className="flex items-center gap-3 rounded-lg bg-black/30 border border-white/10 px-4 py-3 mb-4">
                   <Search className="h-4 w-4 text-gold/60 shrink-0" />
-                  <span className="font-mono text-sm text-white/70">responsabilidade banco fraude consignado</span>
+                  <span className="font-mono text-sm text-white/70">{activeQuery}</span>
                   <span className="ml-auto h-4 w-0.5 bg-gold animate-pulse" />
                 </div>
                 <div className="space-y-3">
