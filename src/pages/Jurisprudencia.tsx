@@ -302,32 +302,43 @@ export default function Jurisprudencia() {
                       </span>
                     )}
                   </div>
-
-                  {d.numero_processo && (
-                    <p className="text-xs text-muted-foreground font-mono mt-1">
-                      {d.numero_processo}
-                    </p>
-                  )}
-                  {d.relator && (
-                    <p className="text-xs text-muted-foreground">
-                      Rel. {d.relator}
-                    </p>
-                  )}
-                  {d.orgao_julgador && (
-                    <p className="text-xs text-muted-foreground flex items-center gap-1">
-                      <Gavel className="h-3 w-3" />
-                      {d.orgao_julgador}
-                    </p>
-                  )}
                 </CardHeader>
 
                 <CardContent className="px-4 pb-4">
-                  {/* Ementa */}
+                  {/* Ementa — hero element */}
                   {d.ementa && (
-                    <p className={`text-sm leading-relaxed ${expandedId === d.id ? "" : "line-clamp-3"}`}>
+                    <p className={`text-sm font-medium leading-relaxed text-foreground ${expandedId === d.id ? "" : "line-clamp-3"}`}>
                       {d.ementa}
                     </p>
                   )}
+
+                  {/* Processo number */}
+                  {d.numero_processo && (
+                    <p className="text-xs text-muted-foreground font-mono mt-2">
+                      Proc. {d.numero_processo}
+                    </p>
+                  )}
+
+                  {/* Relator + Órgão Julgador + Comarca */}
+                  <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 mt-1">
+                    {d.relator && (
+                      <span className="text-xs text-muted-foreground">
+                        Rel. {d.relator}
+                      </span>
+                    )}
+                    {d.orgao_julgador && (
+                      <span className="text-xs text-muted-foreground flex items-center gap-1">
+                        <Gavel className="h-3 w-3" />
+                        {d.orgao_julgador}
+                      </span>
+                    )}
+                    {d.comarca && d.uf && (
+                      <span className={`text-xs flex items-center gap-1 ${d.comarca_pequena ? "text-purple-700 dark:text-purple-300 font-medium" : "text-muted-foreground"}`}>
+                        <MapPin className="h-3 w-3" />
+                        {d.comarca}/{d.uf}
+                      </span>
+                    )}
+                  </div>
 
                   {/* AI Summary */}
                   {d.resumo_ia && expandedId === d.id && (
@@ -353,7 +364,7 @@ export default function Jurisprudencia() {
                   {/* Actions */}
                   <div className="flex items-center justify-between mt-3 pt-2 border-t border-border">
                     <button
-                      onClick={() => setExpandedId(expandedId === d.id ? null : d.id)}
+                      onClick={(e) => { e.preventDefault(); e.stopPropagation(); setExpandedId(expandedId === d.id ? null : d.id); }}
                       className="text-xs text-accent hover:underline"
                     >
                       {expandedId === d.id ? "Ver menos" : "Ver mais"}
@@ -368,17 +379,12 @@ export default function Jurisprudencia() {
                         {copiedId === d.id ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
                         {copiedId === d.id ? "Copiado" : "Citar"}
                       </button>
-                      {d.comarca && d.uf && (
-                        <span className="text-xs text-muted-foreground flex items-center gap-1">
-                          <MapPin className="h-3 w-3" />
-                          {d.comarca}/{d.uf}
-                        </span>
-                      )}
                       {d.source_url && (
                         <a
                           href={d.source_url}
                           target="_blank"
                           rel="noopener noreferrer"
+                          onClick={(e) => e.stopPropagation()}
                           className="text-xs text-accent hover:underline flex items-center gap-1"
                         >
                           <ExternalLink className="h-3 w-3" />
