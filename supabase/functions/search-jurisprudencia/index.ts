@@ -139,7 +139,10 @@ serve(async (req) => {
       throw new Error("Erro na busca no banco de dados");
     }
 
-    // Step 4: Merge results using simple RRF (Reciprocal Rank Fusion)
+    // Step 4: Merge results using weighted RRF (Reciprocal Rank Fusion)
+    // k_fts=30 (lower k = higher weight), k_vec=60 (higher k = lower weight)
+    const K_FTS = 30;
+    const K_VEC = 60;
     const resultMap = new Map<string, any>();
 
     // Add FTS results with rank score
@@ -148,23 +151,23 @@ serve(async (req) => {
         ...r,
         fts_rank: idx + 1,
         vector_rank: null,
-        combined_score: 1 / (idx + 1),
+        combined_score: 1 / (K_FTS + idx + 1),
       });
     });
 
-    // Add/merge vector results
+    // Add/merge vector results — vector-only requires similarity > 0.5
     vectorResults.forEach((r: any, idx: number) => {
       const existing = resultMap.get(r.id);
       if (existing) {
         existing.vector_rank = idx + 1;
-        existing.combined_score += 1 / (idx + 1);
-      } else {
+        existing.combined_score += 1 / (K_VEC + idx + 1);
+      } else if ((r.similarity || 0) > 0.5) {
         resultMap.set(r.id, {
           ...r,
           rank: r.similarity || 0,
           fts_rank: null,
           vector_rank: idx + 1,
-          combined_score: 1 / (idx + 1),
+          combined_score: 1 / (K_VEC + idx + 1),
         });
       }
     });
