@@ -388,7 +388,7 @@ const response = await res.json() as SearchResponse;
                       </button>
                      {d.source_url && (
   
-    href={d.source_url}
+   <a href={d.source_url}
     target="_blank"
     rel="noopener noreferrer"
     onClick={(e) => e.stopPropagation()}
@@ -399,7 +399,7 @@ const response = await res.json() as SearchResponse;
     Fonte verificada
   </a>
 )}
-                      )}
+                     
                     </div>
                   </div>
                 </CardContent>
