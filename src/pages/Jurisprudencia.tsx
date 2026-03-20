@@ -386,17 +386,19 @@ const response = await res.json() as SearchResponse;
                         {copiedId === d.id ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
                         {copiedId === d.id ? "Copiado" : "Citar"}
                       </button>
-                      {d.source_url && (
-                        <a
-                          href={d.source_url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          onClick={(e) => e.stopPropagation()}
-                          className="text-xs text-accent hover:underline flex items-center gap-1"
-                        >
-                          <ExternalLink className="h-3 w-3" />
-                          Fonte
-                        </a>
+                     {d.source_url && (
+  
+    href={d.source_url}
+    target="_blank"
+    rel="noopener noreferrer"
+    onClick={(e) => e.stopPropagation()}
+    className="text-xs text-emerald-600 hover:text-emerald-700 flex items-center gap-1 font-medium"
+    title="Decisão verificada — link para o tribunal original"
+  >
+    <Check className="h-3 w-3" />
+    Fonte verificada
+  </a>
+)}
                       )}
                     </div>
                   </div>
