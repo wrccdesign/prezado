@@ -93,21 +93,26 @@ export default function Jurisprudencia() {
     setLoading(true);
     setHasSearched(true);
     try {
-      const { data, error } = await supabase.functions.invoke("search-jurisprudencia", {
-        body: {
-          query: q,
-          filters: {
-            tribunal: tribunal || null,
-            uf: uf || null,
-            instancia: instancia || null,
-            comarca_pequena: comarcaPequena || null,
-          },
-        },
-      });
+    const res = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/search-jurisprudencia`, {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json",
+    "Authorization": `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+  },
+  body: JSON.stringify({
+    query: q,
+    filters: {
+      tribunal: tribunal || null,
+      uf: uf || null,
+      instancia: instancia || null,
+      comarca_pequena: comarcaPequena || null,
+    },
+  }),
+});
 
-      if (error) throw error;
+if (!res.ok) throw new Error(`Erro ${res.status}`);
 
-      const response = data as SearchResponse;
+const response = await res.json() as SearchResponse;
       setResults(response.results || []);
       setAiExpansion(response.ai_expansion);
     } catch (e: any) {
