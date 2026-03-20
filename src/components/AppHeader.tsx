@@ -105,7 +105,7 @@ export function AppHeader() {
             <NavButton key={item.path} item={item} active={location.pathname === item.path} onClick={() => navigate(item.path)} />
           ))}
           <div className="w-px h-6 bg-white/10 mx-1" />
-          <button onClick={signOut} className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm font-medium text-white/40 hover:text-red-400 hover:bg-white/5 transition-colors">
+        <button onClick={() => { signOut(); navigate("/auth"); }} className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm font-medium text-white/40 hover:text-red-400 hover:bg-white/5 transition-colors">
             <LogOut className="h-4 w-4" />
             Sair
           </button>
@@ -134,7 +134,7 @@ export function AppHeader() {
               <nav className="mt-6 flex flex-col gap-1">
                 {sheetNav(secondaryItems, "FERRAMENTAS")}
                 <div className="h-px bg-white/10 my-3" />
-                <button onClick={() => { signOut(); setSheetOpen(false); }} className="flex items-center gap-3 w-full px-3 py-2.5 rounded-md text-sm font-medium text-red-400/80 hover:text-red-400 hover:bg-white/5 transition-colors">
+                <button onClick={() => { signOut(); navigate("/auth"); setSheetOpen(false); }} className="flex items-center gap-3 w-full px-3 py-2.5 rounded-md text-sm font-medium text-red-400/80 hover:text-red-400 hover:bg-white/5 transition-colors">
                   <LogOut className="h-5 w-5" />
                   Sair
                 </button>
