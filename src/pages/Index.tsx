@@ -24,15 +24,19 @@ export default function Index() {
   const [parseStage, setParseStage] = useState("");
   const [result, setResult] = useState<LegalAnalysis | null>(null);
   const [showPreview, setShowPreview] = useState(false);
+  const [partialExtraction, setPartialExtraction] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
 
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    const maxSize = 10 * 1024 * 1024;
+    const isPdf = file.name.toLowerCase().endsWith(".pdf");
+    const maxSize = isPdf ? 5 * 1024 * 1024 : 10 * 1024 * 1024;
+    const limitLabel = isPdf ? "5MB" : "10MB";
+
     if (file.size > maxSize) {
-      toast({ title: "Arquivo muito grande", description: "O limite é 10MB.", variant: "destructive" });
+      toast({ title: "Arquivo muito grande", description: `O limite para ${isPdf ? "PDF" : "este formato"} é ${limitLabel}.`, variant: "destructive" });
       return;
     }
 
@@ -87,12 +91,17 @@ export default function Index() {
         setParseStage("OCR aplicado em documento escaneado...");
       }
       
+      if (data.partial) {
+        setPartialExtraction(true);
+      }
+      
       setParseProgress(100);
       setParseStage("Concluído!");
       setText(data.text);
       setShowPreview(true);
       const ocrNote = data.ocr ? " (via OCR — documento escaneado)" : "";
-      toast({ title: "Documento processado!", description: `Texto extraído de ${file.name}${ocrNote}. Verifique o preview abaixo.` });
+      const partialNote = data.partial ? " ⚠️ Extração parcial — PDF muito grande, apenas parte do texto foi extraída." : "";
+      toast({ title: "Documento processado!", description: `Texto extraído de ${file.name}${ocrNote}.${partialNote}` });
     } catch (err: any) {
       if (err?.name === "AbortError") {
         toast({ title: "Timeout no upload", description: "O processamento demorou demais. Tente um PDF menor, TXT ou cole o texto manualmente.", variant: "destructive" });
@@ -146,6 +155,7 @@ export default function Index() {
     setFileName(null);
     setResult(null);
     setShowPreview(false);
+    setPartialExtraction(false);
   };
 
   if (result) {
@@ -177,7 +187,7 @@ export default function Index() {
         <Card className="animate-fade-in">
           <CardHeader className="pb-3 sm:pb-6">
             <CardTitle className="text-base sm:text-lg">Texto para Análise</CardTitle>
-            <CardDescription className="text-xs sm:text-sm">Cole o texto jurídico ou envie um arquivo PDF/DOCX</CardDescription>
+            <CardDescription className="text-xs sm:text-sm">Cole o texto jurídico ou envie um arquivo (PDF: máx 5MB / TXT e DOCX: máx 10MB)</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <Textarea
@@ -212,6 +222,11 @@ export default function Index() {
                 {text.startsWith("[Não foi possível") && (
                   <p className="mt-2 text-xs text-destructive">
                     ⚠️ A extração pode ter falhado. Tente copiar e colar o texto manualmente.
+                  </p>
+                )}
+                {partialExtraction && !text.startsWith("[Não foi possível") && (
+                  <p className="mt-2 text-xs text-amber-600 dark:text-amber-400">
+                    ⚠️ Extração parcial — o PDF é grande e apenas parte do texto foi processada via OCR. Para melhores resultados, use um PDF menor ou cole o texto manualmente.
                   </p>
                 )}
               </div>

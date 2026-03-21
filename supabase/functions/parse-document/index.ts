@@ -5,6 +5,12 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
+const MAX_PDF_SIZE = 5 * 1024 * 1024;   // 5MB for PDFs
+const MAX_OTHER_SIZE = 10 * 1024 * 1024; // 10MB for TXT/DOCX
+const OCR_CHUNK_SIZE = 2 * 1024 * 1024;  // 2MB chunks for OCR
+const OCR_TIMEOUT_MS = 55000;
+const MAX_TEXT_LENGTH = 50000;
+
 function sanitizeText(raw: string): string {
   let text = raw.replace(/[^\x20-\x7E\xA0-\xFF\u00C0-\u024F\n\r\t]/g, " ");
   text = text.replace(/\.{5,}/g, " ");
@@ -18,33 +24,22 @@ function sanitizeText(raw: string): string {
   return text.trim();
 }
 
-/**
- * Check if a string looks like readable text (not binary garbage)
- */
 function isReadableText(text: string): boolean {
   if (!text || text.length < 5) return false;
-  // Count printable Latin chars (letters, digits, spaces, common punctuation)
   const printable = text.match(/[a-zA-ZÀ-ÿ0-9\s.,;:!?()'"\/\-]/g);
   const ratio = (printable?.length || 0) / text.length;
-  return ratio > 0.6; // At least 60% readable characters
+  return ratio > 0.6;
 }
 
-/**
- * Lightweight PDF text extraction - strips compressed streams first
- */
 function extractPdfText(bytes: Uint8Array): string {
   try {
     const raw = new TextDecoder("latin1").decode(bytes);
-    
-    // Strip compressed stream data (FlateDecode etc.) which is binary garbage
     const cleaned = raw.replace(/stream[\r\n][\s\S]*?endstream/gi, " ");
-    
     const parts: string[] = [];
     const seen = new Set<string>();
     const MAX_ITERATIONS = 50000;
     let iterations = 0;
 
-    // Pass 1: simple (text) Tj
     const tjRegex = /\(([^)]{1,500})\)\s*Tj/gi;
     let match;
     while ((match = tjRegex.exec(cleaned)) !== null && iterations < MAX_ITERATIONS) {
@@ -56,7 +51,6 @@ function extractPdfText(bytes: Uint8Array): string {
       }
     }
 
-    // Pass 2: [...] TJ arrays
     const arrayRegex = /\[([^\]]{1,5000})\]\s*TJ/gi;
     while ((match = arrayRegex.exec(cleaned)) !== null && iterations < MAX_ITERATIONS) {
       iterations++;
@@ -76,85 +70,121 @@ function extractPdfText(bytes: Uint8Array): string {
 
     return parts.join(" ");
   } catch (e) {
-    console.error("extractPdfText failed, falling back to OCR:", e);
+    console.error("extractPdfText failed:", e);
     return "";
   }
 }
 
-/**
- * OCR fallback: send the raw PDF as base64 to Gemini vision for text extraction
- */
-async function ocrWithVision(bytes: Uint8Array, fileName: string): Promise<{ text: string; timedOut: boolean }> {
+function bytesToBase64(bytes: Uint8Array): string {
+  const CHUNK = 8192;
+  let binary = "";
+  for (let i = 0; i < bytes.length; i += CHUNK) {
+    const chunk = bytes.subarray(i, Math.min(i + CHUNK, bytes.length));
+    binary += String.fromCharCode(...chunk);
+  }
+  return btoa(binary);
+}
+
+async function ocrWithVision(
+  bytes: Uint8Array,
+  fileName: string,
+  retries = 1
+): Promise<{ text: string; timedOut: boolean }> {
   const apiKey = Deno.env.get("LOVABLE_API_KEY");
   if (!apiKey) {
     console.error("LOVABLE_API_KEY not available for OCR fallback");
     return { text: "", timedOut: false };
   }
 
-  // Convert PDF bytes to base64
-  let base64 = "";
-  const CHUNK = 8192;
-  for (let i = 0; i < bytes.length; i += CHUNK) {
-    const chunk = bytes.subarray(i, Math.min(i + CHUNK, bytes.length));
-    base64 += String.fromCharCode(...chunk);
-  }
-  base64 = btoa(base64);
+  const base64 = bytesToBase64(bytes);
 
-  const ocrController = new AbortController();
-  const ocrTimeout = setTimeout(() => ocrController.abort(), 45000);
+  for (let attempt = 0; attempt <= retries; attempt++) {
+    if (attempt > 0) {
+      console.log(`OCR retry attempt ${attempt}...`);
+      await new Promise((r) => setTimeout(r, 2000 * attempt));
+    }
 
-  try {
-    const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        "Authorization": `Bearer ${apiKey}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        model: "google/gemini-2.5-flash",
-        messages: [
-          {
-            role: "user",
-            content: [
-              {
-                type: "text",
-                text: `Extraia TODO o texto deste documento PDF escaneado (${fileName}). Retorne APENAS o texto extraído, sem comentários, explicações ou formatação markdown. Mantenha a estrutura original de parágrafos. Se houver tabelas, formate-as de forma legível. Texto em português do Brasil.`,
-              },
-              {
-                type: "image_url",
-                image_url: {
-                  url: `data:application/pdf;base64,${base64}`,
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), OCR_TIMEOUT_MS);
+
+    try {
+      const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${apiKey}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          model: "google/gemini-2.5-flash-lite",
+          messages: [
+            {
+              role: "user",
+              content: [
+                {
+                  type: "text",
+                  text: `Extraia TODO o texto deste documento PDF escaneado (${fileName}). Retorne APENAS o texto extraído, sem comentários, explicações ou formatação markdown. Mantenha a estrutura original de parágrafos. Se houver tabelas, formate-as de forma legível. Texto em português do Brasil.`,
                 },
-              },
-            ],
-          },
-        ],
-        max_tokens: 16000,
-        temperature: 0.1,
-      }),
-      signal: ocrController.signal,
-    });
+                {
+                  type: "image_url",
+                  image_url: {
+                    url: `data:application/pdf;base64,${base64}`,
+                  },
+                },
+              ],
+            },
+          ],
+          max_tokens: 16000,
+          temperature: 0.1,
+        }),
+        signal: controller.signal,
+      });
 
-    clearTimeout(ocrTimeout);
+      clearTimeout(timeout);
 
-    if (!response.ok) {
-      const errText = await response.text();
-      console.error(`OCR vision API error [${response.status}]:`, errText);
+      if (!response.ok) {
+        const errText = await response.text();
+        console.error(`OCR API error [${response.status}]:`, errText);
+        if (attempt < retries) continue;
+        return { text: "", timedOut: false };
+      }
+
+      const data = await response.json();
+      const text = data?.choices?.[0]?.message?.content || "";
+      if (text.trim().length > 20) {
+        return { text: text.trim(), timedOut: false };
+      }
+      if (attempt < retries) continue;
+      return { text: text.trim(), timedOut: false };
+    } catch (e) {
+      clearTimeout(timeout);
+      if (e instanceof DOMException && e.name === "AbortError") {
+        console.error(`OCR timed out (attempt ${attempt + 1})`);
+        if (attempt < retries) continue;
+        return { text: "", timedOut: true };
+      }
+      console.error("OCR fetch error:", e);
+      if (attempt < retries) continue;
       return { text: "", timedOut: false };
     }
-
-    const data = await response.json();
-    const text = data?.choices?.[0]?.message?.content || "";
-    return { text: text.trim(), timedOut: false };
-  } catch (e) {
-    clearTimeout(ocrTimeout);
-    if (e instanceof DOMException && e.name === "AbortError") {
-      console.error("OCR timed out after 45s");
-      return { text: "", timedOut: true };
-    }
-    console.error("OCR fetch error:", e);
-    return { text: "", timedOut: false };
   }
+
+  return { text: "", timedOut: false };
+}
+
+async function processLargePdfOcr(
+  bytes: Uint8Array,
+  fileName: string
+): Promise<{ text: string; timedOut: boolean; partial: boolean }> {
+  if (bytes.length <= OCR_CHUNK_SIZE) {
+    const result = await ocrWithVision(bytes, fileName, 1);
+    return { ...result, partial: false };
+  }
+
+  // Truncate to first OCR_CHUNK_SIZE bytes for OCR
+  console.log(`PDF is ${(bytes.length / 1024 / 1024).toFixed(1)}MB, truncating to ${(OCR_CHUNK_SIZE / 1024 / 1024).toFixed(1)}MB for OCR...`);
+  const truncated = bytes.subarray(0, OCR_CHUNK_SIZE);
+  const result = await ocrWithVision(truncated, fileName, 1);
+  return { ...result, partial: result.text.length > 20 };
 }
 
 serve(async (req) => {
@@ -162,7 +192,6 @@ serve(async (req) => {
 
   try {
     const contentType = req.headers.get("content-type") || "";
-    
     if (!contentType.includes("multipart/form-data")) {
       throw new Error("Expected multipart/form-data");
     }
@@ -171,48 +200,52 @@ serve(async (req) => {
     const file = formData.get("file") as File | null;
     if (!file) throw new Error("No file provided");
 
-    const maxSize = 10 * 1024 * 1024;
-    if (file.size > maxSize) throw new Error("File too large (max 10MB)");
-
     const fileName = file.name.toLowerCase();
+    const isPdf = fileName.endsWith(".pdf");
+    const maxSize = isPdf ? MAX_PDF_SIZE : MAX_OTHER_SIZE;
+
+    if (file.size > maxSize) {
+      const limitMb = Math.round(maxSize / 1024 / 1024);
+      throw new Error(`Arquivo muito grande (máximo ${limitMb}MB para ${isPdf ? "PDF" : "este formato"})`);
+    }
+
     let extractedText = "";
     let usedOcr = false;
+    let partialExtraction = false;
 
     if (fileName.endsWith(".txt")) {
       extractedText = await file.text();
     } else {
       const buffer = await file.arrayBuffer();
       const bytes = new Uint8Array(buffer);
-      
-      if (fileName.endsWith(".pdf")) {
-        // Step 1: Try regex-based extraction
+
+      if (isPdf) {
+        // Step 1: regex extraction
         extractedText = extractPdfText(bytes);
         extractedText = sanitizeText(extractedText);
-        
-        // Validate overall quality, not just length
+
         if (extractedText && extractedText.length >= 50 && !isReadableText(extractedText)) {
           console.log(`Extracted text failed readability check (${extractedText.length} chars), falling back to OCR...`);
           extractedText = "";
         }
-        
-        // Step 2: If too little text or unreadable, fallback to OCR via Gemini vision
-        let ocrTimedOut = false;
+
+        // Step 2: OCR fallback with chunking
         if (!extractedText || extractedText.length < 50) {
           console.log(`Regex extraction yielded ${extractedText.length} chars, falling back to OCR...`);
-          const ocrResult = await ocrWithVision(bytes, file.name);
-          if (ocrResult.timedOut) {
-            ocrTimedOut = true;
-          } else if (ocrResult.text && ocrResult.text.length > 20) {
+          const ocrResult = await processLargePdfOcr(bytes, file.name);
+
+          if (ocrResult.timedOut && (!extractedText || extractedText.length < 20)) {
+            return new Response(
+              JSON.stringify({ text: "", ocr: false, ocr_timeout: true }),
+              { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+            );
+          }
+
+          if (ocrResult.text && ocrResult.text.length > 20) {
             extractedText = ocrResult.text;
             usedOcr = true;
+            partialExtraction = ocrResult.partial;
           }
-        }
-        
-        if (ocrTimedOut && (!extractedText || extractedText.length < 20)) {
-          return new Response(
-            JSON.stringify({ text: "", ocr: false, ocr_timeout: true }),
-            { headers: { ...corsHeaders, "Content-Type": "application/json" } }
-          );
         }
 
         if (!extractedText || extractedText.length < 20) {
@@ -226,9 +259,7 @@ serve(async (req) => {
         while ((xmlMatch = xmlTextRegex.exec(text)) !== null) {
           parts.push(xmlMatch[1]);
         }
-        
         extractedText = sanitizeText(parts.join(" "));
-        
         if (!extractedText || extractedText.length < 10) {
           extractedText = "[Não foi possível extrair texto do documento. Tente copiar e colar o texto manualmente.]";
         }
@@ -238,9 +269,10 @@ serve(async (req) => {
     }
 
     return new Response(
-      JSON.stringify({ 
-        text: extractedText.slice(0, 50000),
+      JSON.stringify({
+        text: extractedText.slice(0, MAX_TEXT_LENGTH),
         ocr: usedOcr,
+        partial: partialExtraction,
       }),
       { headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
