@@ -1,4 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { checkRateLimit } from "../_shared/rate-limit.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -98,6 +100,26 @@ serve(async (req) => {
 
     if (!messages || !Array.isArray(messages) || messages.length === 0) {
       throw new Error("Mensagens não fornecidas");
+    }
+
+    const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
+    const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+
+    // Optional auth — rate limit only if user is authenticated
+    const authHeader = req.headers.get("Authorization");
+    if (authHeader) {
+      const supa = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
+      const token = authHeader.replace("Bearer ", "");
+      const { data: { user } } = await supa.auth.getUser(token);
+      if (user) {
+        const { allowed, used, limit } = await checkRateLimit(user.id, "chat", SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
+        if (!allowed) {
+          return new Response(JSON.stringify({
+            error: `Limite diário de ${limit} mensagens atingido. Faça upgrade para continuar.`,
+            limit_reached: true, used, limit,
+          }), { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+        }
+      }
     }
 
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { AppHeader } from "@/components/AppHeader";
 import { LegalDisclaimer } from "@/components/LegalDisclaimer";
@@ -36,6 +37,7 @@ const VARA_JUIZO = [
 
 export default function Petition() {
   const { toast } = useToast();
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [generatedText, setGeneratedText] = useState<string | null>(null);
   const [tipoAcao, setTipoAcao] = useState("");
@@ -68,11 +70,25 @@ export default function Petition() {
       setGeneratedText(data.generated_text);
       toast({ title: "Petição gerada com sucesso!" });
     } catch (err: any) {
-      toast({
-        title: "Erro ao gerar petição",
-        description: err.message || "Tente novamente mais tarde.",
-        variant: "destructive",
-      });
+      const isLimitReached = err?.message?.includes("Limite diário") || err?.context?.status === 429;
+      if (isLimitReached || (err?.status === 429)) {
+        toast({
+          title: "Limite diário atingido",
+          description: err.message || "Você atingiu o limite de petições do plano gratuito.",
+          variant: "destructive",
+          action: (
+            <Button variant="outline" size="sm" onClick={() => navigate("/planos")}>
+              Ver planos
+            </Button>
+          ),
+        });
+      } else {
+        toast({
+          title: "Erro ao gerar petição",
+          description: err.message || "Tente novamente mais tarde.",
+          variant: "destructive",
+        });
+      }
     } finally {
       setLoading(false);
     }

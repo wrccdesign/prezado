@@ -68,6 +68,20 @@ export default function Diagnostico() {
       const data = await response.json();
 
       if (!response.ok) {
+        if (response.status === 429 && data?.limit_reached) {
+          toast({
+            title: "Limite diário atingido",
+            description: data.error || "Você atingiu o limite de diagnósticos do plano gratuito.",
+            variant: "destructive",
+            action: (
+              <Button variant="outline" size="sm" onClick={() => navigate("/planos")}>
+                Ver planos
+              </Button>
+            ),
+          });
+          setLoading(false);
+          return;
+        }
         throw new Error(data.error || "Erro ao processar diagnóstico");
       }
 

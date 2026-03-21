@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { AppHeader } from "@/components/AppHeader";
 import { LegalDisclaimer } from "@/components/LegalDisclaimer";
 import { useUserProfile } from "@/contexts/UserProfileContext";
@@ -38,6 +39,7 @@ function stripMeta(text: string): string {
 
 export default function Chat() {
   const { toast } = useToast();
+  const navigate = useNavigate();
   const { isLawyer } = useUserProfile();
   const { user } = useAuth();
   const [messages, setMessages] = useState<Message[]>([]);
@@ -102,7 +104,20 @@ export default function Chat() {
 
       if (!resp.ok) {
         const errData = await resp.json().catch(() => null);
-        toast({ title: "Erro", description: errData?.error || "Erro ao conectar com a IA.", variant: "destructive" });
+        if (resp.status === 429 && errData?.limit_reached) {
+          toast({
+            title: "Limite diário atingido",
+            description: errData.error || "Você atingiu o limite de mensagens do plano gratuito.",
+            variant: "destructive",
+            action: (
+              <Button variant="outline" size="sm" onClick={() => navigate("/planos")}>
+                Ver planos
+              </Button>
+            ),
+          });
+        } else {
+          toast({ title: "Erro", description: errData?.error || "Erro ao conectar com a IA.", variant: "destructive" });
+        }
         setIsLoading(false);
         return;
       }
