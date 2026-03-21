@@ -110,6 +110,30 @@ export type Database = {
         }
         Relationships: []
       }
+      cron_ingest_log: {
+        Row: {
+          executed_at: string | null
+          id: string
+          phase: number
+          results: Json | null
+          total_ingested: number | null
+        }
+        Insert: {
+          executed_at?: string | null
+          id?: string
+          phase: number
+          results?: Json | null
+          total_ingested?: number | null
+        }
+        Update: {
+          executed_at?: string | null
+          id?: string
+          phase?: number
+          results?: Json | null
+          total_ingested?: number | null
+        }
+        Relationships: []
+      }
       decisions: {
         Row: {
           argumentos_principais: string[] | null
