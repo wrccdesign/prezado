@@ -31,9 +31,12 @@ export default function Index() {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    const maxSize = 10 * 1024 * 1024;
+    const isPdf = file.name.toLowerCase().endsWith(".pdf");
+    const maxSize = isPdf ? 5 * 1024 * 1024 : 10 * 1024 * 1024;
+    const limitLabel = isPdf ? "5MB" : "10MB";
+
     if (file.size > maxSize) {
-      toast({ title: "Arquivo muito grande", description: "O limite é 10MB.", variant: "destructive" });
+      toast({ title: "Arquivo muito grande", description: `O limite para ${isPdf ? "PDF" : "este formato"} é ${limitLabel}.`, variant: "destructive" });
       return;
     }
 
