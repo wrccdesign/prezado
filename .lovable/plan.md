@@ -1,23 +1,53 @@
 
 
-## Plan: Create `cron_ingest_log` table
+## Configurar pg_cron para ingestão automática
 
-Create audit log table for the cron ingestion pipeline, restricted to service role only.
+### O que será feito
 
-### Database migration
+Executar o SQL que você forneceu para agendar dois cron jobs:
 
-Single migration to:
-1. Create `cron_ingest_log` table with columns: `id` (uuid PK), `phase` (integer), `total_ingested` (integer), `results` (jsonb), `executed_at` (timestamptz)
-2. Enable RLS
-3. Add single policy granting full access to `service_role` only
+- **Phase 1 (DataJud):** Todos os dias às 06:00 UTC
+- **Phase 2 (Firecrawl):** Toda segunda-feira às 04:00 UTC
 
-### Technical details
+### Passos
 
-- No public/authenticated access — only edge functions using service role key can read/write
-- This table is already referenced by `cron-ingest` edge function but was silently failing because it didn't exist
-- No frontend or code changes needed
+1. **Habilitar extensões** `pg_cron` e `pg_net` (se ainda não estiverem ativas)
+2. **Criar os dois agendamentos** usando `cron.schedule()` com `net.http_post()` chamando a edge function `cron-ingest`
 
-### Files changed
+### Observação técnica
 
-1. New Supabase migration — `CREATE TABLE cron_ingest_log` + RLS
+- As edge functions estão configuradas com `verify_jwt = false`, então a anon key funciona para autenticação
+- A edge function `cron-ingest` internamente usa `SUPABASE_SERVICE_ROLE_KEY` (via `Deno.env.get`) para chamar as outras funções de scraping, então a autenticação interna está coberta
+- O SQL será executado diretamente no banco (não como migration, pois contém dados específicos do projeto)
+
+### SQL a executar
+
+```sql
+CREATE EXTENSION IF NOT EXISTS pg_cron;
+CREATE EXTENSION IF NOT EXISTS pg_net;
+
+SELECT cron.schedule(
+  'cron-ingest-phase1',
+  '0 6 * * *',
+  $$
+  SELECT net.http_post(
+    url:='https://hfhzkvuoywgxjklpiydq.supabase.co/functions/v1/cron-ingest',
+    headers:='{"Content-Type": "application/json", "Authorization": "Bearer eyJhbG...pDA4"}'::jsonb,
+    body:='{"phase": 1}'::jsonb
+  ) as request_id;
+  $$
+);
+
+SELECT cron.schedule(
+  'cron-ingest-phase2',
+  '0 4 * * 1',
+  $$
+  SELECT net.http_post(
+    url:='https://hfhzkvuoywgxjklpiydq.supabase.co/functions/v1/cron-ingest',
+    headers:='{"Content-Type": "application/json", "Authorization": "Bearer eyJhbG...pDA4"}'::jsonb,
+    body:='{"phase": 2}'::jsonb
+  ) as request_id;
+  $$
+);
+```
 
