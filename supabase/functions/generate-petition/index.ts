@@ -74,6 +74,17 @@ serve(async (req) => {
     const { data: { user }, error: userError } = await supabase.auth.getUser(token);
     if (userError || !user) throw new Error("Unauthorized");
 
+    // Rate limit check
+    {
+      const { allowed, used, limit } = await checkRateLimit(user.id, "peticao", supabaseUrl, supabaseKey);
+      if (!allowed) {
+        return new Response(JSON.stringify({
+          error: `Limite diário de ${limit} petições atingido. Faça upgrade para continuar.`,
+          limit_reached: true, used, limit,
+        }), { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+      }
+    }
+
     const body = await req.json();
     
     // Support both new simplified form and legacy form

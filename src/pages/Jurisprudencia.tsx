@@ -112,7 +112,24 @@ export default function Jurisprudencia() {
   }),
 });
 
-if (!res.ok) throw new Error(`Erro ${res.status}`);
+if (!res.ok) {
+        const errData = await res.json().catch(() => null);
+        if (res.status === 429 && errData?.limit_reached) {
+          toast({
+            title: "Limite diário atingido",
+            description: errData.error || "Você atingiu o limite de buscas do plano gratuito.",
+            variant: "destructive",
+            action: (
+              <Button variant="outline" size="sm" onClick={() => navigate("/planos")}>
+                Ver planos
+              </Button>
+            ),
+          });
+          setLoading(false);
+          return;
+        }
+        throw new Error(errData?.error || `Erro ${res.status}`);
+      }
 
 const response = await res.json() as SearchResponse;
       setResults(response.results || []);

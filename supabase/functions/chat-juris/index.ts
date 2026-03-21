@@ -102,6 +102,26 @@ serve(async (req) => {
       throw new Error("Mensagens não fornecidas");
     }
 
+    const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
+    const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+
+    // Optional auth — rate limit only if user is authenticated
+    const authHeader = req.headers.get("Authorization");
+    if (authHeader) {
+      const supa = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
+      const token = authHeader.replace("Bearer ", "");
+      const { data: { user } } = await supa.auth.getUser(token);
+      if (user) {
+        const { allowed, used, limit } = await checkRateLimit(user.id, "chat", SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
+        if (!allowed) {
+          return new Response(JSON.stringify({
+            error: `Limite diário de ${limit} mensagens atingido. Faça upgrade para continuar.`,
+            limit_reached: true, used, limit,
+          }), { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+        }
+      }
+    }
+
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY not configured");
 

@@ -104,7 +104,20 @@ export default function Chat() {
 
       if (!resp.ok) {
         const errData = await resp.json().catch(() => null);
-        toast({ title: "Erro", description: errData?.error || "Erro ao conectar com a IA.", variant: "destructive" });
+        if (resp.status === 429 && errData?.limit_reached) {
+          toast({
+            title: "Limite diário atingido",
+            description: errData.error || "Você atingiu o limite de mensagens do plano gratuito.",
+            variant: "destructive",
+            action: (
+              <Button variant="outline" size="sm" onClick={() => navigate("/planos")}>
+                Ver planos
+              </Button>
+            ),
+          });
+        } else {
+          toast({ title: "Erro", description: errData?.error || "Erro ao conectar com a IA.", variant: "destructive" });
+        }
         setIsLoading(false);
         return;
       }

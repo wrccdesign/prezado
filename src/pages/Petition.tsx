@@ -70,11 +70,25 @@ export default function Petition() {
       setGeneratedText(data.generated_text);
       toast({ title: "Petição gerada com sucesso!" });
     } catch (err: any) {
-      toast({
-        title: "Erro ao gerar petição",
-        description: err.message || "Tente novamente mais tarde.",
-        variant: "destructive",
-      });
+      const isLimitReached = err?.message?.includes("Limite diário") || err?.context?.status === 429;
+      if (isLimitReached || (err?.status === 429)) {
+        toast({
+          title: "Limite diário atingido",
+          description: err.message || "Você atingiu o limite de petições do plano gratuito.",
+          variant: "destructive",
+          action: (
+            <Button variant="outline" size="sm" onClick={() => navigate("/planos")}>
+              Ver planos
+            </Button>
+          ),
+        });
+      } else {
+        toast({
+          title: "Erro ao gerar petição",
+          description: err.message || "Tente novamente mais tarde.",
+          variant: "destructive",
+        });
+      }
     } finally {
       setLoading(false);
     }
