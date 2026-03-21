@@ -24,6 +24,7 @@ export default function Index() {
   const [parseStage, setParseStage] = useState("");
   const [result, setResult] = useState<LegalAnalysis | null>(null);
   const [showPreview, setShowPreview] = useState(false);
+  const [partialExtraction, setPartialExtraction] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
 
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
