@@ -61,6 +61,7 @@ const INSTANCIAS = [
 ];
 
 export default function Jurisprudencia() {
+  const navigate = useNavigate();
   const [query, setQuery] = useState("");
   const [loading, setLoading] = useState(false);
   const [results, setResults] = useState<Decision[]>([]);
