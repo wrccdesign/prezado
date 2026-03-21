@@ -1,27 +1,29 @@
 
 
-## Plan: Rebalance RRF weights in search-jurisprudencia
+## Plan: Update `search_decisions` function
 
-### Changes in `supabase/functions/search-jurisprudencia/index.ts`
+Apply the provided SQL to recreate the `search_decisions` function with the relaxed content filter — allowing results that have either a valid ementa (≥50 chars) OR a valid resumo_ia (≥30 chars), instead of requiring ementa only.
 
-**1. Increase vector similarity threshold (line 121)**
-- Change `match_threshold: 0.25` → `match_threshold: 0.4`
+### What changes
 
-**2. Apply weighted RRF with k constants (lines 146-170)**
-
-Replace the current RRF merge logic:
-
-- FTS score: `1 / (k_fts + rank)` where `k_fts = 30` (lower k = higher weight)
-- Vector score: `1 / (k_vec + rank)` where `k_vec = 60` (higher k = lower weight)
-- Vector-only results (no FTS match): only include if `similarity > 0.5`
-
-```text
-FTS results:    combined_score = 1 / (30 + idx)
-Vector results: combined_score += 1 / (60 + idx)   [if already in map]
-Vector-only:    only add if similarity > 0.5, score = 1 / (60 + idx)
+The WHERE clause changes from:
+```sql
+AND d.ementa IS NOT NULL AND length(d.ementa) >= 50
+```
+to:
+```sql
+AND (
+  (d.ementa IS NOT NULL AND length(d.ementa) >= 50)
+  OR
+  (d.resumo_ia IS NOT NULL AND length(d.resumo_ia) >= 30)
+)
 ```
 
-### Files changed
+This ensures decisions with AI summaries but no ementa still appear in search results.
 
-1. `supabase/functions/search-jurisprudencia/index.ts` — RRF rebalancing + threshold bump
+### Technical details
+
+- Single migration with `CREATE OR REPLACE FUNCTION` for `search_decisions`
+- All other filters remain unchanged (date ≥ 2015, no `<UNKNOWN>`, no procedural results)
+- No frontend changes needed — the card already has a fallback for missing ementa
 
