@@ -187,7 +187,7 @@ export default function Index() {
         <Card className="animate-fade-in">
           <CardHeader className="pb-3 sm:pb-6">
             <CardTitle className="text-base sm:text-lg">Texto para Análise</CardTitle>
-            <CardDescription className="text-xs sm:text-sm">Cole o texto jurídico ou envie um arquivo PDF/DOCX</CardDescription>
+            <CardDescription className="text-xs sm:text-sm">Cole o texto jurídico ou envie um arquivo (PDF: máx 5MB / TXT e DOCX: máx 10MB)</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <Textarea
