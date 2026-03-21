@@ -1,29 +1,24 @@
 
 
-## Plan: Update `search_decisions` function
+## Plan: Create `usage_tracking` table
 
-Apply the provided SQL to recreate the `search_decisions` function with the relaxed content filter — allowing results that have either a valid ementa (≥50 chars) OR a valid resumo_ia (≥30 chars), instead of requiring ementa only.
+Create a new table to track per-user feature usage (searches, chat messages, petitions, etc.), with RLS so users can only insert and view their own records.
 
-### What changes
+### Database migration
 
-The WHERE clause changes from:
-```sql
-AND d.ementa IS NOT NULL AND length(d.ementa) >= 50
-```
-to:
-```sql
-AND (
-  (d.ementa IS NOT NULL AND length(d.ementa) >= 50)
-  OR
-  (d.resumo_ia IS NOT NULL AND length(d.resumo_ia) >= 30)
-)
-```
-
-This ensures decisions with AI summaries but no ementa still appear in search results.
+Single migration to:
+1. Create `usage_tracking` table with columns: `id` (uuid PK), `user_id` (references auth.users), `action` (text), `created_at` (timestamptz)
+2. Enable RLS
+3. Add INSERT policy — users can insert own rows
+4. Add SELECT policy — users can read own rows
 
 ### Technical details
 
-- Single migration with `CREATE OR REPLACE FUNCTION` for `search_decisions`
-- All other filters remain unchanged (date ≥ 2015, no `<UNKNOWN>`, no procedural results)
-- No frontend changes needed — the card already has a fallback for missing ementa
+- No foreign key to `public.profiles` — references `auth.users(id)` directly (appropriate for internal tracking)
+- No UPDATE/DELETE policies — usage records are append-only
+- No frontend changes in this step — this just creates the tracking infrastructure
+
+### Files changed
+
+1. New Supabase migration — `CREATE TABLE usage_tracking` + RLS policies
 
