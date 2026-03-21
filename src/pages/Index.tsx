@@ -91,12 +91,17 @@ export default function Index() {
         setParseStage("OCR aplicado em documento escaneado...");
       }
       
+      if (data.partial) {
+        setPartialExtraction(true);
+      }
+      
       setParseProgress(100);
       setParseStage("Concluído!");
       setText(data.text);
       setShowPreview(true);
       const ocrNote = data.ocr ? " (via OCR — documento escaneado)" : "";
-      toast({ title: "Documento processado!", description: `Texto extraído de ${file.name}${ocrNote}. Verifique o preview abaixo.` });
+      const partialNote = data.partial ? " ⚠️ Extração parcial — PDF muito grande, apenas parte do texto foi extraída." : "";
+      toast({ title: "Documento processado!", description: `Texto extraído de ${file.name}${ocrNote}.${partialNote}` });
     } catch (err: any) {
       if (err?.name === "AbortError") {
         toast({ title: "Timeout no upload", description: "O processamento demorou demais. Tente um PDF menor, TXT ou cole o texto manualmente.", variant: "destructive" });
