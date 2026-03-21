@@ -224,6 +224,11 @@ export default function Index() {
                     ⚠️ A extração pode ter falhado. Tente copiar e colar o texto manualmente.
                   </p>
                 )}
+                {partialExtraction && !text.startsWith("[Não foi possível") && (
+                  <p className="mt-2 text-xs text-amber-600 dark:text-amber-400">
+                    ⚠️ Extração parcial — o PDF é grande e apenas parte do texto foi processada via OCR. Para melhores resultados, use um PDF menor ou cole o texto manualmente.
+                  </p>
+                )}
               </div>
             )}
 
