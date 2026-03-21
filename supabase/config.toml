@@ -39,5 +39,8 @@ verify_jwt = false
 [functions.scrape-tj-proprio]
 verify_jwt = false
 
+[functions.cron-ingest]
+verify_jwt = false
+
 [functions.ingest-datajud]
 verify_jwt = false
