@@ -22,6 +22,15 @@ serve(async (req) => {
     const { data: { user }, error: userError } = await supabase.auth.getUser(token);
     if (userError || !user) throw new Error("Unauthorized");
 
+    // Rate limit check
+    const { allowed, used, limit } = await checkRateLimit(user.id, "diagnostico", supabaseUrl, supabaseKey);
+    if (!allowed) {
+      return new Response(JSON.stringify({
+        error: `Limite diário de ${limit} diagnósticos atingido. Faça upgrade para continuar.`,
+        limit_reached: true, used, limit,
+      }), { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    }
+
     const { situacao } = await req.json();
     if (!situacao || typeof situacao !== "string" || situacao.trim().length < 20) {
       throw new Error("Descreva sua situação com mais detalhes (mínimo 20 caracteres)");
