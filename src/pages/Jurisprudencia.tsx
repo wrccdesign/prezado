@@ -310,14 +310,15 @@ const response = await res.json() as SearchResponse;
                 </CardHeader>
 
                 <CardContent className="px-4 pb-4">
+
                   {/* Ementa — hero element */}
-                  {d.ementa ? (
-                    <p className={`text-sm font-medium leading-relaxed text-foreground ${expandedId === d.id ? "" : "line-clamp-3"}`}>
-                      {d.ementa}
-                    </p>
-                  ) : (
-                    <p className="text-sm italic text-muted-foreground">Ementa não disponível</p>
-                  )}
+{(d.ementa || d.resumo_ia) ? (
+  <p className={`text-sm font-medium leading-relaxed text-foreground ${expandedId === d.id ? "" : "line-clamp-3"}`}>
+    {d.ementa || d.resumo_ia}
+  </p>
+) : (
+  <p className="text-sm italic text-muted-foreground">Ementa não disponível</p>
+)}
 
                   {/* Processo number */}
                   {d.numero_processo && !d.numero_processo.includes('<UNKNOWN>') && (
