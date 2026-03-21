@@ -37,6 +37,7 @@ const VARA_JUIZO = [
 
 export default function Petition() {
   const { toast } = useToast();
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [generatedText, setGeneratedText] = useState<string | null>(null);
   const [tipoAcao, setTipoAcao] = useState("");
