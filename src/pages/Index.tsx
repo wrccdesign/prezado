@@ -155,6 +155,7 @@ export default function Index() {
     setFileName(null);
     setResult(null);
     setShowPreview(false);
+    setPartialExtraction(false);
   };
 
   if (result) {
