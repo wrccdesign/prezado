@@ -39,6 +39,7 @@ function stripMeta(text: string): string {
 
 export default function Chat() {
   const { toast } = useToast();
+  const navigate = useNavigate();
   const { isLawyer } = useUserProfile();
   const { user } = useAuth();
   const [messages, setMessages] = useState<Message[]>([]);
