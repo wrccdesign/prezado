@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { AppHeader } from "@/components/AppHeader";
 import { LegalDisclaimer } from "@/components/LegalDisclaimer";
 import { useUserProfile } from "@/contexts/UserProfileContext";
@@ -40,12 +40,33 @@ function stripMeta(text: string): string {
 export default function Chat() {
   const { toast } = useToast();
   const navigate = useNavigate();
+  const location = useLocation();
   const { isLawyer } = useUserProfile();
   const { user } = useAuth();
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const diagnosticoConsumed = useRef(false);
+
+  // Pre-populate messages from Diagnóstico navigation
+  useEffect(() => {
+    const state = location.state as {
+      fromDiagnostico?: boolean;
+      situacao?: string;
+      diagnosticoSummary?: string;
+    } | null;
+
+    if (state?.fromDiagnostico && state.situacao && state.diagnosticoSummary && !diagnosticoConsumed.current) {
+      diagnosticoConsumed.current = true;
+      setMessages([
+        { role: "user", content: state.situacao },
+        { role: "assistant", content: state.diagnosticoSummary },
+      ]);
+      // Clear the state to prevent re-trigger on refresh
+      navigate(location.pathname, { replace: true, state: null });
+    }
+  }, [location.state, navigate, location.pathname]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });

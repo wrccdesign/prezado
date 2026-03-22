@@ -106,9 +106,14 @@ export default function Diagnostico() {
   };
 
   const handleChatMore = () => {
+    if (!result) return;
+    const diagnosticoSummary = `## Diagnóstico Jurídico\n\n**Área:** ${result.area_do_direito}\n**Urgência:** ${URGENCIA_CONFIG[result.urgencia].label}\n\n**O que está acontecendo:**\n${result.o_que_esta_acontecendo}\n\n**Seu direito:**\n${result.qual_seu_direito}\n\n**O que você pode fazer:**\n${result.o_que_voce_pode_fazer.map((s, i) => `${i + 1}. ${s}`).join("\n")}\n\n**Custos/Ganhos:**\n${result.estimativa_custos_ganhos}\n\n**Onde buscar ajuda:**\n${result.onde_entrar}`;
+
     navigate("/chat", {
       state: {
-        initialMessage: `Quero saber mais sobre minha situação: ${situacao}`,
+        fromDiagnostico: true,
+        situacao: situacao.trim(),
+        diagnosticoSummary,
       },
     });
   };
