@@ -1,43 +1,35 @@
 
 
-## Resolver timeout de OCR em PDFs grandes
+## Preservar contexto do Diagnóstico ao continuar no Chat
 
 ### Problema
-PDFs escaneados grandes (sem texto selecionável) são enviados inteiros como base64 para o Gemini via OCR, o que excede o timeout de 45s da edge function. O erro "OCR expirou" aparece quando o documento é muito pesado.
+Ao clicar "Falar mais sobre isso" no Diagnóstico, o usuário é levado ao Chat mas perde toda a conversa anterior. O `navigate` envia `state.initialMessage`, porém o Chat.tsx nunca lê esse state.
 
-### Solução: OCR por páginas com chunking
+### Solução recomendada: Passar contexto completo e auto-enviar
 
-Em vez de enviar o PDF inteiro de uma vez para o Gemini, dividir o processamento em chunks menores e processar página a página. Também ajustar os limites de arquivo para serem mais realistas.
+Em vez de apenas enviar uma mensagem genérica, passar o diagnóstico completo como contexto inicial do chat, permitindo que a IA continue a conversa com conhecimento do que já foi discutido.
 
 ### Mudanças
 
-**1. Edge Function `parse-document/index.ts`**
-- Implementar processamento paginado: enviar apenas os primeiros N MB do PDF para OCR (split em chunks de ~2MB)
-- Aumentar o timeout do OCR de 45s para 55s por chunk
-- Adicionar retry com backoff para chunks que falham
-- Se o PDF for muito grande para OCR completo, processar parcialmente e informar o usuário
-- Reduzir o limite de arquivo de 10MB para 5MB para PDFs (manter 10MB para TXT/DOCX que não precisam de OCR)
-- Usar `google/gemini-2.5-flash-lite` para OCR (mais rápido, suficiente para extração de texto)
+**1. `src/pages/Diagnostico.tsx` — Enviar contexto rico**
+- Alterar `handleChatMore` para passar tanto a situação original quanto o resultado do diagnóstico via `navigate state`
+- Incluir um resumo formatado do diagnóstico como primeira mensagem "assistant" para o usuário ver o que já foi discutido
 
-**2. Frontend `src/pages/Index.tsx`**
-- Atualizar mensagem de limite: "PDF: máx 5MB / TXT e DOCX: máx 10MB"
-- Validar tamanho por tipo de arquivo antes do upload
-- Melhorar feedback de progresso para OCR parcial
-- Mostrar aviso quando texto foi extraído parcialmente
+**2. `src/pages/Chat.tsx` — Ler o state e pré-popular conversa**
+- Usar `useLocation()` para ler `location.state`
+- Se vier `fromDiagnostico: true`, pré-popular o array `messages` com:
+  - Uma mensagem `user` com a situação original
+  - Uma mensagem `assistant` com um resumo do diagnóstico
+- Auto-enviar a pergunta de follow-up se houver `initialMessage`
+- Limpar o state após consumir (via `navigate(location.pathname, { replace: true, state: null })`) para evitar re-trigger em refresh
 
-**3. Fluxo atualizado**
+**3. Fluxo resultante**
 ```text
-PDF upload → regex extraction
-  ├─ texto suficiente → retorna
-  └─ texto insuficiente → OCR
-       ├─ PDF ≤ 2MB → envia inteiro
-       └─ PDF > 2MB → trunca para primeiros 2MB
-            └─ processa + avisa "extração parcial"
+Diagnóstico → clica "Falar mais" → Chat abre com:
+  [user]: "Fui demitido sem receber..."
+  [assistant]: "Resumo do diagnóstico: ..."
+  [user pode continuar perguntando normalmente]
 ```
 
-### Limites de segurança mantidos
-- Validação de tamanho no frontend E no backend
-- Limite de 5MB para PDFs (reduzido de 10MB)
-- Timeout total de 55s para OCR
-- Limite de 50.000 caracteres no texto extraído
+Dessa forma o usuário mantém o contexto visual e a IA recebe o histórico completo para dar respostas coerentes. Não é necessário salvar em banco — o contexto viaja via navigation state e é suficiente para a sessão.
 
