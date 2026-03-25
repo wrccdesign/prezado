@@ -44,3 +44,6 @@ verify_jwt = false
 
 [functions.ingest-datajud]
 verify_jwt = false
+
+[functions.test-juslaboris]
+verify_jwt = false
