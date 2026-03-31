@@ -131,7 +131,7 @@ export default function Index() {
 
     try {
       const { data, error } = await supabase.functions.invoke("analyze-legal-text", {
-        body: { text: text.trim(), file_name: fileName },
+        body: { text: text.trim().slice(0, 15000), file_name: fileName },
       });
 
       if (error) throw error;
