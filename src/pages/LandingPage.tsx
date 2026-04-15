@@ -486,7 +486,7 @@ export default function LandingPage() {
                   {p.features.map((f) => (<li key={f} className="flex items-center gap-2 text-sm text-muted-foreground"><Check className="h-4 w-4 text-gold shrink-0" />{f}</li>))}
                 </ul>
                 <Button className={`w-full font-semibold ${p.highlight ? "bg-gold text-navy hover:bg-gold-light" : "bg-navy text-white hover:bg-navy-medium"}`} asChild>
-                  <Link to="/auth">{p.cta}</Link>
+                  <Link to="/planos">{p.cta}</Link>
                 </Button>
               </div>
             ))}
