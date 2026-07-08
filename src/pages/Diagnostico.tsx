@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { AppHeader } from "@/components/AppHeader";
@@ -7,9 +7,12 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
+import { PaywallBlur } from "@/components/PaywallBlur";
+import { useAuth } from "@/contexts/AuthContext";
+import { useSubscription } from "@/hooks/useSubscription";
 
 import { AppFooter } from "@/components/AppFooter";
-import { Search, Scale, ClipboardList, DollarSign, Building2, Zap, ArrowRight, MessageCircle, Loader2, Stethoscope } from "lucide-react";
+import { Search, Scale, ClipboardList, DollarSign, Building2, Zap, ArrowRight, MessageCircle, Loader2, Stethoscope, Sparkles, Lock } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 
 interface Diagnostico {
@@ -30,11 +33,41 @@ const URGENCIA_CONFIG = {
   alta: { label: "Alta", color: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300" },
 };
 
+const TEASER_ACTION = "diagnostico_completo_free";
+
 export default function Diagnostico() {
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const { isPro } = useSubscription();
   const [situacao, setSituacao] = useState("");
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<Diagnostico | null>(null);
+  const [teaserAvailable, setTeaserAvailable] = useState(false);
+  const [teaserUsedThisSession, setTeaserUsedThisSession] = useState(false);
+
+  // Verificar se o usuário free já usou o teaser diário
+  useEffect(() => {
+    if (!user || isPro) {
+      setTeaserAvailable(false);
+      return;
+    }
+    const checkTeaser = async () => {
+      const startOfDay = new Date();
+      startOfDay.setHours(0, 0, 0, 0);
+      const { count } = await supabase
+        .from("usage_tracking")
+        .select("*", { count: "exact", head: true })
+        .eq("user_id", user.id)
+        .eq("action", TEASER_ACTION)
+        .gte("created_at", startOfDay.toISOString());
+      setTeaserAvailable((count ?? 0) === 0);
+    };
+    checkTeaser();
+  }, [user, isPro]);
+
+  // Free tem tudo desbloqueado se: é pro OU tem teaser disponível OU acabou de usar o teaser nesta sessão
+  const fullAccess = isPro || teaserAvailable || teaserUsedThisSession;
+  const locked = !fullAccess;
 
   const handleAnalyze = async () => {
     if (situacao.trim().length < 20) {
@@ -86,6 +119,16 @@ export default function Diagnostico() {
       }
 
       setResult(data.diagnostico);
+
+      // Consumir teaser diário se aplicável
+      if (!isPro && teaserAvailable && user) {
+        await supabase.from("usage_tracking").insert({
+          user_id: user.id,
+          action: TEASER_ACTION,
+        });
+        setTeaserAvailable(false);
+        setTeaserUsedThisSession(true);
+      }
     } catch (err: any) {
       toast({ title: "Erro", description: err.message || "Não foi possível gerar o diagnóstico.", variant: "destructive" });
     } finally {
@@ -95,6 +138,10 @@ export default function Diagnostico() {
 
   const handleGeneratePetition = () => {
     if (!result) return;
+    if (locked) {
+      navigate("/planos");
+      return;
+    }
     navigate("/peticao", {
       state: {
         fromDiagnostico: true,
@@ -107,6 +154,10 @@ export default function Diagnostico() {
 
   const handleChatMore = () => {
     if (!result) return;
+    if (locked) {
+      navigate("/planos");
+      return;
+    }
     const diagnosticoSummary = `## Diagnóstico Jurídico\n\n**Área:** ${result.area_do_direito}\n**Urgência:** ${URGENCIA_CONFIG[result.urgencia].label}\n\n**O que está acontecendo:**\n${result.o_que_esta_acontecendo}\n\n**Seu direito:**\n${result.qual_seu_direito}\n\n**O que você pode fazer:**\n${result.o_que_voce_pode_fazer.map((s, i) => `${i + 1}. ${s}`).join("\n")}\n\n**Custos/Ganhos:**\n${result.estimativa_custos_ganhos}\n\n**Onde buscar ajuda:**\n${result.onde_entrar}`;
 
     navigate("/chat", {
@@ -139,6 +190,12 @@ export default function Diagnostico() {
                 <br />
                 <span className="text-sm">Não precisa saber termos jurídicos — eu entendo você.</span>
               </p>
+              {!isPro && teaserAvailable && (
+                <div className="inline-flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1.5 text-xs font-medium text-primary">
+                  <Sparkles className="h-3.5 w-3.5" />
+                  Seu diagnóstico completo grátis de hoje está disponível
+                </div>
+              )}
             </div>
 
             {/* Input */}
@@ -185,15 +242,21 @@ export default function Diagnostico() {
             </Button>
 
             {/* Urgency Badge */}
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-3 flex-wrap">
               <h2 className="text-xl sm:text-2xl font-bold font-serif text-foreground">Seu Diagnóstico</h2>
               <Badge className={`${URGENCIA_CONFIG[result.urgencia].color} text-xs px-2.5 py-1`}>
                 <Zap className="h-3 w-3 mr-1" />
                 Urgência {URGENCIA_CONFIG[result.urgencia].label}
               </Badge>
+              {!isPro && teaserUsedThisSession && (
+                <Badge variant="outline" className="text-xs">
+                  <Sparkles className="h-3 w-3 mr-1" />
+                  Diagnóstico completo grátis de hoje
+                </Badge>
+              )}
             </div>
 
-            {/* O que está acontecendo */}
+            {/* SEMPRE VISÍVEIS — 2 primeiros cards */}
             <Card>
               <CardHeader className="pb-3">
                 <CardTitle className="text-base flex items-center gap-2">
@@ -206,7 +269,6 @@ export default function Diagnostico() {
               </CardContent>
             </Card>
 
-            {/* Qual é o seu direito */}
             <Card>
               <CardHeader className="pb-3">
                 <CardTitle className="text-base flex items-center gap-2">
@@ -219,78 +281,112 @@ export default function Diagnostico() {
               </CardContent>
             </Card>
 
-            {/* O que você pode fazer */}
-            <Card>
-              <CardHeader className="pb-3">
-                <CardTitle className="text-base flex items-center gap-2">
-                  <ClipboardList className="h-4 w-4 text-primary" />
-                  📋 O que você pode fazer
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <ol className="space-y-2">
-                  {result.o_que_voce_pode_fazer.map((step, i) => (
-                    <li key={i} className="flex gap-3 text-sm">
-                      <span className="flex-shrink-0 flex items-center justify-center h-6 w-6 rounded-full bg-primary/10 text-primary text-xs font-bold">
-                        {i + 1}
-                      </span>
-                      <span className="leading-relaxed pt-0.5">{step}</span>
-                    </li>
-                  ))}
-                </ol>
-              </CardContent>
-            </Card>
+            {/* BLOQUEÁVEIS — 4 cards restantes */}
+            <PaywallBlur locked={locked}>
+              <Card>
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-base flex items-center gap-2">
+                    <ClipboardList className="h-4 w-4 text-primary" />
+                    📋 O que você pode fazer
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <ol className="space-y-2">
+                    {result.o_que_voce_pode_fazer.map((step, i) => (
+                      <li key={i} className="flex gap-3 text-sm">
+                        <span className="flex-shrink-0 flex items-center justify-center h-6 w-6 rounded-full bg-primary/10 text-primary text-xs font-bold">
+                          {i + 1}
+                        </span>
+                        <span className="leading-relaxed pt-0.5">{step}</span>
+                      </li>
+                    ))}
+                  </ol>
+                </CardContent>
+              </Card>
+            </PaywallBlur>
 
-            {/* Custos e ganhos */}
-            <Card>
-              <CardHeader className="pb-3">
-                <CardTitle className="text-base flex items-center gap-2">
-                  <DollarSign className="h-4 w-4 text-primary" />
-                  💰 Quanto pode custar / ganhar
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-sm leading-relaxed">{result.estimativa_custos_ganhos}</p>
-              </CardContent>
-            </Card>
+            <PaywallBlur locked={locked}>
+              <Card>
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-base flex items-center gap-2">
+                    <DollarSign className="h-4 w-4 text-primary" />
+                    💰 Quanto pode custar / ganhar
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-sm leading-relaxed">{result.estimativa_custos_ganhos}</p>
+                </CardContent>
+              </Card>
+            </PaywallBlur>
 
-            {/* Onde entrar */}
-            <Card>
-              <CardHeader className="pb-3">
-                <CardTitle className="text-base flex items-center gap-2">
-                  <Building2 className="h-4 w-4 text-primary" />
-                  🏛️ Onde buscar ajuda
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-sm leading-relaxed">{result.onde_entrar}</p>
-              </CardContent>
-            </Card>
+            <PaywallBlur locked={locked}>
+              <Card>
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-base flex items-center gap-2">
+                    <Building2 className="h-4 w-4 text-primary" />
+                    🏛️ Onde buscar ajuda
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-sm leading-relaxed">{result.onde_entrar}</p>
+                </CardContent>
+              </Card>
+            </PaywallBlur>
 
-            {/* Urgência */}
-            <Card className={result.urgencia === "alta" ? "border-destructive/30" : ""}>
-              <CardHeader className="pb-3">
-                <CardTitle className="text-base flex items-center gap-2">
-                  <Zap className="h-4 w-4 text-primary" />
-                  ⚡ Sobre a urgência
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-sm leading-relaxed">{result.explicacao_urgencia}</p>
-              </CardContent>
-            </Card>
+            <PaywallBlur locked={locked}>
+              <Card className={result.urgencia === "alta" ? "border-destructive/30" : ""}>
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-base flex items-center gap-2">
+                    <Zap className="h-4 w-4 text-primary" />
+                    ⚡ Sobre a urgência
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-sm leading-relaxed">{result.explicacao_urgencia}</p>
+                </CardContent>
+              </Card>
+            </PaywallBlur>
+
+            {/* Banner de conversão para free bloqueado */}
+            {locked && (
+              <Card className="border-primary/40 bg-gradient-to-br from-primary/5 to-primary/10">
+                <CardContent className="pt-6 space-y-3 text-center">
+                  <div className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-primary/15">
+                    <Lock className="h-5 w-5 text-primary" />
+                  </div>
+                  <h3 className="text-base font-semibold text-foreground">
+                    Desbloqueie o diagnóstico completo
+                  </h3>
+                  <p className="text-sm text-muted-foreground max-w-md mx-auto leading-relaxed">
+                    Veja o passo a passo, estimativa de custos, onde buscar ajuda, gere petições e converse com o chat jurídico ilimitado.
+                  </p>
+                  <Button size="lg" onClick={() => navigate("/planos")} className="mt-2">
+                    Ver planos
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                  </Button>
+                </CardContent>
+              </Card>
+            )}
 
             <div className="border-t border-border" />
 
             {/* Action Buttons */}
             <div className="grid gap-3 sm:grid-cols-2">
-              <Button onClick={handleGeneratePetition} className="h-12 text-sm">
-                <ArrowRight className="mr-2 h-4 w-4" />
-                Gerar petição para este caso
+              <Button
+                onClick={handleGeneratePetition}
+                className="h-12 text-sm"
+                variant={locked ? "outline" : "default"}
+              >
+                {locked ? <Lock className="mr-2 h-4 w-4" /> : <ArrowRight className="mr-2 h-4 w-4" />}
+                {locked ? "Gerar petição (Profissional)" : "Gerar petição para este caso"}
               </Button>
-              <Button variant="outline" onClick={handleChatMore} className="h-12 text-sm">
-                <MessageCircle className="mr-2 h-4 w-4" />
-                Falar mais sobre isso
+              <Button
+                variant="outline"
+                onClick={handleChatMore}
+                className="h-12 text-sm"
+              >
+                {locked ? <Lock className="mr-2 h-4 w-4" /> : <MessageCircle className="mr-2 h-4 w-4" />}
+                {locked ? "Falar mais (Profissional)" : "Falar mais sobre isso"}
               </Button>
             </div>
 
