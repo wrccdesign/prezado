@@ -87,6 +87,7 @@ export default function History() {
     return (
       <div className="min-h-screen bg-background">
         <AppHeader />
+      <SEO title="Histórico de Análises — Prezado AI" description="Acesse todas as suas análises jurídicas e petições geradas no Prezado.ai." path="/historico" />
         <LegalDisclaimer />
         <main className="container max-w-3xl py-8">
           <Button variant="ghost" onClick={() => setSelectedAnalysis(null)} className="mb-4">

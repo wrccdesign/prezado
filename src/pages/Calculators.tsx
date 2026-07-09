@@ -115,6 +115,7 @@ export default function Calculators() {
   return (
     <div className="min-h-screen bg-background">
       <AppHeader />
+      <SEO title="Calculadoras Jurídicas — Prezado AI" description="Rescisão trabalhista, pensão alimentícia, correção monetária e prazos processuais. Ferramentas grátis do Prezado.ai." path="/calculadoras" />
       <main className="container py-6 sm:py-8 px-4 sm:px-6 space-y-6 sm:space-y-8">
         <div>
           <h1 className="text-2xl sm:text-3xl font-bold font-serif text-foreground">Calculadoras Jurídicas</h1>

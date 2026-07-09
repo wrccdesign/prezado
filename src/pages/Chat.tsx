@@ -206,6 +206,7 @@ export default function Chat() {
   return (
     <div className="flex min-h-screen flex-col bg-background">
       <AppHeader />
+      <SEO title="Chat Jurídico com IA — Prezado AI" description="Converse com a IA jurídica do Prezado.ai sobre qualquer tema do Direito brasileiro, com respostas fundamentadas." path="/chat" />
       <LegalDisclaimer />
       <main className="flex flex-1 flex-col container max-w-3xl py-4">
         <div className="mb-4">
