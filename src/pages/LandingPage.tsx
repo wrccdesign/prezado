@@ -204,7 +204,7 @@ export default function LandingPage() {
               <Link to="/auth">Cadastrar</Link>
             </Button>
           </div>
-          <button className="md:hidden text-white" onClick={() => setMenuOpen(!menuOpen)}>
+          <button className="md:hidden text-white" aria-label={menuOpen ? "Fechar menu" : "Abrir menu"} aria-expanded={menuOpen} onClick={() => setMenuOpen(!menuOpen)}>
             {menuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
           </button>
         </div>

@@ -9,6 +9,7 @@ import { Switch } from "@/components/ui/switch";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
+import { SEO } from "@/components/SEO";
 import logo from "@/assets/logo.png";
 
 const UF_LIST = [
@@ -97,6 +98,7 @@ export default function Auth() {
 
         <Card>
           <CardHeader>
+            <h1 className="sr-only">Acesse sua conta ou cadastre-se no Prezado.ai</h1>
             <CardTitle className="text-xl">{isSignUp ? "Criar conta" : "Entrar"}</CardTitle>
             <CardDescription>
               {isSignUp ? "Crie sua conta para salvar suas análises" : "Acesse sua conta para continuar"}
