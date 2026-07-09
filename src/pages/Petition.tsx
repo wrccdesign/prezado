@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { AppHeader } from "@/components/AppHeader";
+import { SEO } from "@/components/SEO";
 import { LegalDisclaimer } from "@/components/LegalDisclaimer";
 import { PetitionResult } from "@/components/PetitionResult";
 import { Button } from "@/components/ui/button";
@@ -106,6 +107,7 @@ export default function Petition() {
     return (
       <div className="min-h-screen bg-background">
         <AppHeader />
+      <SEO title="Geração de Petições com IA — Prezado AI" description="Gere petições jurídicas fundamentadas em segundos. Download em PDF e DOCX, prontas para protocolo." path="/peticao" />
         <LegalDisclaimer />
         <main className="container max-w-4xl py-8">
           <PetitionResult text={generatedText} petitionType={tipoAcao} onNewPetition={handleNewPetition} />

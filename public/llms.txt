@@ -1,0 +1,21 @@
+# Prezado AI
+
+> Plataforma brasileira de inteligência artificial jurídica para cidadãos e advogados: análise de documentos, diagnóstico jurídico, geração de petições, busca de jurisprudência e calculadoras.
+
+Prezado.ai oferece ferramentas de IA especializadas em direito brasileiro. Cidadãos recebem orientação em linguagem simples; advogados acessam petições fundamentadas, busca semântica de jurisprudência em 27 tribunais e um painel profissional.
+
+## Pages
+
+- [Início](/): Visão geral da plataforma e principais ferramentas de IA jurídica.
+- [Diagnóstico Jurídico](/diagnostico): Descreva sua situação e receba análise estruturada com direitos, riscos e próximos passos.
+- [Geração de Petições](/peticao): IA elabora petições fundamentadas prontas para download em PDF e DOCX.
+- [Busca de Jurisprudência](/jurisprudencia): Pesquisa semântica em decisões dos tribunais brasileiros.
+- [Chat Jurídico](/chat): Converse com a IA sobre qualquer tema jurídico brasileiro.
+- [Calculadoras Jurídicas](/calculadoras): Rescisão trabalhista, pensão alimentícia, prazos processuais e correção monetária.
+- [Planos](/planos): Assinaturas Gratuito, Profissional e Escritório.
+
+## Optional
+
+- [Painel do Advogado](/painel-advogado): Gestão de clientes, petições e modelos (requer conta).
+- [Histórico](/historico): Suas análises anteriores (requer conta).
+- [Entrar](/auth): Cadastro e login.

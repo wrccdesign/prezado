@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 import { AppHeader } from "@/components/AppHeader";
+import { SEO } from "@/components/SEO";
 import { AppFooter } from "@/components/AppFooter";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -157,6 +158,7 @@ const response = await res.json() as SearchResponse;
   return (
     <div className="min-h-screen flex flex-col bg-background">
       <AppHeader />
+      <SEO title="Busca de Jurisprudência — Prezado AI" description="Pesquisa semântica em decisões de 27 tribunais brasileiros. Encontre precedentes pelo conceito jurídico." path="/jurisprudencia" />
       <main className="flex-1">
         {/* Hero Search */}
         <div className="bg-primary text-primary-foreground py-8 sm:py-12">

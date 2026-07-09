@@ -9,6 +9,7 @@ import { Switch } from "@/components/ui/switch";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
+import { SEO } from "@/components/SEO";
 import logo from "@/assets/logo.png";
 
 const UF_LIST = [
@@ -89,6 +90,7 @@ export default function Auth() {
 
   return (
     <div className="flex min-h-screen items-center justify-center px-4 py-8 bg-slate-900">
+      <SEO title="Entrar ou Cadastrar — Prezado AI" description="Acesse sua conta Prezado.ai ou crie um cadastro gratuito para usar as ferramentas de IA jurídica." path="/auth" />
       <div className="w-full max-w-md animate-fade-in">
         <div className="mb-8 text-center">
           <img src={logo} alt="Prezado.ai" className="h-12 mx-auto mb-4" />
@@ -97,6 +99,7 @@ export default function Auth() {
 
         <Card>
           <CardHeader>
+            <h1 className="sr-only">Acesse sua conta ou cadastre-se no Prezado.ai</h1>
             <CardTitle className="text-xl">{isSignUp ? "Criar conta" : "Entrar"}</CardTitle>
             <CardDescription>
               {isSignUp ? "Crie sua conta para salvar suas análises" : "Acesse sua conta para continuar"}

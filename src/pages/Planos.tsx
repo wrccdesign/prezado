@@ -1,6 +1,7 @@
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useEffect } from "react";
 import { AppHeader } from "@/components/AppHeader";
+import { SEO } from "@/components/SEO";
 import { AppFooter } from "@/components/AppFooter";
 import { PaymentTestModeBanner } from "@/components/PaymentTestModeBanner";
 import { Button } from "@/components/ui/button";
@@ -103,6 +104,7 @@ export default function Planos() {
   return (
     <div className="flex min-h-screen flex-col bg-background">
       <AppHeader />
+      <SEO title="Planos e Preços — Prezado AI" description="Compare os planos Gratuito, Profissional e Escritório do Prezado.ai. Assine e desbloqueie todas as ferramentas de IA jurídica." path="/planos" />
       <PaymentTestModeBanner />
 
       <main className="flex-1 container max-w-5xl py-12 px-4">

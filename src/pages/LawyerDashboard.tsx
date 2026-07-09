@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useUserProfile } from "@/contexts/UserProfileContext";
 import { AppHeader } from "@/components/AppHeader";
+import { SEO } from "@/components/SEO";
 import { LegalDisclaimer } from "@/components/LegalDisclaimer";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { LayoutDashboard, Users, FileText, BookTemplate, Settings } from "lucide-react";
@@ -35,6 +36,7 @@ export default function LawyerDashboard() {
   return (
     <div className="flex min-h-screen flex-col bg-background">
       <AppHeader />
+      <SEO title="Painel do Advogado — Prezado AI" description="Gestão de clientes, petições, modelos e configurações do escritório. Painel completo do Prezado.ai." path="/painel-advogado" />
       <LegalDisclaimer />
 
       <main className="flex-1 container py-6 sm:py-8 px-4 sm:px-6">

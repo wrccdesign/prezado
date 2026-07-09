@@ -7,6 +7,7 @@ import {
 } from "lucide-react";
 import logo from "@/assets/logo.png";
 import { supabase } from "@/integrations/supabase/client";
+import { SEO } from "@/components/SEO";
 
 function useScrollReveal() {
   const ref = useRef<HTMLDivElement>(null);
@@ -180,6 +181,20 @@ export default function LandingPage() {
 
   return (
     <div ref={revealRef} className="min-h-screen font-sans">
+      <SEO
+        title="Prezado AI — IA Jurídica Brasileira para Cidadãos e Advogados"
+        description="Análise de documentos, diagnóstico jurídico, geração de petições, busca de jurisprudência em 27 tribunais e calculadoras. IA jurídica brasileira."
+        path="/"
+        jsonLd={{
+          "@context": "https://schema.org",
+          "@type": "SoftwareApplication",
+          name: "Prezado AI",
+          applicationCategory: "LegalService",
+          operatingSystem: "Web",
+          url: "https://prezado.lovable.app/",
+          offers: { "@type": "Offer", price: "0", priceCurrency: "BRL" },
+        }}
+      />
       {/* NAVBAR */}
       <nav
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 border-b ${scrolled ? "py-2" : "py-4"}`}
@@ -204,7 +219,7 @@ export default function LandingPage() {
               <Link to="/auth">Cadastrar</Link>
             </Button>
           </div>
-          <button className="md:hidden text-white" onClick={() => setMenuOpen(!menuOpen)}>
+          <button className="md:hidden text-white" aria-label={menuOpen ? "Fechar menu" : "Abrir menu"} aria-expanded={menuOpen} onClick={() => setMenuOpen(!menuOpen)}>
             {menuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
           </button>
         </div>

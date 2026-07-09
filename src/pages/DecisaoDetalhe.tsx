@@ -223,7 +223,7 @@ function ChatPanel({ decisionId }: { decisionId: string }) {
             className="text-sm h-9"
             disabled={loading}
           />
-          <Button size="sm" onClick={() => send(input)} disabled={loading || !input.trim()} className="h-9 px-3">
+          <Button size="sm" aria-label="Enviar pergunta" onClick={() => send(input)} disabled={loading || !input.trim()} className="h-9 px-3">
             {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
           </Button>
         </div>
