@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { AppHeader } from "@/components/AppHeader";
+import { SEO } from "@/components/SEO";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Briefcase, Users, Calendar, DollarSign } from "lucide-react";
