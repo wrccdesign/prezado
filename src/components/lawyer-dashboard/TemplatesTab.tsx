@@ -205,5 +205,6 @@ export function TemplatesTab() {
         </DialogContent>
       </Dialog>
     </div>
+    </PlanGate>
   );
 }
