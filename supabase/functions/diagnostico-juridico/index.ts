@@ -1,6 +1,7 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { checkRateLimit } from "../_shared/rate-limit.ts";
+import { fetchGroundingContext, buildGroundingBlock } from "../_shared/grounding.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -39,6 +40,10 @@ serve(async (req) => {
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY not configured");
 
+    // Grounding: fetch relevant decisions
+    const grounding = await fetchGroundingContext(situacao, supabaseUrl, supabaseKey, 4);
+    const groundingBlock = buildGroundingBlock(grounding);
+
     const systemPrompt = `Você é um assistente jurídico brasileiro especializado em orientar cidadãos comuns que NÃO têm conhecimento jurídico.
 
 ## SUA MISSÃO
@@ -56,10 +61,11 @@ Baseie-se SEMPRE em legislação brasileira vigente:
 - Constituição Federal de 1988
 - CLT, CDC, Código Civil, CPC, etc.
 - Jurisprudência do STF e STJ
-- NUNCA invente artigos ou leis
+- NUNCA invente artigos, leis, números de processo ou súmulas. Se tiver dúvida sobre o número exato de um artigo, prefira dizer o tema ("o CDC protege contra cobrança indevida") em vez de arriscar um número errado.
+- Você SÓ pode citar jurisprudência específica (número de processo, ementa) que esteja listada no CONTEXTO OBRIGATÓRIO abaixo. Se o contexto estiver vazio ou irrelevante, apenas mencione a lei em geral.
 
 ## FORMATO
-Use a ferramenta diagnostico_juridico para estruturar a resposta.`;
+Use a ferramenta diagnostico_juridico para estruturar a resposta.${groundingBlock}`;
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
