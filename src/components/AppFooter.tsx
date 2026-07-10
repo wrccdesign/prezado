@@ -8,7 +8,7 @@ export function AppFooter() {
       style={{ backgroundColor: "hsl(218 60% 5%)", borderColor: "hsl(var(--gold) / 0.15)" }}
     >
       <div className="container mx-auto px-4 sm:px-6">
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-10 mb-10">
+        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-10 mb-10">
           <div>
             <h4 className="font-sans font-semibold text-white text-sm mb-4">Plataforma</h4>
             <ul className="space-y-2">
@@ -34,6 +34,24 @@ export function AppFooter() {
                 { label: "Diagnóstico", to: "/diagnostico" },
                 { label: "Histórico", to: "/historico" },
                 { label: "Painel do Advogado", to: "/painel-advogado" },
+                { label: "Planos", to: "/planos" },
+              ].map((l) => (
+                <li key={l.label}>
+                  <Link to={l.to} className="text-sm text-white/40 hover:text-[hsl(var(--gold))] transition-colors">
+                    {l.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div>
+            <h4 className="font-sans font-semibold text-white text-sm mb-4">Legal</h4>
+            <ul className="space-y-2">
+              {[
+                { label: "Termos e Condições", to: "/termos" },
+                { label: "Política de Reembolso", to: "/reembolso" },
+                { label: "Aviso de Privacidade", to: "/privacidade" },
               ].map((l) => (
                 <li key={l.label}>
                   <Link to={l.to} className="text-sm text-white/40 hover:text-[hsl(var(--gold))] transition-colors">
@@ -47,10 +65,13 @@ export function AppFooter() {
           <div>
             <h4 className="font-sans font-semibold text-white text-sm mb-4">Sobre</h4>
             <div className="mb-3">
-              <img src={logo} alt="Prezado.ai" className="h-7" />
+              <img src={logo} alt="Prezados.AI" className="h-7" />
             </div>
             <p className="text-sm text-white/40 leading-relaxed">
               Inteligência Artificial Jurídica Brasileira. Ferramentas de análise, petições e consultoria com IA para advogados e cidadãos.
+            </p>
+            <p className="text-xs text-white/30 mt-3 leading-relaxed">
+              Pagamentos processados por <strong className="text-white/50">Paddle.com</strong> (Merchant of Record).
             </p>
           </div>
         </div>
