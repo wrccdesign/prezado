@@ -12,6 +12,7 @@ import { Plus, Pencil, Trash2, FileText } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
+import { PlanGate } from "@/components/PlanGate";
 
 interface Template {
   id: string;
@@ -118,6 +119,11 @@ export function TemplatesTab() {
   };
 
   return (
+    <PlanGate
+      requiredPlan="escritorio"
+      title="Modelos de petição são exclusivos do plano Escritório"
+      description="Crie, salve e reutilize modelos próprios do seu escritório. Faça upgrade para o plano Escritório."
+    >
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <h2 className="text-lg font-semibold font-serif">Meus Modelos</h2>
