@@ -9,6 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Save, Upload, X } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
+import { PlanGate } from "@/components/PlanGate";
 
 export function SettingsTab() {
   const { user } = useAuth();
@@ -96,6 +97,11 @@ export function SettingsTab() {
   const UF_OPTIONS = ["AC","AL","AM","AP","BA","CE","DF","ES","GO","MA","MG","MS","MT","PA","PB","PE","PI","PR","RJ","RN","RO","RR","RS","SC","SE","SP","TO"];
 
   return (
+    <PlanGate
+      requiredPlan="escritorio"
+      title="Configurações de escritório são exclusivas do plano Escritório"
+      description="Logo personalizado nas petições, dados do escritório e OAB completa. Faça upgrade para o plano Escritório."
+    >
     <div className="space-y-6 max-w-2xl">
       <Card>
         <CardHeader>
@@ -147,5 +153,6 @@ export function SettingsTab() {
         <Save className="mr-2 h-4 w-4" /> {saving ? "Salvando..." : "Salvar Configurações"}
       </Button>
     </div>
+    </PlanGate>
   );
 }

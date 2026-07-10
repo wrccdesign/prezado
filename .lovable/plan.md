@@ -1,75 +1,137 @@
-# Fase 1.2 — Paywall inteligente no Diagnóstico
 
-Objetivo: usuário free vê valor real (2 cards) antes do paywall; upgrade vira decisão informada, não fricção seca.
+# Prezados.AI — Pronto para pagamento + revisão de fluxo
 
-## Comportamento
+Três frentes em paralelo: **(A)** liberar pagamento real, **(B)** eliminar alucinações da IA com grounding + citação obrigatória, **(C)** justificar o plano Escritório (R$149) com gates reais + recursos exclusivos.
 
-**Usuário free (não pago):**
-- Cards **visíveis** (100%): "O que está acontecendo" + "Qual é seu direito"
-- Cards **com blur + overlay CTA**: "O que você pode fazer", "Custos/Ganhos", "Onde buscar ajuda", "Sobre a urgência"
-- Botões finais (Gerar petição / Falar mais) **desabilitados** com tooltip "Disponível no Profissional"
-- Regra especial — **teaser diário**: 1 diagnóstico completo grátis por dia (sem blur). Controlado por `usage_tracking` com nova chave `diagnostico_completo_free`.
+---
 
-**Usuário Profissional/Escritório:**
-- Tudo liberado como hoje. Zero mudança visual.
+## A. Pronto para receber pagamento (Paddle → Live)
 
-## UX do bloqueio
+O checkout de teste já funciona (produtos `profissional_mensal` R$49 e `escritorio_mensal` R$149 criados em sandbox). Faltam três coisas para o live liberar:
 
-- Cards bloqueados: `filter: blur(6px)` no conteúdo + overlay centralizado com ícone de cadeado, texto curto ("Continue lendo com Profissional") e botão "Ver planos" → `/planos`.
-- Após o último card, banner de conversão sticky: "Este é seu diagnóstico gratuito. Desbloqueie os próximos por R$ X/mês" com CTA primário.
-- Copy do teaser diário quando disponível: pequeno badge no topo — "🎁 Seu diagnóstico completo grátis de hoje".
+**A1. Páginas legais públicas** (exigência do Paddle — sem elas o Readiness Check reprova)
+Criar 3 rotas públicas usando **"Prezados.AI"** como nome comercial:
+- `/termos` — Termos & Condições (identifica Prezados.AI, disclosure de Paddle como MoR, uso aceitável, IP, suspensão, cláusulas específicas para IA generativa: prompts do usuário, precisão não substitui advogado, moderação)
+- `/reembolso` — Política de Reembolso (garantia de 30 dias, direciona a paddle.net; sem "no refunds")
+- `/privacidade` — Aviso de Privacidade (Prezados.AI como controlador, LGPD, dados coletados: e‑mail/OAB/CPF/conteúdo, Paddle como recipient, retenção, direitos do titular)
 
-## Mudanças técnicas
+Adicionar links no `AppFooter` e `LandingPage` (rodapé).
 
-### 1. Componente novo: `src/components/PaywallBlur.tsx`
-Wrapper reutilizável:
-```tsx
-<PaywallBlur locked={!isPro && !hasFreeToday}>
-  <Card>...</Card>
-</PaywallBlur>
-```
-- Se `locked`, renderiza children com blur + overlay absoluto.
-- Overlay: ícone `Lock`, título, subtítulo, botão para `/planos`.
-- Aria-hidden no conteúdo bloqueado; overlay focável por teclado.
+**A2. Portal do assinante + cancelamento**
+- Nova edge function `paddle-customer-portal` (usa `getPaddleClient(env).customerPortalSessions.create`)
+- Botão "Gerenciar assinatura" em `/planos` (quando `isCurrent && plan.id !== 'free'`) que abre o portal em nova aba
 
-### 2. `src/pages/Diagnostico.tsx`
-- Importar `useSubscription` para saber `isPro`.
-- Nova query no início: verificar se usuário já usou seu diagnóstico-completo-grátis hoje (query em `usage_tracking` com `action_type = 'diagnostico_completo_free'` e `date = today`).
-- Envolver os 4 cards bloqueáveis em `<PaywallBlur locked={!isPro && !hasFreeToday}>`.
-- Quando gera diagnóstico e usuário é free + tem teaser disponível: chamar edge function (ou insert direto) para gravar consumo em `usage_tracking`.
-- Botões "Gerar petição" e "Falar mais": desabilitar com tooltip para free bloqueado. Se free + teaser: manter habilitados só nesse dia.
-- Banner sticky de conversão abaixo dos cards para free.
+**A3. Comunicação clara test vs live**
+- `PaymentTestModeBanner` já existe — garantir que aparece em `/planos` (já está) e adicionar em `/peticao`, `/chat`, `/diagnostico` (contexto de paywall)
+- Mensagem de erro específica quando o checkout live falha (conta ainda não aprovada) — hoje mostra erro genérico
 
-### 3. `supabase/functions/diagnostico-juridico/index.ts`
-- Nenhuma mudança na IA — o diagnóstico completo continua sendo gerado no backend (para não ter que refazer se usuário fizer upgrade). O bloqueio é 100% visual + de features derivadas (petição/chat).
-- Opcional: retornar campo `daily_teaser_available: boolean` para simplificar o front. **Vou incluir** — evita round-trip extra.
+**A4. Publicar** para o Paddle detectar as páginas legais e liberar Verification → Domain Review → Business ID → Identity → Final Review. Após publish, aciono `get_go_live_status` para acompanhar.
 
-### 4. `usage_tracking` (sem migração necessária)
-Tabela já existe. Só precisamos usar um novo `action_type = 'diagnostico_completo_free'`. Inserção via service_role na edge function do diagnóstico.
+---
+
+## B. Anti-alucinação: grounding + citação obrigatória
+
+Hoje o `chat-juris` e o `diagnostico-juridico` chamam a IA sem grounding — podem inventar artigo, súmula, número de processo.
+
+**B1. Search-first para o Chat Jurídico** (`chat-juris/index.ts`)
+- Antes de chamar o LLM, rodar `search_decisions_vector` + `search_decisions` (RRF híbrido) com a última pergunta do usuário
+- Injetar os top‑5 resultados no system prompt como **"Contexto obrigatório"**
+- System prompt endurecido:
+  - "Você SÓ pode citar decisões que estejam no Contexto abaixo. Se a resposta exigir jurisprudência ausente do contexto, diga: 'Não encontrei decisões específicas no nosso banco sobre isso'"
+  - "NUNCA invente números de processo, súmulas ou artigos. Se não souber o número exato, diga apenas o nome da lei (ex: 'CDC art. 42' apenas se tiver certeza; caso contrário 'proteção do CDC contra cobrança indevida')"
+- Retornar `citations: [{id, tribunal, numero}]` junto da resposta para renderizar cards clicáveis
+
+**B2. Diagnóstico** (`diagnostico-juridico/index.ts`)
+- Mesma injeção de contexto (search antes do LLM)
+- No JSON de resposta, campo `fundamentos` só é preenchido se houver match no banco; senão volta vazio com aviso
+
+**B3. Geração de Petição** (`generate-petition/index.ts`)
+- Buscar 3 decisões relacionadas ao tipo/tema e injetar como precedentes disponíveis
+- Instruir a IA a citar SOMENTE esses precedentes; se nenhum servir, gera a petição sem seção "Precedentes"
+- Legislação (CLT, CC, CDC, CPC, CF, CP) é conhecimento estável — pode citar artigo, mas o prompt reforça: "se tiver dúvida sobre o número exato do artigo, cite genericamente"
+
+**B4. UI de transparência**
+- Componente `<Citations>` que renderiza os cards das decisões usadas (link para `/decisao/:id`)
+- Badge "🔒 Fundamentado em N decisões do nosso banco" quando houver contexto
+- Badge "⚠️ Resposta sem lastro em jurisprudência indexada" quando o search não retornou nada
+
+---
+
+## C. Diferenciação real do plano Escritório
+
+Hoje `/planos` mostra Escritório como "só limites maiores" — não justifica 3× o preço. Landing promete mais do que entrega.
+
+**C1. Gates no Painel do Advogado** (`LawyerDashboard.tsx` + tabs)
+Adicionar `useSubscription` e bloquear por `planId`:
+
+| Aba              | Free      | Profissional | Escritório |
+|------------------|-----------|--------------|------------|
+| Dashboard        | ✅        | ✅           | ✅         |
+| Petições (própria) | ✅ (histórico) | ✅ | ✅ |
+| **Clientes**     | 🔒 Pro    | ✅ (até 20)  | ✅ ilimitado |
+| **Modelos**      | 🔒        | ✅ (usar)    | ✅ criar + editar |
+| **Configurações escritório** (logo, CNPJ, endereço) | 🔒 | 🔒 Escritório | ✅ |
+
+Componente `<PlanGate requiredPlan="escritorio">` reutilizável (blur + CTA "Fazer upgrade").
+
+**C2. Recursos exclusivos do Escritório**
+
+- **Logo personalizado nas petições exportadas**
+  - Coluna `office_logo_url` já existe no bucket `office-logos`; garantir upload na aba Configurações
+  - `PetitionResult.tsx` (export PDF) insere logo do usuário Escritório no cabeçalho
+  - Free/Profissional exportam com marca sutil "Gerado por Prezados.AI"
+
+- **Modelos de petição customizados**
+  - Escritório pode criar/salvar modelos próprios (tabela `petition_templates` já existe); Profissional só usa os padrão
+
+- **Cliente-centric: petições vinculadas a clientes**
+  - Escritório vê petições agrupadas por cliente; Profissional vê lista flat
+
+- **Suporte prioritário** (visual):
+  - Badge "Suporte prioritário" na aba Configurações + e‑mail dedicado `escritorio@prezados.ai` (mailto)
+
+**C3. Consistência /planos ↔ landing ↔ realidade**
+Reescrever a tabela de features em `Planos.tsx` para refletir os gates acima (não só números, mas ✅/🔒 por feature) e alinhar `LandingPage.tsx` para não prometer o que não existe.
+
+---
 
 ## Detalhes técnicos
 
-- **Bypass de segurança**: como o diagnóstico completo é gerado sempre, tecnicamente o usuário poderia ler via DevTools. **Aceitável para v1** — o objetivo é conversão, não DRM. Se virar problema, na v2 gera-se só os 2 primeiros cards para free.
-- **Petição e chat continuam gated no backend** (via `useSubscription` + verificação nas edge functions que já existe). Aqui só adicionamos o bloqueio visual no Diagnóstico.
-- **SSR/SEO**: Diagnóstico é rota autenticada, não afeta SEO.
+**Estrutura de arquivos**
+```text
+src/
+  pages/
+    Termos.tsx           (novo)
+    Reembolso.tsx        (novo)
+    Privacidade.tsx      (novo)
+    Planos.tsx           (reescrita da tabela + botão gerenciar)
+    LawyerDashboard.tsx  (gates por tab)
+  components/
+    PlanGate.tsx         (novo — wrapper de bloqueio por plano)
+    Citations.tsx        (novo — cards de jurisprudência citada)
+    lawyer-dashboard/
+      ClientsTab.tsx     (limite 20 no Profissional)
+      TemplatesTab.tsx   (create bloqueado fora do Escritório)
+      SettingsTab.tsx    (logo upload + gate)
+  hooks/
+    usePlanGate.ts       (helper: requiresPlan('escritorio'))
+supabase/functions/
+  paddle-customer-portal/index.ts (novo)
+  chat-juris/index.ts             (add grounding)
+  diagnostico-juridico/index.ts   (add grounding)
+  generate-petition/index.ts      (add grounding + logo)
+```
 
-## Arquivos afetados
+**Migração DB**: nenhuma nova tabela — reuso `subscriptions.plan_id`, `profiles.office_logo_url`, `clients`, `petition_templates`.
 
-- Novo: `src/components/PaywallBlur.tsx`
-- Editado: `src/pages/Diagnostico.tsx`
-- Editado: `supabase/functions/diagnostico-juridico/index.ts` (adicionar `daily_teaser_available` na resposta + insert em `usage_tracking` quando teaser consumido)
+**Ordem de implementação (uma resposta de build)**
+1. Páginas legais + rotas + footer
+2. Grounding nas 3 edge functions + componente Citations
+3. Gates do Painel do Advogado + PlanGate + logo no PDF
+4. Reescrita Planos.tsx + Landing consistente
+5. Edge function customer-portal + botão "Gerenciar"
 
-## Fora de escopo (fica para depois)
-
-- A/B test de qual card bloquear (v1 = fixo)
-- Preços dinâmicos por região no CTA
-- Bloqueio server-side dos cards bloqueados
-
-## Como validar
-
-1. Login como free → gerar diagnóstico → ver 2 cards + 4 blurados + banner
-2. Segundo diagnóstico no mesmo dia → ver todos blurados (teaser já usado)
-3. Login como Profissional → tudo liberado, sem blur, sem banner
-4. Botão "Ver planos" navega para `/planos`
-
-Pronto para implementar?
+**Fora de escopo desta rodada** (posso fazer depois se quiser):
+- Publicação e submissão real ao Paddle (você aciona após revisar as páginas)
+- Anúncios / SEO adicional
+- Testes E2E do checkout (Playwright não interage com iframe do Paddle)

@@ -12,6 +12,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useSubscription, type PlanId } from "@/hooks/useSubscription";
 import { usePaddleCheckout } from "@/hooks/usePaddleCheckout";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 
 interface PlanFeature {
   label: string;
@@ -188,16 +189,34 @@ export default function Planos() {
                     >
                       {isCurrent ? "Plano atual" : user ? "Plano atual" : "Criar conta grátis"}
                     </Button>
+                  ) : isCurrent ? (
+                    <Button
+                      variant="outline"
+                      className="w-full"
+                      onClick={async () => {
+                        try {
+                          const { data, error } = await supabase.functions.invoke("paddle-customer-portal", {
+                            body: { environment: import.meta.env.VITE_PAYMENTS_CLIENT_TOKEN?.startsWith("test_") ? "sandbox" : "live" },
+                          });
+                          if (error || !data?.url) throw new Error(data?.error || "Portal indisponível");
+                          window.open(data.url, "_blank");
+                        } catch (err: unknown) {
+                          toast.error(err instanceof Error ? err.message : "Erro ao abrir portal");
+                        }
+                      }}
+                    >
+                      Gerenciar assinatura
+                    </Button>
                   ) : (
                     <Button
                       className={`w-full ${plan.popular ? "bg-accent text-accent-foreground hover:bg-accent/90" : ""}`}
-                      disabled={isCurrent || checkoutLoading || isLoading}
+                      disabled={checkoutLoading || isLoading}
                       onClick={() => handleSubscribe(plan)}
                     >
                       {checkoutLoading ? (
                         <Loader2 className="h-4 w-4 animate-spin mr-2" />
                       ) : null}
-                      {isCurrent ? "Plano atual" : `Assinar ${plan.name}`}
+                      Assinar {plan.name}
                     </Button>
                   )}
                 </CardContent>

@@ -20,6 +20,9 @@ import AdminIngestao from "./pages/AdminIngestao";
 import Comparativo from "./pages/Comparativo";
 import Planos from "./pages/Planos";
 import NotFound from "./pages/NotFound";
+import Termos from "./pages/Termos";
+import Reembolso from "./pages/Reembolso";
+import Privacidade from "./pages/Privacidade";
 
 const queryClient = new QueryClient();
 
@@ -59,6 +62,9 @@ const App = () => (
               <Route path="/comparativo" element={<Comparativo />} />
               <Route path="/planos" element={<Planos />} />
               <Route path="/admin/ingestao" element={<ProtectedRoute><AdminIngestao /></ProtectedRoute>} />
+              <Route path="/termos" element={<Termos />} />
+              <Route path="/reembolso" element={<Reembolso />} />
+              <Route path="/privacidade" element={<Privacidade />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </UserProfileProvider>
