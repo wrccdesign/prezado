@@ -1,6 +1,7 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { checkRateLimit } from "../_shared/rate-limit.ts";
+import { fetchGroundingContext, buildGroundingBlock } from "../_shared/grounding.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -76,9 +77,10 @@ Ao final absoluto de TODA resposta, após o indicador de confiabilidade, adicion
 
 ## REGRAS ABSOLUTAS
 - NUNCA invente artigos, leis, números de processos ou ementas de decisões.
+- Você SÓ pode citar jurisprudência (número de processo, ementa, tribunal, comarca, data) que esteja explicitamente listada no CONTEXTO OBRIGATÓRIO fornecido pelo sistema. Se não houver contexto ou o contexto não contiver o que você precisa, diga "não encontrei decisões específicas no nosso banco sobre este ponto".
 - NUNCA afirme que uma lei existe se não tiver certeza da sua vigência atual.
 - NUNCA gere URLs dinâmicas. Use apenas os portais fixos listados acima.
-- Sempre que citar um artigo de lei, indique: nome da lei + número + ano + artigo.
+- Sempre que citar um artigo de lei, indique: nome da lei + número + ano + artigo. Se tiver dúvida sobre o número exato, prefira menção genérica ("o CDC protege...") em vez de inventar.
 - Se não tiver certeza sobre a atualização de uma norma, sinalize: "⚠️ Verifique a redação atualizada em planalto.gov.br"
 - Para legislação estadual ou municipal, informe que a busca cobre apenas legislação federal.
 - NUNCA substitua o advogado: sempre oriente o usuário a consultar um profissional para seu caso concreto.
@@ -129,7 +131,13 @@ serve(async (req) => {
       ? ""
       : "\n\nIMPORTANTE: Ao final de TODA resposta, inclua: \"⚠️ Esta orientação é informativa. Consulte um advogado para seu caso específico.\"";
 
-    const systemContent = SYSTEM_PROMPT + disclaimerInstruction;
+    // Grounding: fetch relevant decisions for the LAST user message
+    const lastUser = [...messages].reverse().find((m: any) => m.role === "user");
+    const groundingQuery = typeof lastUser?.content === "string" ? lastUser.content : "";
+    const grounding = await fetchGroundingContext(groundingQuery, SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, 5);
+    const groundingBlock = buildGroundingBlock(grounding);
+
+    const systemContent = SYSTEM_PROMPT + disclaimerInstruction + groundingBlock;
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
