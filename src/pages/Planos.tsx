@@ -168,7 +168,7 @@ export default function Planos() {
                           ) : (
                             <Check className="h-4 w-4 text-accent shrink-0" />
                           )}
-                          <span className={isBlocked ? "text-muted-foreground/50" : "text-foreground"}>
+                          <span className={isBlocked ? "text-muted-foreground line-through" : "text-foreground"}>
                             {feat.label}
                             {typeof val === "number" && val > 0 && (
                               <span className="font-semibold text-accent ml-1">({val})</span>
