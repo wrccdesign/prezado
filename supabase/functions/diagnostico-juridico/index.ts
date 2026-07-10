@@ -164,7 +164,7 @@ Use a ferramenta diagnostico_juridico para estruturar a resposta.${groundingBloc
 
     const diagnostico = JSON.parse(toolCall.function.arguments);
 
-    return new Response(JSON.stringify({ diagnostico }), {
+    return new Response(JSON.stringify({ diagnostico, citations: grounding }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } catch (e) {

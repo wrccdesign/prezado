@@ -1,6 +1,7 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { checkRateLimit } from "../_shared/rate-limit.ts";
+import { fetchGroundingContext } from "../_shared/grounding.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -129,6 +130,14 @@ serve(async (req) => {
     const normas = getLegislationByKeywords(keywords);
     const legislationContext = buildLegislationContext(normas);
 
+    // Grounding: fetch top 3 precedents from our indexed base
+    const groundingQuery = `${tipo_acao} ${fatos}`.slice(0, 800);
+    const precedents = await fetchGroundingContext(groundingQuery, supabaseUrl, supabaseKey, 3);
+    const precedentsBlock = precedents.length > 0
+      ? `\n\nPRECEDENTES DISPONÍVEIS NO NOSSO BANCO (você SÓ pode citar estes; caso nenhum sirva, omita a seção "Precedentes"):
+${precedents.map((p, i) => `[P${i + 1}] ${[p.tribunal, p.numero_processo, p.comarca, p.data_decisao].filter(Boolean).join(" · ")}\n"${(p.ementa || "").slice(0, 400)}"`).join("\n\n")}`
+      : `\n\nATENÇÃO: Não foram encontrados precedentes específicos no nosso banco para este caso. NÃO invente números de processo, ementas ou súmulas. Baseie a fundamentação apenas na legislação.`;
+
     const systemPrompt = `Você é Prezado.ai, especialista em redação de peças processuais e documentos jurídicos brasileiros.
 
 ## IMPORTANTE: INFERIR FUNDAMENTOS JURÍDICOS
@@ -136,9 +145,11 @@ Seu papel é receber os FATOS e PEDIDOS do advogado e INFERIR toda a fundamenta�
 O advogado NÃO precisa fornecer os fundamentos — isso é trabalho da IA.
 
 ## REGRAS ABSOLUTAS
-- NUNCA invente artigos, leis, números de processos ou ementas de decisões.
-- Sempre que citar um artigo de lei, use o formato: "nos termos do art. X da Lei nº Y/ANO..."
-- Se não tiver certeza sobre a atualização de uma norma, sinalize: "verifique a redação vigente no Planalto (planalto.gov.br)"
+- NUNCA invente artigos, leis, números de processos, súmulas ou ementas de decisões.
+- Sempre que citar um artigo de lei, use o formato: "nos termos do art. X da Lei nº Y/ANO...". Se tiver QUALQUER dúvida sobre o número exato do artigo, prefira redação genérica ("com base nos princípios do CDC sobre cobrança indevida").
+- Precedentes jurisprudenciais: você SÓ pode citar decisões listadas em "PRECEDENTES DISPONÍVEIS" abaixo. Se nenhum se aplicar, NÃO inclua seção de precedentes.
+- Súmulas: só cite súmulas do STF ou STJ se tiver CERTEZA absoluta do número e teor.
+- Se não tiver certeza sobre a atualização de uma norma, sinalize: "verifique a redação vigente no Planalto (planalto.gov.br)".
 
 ## ESTRUTURA OBRIGATÓRIA DA PETIÇÃO
 
@@ -151,9 +162,9 @@ O advogado NÃO precisa fornecer os fundamentos — isso é trabalho da IA.
 
 ### 3. DO DIREITO
 - Fundamentação legal INFERIDA com base nos fatos apresentados
-- Cite com precisão artigos de lei relevantes
+- Cite com precisão artigos de lei relevantes (dentro das regras absolutas acima)
 - Integre a legislação do contexto RAG
-- Jurisprudência relevante quando disponível
+- Cite precedentes SOMENTE se listados abaixo
 
 ### 4. DOS PEDIDOS
 - Numerados e específicos
@@ -170,7 +181,7 @@ O advogado NÃO precisa fornecer os fundamentos — isso é trabalho da IA.
 
 ## AVISO FINAL OBRIGATÓRIO
 "---
-⚠️ IMPORTANTE: Esta peça foi gerada por inteligência artificial como modelo de referência. Deve ser revisada, adaptada e assinada por advogado habilitado perante a OAB antes do protocolo."${legislationContext}`;
+⚠️ IMPORTANTE: Esta peça foi gerada por inteligência artificial como modelo de referência. Deve ser revisada, adaptada e assinada por advogado habilitado perante a OAB antes do protocolo."${legislationContext}${precedentsBlock}`;
 
     const userPrompt = `Gere uma petição inicial para o seguinte caso:
 
