@@ -484,6 +484,10 @@ export type Database = {
         Args: { p_env?: string; p_user_id: string }
         Returns: string
       }
+      has_active_subscription: {
+        Args: { check_env?: string; user_uuid: string }
+        Returns: boolean
+      }
       search_decisions: {
         Args: {
           filter_comarca_pequena?: boolean
