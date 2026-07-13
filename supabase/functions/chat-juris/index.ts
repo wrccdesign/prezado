@@ -114,7 +114,8 @@ serve(async (req) => {
       const token = authHeader.replace("Bearer ", "");
       const { data: { user } } = await supa.auth.getUser(token);
       if (user) {
-        const { allowed, used, limit } = await checkRateLimit(user.id, "chat", SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
+        const env = (req.headers.get("x-payment-env") === "sandbox" ? "sandbox" : "live") as "sandbox" | "live";
+        const { allowed, used, limit } = await checkRateLimit(user.id, "chat", SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, env);
         if (!allowed) {
           return new Response(JSON.stringify({
             error: `Limite diário de ${limit} mensagens atingido. Faça upgrade para continuar.`,
