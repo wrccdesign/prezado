@@ -6,26 +6,35 @@ const PLAN_LIMITS: Record<string, Record<string, number>> = {
   escritorio: { search: 200, chat: 100, diagnostico: 50, peticao: 30 },
 };
 
+export type PaddleEnv = "sandbox" | "live";
+
+export function extractEnv(req: Request): PaddleEnv {
+  // Client passes env via header so preview (sandbox subs) unlocks features
+  // exactly like live. This is safe: the sandbox client token is Lovable-auth
+  // gated; production builds ship the live token.
+  const h = req.headers.get("x-payment-env")?.toLowerCase();
+  return h === "sandbox" ? "sandbox" : "live";
+}
+
 export async function checkRateLimit(
   userId: string,
   action: string,
   supabaseUrl: string,
-  supabaseServiceKey: string
-): Promise<{ allowed: boolean; used: number; limit: number }> {
+  supabaseServiceKey: string,
+  env: PaddleEnv = "live",
+): Promise<{ allowed: boolean; used: number; limit: number; plan: string }> {
   const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
-  // Get user plan via security definer function
   const { data: planData } = await supabase.rpc("get_user_plan", {
     p_user_id: userId,
-    p_env: "live",
+    p_env: env,
   });
   const plan = planData || "free";
   const limits = PLAN_LIMITS[plan] || PLAN_LIMITS.free;
   const limit = limits[action] ?? 10;
 
-  // If limit is 0, action is not allowed on this plan
   if (limit === 0) {
-    return { allowed: false, used: 0, limit: 0 };
+    return { allowed: false, used: 0, limit: 0, plan };
   }
 
   const today = new Date().toISOString().split("T")[0];
@@ -40,10 +49,10 @@ export async function checkRateLimit(
   const used = count ?? 0;
 
   if (used >= limit) {
-    return { allowed: false, used, limit };
+    return { allowed: false, used, limit, plan };
   }
 
   await supabase.from("usage_tracking").insert({ user_id: userId, action });
 
-  return { allowed: true, used: used + 1, limit };
+  return { allowed: true, used: used + 1, limit, plan };
 }
