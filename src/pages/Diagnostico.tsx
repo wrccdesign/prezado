@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { AppHeader } from "@/components/AppHeader";
+import { PaymentTestModeBanner } from "@/components/PaymentTestModeBanner";
 import { SEO } from "@/components/SEO";
 import { LegalDisclaimer } from "@/components/LegalDisclaimer";
 import { Button } from "@/components/ui/button";
@@ -173,7 +174,7 @@ export default function Diagnostico() {
 
   return (
     <div className="flex min-h-screen flex-col bg-background">
-      <AppHeader />
+      <AppHeader /><PaymentTestModeBanner />
       <SEO title="Diagnóstico Jurídico com IA — Prezado AI" description="Descreva sua situação em linguagem simples e receba diagnóstico jurídico estruturado: direitos, riscos e próximos passos." path="/diagnostico" />
       <LegalDisclaimer />
 
