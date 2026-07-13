@@ -94,6 +94,7 @@ export default function Diagnostico() {
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${session.access_token}`,
+            "x-payment-env": import.meta.env.VITE_PAYMENTS_CLIENT_TOKEN?.startsWith("test_") ? "sandbox" : "live",
           },
           body: JSON.stringify({ situacao: situacao.trim() }),
         }

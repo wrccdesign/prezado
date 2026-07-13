@@ -63,6 +63,9 @@ export default function Petition() {
           fatos: fatos.trim(),
           pedidos: pedidos.trim(),
         },
+        headers: {
+          "x-payment-env": import.meta.env.VITE_PAYMENTS_CLIENT_TOKEN?.startsWith("test_") ? "sandbox" : "live",
+        },
       });
 
       if (error) throw error;
