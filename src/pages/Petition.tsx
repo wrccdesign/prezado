@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { AppHeader } from "@/components/AppHeader";
+import { PaymentTestModeBanner } from "@/components/PaymentTestModeBanner";
 import { SEO } from "@/components/SEO";
 import { LegalDisclaimer } from "@/components/LegalDisclaimer";
 import { PetitionResult } from "@/components/PetitionResult";
@@ -63,6 +64,9 @@ export default function Petition() {
           fatos: fatos.trim(),
           pedidos: pedidos.trim(),
         },
+        headers: {
+          "x-payment-env": import.meta.env.VITE_PAYMENTS_CLIENT_TOKEN?.startsWith("test_") ? "sandbox" : "live",
+        },
       });
 
       if (error) throw error;
@@ -106,7 +110,7 @@ export default function Petition() {
   if (generatedText) {
     return (
       <div className="min-h-screen bg-background">
-        <AppHeader />
+        <AppHeader /><PaymentTestModeBanner />
       <SEO title="Geração de Petições com IA — Prezado AI" description="Gere petições jurídicas fundamentadas em segundos. Download em PDF e DOCX, prontas para protocolo." path="/peticao" />
         <LegalDisclaimer />
         <main className="container max-w-4xl py-8">
@@ -118,7 +122,7 @@ export default function Petition() {
 
   return (
     <div className="min-h-screen bg-background">
-      <AppHeader />
+      <AppHeader /><PaymentTestModeBanner />
       <LegalDisclaimer />
       <main className="container max-w-3xl py-8">
         <div className="mb-8 animate-fade-in">

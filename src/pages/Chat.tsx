@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { AppHeader } from "@/components/AppHeader";
+import { PaymentTestModeBanner } from "@/components/PaymentTestModeBanner";
 import { SEO } from "@/components/SEO";
 import { LegalDisclaimer } from "@/components/LegalDisclaimer";
 import { useUserProfile } from "@/contexts/UserProfileContext";
@@ -120,6 +121,7 @@ export default function Chat() {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+          "x-payment-env": import.meta.env.VITE_PAYMENTS_CLIENT_TOKEN?.startsWith("test_") ? "sandbox" : "live",
         },
         body: JSON.stringify({ messages: newMessages, isLawyer }),
       });
@@ -205,7 +207,7 @@ export default function Chat() {
 
   return (
     <div className="flex min-h-screen flex-col bg-background">
-      <AppHeader />
+      <AppHeader /><PaymentTestModeBanner />
       <SEO title="Chat Jurídico com IA — Prezado AI" description="Converse com a IA jurídica do Prezado.ai sobre qualquer tema do Direito brasileiro, com respostas fundamentadas." path="/chat" />
       <LegalDisclaimer />
       <main className="flex flex-1 flex-col container max-w-3xl py-4">

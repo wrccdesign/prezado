@@ -101,6 +101,7 @@ export default function Jurisprudencia() {
   headers: {
     "Content-Type": "application/json",
     "Authorization": `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+    "x-payment-env": import.meta.env.VITE_PAYMENTS_CLIENT_TOKEN?.startsWith("test_") ? "sandbox" : "live",
   },
   body: JSON.stringify({
     query: q,

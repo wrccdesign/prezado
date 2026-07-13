@@ -4,7 +4,7 @@ import { getPaddleClient, type PaddleEnv } from "../_shared/paddle.ts";
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
+    "authorization, x-client-info, apikey, content-type, x-payment-env, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
 Deno.serve(async (req) => {
@@ -14,27 +14,26 @@ Deno.serve(async (req) => {
     const authHeader = req.headers.get("Authorization");
     if (!authHeader) throw new Error("Missing authorization");
 
-    const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
-    const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-    const supabase = createClient(supabaseUrl, serviceKey);
+    const supabase = createClient(
+      Deno.env.get("SUPABASE_URL")!,
+      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
+    );
 
     const token = authHeader.replace("Bearer ", "");
-    const {
-      data: { user },
-      error: userError,
-    } = await supabase.auth.getUser(token);
+    const { data: { user }, error: userError } = await supabase.auth.getUser(token);
     if (userError || !user) throw new Error("Unauthorized");
 
-    const body = await req.json().catch(() => ({}));
-    const environment: PaddleEnv = body.environment === "live" ? "live" : "sandbox";
+    // Env is derived from the header the client sends (matches its token prefix).
+    const headerEnv = req.headers.get("x-payment-env");
+    const environment: PaddleEnv = headerEnv === "sandbox" ? "sandbox" : "live";
 
-    // Find the user's most recent subscription for this environment
     const { data: sub } = await supabase
       .from("subscriptions")
       .select("paddle_customer_id, paddle_subscription_id")
       .eq("user_id", user.id)
       .eq("environment", environment)
       .not("paddle_subscription_id", "is", null)
+      .not("paddle_customer_id", "is", null)
       .order("created_at", { ascending: false })
       .limit(1)
       .maybeSingle();
@@ -42,7 +41,7 @@ Deno.serve(async (req) => {
     if (!sub?.paddle_customer_id) {
       return new Response(
         JSON.stringify({ error: "Nenhuma assinatura ativa encontrada." }),
-        { status: 404, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        { status: 404, headers: { ...corsHeaders, "Content-Type": "application/json" } },
       );
     }
 
@@ -50,16 +49,13 @@ Deno.serve(async (req) => {
     const subscriptionIds = sub.paddle_subscription_id ? [sub.paddle_subscription_id] : [];
     const session = await paddle.customerPortalSessions.create(sub.paddle_customer_id, subscriptionIds);
 
-    // Prefer general overview; fallback to the first subscription URL
     const url =
       (session as any)?.urls?.general?.overview ||
       (session as any)?.urls?.subscriptions?.[0]?.updatePaymentMethod ||
       (session as any)?.urls?.subscriptions?.[0]?.cancel ||
       null;
 
-    if (!url) {
-      throw new Error("Portal URL não retornada pelo provedor.");
-    }
+    if (!url) throw new Error("Portal URL não retornada pelo provedor.");
 
     return new Response(JSON.stringify({ url }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -68,7 +64,7 @@ Deno.serve(async (req) => {
     console.error("paddle-customer-portal error:", e);
     return new Response(
       JSON.stringify({ error: e instanceof Error ? e.message : "Erro desconhecido" }),
-      { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } },
     );
   }
 });

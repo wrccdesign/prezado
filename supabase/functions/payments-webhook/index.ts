@@ -112,10 +112,12 @@ async function handleSubscriptionUpdated(data: any, env: PaddleEnv) {
 }
 
 async function handleSubscriptionCanceled(data: any, env: PaddleEnv) {
+  // Keep plan_id so the user retains access until current_period_end.
+  // get_user_plan() gives grace period access for status='canceled' rows.
   await supabase.from('subscriptions')
     .update({
       status: 'canceled',
-      plan_id: 'free',
+      cancel_at_period_end: true,
       updated_at: new Date().toISOString(),
     })
     .eq('paddle_subscription_id', data.id)

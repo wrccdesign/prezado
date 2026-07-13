@@ -24,7 +24,8 @@ serve(async (req) => {
     if (userError || !user) throw new Error("Unauthorized");
 
     // Rate limit check
-    const { allowed, used, limit } = await checkRateLimit(user.id, "diagnostico", supabaseUrl, supabaseKey);
+    const env = (req.headers.get("x-payment-env") === "sandbox" ? "sandbox" : "live") as "sandbox" | "live";
+    const { allowed, used, limit } = await checkRateLimit(user.id, "diagnostico", supabaseUrl, supabaseKey, env);
     if (!allowed) {
       return new Response(JSON.stringify({
         error: `Limite diário de ${limit} diagnósticos atingido. Faça upgrade para continuar.`,
