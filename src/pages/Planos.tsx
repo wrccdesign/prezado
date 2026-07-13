@@ -73,14 +73,39 @@ export default function Planos() {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const { planId, isLoading } = useSubscription();
+  const { planId, isLoading, subscription } = useSubscription();
   const { openCheckout, loading: checkoutLoading } = usePaddleCheckout();
+  const hasPaidPlan = planId !== "free";
 
   useEffect(() => {
     if (searchParams.get("checkout") === "success") {
-      toast.success("Pagamento realizado com sucesso! Seu plano será ativado em instantes.");
+      toast.success("Pagamento realizado! Ativando seu plano...");
+      // Webhook can take a few seconds — poll the subscription query.
+      const key = ["subscription", user?.id];
+      let attempts = 0;
+      const interval = setInterval(async () => {
+        attempts++;
+        // Invalidate via reload of the query — simplest without importing queryClient here
+        window.dispatchEvent(new Event("refetch-subscription"));
+        if (attempts >= 6) clearInterval(interval);
+      }, 2000);
+      return () => clearInterval(interval);
     }
-  }, [searchParams]);
+  }, [searchParams, user?.id]);
+
+  const openPortal = async () => {
+    try {
+      const { data, error } = await supabase.functions.invoke("paddle-customer-portal", {
+        headers: {
+          "x-payment-env": import.meta.env.VITE_PAYMENTS_CLIENT_TOKEN?.startsWith("test_") ? "sandbox" : "live",
+        },
+      });
+      if (error || !data?.url) throw new Error(data?.error || "Portal indisponível");
+      window.open(data.url, "_blank");
+    } catch (err: unknown) {
+      toast.error(err instanceof Error ? err.message : "Erro ao abrir portal");
+    }
+  };
 
   const handleSubscribe = async (plan: typeof plans[number]) => {
     if (!user) {
@@ -88,6 +113,13 @@ export default function Planos() {
       return;
     }
     if (!plan.priceId) return;
+
+    // If user already has a paid plan, force them to the portal for plan changes.
+    if (hasPaidPlan) {
+      toast.info("Você já tem um plano pago. Use 'Gerenciar assinatura' para trocar.");
+      await openPortal();
+      return;
+    }
 
     try {
       await openCheckout({
