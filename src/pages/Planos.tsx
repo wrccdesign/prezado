@@ -222,22 +222,12 @@ export default function Planos() {
                       {isCurrent ? "Plano atual" : user ? "Plano atual" : "Criar conta grátis"}
                     </Button>
                   ) : isCurrent ? (
-                    <Button
-                      variant="outline"
-                      className="w-full"
-                      onClick={async () => {
-                        try {
-                          const { data, error } = await supabase.functions.invoke("paddle-customer-portal", {
-                            body: { environment: import.meta.env.VITE_PAYMENTS_CLIENT_TOKEN?.startsWith("test_") ? "sandbox" : "live" },
-                          });
-                          if (error || !data?.url) throw new Error(data?.error || "Portal indisponível");
-                          window.open(data.url, "_blank");
-                        } catch (err: unknown) {
-                          toast.error(err instanceof Error ? err.message : "Erro ao abrir portal");
-                        }
-                      }}
-                    >
+                    <Button variant="outline" className="w-full" onClick={openPortal}>
                       Gerenciar assinatura
+                    </Button>
+                  ) : hasPaidPlan ? (
+                    <Button variant="outline" className="w-full" onClick={openPortal}>
+                      Trocar para {plan.name}
                     </Button>
                   ) : (
                     <Button
