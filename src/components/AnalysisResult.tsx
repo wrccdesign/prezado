@@ -73,6 +73,85 @@ export function AnalysisResult({ result, onNewAnalysis }: { result: LegalAnalysi
     toast({ title: "JSON copiado!" });
   };
 
+  const buildSections = (): ExportSection[] => {
+    const sections: ExportSection[] = [
+      {
+        heading: "Resumo da Análise",
+        body: result.resumo,
+      },
+      {
+        heading: "Classificação",
+        body: [
+          `Complexidade: ${result.complexidade}`,
+          `Urgência: ${result.urgencia ? "Sim" : "Não"}`,
+          `Prazo estimado: ${result.prazo_estimado}`,
+        ].join("\n"),
+      },
+    ];
+
+    if (result.pontos_fracos?.length) {
+      sections.push({
+        heading: "Pontos Fracos Identificados",
+        body: result.pontos_fracos.map((p, i) => `${i + 1}. ${p}`).join("\n"),
+      });
+    }
+    if (result.riscos_processuais?.length) {
+      sections.push({
+        heading: "Riscos Processuais",
+        body: result.riscos_processuais.map((p, i) => `${i + 1}. ${p}`).join("\n"),
+      });
+    }
+    if (result.fundamentacao_sugerida?.length) {
+      sections.push({
+        heading: "Fundamentação Sugerida",
+        body: result.fundamentacao_sugerida
+          .map((l) => `${l.lei}: ${l.artigos.join(", ")}`)
+          .join("\n"),
+      });
+    }
+    sections.push({
+      heading: "Legislação Aplicável",
+      body: result.legislacao_aplicavel
+        .map((l) => `${l.lei}: ${l.artigos.join(", ")}`)
+        .join("\n"),
+    });
+    sections.push({
+      heading: "Jurisdição Competente",
+      body: result.jurisdicao_competente,
+    });
+    sections.push({
+      heading: "Recomendações Concretas",
+      body: result.direcionamentos.map((s, i) => `${i + 1}. ${s}`).join("\n"),
+    });
+    sections.push({
+      heading: "Aviso Legal",
+      body:
+        "Esta análise é informativa e foi gerada por inteligência artificial. Consulte um advogado para orientação específica sobre seu caso.",
+    });
+    return sections;
+  };
+
+  const baseName = `analise-${slugify(result.tipo_de_causa)}-${format(new Date(), "yyyy-MM-dd")}`;
+  const title = `Análise Jurídica — ${result.tipo_de_causa}`;
+
+  const handleExportPDF = () => {
+    try {
+      exportToPDF(title, buildSections(), `${baseName}.pdf`);
+      toast({ title: "PDF gerado" });
+    } catch {
+      toast({ title: "Erro ao gerar PDF", variant: "destructive" });
+    }
+  };
+
+  const handleExportDOCX = async () => {
+    try {
+      await exportToDOCX(title, buildSections(), `${baseName}.docx`);
+      toast({ title: "Word gerado" });
+    } catch {
+      toast({ title: "Erro ao gerar Word", variant: "destructive" });
+    }
+  };
+
   const complexity = complexityConfig[result.complexidade];
   const ComplexityIcon = complexity.icon;
 
