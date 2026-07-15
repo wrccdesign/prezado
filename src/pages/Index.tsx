@@ -67,7 +67,7 @@ export default function Index() {
         {
           method: "POST",
           headers: {
-            Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+            Authorization: `Bearer ${(await supabase.auth.getSession()).data.session?.access_token ?? ""}`,
           },
           body: formData,
           signal: controller.signal,
