@@ -361,6 +361,14 @@ export function AnalysisResult({ result, onNewAnalysis }: { result: LegalAnalysi
       {/* Actions */}
       <Separator />
       <div className="flex flex-wrap gap-3">
+        <Button variant="outline" onClick={handleExportPDF}>
+          <FileDown className="mr-2 h-4 w-4" />
+          Exportar PDF
+        </Button>
+        <Button variant="outline" onClick={handleExportDOCX}>
+          <FileText className="mr-2 h-4 w-4" />
+          Exportar Word
+        </Button>
         <Button variant="outline" onClick={copyJson}>
           <Copy className="mr-2 h-4 w-4" />
           Copiar JSON
