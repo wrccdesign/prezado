@@ -14,8 +14,10 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useSubscription } from "@/hooks/useSubscription";
 
 import { AppFooter } from "@/components/AppFooter";
-import { Search, Scale, ClipboardList, DollarSign, Building2, Zap, ArrowRight, MessageCircle, Loader2, Stethoscope, Sparkles, Lock } from "lucide-react";
+import { Search, Scale, ClipboardList, DollarSign, Building2, Zap, ArrowRight, MessageCircle, Loader2, Stethoscope, Sparkles, Lock, FileDown, FileText } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
+import { exportToPDF, exportToDOCX, type ExportSection } from "@/lib/exportDocument";
+import { format } from "date-fns";
 
 interface Diagnostico {
   o_que_esta_acontecendo: string;
@@ -170,6 +172,56 @@ export default function Diagnostico() {
         diagnosticoSummary,
       },
     });
+  };
+
+  const buildDiagnosticoSections = (r: Diagnostico): ExportSection[] => [
+    { heading: "Situação descrita", body: situacao.trim() },
+    { heading: "Área do Direito", body: r.area_do_direito },
+    {
+      heading: "Urgência",
+      body: `${URGENCIA_CONFIG[r.urgencia].label}\n\n${r.explicacao_urgencia}`,
+    },
+    { heading: "O que está acontecendo", body: r.o_que_esta_acontecendo },
+    { heading: "Qual é o seu direito", body: r.qual_seu_direito },
+    {
+      heading: "O que você pode fazer",
+      body: r.o_que_voce_pode_fazer.map((s, i) => `${i + 1}. ${s}`).join("\n"),
+    },
+    { heading: "Quanto pode custar / ganhar", body: r.estimativa_custos_ganhos },
+    { heading: "Onde buscar ajuda", body: r.onde_entrar },
+    {
+      heading: "Aviso",
+      body:
+        "Este diagnóstico é uma orientação inicial gerada por inteligência artificial. Não substitui a consulta com um advogado. Para casos urgentes, procure assistência jurídica presencial.",
+    },
+  ];
+
+  const handleExportPDF = () => {
+    if (!result) return;
+    try {
+      exportToPDF(
+        "Diagnóstico Jurídico",
+        buildDiagnosticoSections(result),
+        `diagnostico-${format(new Date(), "yyyy-MM-dd")}.pdf`,
+      );
+      toast({ title: "PDF gerado" });
+    } catch {
+      toast({ title: "Erro ao gerar PDF", variant: "destructive" });
+    }
+  };
+
+  const handleExportDOCX = async () => {
+    if (!result) return;
+    try {
+      await exportToDOCX(
+        "Diagnóstico Jurídico",
+        buildDiagnosticoSections(result),
+        `diagnostico-${format(new Date(), "yyyy-MM-dd")}.docx`,
+      );
+      toast({ title: "Word gerado" });
+    } catch {
+      toast({ title: "Erro ao gerar Word", variant: "destructive" });
+    }
   };
 
   return (
@@ -393,6 +445,19 @@ export default function Diagnostico() {
                 {locked ? "Falar mais (Profissional)" : "Falar mais sobre isso"}
               </Button>
             </div>
+
+            {!locked && (
+              <div className="flex flex-wrap gap-2 justify-center">
+                <Button variant="outline" size="sm" onClick={handleExportPDF}>
+                  <FileDown className="mr-2 h-4 w-4" />
+                  Exportar PDF
+                </Button>
+                <Button variant="outline" size="sm" onClick={handleExportDOCX}>
+                  <FileText className="mr-2 h-4 w-4" />
+                  Exportar Word
+                </Button>
+              </div>
+            )}
 
             <p className="text-xs text-muted-foreground text-center leading-relaxed">
               ⚠️ Este diagnóstico é uma orientação inicial gerada por inteligência artificial.

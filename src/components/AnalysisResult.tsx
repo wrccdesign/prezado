@@ -5,10 +5,12 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import {
   Scale, AlertTriangle, Clock, ExternalLink, Copy, ChevronRight,
-  BookOpen, MapPin, ListOrdered, Globe,
+  BookOpen, MapPin, ListOrdered, Globe, FileDown, FileText,
   AlertCircle, Gavel, CheckCircle2, ShieldAlert, BookMarked
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { exportToPDF, exportToDOCX, slugify, type ExportSection } from "@/lib/exportDocument";
+import { format } from "date-fns";
 
 const complexityConfig = {
   simples: { label: "Simples", className: "bg-emerald-500/10 text-emerald-600 border-emerald-500/20", icon: CheckCircle2 },
@@ -69,6 +71,85 @@ export function AnalysisResult({ result, onNewAnalysis }: { result: LegalAnalysi
   const copyJson = () => {
     navigator.clipboard.writeText(JSON.stringify(result, null, 2));
     toast({ title: "JSON copiado!" });
+  };
+
+  const buildSections = (): ExportSection[] => {
+    const sections: ExportSection[] = [
+      {
+        heading: "Resumo da Análise",
+        body: result.resumo,
+      },
+      {
+        heading: "Classificação",
+        body: [
+          `Complexidade: ${result.complexidade}`,
+          `Urgência: ${result.urgencia ? "Sim" : "Não"}`,
+          `Prazo estimado: ${result.prazo_estimado}`,
+        ].join("\n"),
+      },
+    ];
+
+    if (result.pontos_fracos?.length) {
+      sections.push({
+        heading: "Pontos Fracos Identificados",
+        body: result.pontos_fracos.map((p, i) => `${i + 1}. ${p}`).join("\n"),
+      });
+    }
+    if (result.riscos_processuais?.length) {
+      sections.push({
+        heading: "Riscos Processuais",
+        body: result.riscos_processuais.map((p, i) => `${i + 1}. ${p}`).join("\n"),
+      });
+    }
+    if (result.fundamentacao_sugerida?.length) {
+      sections.push({
+        heading: "Fundamentação Sugerida",
+        body: result.fundamentacao_sugerida
+          .map((l) => `${l.lei}: ${l.artigos.join(", ")}`)
+          .join("\n"),
+      });
+    }
+    sections.push({
+      heading: "Legislação Aplicável",
+      body: result.legislacao_aplicavel
+        .map((l) => `${l.lei}: ${l.artigos.join(", ")}`)
+        .join("\n"),
+    });
+    sections.push({
+      heading: "Jurisdição Competente",
+      body: result.jurisdicao_competente,
+    });
+    sections.push({
+      heading: "Recomendações Concretas",
+      body: result.direcionamentos.map((s, i) => `${i + 1}. ${s}`).join("\n"),
+    });
+    sections.push({
+      heading: "Aviso Legal",
+      body:
+        "Esta análise é informativa e foi gerada por inteligência artificial. Consulte um advogado para orientação específica sobre seu caso.",
+    });
+    return sections;
+  };
+
+  const baseName = `analise-${slugify(result.tipo_de_causa)}-${format(new Date(), "yyyy-MM-dd")}`;
+  const title = `Análise Jurídica — ${result.tipo_de_causa}`;
+
+  const handleExportPDF = () => {
+    try {
+      exportToPDF(title, buildSections(), `${baseName}.pdf`);
+      toast({ title: "PDF gerado" });
+    } catch {
+      toast({ title: "Erro ao gerar PDF", variant: "destructive" });
+    }
+  };
+
+  const handleExportDOCX = async () => {
+    try {
+      await exportToDOCX(title, buildSections(), `${baseName}.docx`);
+      toast({ title: "Word gerado" });
+    } catch {
+      toast({ title: "Erro ao gerar Word", variant: "destructive" });
+    }
   };
 
   const complexity = complexityConfig[result.complexidade];
@@ -280,6 +361,14 @@ export function AnalysisResult({ result, onNewAnalysis }: { result: LegalAnalysi
       {/* Actions */}
       <Separator />
       <div className="flex flex-wrap gap-3">
+        <Button variant="outline" onClick={handleExportPDF}>
+          <FileDown className="mr-2 h-4 w-4" />
+          Exportar PDF
+        </Button>
+        <Button variant="outline" onClick={handleExportDOCX}>
+          <FileText className="mr-2 h-4 w-4" />
+          Exportar Word
+        </Button>
         <Button variant="outline" onClick={copyJson}>
           <Copy className="mr-2 h-4 w-4" />
           Copiar JSON
