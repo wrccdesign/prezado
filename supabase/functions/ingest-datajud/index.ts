@@ -1,5 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { requireServiceRole } from "../_shared/auth.ts";
+import { requireUser } from "../_shared/auth.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { generateEmbedding } from "../_shared/embeddings.ts";
 
@@ -140,8 +140,8 @@ function buildDecisionData(metadata: any, source: any, tribunal: string, externa
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
-  const _svcErr = requireServiceRole(req);
-  if (_svcErr) return _svcErr;
+  const _auth = await requireUser(req);
+  if (_auth instanceof Response) return _auth;
 
   try {
     const { tribunal, query, size = 10 } = await req.json();
