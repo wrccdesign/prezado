@@ -446,6 +446,19 @@ export default function Diagnostico() {
               </Button>
             </div>
 
+            {!locked && (
+              <div className="flex flex-wrap gap-2 justify-center">
+                <Button variant="outline" size="sm" onClick={handleExportPDF}>
+                  <FileDown className="mr-2 h-4 w-4" />
+                  Exportar PDF
+                </Button>
+                <Button variant="outline" size="sm" onClick={handleExportDOCX}>
+                  <FileText className="mr-2 h-4 w-4" />
+                  Exportar Word
+                </Button>
+              </div>
+            )}
+
             <p className="text-xs text-muted-foreground text-center leading-relaxed">
               ⚠️ Este diagnóstico é uma orientação inicial gerada por inteligência artificial.
               Não substitui a consulta com um advogado. Para casos urgentes, procure assistência jurídica presencial.
