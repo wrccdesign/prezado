@@ -174,6 +174,56 @@ export default function Diagnostico() {
     });
   };
 
+  const buildDiagnosticoSections = (r: Diagnostico): ExportSection[] => [
+    { heading: "Situação descrita", body: situacao.trim() },
+    { heading: "Área do Direito", body: r.area_do_direito },
+    {
+      heading: "Urgência",
+      body: `${URGENCIA_CONFIG[r.urgencia].label}\n\n${r.explicacao_urgencia}`,
+    },
+    { heading: "O que está acontecendo", body: r.o_que_esta_acontecendo },
+    { heading: "Qual é o seu direito", body: r.qual_seu_direito },
+    {
+      heading: "O que você pode fazer",
+      body: r.o_que_voce_pode_fazer.map((s, i) => `${i + 1}. ${s}`).join("\n"),
+    },
+    { heading: "Quanto pode custar / ganhar", body: r.estimativa_custos_ganhos },
+    { heading: "Onde buscar ajuda", body: r.onde_entrar },
+    {
+      heading: "Aviso",
+      body:
+        "Este diagnóstico é uma orientação inicial gerada por inteligência artificial. Não substitui a consulta com um advogado. Para casos urgentes, procure assistência jurídica presencial.",
+    },
+  ];
+
+  const handleExportPDF = () => {
+    if (!result) return;
+    try {
+      exportToPDF(
+        "Diagnóstico Jurídico",
+        buildDiagnosticoSections(result),
+        `diagnostico-${format(new Date(), "yyyy-MM-dd")}.pdf`,
+      );
+      toast({ title: "PDF gerado" });
+    } catch {
+      toast({ title: "Erro ao gerar PDF", variant: "destructive" });
+    }
+  };
+
+  const handleExportDOCX = async () => {
+    if (!result) return;
+    try {
+      await exportToDOCX(
+        "Diagnóstico Jurídico",
+        buildDiagnosticoSections(result),
+        `diagnostico-${format(new Date(), "yyyy-MM-dd")}.docx`,
+      );
+      toast({ title: "Word gerado" });
+    } catch {
+      toast({ title: "Erro ao gerar Word", variant: "destructive" });
+    }
+  };
+
   return (
     <div className="flex min-h-screen flex-col bg-background">
       <AppHeader /><PaymentTestModeBanner />
