@@ -1,4 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { requireServiceRole } from "../_shared/auth.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { generateEmbedding } from "../_shared/embeddings.ts";
 
@@ -116,6 +117,9 @@ function getDatajudEndpoint(tribunal: string): string {
 
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
+
+  const _svcErr = requireServiceRole(req);
+  if (_svcErr) return _svcErr;
 
   try {
     const { tribunal, query, size = 20 } = await req.json();
