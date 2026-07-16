@@ -1,33 +1,18 @@
-## Objetivo
-Adicionar botões "Exportar PDF" e "Exportar Word" nas telas de Análise Legal (`AnalysisResult`) e Diagnóstico Jurídico, com o mesmo padrão já usado em Petições (`PetitionsTab` usa `jsPDF` + `docx`).
+# Corrigir erro "Failed to fetch" no Diagnóstico
 
-## Escopo
+## Causa
 
-### 1. `src/components/AnalysisResult.tsx`
-- Adicionar dois botões na barra de ações (ao lado de "Copiar JSON"): **Exportar PDF** e **Exportar Word**.
-- Gerar conteúdo formatado a partir do objeto `LegalAnalysis`:
-  - Título: "Análise Jurídica — {tipo_de_causa}"
-  - Seções: Resumo, Complexidade/Urgência/Prazo, Pontos Fracos, Riscos Processuais, Fundamentação Sugerida, Legislação Aplicável, Jurisdição, Recomendações, Aviso legal.
-- PDF via `jsPDF` (com quebra de linha via `splitTextToSize`, títulos em negrito, controle de página).
-- DOCX via `docx` (`Document` + `Paragraph`/`TextRun` com `bold`/`heading`).
-- Nome do arquivo: `analise-{slug(tipo_de_causa)}-{yyyy-MM-dd}.pdf|docx`.
+O cliente (`src/pages/Diagnostico.tsx`) envia o header `x-payment-env` ao chamar a edge function `diagnostico-juridico`. Porém, o `Access-Control-Allow-Headers` dessa function não lista `x-payment-env`, então o browser falha no preflight CORS e mostra "Failed to fetch" antes mesmo da requisição sair.
 
-### 2. Diagnóstico Jurídico (`src/pages/Diagnostico.tsx` ou componente de resultado)
-- Verificar onde o resultado do diagnóstico é renderizado; adicionar os mesmos dois botões de exportação, montando o texto a partir das seções exibidas (para cidadão e advogado).
-- Mesmo padrão de nome de arquivo: `diagnostico-{yyyy-MM-dd}.pdf|docx`.
+Outras functions (ex.: `_shared/auth.ts`) já incluem esse header — só a `diagnostico-juridico` ficou desatualizada.
 
-### 3. Helper compartilhado (opcional, para não duplicar)
-- Criar `src/lib/exportDocument.ts` com duas funções:
-  - `exportToPDF(title: string, sections: {heading: string; body: string}[], filename: string)`
-  - `exportToDOCX(title: string, sections: {heading: string; body: string}[], filename: string)`
-- Reutilizar em `AnalysisResult` e no resultado do Diagnóstico. `PetitionsTab` fica como está (formato texto puro já funciona).
+## Alteração
 
-## Fora do escopo
-- Nenhuma mudança em lógica de IA, gates de plano ou billing.
-- Sem alterações no backend / edge functions.
-- `PetitionsTab` mantém sua implementação atual.
+**`supabase/functions/diagnostico-juridico/index.ts`**
+- Adicionar `x-payment-env` (e demais headers padrão já usados no projeto) ao `Access-Control-Allow-Headers` do `corsHeaders`.
 
-## Como testar no preview
-1. Rodar uma Análise em `/` (Index) → clicar em **Exportar PDF** e **Exportar Word** → conferir arquivo baixado com todas as seções.
-2. Rodar um Diagnóstico em `/diagnostico` → repetir para os dois formatos, nos perfis Cidadão e Advogado.
-3. Abrir os arquivos gerados no leitor de PDF e no Word/Google Docs para confirmar formatação (títulos em negrito, quebras corretas, acentuação preservada).
+Sem mudanças de lógica, UI, banco ou auth. Somente o header CORS.
+
+## Verificação
+
+- Recarregar `/diagnostico`, clicar em "Analisar minha situação" e confirmar que a chamada retorna 200 (ou o 429 de limite, conforme o caso) em vez de "Failed to fetch".
