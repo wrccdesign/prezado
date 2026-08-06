@@ -141,9 +141,18 @@ export default function Index() {
       setResult(data.result as LegalAnalysis);
       toast({ title: "Análise concluída!" });
     } catch (err: any) {
+      let msg = err.message;
+      if (err?.context instanceof Response) {
+        try {
+          const body = await err.context.json();
+          msg = body?.error || msg;
+        } catch {
+          // mantém msg original se não conseguir ler o corpo
+        }
+      }
       toast({
         title: "Erro na análise",
-        description: err.message || "Tente novamente mais tarde.",
+        description: msg || "Tente novamente mais tarde.",
         variant: "destructive",
       });
     } finally {
