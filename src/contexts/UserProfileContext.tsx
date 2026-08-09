@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useEffect, useCallback, type ReactNode } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import type { Json } from "@/integrations/supabase/types";
 import { useAuth } from "./AuthContext";
 
 export type ProfileType = "cidadao" | "advogado";
@@ -16,7 +17,7 @@ export interface ProfileData {
   office_phone: string | null;
   office_email: string | null;
   office_logo_url: string | null;
-  formatting_preferences: any;
+  formatting_preferences: Json;
   created_at: string;
   updated_at: string;
 }
@@ -56,43 +57,6 @@ export function UserProfileProvider({ children }: { children: ReactNode }) {
       }
 
       if (data) {
-        // Check if there's a pending lawyer profile to apply (set during signup)
-        const pendingProfileKey = "jurisai-pending-lawyer-profile";
-        const pendingProfile = localStorage.getItem(pendingProfileKey);
-        
-        if (pendingProfile) {
-          try {
-            const pendingData = JSON.parse(pendingProfile);
-            localStorage.removeItem(pendingProfileKey);
-            // Apply the pending lawyer profile
-            await supabase
-              .from("profiles")
-              .upsert({
-                user_id: user.id,
-                ...pendingData,
-                updated_at: new Date().toISOString(),
-              }, { onConflict: "user_id" });
-            
-            // Fetch again with updated data
-            const { data: updatedData } = await supabase
-              .from("profiles")
-              .select("*")
-              .eq("user_id", user.id)
-              .single();
-            
-            if (updatedData) {
-              setProfileData({
-                ...updatedData,
-                profile_type: updatedData.profile_type as ProfileType,
-                specialties: updatedData.specialties || [],
-              });
-              return;
-            }
-          } catch (err) {
-            console.error("Error applying pending profile:", err);
-          }
-        }
-
         setProfileData({
           ...data,
           profile_type: data.profile_type as ProfileType,

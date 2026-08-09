@@ -55,7 +55,7 @@ export function RescisaoCalc() {
     else if (tipo === "acordo_mutuo") { avisoPrevio = ((remuneracao / 30) * Math.min(30 + anosCompletos * 3, 90)) / 2; }
 
     const meses13 = demissao.getMonth() + 1;
-    let decimoTerceiro = tipo !== "com_justa_causa" ? (remuneracao / 12) * meses13 : 0;
+    const decimoTerceiro = tipo !== "com_justa_causa" ? (remuneracao / 12) * meses13 : 0;
 
     const totalMonths = Math.floor(totalDays / 30);
     const mesesFerias = totalMonths % 12;
