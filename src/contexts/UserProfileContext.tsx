@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useEffect, useCallback, type ReactNode } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import type { Json } from "@/integrations/supabase/types";
 import { useAuth } from "./AuthContext";
 
 export type ProfileType = "cidadao" | "advogado";
@@ -16,7 +17,7 @@ export interface ProfileData {
   office_phone: string | null;
   office_email: string | null;
   office_logo_url: string | null;
-  formatting_preferences: any;
+  formatting_preferences: Json;
   created_at: string;
   updated_at: string;
 }
