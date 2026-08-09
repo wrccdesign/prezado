@@ -85,6 +85,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 }
 
 function toAuthError(error: unknown): Error {
+  if (error instanceof Error && error.message === "Invalid login credentials") {
+    return new Error("E-mail ou senha incorretos.");
+  }
   if (error instanceof Error && error.message !== "Failed to fetch") return error;
   return new Error("Não foi possível conectar ao serviço de autenticação. Aguarde alguns instantes e tente novamente.");
 }
