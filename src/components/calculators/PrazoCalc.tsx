@@ -102,7 +102,7 @@ export function PrazoCalc() {
     if (!dataIntimacao || !diasPrazo) return;
     const anosRelevantes = new Set([dataIntimacao.getFullYear(), dataIntimacao.getFullYear() + 1]);
     const feriados = [...anosRelevantes].flatMap(a => getFeriadosNacionais(a));
-    let date = new Date(dataIntimacao);
+    const date = new Date(dataIntimacao);
     date.setDate(date.getDate() + 1);
     if (diasUteis) { while (!isDiaUtil(date, feriados)) date.setDate(date.getDate() + 1); }
     const inicioContagem = new Date(date);
