@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Navigate } from "react-router-dom";
+import { Navigate, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -30,8 +30,10 @@ const SPECIALTIES = [
 ];
 
 export default function Auth() {
-  const { user, loading, signUp, signIn } = useAuth();
+  const { user, loading, signUp, signIn, resetPassword } = useAuth();
   const { toast } = useToast();
+  const location = useLocation();
+  const navigate = useNavigate();
   const [isSignUp, setIsSignUp] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -51,7 +53,11 @@ export default function Auth() {
     );
   }
 
-  if (user) return <Navigate to="/" replace />;
+  const requestedPath = typeof location.state === "object" && location.state && "redirectTo" in location.state
+    ? String(location.state.redirectTo)
+    : "/";
+
+  if (user) return <Navigate to={requestedPath} replace />;
 
   const toggleSpecialty = (specId: string) => {
     setSelectedSpecialties((prev) =>
@@ -63,38 +69,58 @@ export default function Auth() {
     e.preventDefault();
     setSubmitting(true);
 
-    if (isSignUp) {
-      const { error } = await signUp(email, password);
-      if (error) {
-        toast({ title: "Erro", description: error.message, variant: "destructive" });
-      } else {
-        if (isLawyer && oabNumber && oabState) {
-          localStorage.setItem("jurisai-pending-lawyer-profile", JSON.stringify({
-            profile_type: "advogado",
-            oab_number: oabNumber,
-            oab_state: oabState,
-            specialties: selectedSpecialties,
-            office_name: officeName || null,
-          }));
+    try {
+      if (isSignUp) {
+        const { error } = await signUp(email, password);
+        if (error) {
+          toast({ title: "Erro no cadastro", description: error.message, variant: "destructive" });
+        } else {
+          if (isLawyer && oabNumber && oabState) {
+            localStorage.setItem("jurisai-pending-lawyer-profile", JSON.stringify({
+              profile_type: "advogado",
+              oab_number: oabNumber,
+              oab_state: oabState,
+              specialties: selectedSpecialties,
+              office_name: officeName || null,
+            }));
+          }
+          toast({ title: "Cadastro realizado!", description: "Verifique seu e-mail para confirmar a conta." });
         }
-        toast({ title: "Cadastro realizado!", description: "Verifique seu e-mail para confirmar a conta." });
+      } else {
+        const { error } = await signIn(email, password);
+        if (error) {
+          toast({ title: "Não foi possível entrar", description: error.message, variant: "destructive" });
+        } else {
+          navigate(requestedPath, { replace: true });
+        }
       }
-    } else {
-      const { error } = await signIn(email, password);
-      if (error) {
-        toast({ title: "Erro", description: error.message, variant: "destructive" });
-      }
+    } finally {
+      setSubmitting(false);
     }
+  };
+
+  const handleForgotPassword = async () => {
+    if (!email.trim()) {
+      toast({ title: "Informe seu e-mail", description: "Digite o e-mail da conta antes de recuperar a senha.", variant: "destructive" });
+      return;
+    }
+    setSubmitting(true);
+    const { error } = await resetPassword(email);
     setSubmitting(false);
+    if (error) {
+      toast({ title: "Erro ao recuperar senha", description: error.message, variant: "destructive" });
+      return;
+    }
+    toast({ title: "Confira seu e-mail", description: "Enviamos um link para você criar uma nova senha." });
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center px-4 py-8 bg-slate-900">
+    <div className="flex min-h-screen items-center justify-center px-4 py-8 bg-navy">
       <SEO title="Entrar ou Cadastrar — Prezado AI" description="Acesse sua conta Prezado.ai ou crie um cadastro gratuito para usar as ferramentas de IA jurídica." path="/auth" />
       <div className="w-full max-w-md animate-fade-in">
         <div className="mb-8 text-center">
           <img src={logo} alt="Prezado.ai" className="h-12 mx-auto mb-4" />
-          <p className="mt-2 text-white">Assistente jurídico inteligente para o Direito brasileiro</p>
+          <p className="mt-2 text-primary-foreground">Assistente jurídico inteligente para o Direito brasileiro</p>
         </div>
 
         <Card>
@@ -114,6 +140,11 @@ export default function Auth() {
               <div className="space-y-2">
                 <Label htmlFor="password">Senha</Label>
                 <Input id="password" type="password" placeholder="Mínimo 6 caracteres" value={password} onChange={(e) => setPassword(e.target.value)} required minLength={6} />
+                {!isSignUp && (
+                  <button type="button" onClick={handleForgotPassword} disabled={submitting} className="text-sm text-primary hover:underline disabled:opacity-50">
+                    Esqueci minha senha
+                  </button>
+                )}
               </div>
 
               {isSignUp && (
