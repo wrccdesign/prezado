@@ -71,19 +71,17 @@ export default function Auth() {
 
     try {
       if (isSignUp) {
-        const { error } = await signUp(email, password);
+        const lawyerProfile = isLawyer && oabNumber && oabState ? {
+          profile_type: "advogado" as const,
+          oab_number: oabNumber.trim(),
+          oab_state: oabState,
+          specialties: selectedSpecialties,
+          office_name: officeName.trim() || null,
+        } : undefined;
+        const { error } = await signUp(email, password, lawyerProfile);
         if (error) {
           toast({ title: "Erro no cadastro", description: error.message, variant: "destructive" });
         } else {
-          if (isLawyer && oabNumber && oabState) {
-            localStorage.setItem("jurisai-pending-lawyer-profile", JSON.stringify({
-              profile_type: "advogado",
-              oab_number: oabNumber,
-              oab_state: oabState,
-              specialties: selectedSpecialties,
-              office_name: officeName || null,
-            }));
-          }
           toast({ title: "Cadastro realizado!", description: "Verifique seu e-mail para confirmar a conta." });
         }
       } else {
