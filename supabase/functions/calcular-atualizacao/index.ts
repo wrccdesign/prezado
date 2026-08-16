@@ -164,10 +164,9 @@ serve(async (req) => {
     const ultimoDia = new Date(
       Date.UTC(mes.getUTCFullYear(), mes.getUTCMonth(), daysInMonth(mes)),
     );
-    const posLei = key >= VIGENCIA_14905.slice(0, 7) + "-01" && ultimoDia >= parseISO(VIGENCIA_14905)!
-      ? key > "2024-08-01"
-      : false;
-    const regime: "pre_14905" | "pos_14905" = posLei ? "pos_14905" : "pre_14905";
+    // Agosto/2024 (mês da vigência, em 30/08) permanece no regime anterior;
+    // a partir de setembro/2024 aplica-se o regime da Lei 14.905/2024.
+    const regime: "pre_14905" | "pos_14905" = key > "2024-08-01" ? "pos_14905" : "pre_14905";
 
     // ── Correção monetária ──
     const codigoCorrecao = regime === "pos_14905" ? "ipca" : indiceEscolhido;
