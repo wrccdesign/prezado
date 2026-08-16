@@ -7,96 +7,16 @@ import { ArrowLeft, Briefcase, Users, Calendar, DollarSign } from "lucide-react"
 import { RescisaoCalc } from "@/components/calculators/RescisaoCalc";
 import { PensaoCalc } from "@/components/calculators/PensaoCalc";
 import { PrazoCalc } from "@/components/calculators/PrazoCalc";
+import { CorrecaoCalc } from "@/components/calculators/CorrecaoCalc";
 import { AppFooter } from "@/components/AppFooter";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 type CalculatorType = null | "rescisao" | "pensao" | "prazo" | "correcao";
-
-function fmt(v: number) {
-  return v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
-}
-
-// ── Correção Monetária ──
-function CorrecaoCalc() {
-  const [valor, setValor] = useState("");
-  const [dataInicio, setDataInicio] = useState("");
-  const [dataFim, setDataFim] = useState("");
-  const [indice, setIndice] = useState("ipca");
-  const [juros, setJuros] = useState("1");
-  const [result, setResult] = useState<{ corrigido: number; jurosVal: number; total: number } | null>(null);
-
-  const calcular = () => {
-    const v = parseFloat(valor) || 0;
-    const di = new Date(dataInicio);
-    const df = new Date(dataFim);
-    if (!v || isNaN(di.getTime()) || isNaN(df.getTime())) return;
-
-    const meses = Math.max(0, (df.getFullYear() - di.getFullYear()) * 12 + (df.getMonth() - di.getMonth()));
-    const taxas: Record<string, number> = { ipca: 0.004, inpc: 0.0038, selic: 0.0087 };
-    const taxaMensal = taxas[indice] || 0.004;
-    const corrigido = v * Math.pow(1 + taxaMensal, meses);
-    const jurosMensal = (parseFloat(juros) || 1) / 100;
-    const jurosVal = corrigido * jurosMensal * meses;
-    setResult({ corrigido, jurosVal, total: corrigido + jurosVal });
-  };
-
-  return (
-    <div className="space-y-6">
-      <div className="grid gap-4 sm:grid-cols-2">
-        <div className="space-y-2">
-          <Label>Valor Original (R$)</Label>
-          <Input type="number" placeholder="10000" value={valor} onChange={e => setValor(e.target.value)} />
-        </div>
-        <div className="space-y-2">
-          <Label>Índice de Correção</Label>
-          <Select value={indice} onValueChange={setIndice}>
-            <SelectTrigger><SelectValue /></SelectTrigger>
-            <SelectContent>
-              <SelectItem value="ipca">IPCA</SelectItem>
-              <SelectItem value="inpc">INPC</SelectItem>
-              <SelectItem value="selic">Selic</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-        <div className="space-y-2">
-          <Label>Data Inicial</Label>
-          <Input type="date" value={dataInicio} onChange={e => setDataInicio(e.target.value)} />
-        </div>
-        <div className="space-y-2">
-          <Label>Data Final</Label>
-          <Input type="date" value={dataFim} onChange={e => setDataFim(e.target.value)} />
-        </div>
-        <div className="space-y-2">
-          <Label>Taxa de Juros Mensal (%)</Label>
-          <Input type="number" step="0.1" placeholder="1" value={juros} onChange={e => setJuros(e.target.value)} />
-        </div>
-      </div>
-      <p className="text-xs text-muted-foreground">Cálculo simplificado com taxas médias estimadas. Para valores oficiais, consulte o BACEN.</p>
-      <Button onClick={calcular} className="w-full sm:w-auto">Calcular Correção</Button>
-
-      {result && (
-        <Card className="border-primary/20 bg-primary/5">
-          <CardContent className="pt-6 space-y-2 text-sm">
-            <div className="flex justify-between"><span>Valor Corrigido</span><span className="font-semibold">{fmt(result.corrigido)}</span></div>
-            <div className="flex justify-between"><span>Juros</span><span className="font-semibold">{fmt(result.jurosVal)}</span></div>
-            <div className="flex justify-between border-t pt-2 text-base font-bold">
-              <span>Total</span>
-              <span className="text-primary">{fmt(result.total)}</span>
-            </div>
-          </CardContent>
-        </Card>
-      )}
-    </div>
-  );
-}
 
 const mainCalculators = [
   { id: "rescisao" as const, title: "Rescisão Trabalhista", icon: Briefcase, desc: "Calcule verbas rescisórias: saldo de salário, férias, 13º, aviso prévio e FGTS." },
   { id: "pensao" as const, title: "Pensão Alimentícia", icon: Users, desc: "Estime o valor mensal de pensão alimentícia com base na renda." },
-  { id: "correcao" as const, title: "Correção Monetária e Juros", icon: DollarSign, desc: "Atualize valores com índices de correção e juros." },
-  { id: "prazo" as const, title: "Prazo Processual", icon: Calendar, desc: "Calcule a data final de prazos em dias úteis ou corridos." },
+  { id: "correcao" as const, title: "Correção Monetária e Juros", icon: DollarSign, desc: "Atualize valores com índices oficiais do Banco Central e juros da Lei 14.905/2024." },
+  { id: "prazo" as const, title: "Prazo Processual", icon: Calendar, desc: "Calcule prazos em dias úteis ou corridos com feriados oficiais e recesso forense." },
 ];
 
 const calcComponents: Record<string, () => JSX.Element> = {
