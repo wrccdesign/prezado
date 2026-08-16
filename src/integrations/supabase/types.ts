@@ -245,6 +245,75 @@ export type Database = {
         }
         Relationships: []
       }
+      feriados: {
+        Row: {
+          codigo_ibge: string | null
+          created_at: string
+          data: string
+          descricao: string
+          fonte_normativa: string | null
+          id: string
+          tipo: string
+          tribunal: string | null
+          uf: string | null
+        }
+        Insert: {
+          codigo_ibge?: string | null
+          created_at?: string
+          data: string
+          descricao: string
+          fonte_normativa?: string | null
+          id?: string
+          tipo: string
+          tribunal?: string | null
+          uf?: string | null
+        }
+        Update: {
+          codigo_ibge?: string | null
+          created_at?: string
+          data?: string
+          descricao?: string
+          fonte_normativa?: string | null
+          id?: string
+          tipo?: string
+          tribunal?: string | null
+          uf?: string | null
+        }
+        Relationships: []
+      }
+      indices_economicos: {
+        Row: {
+          codigo_indice: string
+          codigo_sgs: number | null
+          data_ref: string
+          fator: number | null
+          fonte: string
+          id: string
+          sincronizado_em: string
+          valor_percentual: number
+        }
+        Insert: {
+          codigo_indice: string
+          codigo_sgs?: number | null
+          data_ref: string
+          fator?: number | null
+          fonte?: string
+          id?: string
+          sincronizado_em?: string
+          valor_percentual: number
+        }
+        Update: {
+          codigo_indice?: string
+          codigo_sgs?: number | null
+          data_ref?: string
+          fator?: number | null
+          fonte?: string
+          id?: string
+          sincronizado_em?: string
+          valor_percentual?: number
+        }
+        Relationships: []
+      }
       petition_templates: {
         Row: {
           area: string | null
