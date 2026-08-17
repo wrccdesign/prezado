@@ -214,9 +214,11 @@ export function PrazoCalc() {
     : "";
 
   const tribunalLabel = useMemo(() => {
+    if (!tribunal || tribunal === "__nenhum__") return "";
     const t = tribunais.find(x => x.tribunal === tribunal);
     return t ? `${t.tribunal} — ${t.nome_completo}` : tribunal;
   }, [tribunal, tribunais]);
+
 
   return (
     <div className="space-y-6">
