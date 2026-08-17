@@ -1,8 +1,8 @@
-# Prezado AI
+# Honorífico
 
 > Plataforma brasileira de inteligência artificial jurídica para cidadãos e advogados: análise de documentos, diagnóstico jurídico, geração de petições, busca de jurisprudência e calculadoras.
 
-Prezado.ai oferece ferramentas de IA especializadas em direito brasileiro. Cidadãos recebem orientação em linguagem simples; advogados acessam petições fundamentadas, busca semântica de jurisprudência em 27 tribunais e um painel profissional.
+Honorífico oferece ferramentas de IA especializadas em direito brasileiro. Cidadãos recebem orientação em linguagem simples; advogados acessam petições fundamentadas, busca semântica de jurisprudência em 27 tribunais e um painel profissional.
 
 ## Pages
 

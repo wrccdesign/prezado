@@ -129,8 +129,8 @@ export default function Conta() {
     <div className="flex min-h-screen flex-col bg-background">
       <AppHeader />
       <SEO
-        title="Minha conta — Prezado AI"
-        description="Gerencie sua assinatura Prezado.ai: plano atual, próxima cobrança, faturas, upgrade e cancelamento."
+        title="Minha conta — Honorífico"
+        description="Gerencie sua assinatura Honorífico: plano atual, próxima cobrança, faturas, upgrade e cancelamento."
         path="/conta"
       />
       <PaymentTestModeBanner />

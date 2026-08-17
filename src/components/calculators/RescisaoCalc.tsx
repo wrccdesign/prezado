@@ -90,7 +90,7 @@ export function RescisaoCalc() {
   const gerarPDF = () => {
     if (!verbas) return;
     const doc = new jsPDF();
-    doc.setFontSize(16); doc.text("Relatório de Rescisão Trabalhista — Prezado.ai", 14, 20);
+    doc.setFontSize(16); doc.text("Relatório de Rescisão Trabalhista — Honorífico", 14, 20);
     doc.setFontSize(10); doc.text(`Data: ${format(new Date(), "dd/MM/yyyy")}`, 14, 28);
     if (admissao) doc.text(`Admissão: ${format(admissao, "dd/MM/yyyy")}`, 14, 34);
     if (demissao) doc.text(`Demissão: ${format(demissao, "dd/MM/yyyy")}`, 14, 40);
@@ -105,7 +105,7 @@ export function RescisaoCalc() {
     doc.setFontSize(12); doc.text("TOTAL ESTIMADO", 14, y); doc.text(fmt(total), 140, y);
     y += 14; doc.setFontSize(8); doc.text("Cálculo estimado. Consulte um advogado trabalhista para valores exatos.", 14, y);
 
-    doc.save("rescisao-trabalhista-prezado.pdf");
+    doc.save("rescisao-trabalhista-honorifico.pdf");
     toast.success("PDF gerado com sucesso!");
   };
 

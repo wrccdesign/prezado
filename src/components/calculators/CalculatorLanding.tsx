@@ -20,7 +20,7 @@ export function CalculatorLanding({ title, description, path, keywords, features
     <div className="min-h-screen bg-background">
       <AppHeader />
       <SEO
-        title={`${title} — Prezado AI`}
+        title={`${title} — Honorífico`}
         description={description}
         path={path}
       />
@@ -51,7 +51,7 @@ export function CalculatorLanding({ title, description, path, keywords, features
               <p>
                 Esta calculadora foi desenvolvida para advogados, estudantes de Direito e cidadãos que
                 precisam de resultados precisos com base em dados oficiais. Todos os cálculos são
-                executados nos servidores do Prezado.ai e acompanham a memória de cálculo ou a lista
+                executados nos servidores do Honorífico e acompanham a memória de cálculo ou a lista
                 de dias não computados, quando aplicável.
               </p>
             </div>
@@ -76,7 +76,7 @@ export function CalculatorLanding({ title, description, path, keywords, features
               <CardContent className="pt-6 space-y-4">
                 <p className="font-medium text-foreground">Acesse todas as calculadoras</p>
                 <p className="text-sm text-muted-foreground">
-                  O Prezado.ai reúne ferramentas jurídicas práticas em um só lugar.
+                  O Honorífico reúne ferramentas jurídicas práticas em um só lugar.
                 </p>
                 <Button asChild className="w-full">
                   <Link to="/calculadoras">

@@ -4,14 +4,14 @@ export default function Reembolso() {
   return (
     <LegalPageLayout
       title="Política de Reembolso"
-      description="Política de reembolso da plataforma Prezados.AI — garantia de 30 dias."
+      description="Política de reembolso da plataforma Honorífico — garantia de 30 dias."
       path="/reembolso"
       updatedAt="10 de julho de 2026"
     >
       <h2>Garantia de satisfação de 30 dias</h2>
       <p>
         Oferecemos uma <strong>garantia de reembolso de 30 dias</strong> a partir da data da compra ou
-        renovação da assinatura. Se você não estiver satisfeito com o Prezados.AI (serviço operado por Wrcc Design), pode solicitar o reembolso
+        renovação da assinatura. Se você não estiver satisfeito com o Honorífico (serviço operado por Wrcc Design), pode solicitar o reembolso
         integral do valor pago dentro deste prazo, sem necessidade de justificar.
       </p>
 
@@ -29,7 +29,7 @@ export default function Reembolso() {
           Localize a transação e clique em <em>"Get help"</em> → <em>"Request a refund"</em>; ou
         </li>
         <li>
-          Envie um e-mail para <a href="mailto:contato@prezados.ai">contato@prezados.ai</a> com o comprovante
+          Envie um e-mail para <a href="mailto:contato@honorifico.com.br">contato@honorifico.com.br</a> com o comprovante
           da compra que retornaremos em até 2 dias úteis.
         </li>
       </ol>
@@ -59,7 +59,7 @@ export default function Reembolso() {
       <h2>Contato</h2>
       <p>
         Dúvidas sobre pagamento, fatura ou reembolso: <a href="https://paddle.net" target="_blank" rel="noopener noreferrer">paddle.net</a> ou
-        <a href="mailto:contato@prezados.ai"> contato@prezados.ai</a>.
+        <a href="mailto:contato@honorifico.com.br"> contato@honorifico.com.br</a>.
       </p>
     </LegalPageLayout>
   );

@@ -73,12 +73,12 @@ function gerarICS(dataVencimento: string, dataPublicacao: string, tipoPrazo: str
   const now = new Date();
   const stamp = `${now.getFullYear()}${pad(now.getMonth() + 1)}${pad(now.getDate())}T${pad(now.getHours())}${pad(now.getMinutes())}${pad(now.getSeconds())}`;
   return [
-    "BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//Prezado.ai//Prazo Processual//PT", "BEGIN:VEVENT",
+    "BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//Honorífico//Prazo Processual//PT", "BEGIN:VEVENT",
     `DTSTART;VALUE=DATE:${toICSDate(venc)}`,
     `DTEND;VALUE=DATE:${toICSDate(new Date(venc.getTime() + 86400000))}`,
-    `DTSTAMP:${stamp}`, `UID:prezado-prazo-${stamp}@prezado.ai`,
+    `DTSTAMP:${stamp}`, `UID:honorifico-prazo-${stamp}@honorifico.com.br`,
     `SUMMARY:Vencimento: ${tipoPrazo} (${uf})`,
-    `DESCRIPTION:Prazo calculado pelo Prezado.ai.\\nPublicação: ${dataPublicacao}\\nVencimento: ${dataVencimento}\\n\\nSempre confirme no sistema do tribunal.`,
+    `DESCRIPTION:Prazo calculado pelo Honorífico.\\nPublicação: ${dataPublicacao}\\nVencimento: ${dataVencimento}\\n\\nSempre confirme no sistema do tribunal.`,
     "BEGIN:VALARM", "TRIGGER:-P1D", "ACTION:DISPLAY", "DESCRIPTION:Prazo processual vence amanhã!", "END:VALARM",
     "BEGIN:VALARM", "TRIGGER:-P3D", "ACTION:DISPLAY", "DESCRIPTION:Prazo processual vence em 3 dias!", "END:VALARM",
     "END:VEVENT", "END:VCALENDAR",

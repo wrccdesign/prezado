@@ -5,7 +5,7 @@ import {
   Search, FileText, MessageSquare, Calculator, Stethoscope, LayoutDashboard,
   ArrowRight, Check, Scale, ChevronRight, Menu, X, MapPin, Database, Users
 } from "lucide-react";
-import logo from "@/assets/logo.png";
+import Logo from "@/components/Logo";
 import { supabase } from "@/integrations/supabase/client";
 import { SEO } from "@/components/SEO";
 
@@ -182,13 +182,13 @@ export default function LandingPage() {
   return (
     <div ref={revealRef} className="min-h-screen font-sans">
       <SEO
-        title="Prezado AI — IA Jurídica Brasileira para Cidadãos e Advogados"
+        title="Honorífico — IA Jurídica Brasileira para Cidadãos e Advogados"
         description="Análise de documentos, diagnóstico jurídico, geração de petições, busca de jurisprudência em 27 tribunais e calculadoras. IA jurídica brasileira."
         path="/"
         jsonLd={{
           "@context": "https://schema.org",
           "@type": "SoftwareApplication",
-          name: "Prezado AI",
+          name: "Honorífico",
           applicationCategory: "LegalService",
           operatingSystem: "Web",
           url: "https://prezado.lovable.app/",
@@ -202,7 +202,7 @@ export default function LandingPage() {
       >
         <div className="container mx-auto flex items-center justify-between px-4 sm:px-6">
           <Link to="/" className="flex items-center">
-            <img src={logo} alt="Prezado.ai" className="h-8" />
+            <Logo className="h-8" />
           </Link>
           <div className="hidden md:flex items-center gap-6">
             {["funcionalidades", "jurisprudencia", "como-funciona", "planos"].map((s) => (
@@ -379,7 +379,7 @@ export default function LandingPage() {
               {" "}— inclusive do interior
             </h2>
             <p className="text-white/50 mt-3 max-w-xl">
-              A maioria das plataformas cobre apenas os grandes tribunais. O Prezado vai além: indexa decisões de comarcas do interior que nenhum outro serviço alcança.
+              A maioria das plataformas cobre apenas os grandes tribunais. O Honorífico vai além: indexa decisões de comarcas do interior que nenhum outro serviço alcança.
             </p>
           </div>
           <div className="grid lg:grid-cols-2 gap-12 items-start">
@@ -518,7 +518,7 @@ export default function LandingPage() {
               O direito nunca foi tão <span className="text-gold">acessível</span>
             </h2>
             <p className="text-white/50 max-w-lg mx-auto mb-8 text-lg">
-              Junte-se a advogados e cidadãos que já usam a Prezado.ai para democratizar o acesso ao direito brasileiro.
+              Junte-se a advogados e cidadãos que já usam a Honorífico para democratizar o acesso ao direito brasileiro.
             </p>
             <div className="flex flex-wrap gap-4 justify-center">
               <Button size="lg" className="bg-gold text-navy hover:bg-gold-light font-semibold text-base px-8" asChild>
@@ -538,7 +538,7 @@ export default function LandingPage() {
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-10 mb-12">
             <div>
               <Link to="/" className="flex items-center mb-4">
-                <img src={logo} alt="Prezado.ai" className="h-7" />
+                <Logo className="h-7" />
               </Link>
               <p className="text-sm text-white/40 leading-relaxed">Plataforma de inteligência artificial jurídica desenvolvida para o direito brasileiro.</p>
             </div>
@@ -563,7 +563,7 @@ export default function LandingPage() {
               <ul className="space-y-2">
                 {[
                   { label: "Sobre", href: "/" },
-                  { label: "Contato", href: "mailto:contato@prezados.ai" },
+                  { label: "Contato", href: "mailto:contato@honorifico.com.br" },
                   { label: "Termos de Uso", href: "/termos" },
                   { label: "Política de Privacidade", href: "/privacidade" },
                   { label: "Política de Reembolso", href: "/reembolso" },
@@ -578,7 +578,7 @@ export default function LandingPage() {
             </div>
           </div>
           <div className="border-t pt-5 flex flex-col items-center gap-2 text-center" style={{ borderColor: "hsl(var(--gold) / 0.1)" }}>
-            <p className="text-xs text-white/30">© {new Date().getFullYear()} Prezado.ai. Todos os direitos reservados.</p>
+            <p className="text-xs text-white/30">© {new Date().getFullYear()} Honorífico. Todos os direitos reservados.</p>
             <div className="flex gap-4 text-xs text-white/30">
               <Link to="/privacidade" className="hover:text-gold transition-colors">LGPD</Link>
               <Link to="/privacidade" className="hover:text-gold transition-colors">Privacidade</Link>

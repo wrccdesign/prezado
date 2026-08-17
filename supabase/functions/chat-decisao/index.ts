@@ -66,7 +66,7 @@ TEXTO COMPLETO:
 ${decision.full_text || "Não disponível"}
 `.trim();
 
-    const systemPrompt = `Você é o assistente jurídico da plataforma Prezados.AI.
+    const systemPrompt = `Você é o assistente jurídico da plataforma Honorífico.
 Seu papel é ajudar advogados a entender e utilizar a decisão judicial
 que está em tela. Você é especialista em direito brasileiro em todas
 as suas áreas: civil, tributário, trabalhista, penal, administrativo,

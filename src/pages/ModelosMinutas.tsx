@@ -61,7 +61,7 @@ export default function ModelosMinutas() {
     <div className="min-h-screen bg-background">
       <AppHeader />
       <SEO
-        title="Modelos de Minutas e Peças Jurídicas Editáveis — Prezado AI"
+        title="Modelos de Minutas e Peças Jurídicas Editáveis — Honorífico"
         description="Biblioteca gratuita de modelos de minutas jurídicas: petição inicial, contestação, apelação, notificação extrajudicial, procuração, contratos e acordos. Com base legal e checklist."
         path="/modelos-de-minutas"
         jsonLd={jsonLd}
@@ -74,7 +74,7 @@ export default function ModelosMinutas() {
           <p className="text-base sm:text-lg text-muted-foreground">
             Modelos editáveis de uso corrente na advocacia brasileira, com indicação da base legal e
             checklist de conferência antes do protocolo. Copie, exporte em PDF ou Word e adapte ao seu
-            caso — ou gere uma minuta personalizada com a IA do Prezado.ai.
+            caso — ou gere uma minuta personalizada com a IA do Honorífico.
           </p>
           <div className="flex flex-wrap gap-3">
             <Button asChild>
@@ -156,7 +156,7 @@ export default function ModelosMinutas() {
             pelos dados concretos do caso.
           </p>
           <p>
-            O Prezado.ai não substitui a atuação de advogado(a). O uso dos modelos é de
+            O Honorífico não substitui a atuação de advogado(a). O uso dos modelos é de
             responsabilidade do profissional que os subscreve.
           </p>
         </section>

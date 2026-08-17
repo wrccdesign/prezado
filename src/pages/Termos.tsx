@@ -4,12 +4,12 @@ export default function Termos() {
   return (
     <LegalPageLayout
       title="Termos e Condições"
-      description="Termos e Condições de uso da plataforma Prezados.AI — IA jurídica brasileira."
+      description="Termos e Condições de uso da plataforma Honorífico — IA jurídica brasileira."
       path="/termos"
       updatedAt="10 de julho de 2026"
     >
       <p>
-        Estes Termos e Condições ("Termos") regem o uso da plataforma <strong>Prezados.AI</strong> ("Serviço"),
+        Estes Termos e Condições ("Termos") regem o uso da plataforma <strong>Honorífico</strong> ("Serviço"),
         nome fantasia operado por <strong>Wrcc Design</strong> ("nós", "nosso", "Vendedor"), pessoa jurídica
         estabelecida no Brasil. Ao contratar um plano ou utilizar o Serviço, você celebra contrato diretamente
         com a Wrcc Design, titular do Serviço e responsável por sua prestação. Ao acessar, cadastrar-se ou
@@ -17,14 +17,14 @@ export default function Termos() {
         concorda, não utilize o Serviço.
       </p>
       <p>
-        <strong>Identificação do Vendedor:</strong> Wrcc Design — nome fantasia "Prezados.AI". Contato:{" "}
+        <strong>Identificação do Vendedor:</strong> Wrcc Design — nome fantasia "Honorífico". Contato:{" "}
         <a href="mailto:wrccdesign@gmail.com">wrccdesign@gmail.com</a>.
       </p>
 
 
       <h2>1. Sobre o Serviço</h2>
       <p>
-        O Prezados.AI é uma plataforma de software que utiliza inteligência artificial para auxiliar advogados
+        O Honorífico é uma plataforma de software que utiliza inteligência artificial para auxiliar advogados
         e cidadãos brasileiros em pesquisas jurídicas, geração de rascunhos de petições, diagnóstico jurídico
         preliminar, cálculos e consultas informativas sobre legislação brasileira.
       </p>
@@ -91,7 +91,7 @@ export default function Termos() {
       <h2>7. Propriedade intelectual</h2>
       <p>
         Todo o Serviço, incluindo software, marca, layout, base de decisões indexadas e materiais, é de
-        propriedade da Wrcc Design (Prezados.AI) ou de seus licenciadores. Concedemos a você uma licença limitada, não
+        propriedade da Wrcc Design (Honorífico) ou de seus licenciadores. Concedemos a você uma licença limitada, não
         exclusiva, revogável e intransferível para uso pessoal e profissional dentro do plano contratado.
       </p>
       <p>
@@ -138,7 +138,7 @@ export default function Termos() {
 
       <h2>13. Contato</h2>
       <p>
-        Dúvidas sobre estes Termos: <a href="mailto:contato@prezados.ai">contato@prezados.ai</a>.
+        Dúvidas sobre estes Termos: <a href="mailto:contato@honorifico.com.br">contato@honorifico.com.br</a>.
         Questões sobre pagamento, fatura ou reembolso: consulte <a href="https://paddle.net" target="_blank" rel="noopener noreferrer">paddle.net</a>.
       </p>
     </LegalPageLayout>
