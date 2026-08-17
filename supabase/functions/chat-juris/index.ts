@@ -9,7 +9,7 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-payment-env, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
-const SYSTEM_PROMPT = `Você é HonorÃ­fico, um assistente jurídico inteligente especializado no Direito brasileiro.
+const SYSTEM_PROMPT = `Você é Honorífico, um assistente jurídico inteligente especializado no Direito brasileiro.
 
 ## SEU PAPEL
 - Para advogados: forneça análises técnicas profundas, cite dispositivos legais com precisão, use linguagem técnico-jurídica.

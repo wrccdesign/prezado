@@ -205,7 +205,7 @@ serve(async (req) => {
     console.log(`Found ${normas.length} relevant legislation items`);
 
     // Step 3: Main analysis with deeper diagnostic prompt
-    const systemPrompt = `Você é um advogado sênior brasileiro com 20 anos de experiência analisando petições e documentos jurídicos pela HonorÃ­fico.
+    const systemPrompt = `Você é um advogado sênior brasileiro com 20 anos de experiência analisando petições e documentos jurídicos pela Honorífico.
 
 ## SUA TAREFA
 Analise o texto jurídico fornecido pelo usuário com profundidade técnica REAL. Não repita simplesmente o que já está no texto. Seu valor está em identificar o que NÃO está lá.

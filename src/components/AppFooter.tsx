@@ -65,7 +65,7 @@ export function AppFooter() {
           <div>
             <h4 className="font-sans font-semibold text-white text-sm mb-4">Sobre</h4>
             <div className="mb-3">
-              <img src={logo} alt="HonorÃ­fico" className="h-7" />
+              <img src={logo} alt="Honorífico" className="h-7" />
             </div>
             <p className="text-sm text-white/40 leading-relaxed">
               Inteligência Artificial Jurídica Brasileira. Ferramentas de análise, petições e consultoria com IA para advogados e cidadãos.
@@ -81,7 +81,7 @@ export function AppFooter() {
           style={{ borderColor: "hsl(var(--gold) / 0.1)" }}
         >
           <p className="text-xs text-white/30">
-            © {new Date().getFullYear()} HonorÃ­fico. Todos os direitos reservados.
+            © {new Date().getFullYear()} Honorífico. Todos os direitos reservados.
           </p>
           <p className="text-xs text-white/25">
             Desenvolvido por{" "}

@@ -90,7 +90,7 @@ export function RescisaoCalc() {
   const gerarPDF = () => {
     if (!verbas) return;
     const doc = new jsPDF();
-    doc.setFontSize(16); doc.text("Relatório de Rescisão Trabalhista — HonorÃ­fico", 14, 20);
+    doc.setFontSize(16); doc.text("Relatório de Rescisão Trabalhista — Honorífico", 14, 20);
     doc.setFontSize(10); doc.text(`Data: ${format(new Date(), "dd/MM/yyyy")}`, 14, 28);
     if (admissao) doc.text(`Admissão: ${format(admissao, "dd/MM/yyyy")}`, 14, 34);
     if (demissao) doc.text(`Demissão: ${format(demissao, "dd/MM/yyyy")}`, 14, 40);

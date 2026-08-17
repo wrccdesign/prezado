@@ -186,12 +186,12 @@ export default function Index() {
     <div className="min-h-screen bg-background">
       <AppHeader />
       <LegalDisclaimer />
-      <SEO title="Análise Jurídica com IA — HonorÃ­fico" description="Envie um documento ou cole um texto e receba análise jurídica estruturada com direitos, riscos e próximos passos." path="/" />
+      <SEO title="Análise Jurídica com IA — Honorífico" description="Envie um documento ou cole um texto e receba análise jurídica estruturada com direitos, riscos e próximos passos." path="/" />
       <main className="container max-w-3xl py-6 sm:py-8 px-4 sm:px-6">
         <div className="mb-6 sm:mb-8 animate-fade-in">
           <h1 className="text-xl sm:text-2xl font-bold text-foreground">Análise Jurídica com Inteligência Artificial</h1>
           <p className="mt-1 text-sm sm:text-base text-muted-foreground">
-            Insira o texto ou faça upload de um documento para receber uma análise estruturada pela HonorÃ­fico.
+            Insira o texto ou faça upload de um documento para receber uma análise estruturada pela Honorífico.
           </p>
         </div>
 

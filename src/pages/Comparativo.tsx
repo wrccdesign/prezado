@@ -36,9 +36,9 @@ const differentials = [
 export default function Comparativo() {
   const handleShare = async () => {
     const url = window.location.href;
-    const text = "Conheça o HonorÃ­fico — a plataforma jurídica mais completa do Brasil.";
+    const text = "Conheça o Honorífico — a plataforma jurídica mais completa do Brasil.";
     if (navigator.share) {
-      try { await navigator.share({ title: "HonorÃ­fico", text, url }); } catch {}
+      try { await navigator.share({ title: "Honorífico", text, url }); } catch {}
     } else {
       await navigator.clipboard.writeText(url);
       toast({ title: "Link copiado!", description: "Cole onde quiser para compartilhar." });
@@ -52,10 +52,10 @@ export default function Comparativo() {
         <div className="absolute inset-0 opacity-20" style={{ background: "radial-gradient(ellipse at 30% 20%, hsl(var(--gold) / 0.25), transparent 60%)" }} />
         <div className="container mx-auto px-4 sm:px-6 relative z-10 text-center max-w-3xl">
           <Link to="/">
-            <img src={logo} alt="HonorÃ­fico" className="h-10 mx-auto mb-8" />
+            <img src={logo} alt="Honorífico" className="h-10 mx-auto mb-8" />
           </Link>
           <h1 className="font-serif text-3xl sm:text-5xl font-bold mb-5 leading-tight" style={{ color: "hsl(var(--cream))" }}>
-            Por que o <span style={{ color: "hsl(var(--gold))" }}>HonorÃ­fico</span>?
+            Por que o <span style={{ color: "hsl(var(--gold))" }}>Honorífico</span>?
           </h1>
           <p className="text-base sm:text-lg leading-relaxed mb-8" style={{ color: "hsl(var(--cream) / 0.65)" }}>
             A única plataforma jurídica brasileira que une diagnóstico, peticionamento, jurisprudência verificada e calculadoras — com inteligência artificial de verdade.
@@ -78,7 +78,7 @@ export default function Comparativo() {
             Comparativo de Mercado
           </h2>
           <p className="text-center mb-10 text-sm" style={{ color: "hsl(var(--cream) / 0.5)" }}>
-            Veja como o HonorÃ­fico se posiciona frente às principais ferramentas do mercado jurídico.
+            Veja como o Honorífico se posiciona frente às principais ferramentas do mercado jurídico.
           </p>
 
           <div className="overflow-x-auto rounded-xl border" style={{ borderColor: "hsl(var(--gold) / 0.15)" }}>
@@ -86,7 +86,7 @@ export default function Comparativo() {
               <thead>
                 <tr style={{ borderBottom: "1px solid hsl(var(--gold) / 0.12)" }}>
                   <th className="text-left py-4 px-4 sm:px-6 font-sans font-semibold" style={{ color: "hsl(var(--cream) / 0.7)" }}>Funcionalidade</th>
-                  <th className="text-center py-4 px-3 font-sans font-bold" style={{ color: "hsl(var(--gold))" }}>HonorÃ­fico</th>
+                  <th className="text-center py-4 px-3 font-sans font-bold" style={{ color: "hsl(var(--gold))" }}>Honorífico</th>
                   <th className="text-center py-4 px-3 font-sans font-semibold" style={{ color: "hsl(var(--cream) / 0.5)" }}>JusBrasil</th>
                   <th className="text-center py-4 px-3 font-sans font-semibold hidden sm:table-cell" style={{ color: "hsl(var(--cream) / 0.5)" }}>Advbox</th>
                   <th className="text-center py-4 px-3 font-sans font-semibold hidden sm:table-cell" style={{ color: "hsl(var(--cream) / 0.5)" }}>ChatGPT</th>
@@ -141,7 +141,7 @@ export default function Comparativo() {
             Pronto para transformar sua prática jurídica?
           </h2>
           <p className="text-sm mb-8" style={{ color: "hsl(var(--cream) / 0.5)" }}>
-            Comece a usar o HonorÃ­fico gratuitamente e descubra o poder da IA jurídica brasileira.
+            Comece a usar o Honorífico gratuitamente e descubra o poder da IA jurídica brasileira.
           </p>
           <Button asChild size="lg" className="rounded-full font-sans font-bold text-sm px-10" style={{ background: "hsl(var(--gold))", color: "hsl(var(--navy))" }}>
             <Link to="/auth">Começar agora</Link>

@@ -81,7 +81,7 @@ export function PensaoCalc() {
     const f = parseInt(filhos) || 1;
 
     doc.setFontSize(16);
-    doc.text("Relatório de Pensão Alimentícia — HonorÃ­fico", 14, 20);
+    doc.text("Relatório de Pensão Alimentícia — Honorífico", 14, 20);
     doc.setFontSize(10);
     doc.text(`Data: ${new Date().toLocaleDateString("pt-BR")}`, 14, 28);
 

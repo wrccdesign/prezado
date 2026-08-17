@@ -4,14 +4,14 @@ export default function Reembolso() {
   return (
     <LegalPageLayout
       title="Política de Reembolso"
-      description="Política de reembolso da plataforma HonorÃ­fico — garantia de 30 dias."
+      description="Política de reembolso da plataforma Honorífico — garantia de 30 dias."
       path="/reembolso"
       updatedAt="10 de julho de 2026"
     >
       <h2>Garantia de satisfação de 30 dias</h2>
       <p>
         Oferecemos uma <strong>garantia de reembolso de 30 dias</strong> a partir da data da compra ou
-        renovação da assinatura. Se você não estiver satisfeito com o HonorÃ­fico (serviço operado por Wrcc Design), pode solicitar o reembolso
+        renovação da assinatura. Se você não estiver satisfeito com o Honorífico (serviço operado por Wrcc Design), pode solicitar o reembolso
         integral do valor pago dentro deste prazo, sem necessidade de justificar.
       </p>
 

@@ -4,19 +4,19 @@ export default function Privacidade() {
   return (
     <LegalPageLayout
       title="Aviso de Privacidade"
-      description="Aviso de Privacidade do HonorÃ­fico — como tratamos seus dados pessoais em conformidade com a LGPD."
+      description="Aviso de Privacidade do Honorífico — como tratamos seus dados pessoais em conformidade com a LGPD."
       path="/privacidade"
       updatedAt="10 de julho de 2026"
     >
       <p>
-        Este Aviso descreve como a <strong>Wrcc Design</strong>, que opera a plataforma sob o nome fantasia <strong>HonorÃ­fico</strong> ("nós"), coleta, usa, compartilha e protege
-        seus dados pessoais no uso da plataforma HonorÃ­fico ("Serviço"), em conformidade com a Lei Geral de
+        Este Aviso descreve como a <strong>Wrcc Design</strong>, que opera a plataforma sob o nome fantasia <strong>Honorífico</strong> ("nós"), coleta, usa, compartilha e protege
+        seus dados pessoais no uso da plataforma Honorífico ("Serviço"), em conformidade com a Lei Geral de
         Proteção de Dados Pessoais (Lei nº 13.709/2018 — LGPD).
       </p>
 
       <h2>1. Controlador dos dados</h2>
       <p>
-        A Wrcc Design (HonorÃ­fico) é a <strong>controladora</strong> dos dados pessoais tratados no Serviço, respondendo
+        A Wrcc Design (Honorífico) é a <strong>controladora</strong> dos dados pessoais tratados no Serviço, respondendo
         pelas decisões sobre o tratamento. Para exercer seus direitos ou tirar dúvidas, use
         <a href="mailto:contato@honorifico.com.br"> contato@honorifico.com.br</a>.
       </p>
