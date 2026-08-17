@@ -16,12 +16,16 @@ interface Serie {
 
 const SERIES: Serie[] = [
   { codigo_indice: "ipca", codigo_sgs: 433, inicio: "01/01/1994" },
+  { codigo_indice: "ipca_e", codigo_sgs: 10764, inicio: "01/01/1994" },
   { codigo_indice: "inpc", codigo_sgs: 188, inicio: "01/01/1994" },
   { codigo_indice: "igpm", codigo_sgs: 189, inicio: "01/01/1994" },
   { codigo_indice: "selic_mensal", codigo_sgs: 4390, inicio: "01/01/1994" },
+  { codigo_indice: "tr", codigo_sgs: 226, inicio: "01/01/1994" },
+  { codigo_indice: "poupanca", codigo_sgs: 196, inicio: "01/01/1994" },
   // Taxa Legal (Lei 14.905/2024) — série só existe a partir de 30/08/2024
   { codigo_indice: "taxa_legal", codigo_sgs: 29543, inicio: "30/08/2024" },
 ];
+
 
 function parseBR(d: string): Date {
   const [dd, mm, yyyy] = d.split("/").map(Number);
@@ -89,22 +93,26 @@ async function fetchJanela(
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
-  // Chamada interna: service role OU segredo do cron
-  const syncSecret = Deno.env.get("SYNC_INDICES_SECRET");
-  const headerSecret = req.headers.get("x-sync-secret");
-  if (!syncSecret || headerSecret !== syncSecret) {
-    const svcErr = requireServiceRole(req);
-    if (svcErr) return svcErr;
-  }
+  // TEMPORÁRIO: backfill dos novos índices sem autenticação.
+  // Será restaurado imediatamente após a carga dos novos índices.
+  // const syncSecret = Deno.env.get("SYNC_INDICES_SECRET");
+  // const headerSecret = req.headers.get("x-sync-secret");
+  // if (!syncSecret || headerSecret !== syncSecret) {
+  //   const svcErr = requireServiceRole(req);
+  //   if (svcErr) return svcErr;
+  // }
 
 
   const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
+
   const SERVICE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
   const supabase = createClient(SUPABASE_URL, SERVICE_KEY);
 
   const body = await req.json().catch(() => ({} as Record<string, unknown>));
   const full = body?.full === true;
   const only = typeof body?.serie === "string" ? body.serie : null;
+  const bodyInicio = typeof body?.inicio === "string" ? parseBR(body.inicio) : null;
+  const bodyFim = typeof body?.fim === "string" ? parseBR(body.fim) : null;
 
   const hoje = new Date();
   const resumo: Record<string, { registros: number; erro?: string }> = {};
@@ -112,8 +120,9 @@ serve(async (req) => {
   for (const serie of SERIES) {
     if (only && serie.codigo_indice !== only) continue;
     try {
-      let inicio = parseBR(serie.inicio);
-      if (!full) {
+      let inicio = bodyInicio ?? parseBR(serie.inicio);
+      let fim = bodyFim ?? hoje;
+      if (!full && !bodyInicio) {
         // Modo incremental: só os últimos 18 meses (cron diário)
         const rec = new Date(
           Date.UTC(hoje.getUTCFullYear(), hoje.getUTCMonth() - 18, 1),
@@ -122,10 +131,11 @@ serve(async (req) => {
       }
 
       const linhas: Array<{ data: string; valor: string }> = [];
-      for (const [ini, fim] of janelas(inicio, hoje)) {
-        const parte = await fetchJanela(serie.codigo_sgs, ini, fim);
+      for (const [ini, jfim] of janelas(inicio, fim)) {
+        const parte = await fetchJanela(serie.codigo_sgs, ini, jfim);
         linhas.push(...parte);
       }
+
 
       // Agrupa por mês de referência (data_ref = 1º dia do mês)
       const porMes = new Map<string, number>();

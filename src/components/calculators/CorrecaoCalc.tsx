@@ -40,11 +40,15 @@ interface Resultado {
 
 const INDICES = [
   { id: "ipca", label: "IPCA (IBGE)" },
+  { id: "ipca_e", label: "IPCA-E (IBGE)" },
   { id: "inpc", label: "INPC (IBGE)" },
   { id: "igpm", label: "IGP-M (FGV)" },
   { id: "selic_mensal", label: "Selic acumulada no mês" },
+  { id: "tr", label: "TR (Bacen)" },
+  { id: "poupanca", label: "Rendimento da Poupança (Bacen)" },
   { id: "fixo", label: "Sem correção monetária" },
 ];
+
 
 function fmt(v: number) {
   return v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
@@ -62,6 +66,7 @@ export function CorrecaoCalc() {
   const [indice, setIndice] = useState("ipca");
   const [proRata, setProRata] = useState(true);
   const [regimeJuros, setRegimeJuros] = useState("legal_14905");
+  const [tipoJuros, setTipoJuros] = useState("simples");
   const [taxaFixa, setTaxaFixa] = useState("1");
   const [usarDatasJuros, setUsarDatasJuros] = useState(false);
   const [jurosInicio, setJurosInicio] = useState("");
@@ -72,6 +77,7 @@ export function CorrecaoCalc() {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<Resultado | null>(null);
   const [memoriaAberta, setMemoriaAberta] = useState(false);
+
 
   const calcular = async () => {
     if (!valor || !dataInicial || !dataFinal) {
@@ -89,7 +95,9 @@ export function CorrecaoCalc() {
           indice,
           pro_rata: proRata,
           regime_juros: regimeJuros,
+          tipo_juros: tipoJuros,
           taxa_juros_mensal: parseFloat(taxaFixa) || 0,
+
           juros_data_inicial: usarDatasJuros && jurosInicio ? jurosInicio : null,
           juros_data_final: usarDatasJuros && jurosFim ? jurosFim : null,
           multa_percentual: parseFloat(multa) || 0,
@@ -183,7 +191,20 @@ export function CorrecaoCalc() {
             </SelectContent>
           </Select>
         </div>
+        {regimeJuros !== "nenhum" && (
+          <div className="space-y-2">
+            <Label>Tipo de juros</Label>
+            <Select value={tipoJuros} onValueChange={setTipoJuros}>
+              <SelectTrigger><SelectValue /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="simples">Simples (sobre saldo corrigido)</SelectItem>
+                <SelectItem value="compostos">Compostos (capitalizados mês a mês)</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        )}
         {regimeJuros === "taxa_fixa" && (
+
           <div className="space-y-2">
             <Label>Taxa de juros mensal (%)</Label>
             <Input type="number" step="0.1" value={taxaFixa} onChange={e => setTaxaFixa(e.target.value)} />

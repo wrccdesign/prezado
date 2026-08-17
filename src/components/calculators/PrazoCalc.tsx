@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -25,6 +25,31 @@ const PRAZOS_TIPO = [
 ];
 
 const UFS = ["AC","AL","AM","AP","BA","CE","DF","ES","GO","MA","MG","MS","MT","PA","PB","PE","PI","PR","RJ","RN","RO","RR","RS","SC","SE","SP","TO"];
+
+const VARAS = [
+  "Cível",
+  "Consumidor",
+  "Trabalho",
+  "Federal",
+  "Família",
+  "Juizado Especial Cível",
+  "Juizado Especial Federal",
+  "Criminal",
+  "Execução Fiscal",
+  "Fazenda Pública",
+  "Registros Públicos",
+  "Outro",
+];
+
+interface Municipio {
+  id: number;
+  nome: string;
+}
+
+interface Tribunal {
+  tribunal: string;
+  nome_completo: string;
+}
 
 interface DiaExcluido { data: string; motivo: string; }
 
@@ -62,18 +87,61 @@ function gerarICS(dataVencimento: string, dataPublicacao: string, tipoPrazo: str
 
 export function PrazoCalc() {
   const [dataReferencia, setDataReferencia] = useState("");
-  const [tipoData, setTipoData] = useState("disponibilizacao");
+  const [processoEletronico, setProcessoEletronico] = useState(true);
   const [tipoPrazo, setTipoPrazo] = useState("contestacao");
   const [diasPersonalizado, setDiasPersonalizado] = useState("");
   const [materia, setMateria] = useState("civel");
   const [contagem, setContagem] = useState("uteis");
   const [uf, setUf] = useState("SP");
+  const [codigoIbge, setCodigoIbge] = useState<string>("");
+  const [municipios, setMunicipios] = useState<Municipio[]>([]);
+  const [carregandoMunicipios, setCarregandoMunicipios] = useState(false);
+  const [tribunal, setTribunal] = useState<string>("");
+  const [tribunais, setTribunais] = useState<Tribunal[]>([]);
+  const [vara, setVara] = useState<string>("");
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<Resultado | null>(null);
   const [detalhesAberto, setDetalhesAberto] = useState(false);
 
+  const tipoData = processoEletronico ? "disponibilizacao" : "publicacao";
+
   const prazoSelecionado = PRAZOS_TIPO.find(p => p.id === tipoPrazo);
   const diasPrazo = tipoPrazo === "personalizado" ? (parseInt(diasPersonalizado) || 0) : (prazoSelecionado?.dias || 0);
+
+  useEffect(() => {
+    async function carregarTribunais() {
+      const { data, error } = await supabase
+        .from("tj_scraping_config")
+        .select("tribunal, nome_completo")
+        .order("priority", { ascending: false });
+      if (!error && data) setTribunais(data);
+    }
+    carregarTribunais();
+  }, []);
+
+  useEffect(() => {
+    async function carregarMunicipios() {
+      if (!uf) {
+        setMunicipios([]);
+        setCodigoIbge("");
+        return;
+      }
+      setCarregandoMunicipios(true);
+      try {
+        const res = await fetch(`https://servicodados.ibge.gov.br/api/v1/localidades/estados/${uf}/municipios?orderBy=nome`);
+        const data = await res.json();
+        if (Array.isArray(data)) {
+          setMunicipios(data.map((m: any) => ({ id: m.id, nome: m.nome })));
+        }
+      } catch {
+        toast({ title: "Não foi possível carregar municípios", description: "Verifique a conexão ou tente outro estado.", variant: "destructive" });
+        setMunicipios([]);
+      } finally {
+        setCarregandoMunicipios(false);
+      }
+    }
+    carregarMunicipios();
+  }, [uf]);
 
   const onTipoPrazoChange = (id: string) => {
     setTipoPrazo(id);
@@ -100,6 +168,8 @@ export function PrazoCalc() {
           dias: diasPrazo,
           contagem,
           uf,
+          codigo_ibge: codigoIbge || null,
+          tribunal: tribunal || null,
         },
       });
       if (error) throw error;
@@ -142,6 +212,11 @@ export function PrazoCalc() {
         : "border-green-500/30 bg-green-50 dark:bg-green-950/20"
     : "";
 
+  const tribunalLabel = useMemo(() => {
+    const t = tribunais.find(x => x.tribunal === tribunal);
+    return t ? `${t.tribunal} — ${t.nome_completo}` : tribunal;
+  }, [tribunal, tribunais]);
+
   return (
     <div className="space-y-6">
       <div className="grid gap-4 sm:grid-cols-2">
@@ -150,12 +225,12 @@ export function PrazoCalc() {
           <Input type="date" value={dataReferencia} onChange={e => setDataReferencia(e.target.value)} />
         </div>
         <div className="space-y-2">
-          <Label>Essa data é de…</Label>
-          <Select value={tipoData} onValueChange={setTipoData}>
+          <Label>Processo</Label>
+          <Select value={processoEletronico ? "eletronico" : "fisico"} onValueChange={v => setProcessoEletronico(v === "eletronico")}>
             <SelectTrigger><SelectValue /></SelectTrigger>
             <SelectContent>
-              <SelectItem value="disponibilizacao">Disponibilização no DJe</SelectItem>
-              <SelectItem value="publicacao">Publicação / intimação</SelectItem>
+              <SelectItem value="eletronico">Eletrônico (disponibilização no DJe)</SelectItem>
+              <SelectItem value="fisico">Físico (publicação/intimação)</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -200,11 +275,45 @@ export function PrazoCalc() {
           </Select>
         </div>
         <div className="space-y-2">
-          <Label>Estado (feriados locais)</Label>
+          <Label>Estado</Label>
           <Select value={uf} onValueChange={setUf}>
             <SelectTrigger><SelectValue /></SelectTrigger>
             <SelectContent>
               {UFS.map(u => <SelectItem key={u} value={u}>{u}</SelectItem>)}
+            </SelectContent>
+          </Select>
+        </div>
+        <div className="space-y-2">
+          <Label>Município (feriados locais)</Label>
+          <Select value={codigoIbge} onValueChange={setCodigoIbge} disabled={carregandoMunicipios || municipios.length === 0}>
+            <SelectTrigger>
+              <SelectValue placeholder={carregandoMunicipios ? "Carregando..." : "Selecione o município"} />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="">Todos os municípios do estado</SelectItem>
+              {municipios.map(m => <SelectItem key={m.id} value={String(m.id)}>{m.nome}</SelectItem>)}
+            </SelectContent>
+          </Select>
+        </div>
+        <div className="space-y-2">
+          <Label>Tribunal (suspensões forenses)</Label>
+          <Select value={tribunal} onValueChange={setTribunal}>
+            <SelectTrigger>
+              <SelectValue placeholder="Selecione o tribunal" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="">Nenhum tribunal específico</SelectItem>
+              {tribunais.map(t => <SelectItem key={t.tribunal} value={t.tribunal}>{t.tribunal} — {t.nome_completo}</SelectItem>)}
+            </SelectContent>
+          </Select>
+        </div>
+        <div className="space-y-2">
+          <Label>Vara / Unidade judiciária</Label>
+          <Select value={vara} onValueChange={setVara}>
+            <SelectTrigger><SelectValue placeholder="Selecione a vara" /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="">Não especificar</SelectItem>
+              {VARAS.map(v => <SelectItem key={v} value={v}>{v}</SelectItem>)}
             </SelectContent>
           </Select>
         </div>
@@ -235,6 +344,13 @@ export function PrazoCalc() {
                 <span>Início da contagem: {format(parseISO(result.data_inicio_contagem), "dd/MM/yyyy")}</span>
                 <span>Contagem: {result.contagem === "uteis" ? "dias úteis" : "dias corridos"}</span>
               </div>
+              {(codigoIbge || tribunal) && (
+                <div className="text-xs text-muted-foreground pt-1">
+                  {codigoIbge && `Município: ${municipios.find(m => String(m.id) === codigoIbge)?.nome || codigoIbge}`}
+                  {codigoIbge && tribunal && " · "}
+                  {tribunal && `Tribunal: ${tribunalLabel}`}
+                </div>
+              )}
               <Button variant="outline" size="sm" onClick={baixarICS} className="mt-2">
                 <Download className="mr-1.5 h-4 w-4" /> Adicionar ao calendário (.ics)
               </Button>
@@ -277,8 +393,8 @@ export function PrazoCalc() {
               <p className="text-foreground font-medium">Base legal</p>
               {result.base_legal.map(b => <p key={b}>{b}</p>)}
               <p className="pt-2">
-                Cálculo com feriados nacionais e estaduais cadastrados. Feriados municipais e suspensões
-                próprias do tribunal não são considerados — sempre confirme no sistema do tribunal.
+                Cálculo com feriados nacionais, estaduais, municipais (quando informado) e suspensões
+                forenses do tribunal (quando informado). Sempre confirme no sistema do tribunal.
               </p>
             </CardContent>
           </Card>

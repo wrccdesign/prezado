@@ -3,20 +3,24 @@ import { AppHeader } from "@/components/AppHeader";
 import { SEO } from "@/components/SEO";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Briefcase, Users, Calendar, DollarSign } from "lucide-react";
+import { ArrowLeft, Briefcase, Users, Calendar, DollarSign, ShieldCheck, CalendarClock } from "lucide-react";
 import { RescisaoCalc } from "@/components/calculators/RescisaoCalc";
 import { PensaoCalc } from "@/components/calculators/PensaoCalc";
 import { PrazoCalc } from "@/components/calculators/PrazoCalc";
 import { CorrecaoCalc } from "@/components/calculators/CorrecaoCalc";
+import { CpfCnpjCalc } from "@/components/calculators/CpfCnpjCalc";
+import { DateCalc } from "@/components/calculators/DateCalc";
 import { AppFooter } from "@/components/AppFooter";
 
-type CalculatorType = null | "rescisao" | "pensao" | "prazo" | "correcao";
+type CalculatorType = null | "rescisao" | "pensao" | "prazo" | "correcao" | "cpfcnpj" | "datas";
 
 const mainCalculators = [
   { id: "rescisao" as const, title: "Rescisão Trabalhista", icon: Briefcase, desc: "Calcule verbas rescisórias: saldo de salário, férias, 13º, aviso prévio e FGTS." },
   { id: "pensao" as const, title: "Pensão Alimentícia", icon: Users, desc: "Estime o valor mensal de pensão alimentícia com base na renda." },
   { id: "correcao" as const, title: "Correção Monetária e Juros", icon: DollarSign, desc: "Atualize valores com índices oficiais do Banco Central e juros da Lei 14.905/2024." },
   { id: "prazo" as const, title: "Prazo Processual", icon: Calendar, desc: "Calcule prazos em dias úteis ou corridos com feriados oficiais e recesso forense." },
+  { id: "cpfcnpj" as const, title: "Validador CPF/CNPJ", icon: ShieldCheck, desc: "Verifique a validade dos dígitos verificadores de CPF e CNPJ." },
+  { id: "datas" as const, title: "Operações com Datas", icon: CalendarClock, desc: "Some dias, calcule diferenças e obtenha informações sobre datas." },
 ];
 
 const calcComponents: Record<string, () => JSX.Element> = {
@@ -24,7 +28,10 @@ const calcComponents: Record<string, () => JSX.Element> = {
   pensao: PensaoCalc,
   prazo: PrazoCalc,
   correcao: CorrecaoCalc,
+  cpfcnpj: CpfCnpjCalc,
+  datas: DateCalc,
 };
+
 
 export default function Calculators() {
   const [active, setActive] = useState<CalculatorType>(null);
@@ -35,7 +42,7 @@ export default function Calculators() {
   return (
     <div className="min-h-screen bg-background">
       <AppHeader />
-      <SEO title="Calculadoras Jurídicas — Prezado AI" description="Rescisão trabalhista, pensão alimentícia, correção monetária e prazos processuais. Ferramentas grátis do Prezado.ai." path="/calculadoras" />
+      <SEO title="Calculadoras Jurídicas — Prezado AI" description="Rescisão trabalhista, pensão alimentícia, correção monetária, prazos processuais, validador de CPF/CNPJ e operações com datas. Ferramentas grátis do Prezado.ai." path="/calculadoras" />
       <main className="container py-6 sm:py-8 px-4 sm:px-6 space-y-6 sm:space-y-8">
         <div>
           <h1 className="text-2xl sm:text-3xl font-bold font-serif text-foreground">Calculadoras Jurídicas</h1>
@@ -43,7 +50,8 @@ export default function Calculators() {
         </div>
 
         {!active && (
-          <div className="grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+
             {mainCalculators.map(c => (
               <Card
                 key={c.id}
