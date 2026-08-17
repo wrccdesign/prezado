@@ -96,15 +96,8 @@ export default function Planos() {
     }
   }, [searchParams, user?.id]);
 
-  const openPortal = async () => {
-    try {
-      const { data, error } = await supabase.functions.invoke("paddle-customer-portal");
-      if (error || !data?.url) throw new Error(data?.error || "Portal indisponível");
-      window.open(data.url, "_blank", "noopener");
-    } catch (err: unknown) {
-      toast.error(err instanceof Error ? err.message : "Erro ao abrir portal");
-    }
-  };
+
+
 
   const handleSubscribe = async (plan: typeof plans[number]) => {
     if (!user) {
