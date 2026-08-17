@@ -561,8 +561,18 @@ export default function LandingPage() {
             <div>
               <h4 className="font-sans font-semibold text-white text-sm mb-4">Empresa</h4>
               <ul className="space-y-2">
-                {["Sobre", "Contato", "Termos de Uso", "Política de Privacidade"].map((l) => (
-                  <li key={l}><span className="text-sm text-white/40 hover:text-gold transition-colors cursor-default">{l}</span></li>
+                {[
+                  { label: "Sobre", href: "/" },
+                  { label: "Contato", href: "mailto:contato@prezados.ai" },
+                  { label: "Termos de Uso", href: "/termos" },
+                  { label: "Política de Privacidade", href: "/privacidade" },
+                  { label: "Política de Reembolso", href: "/reembolso" },
+                ].map((l) => (
+                  <li key={l.label}>
+                    <Link to={l.href} className="text-sm text-white/40 hover:text-gold transition-colors">
+                      {l.label}
+                    </Link>
+                  </li>
                 ))}
               </ul>
             </div>
@@ -570,9 +580,10 @@ export default function LandingPage() {
           <div className="border-t pt-5 flex flex-col items-center gap-2 text-center" style={{ borderColor: "hsl(var(--gold) / 0.1)" }}>
             <p className="text-xs text-white/30">© {new Date().getFullYear()} Prezado.ai. Todos os direitos reservados.</p>
             <div className="flex gap-4 text-xs text-white/30">
-              <span className="hover:text-gold transition-colors cursor-default">LGPD</span>
-              <span className="hover:text-gold transition-colors cursor-default">Privacidade</span>
-              <span className="hover:text-gold transition-colors cursor-default">Termos</span>
+              <Link to="/privacidade" className="hover:text-gold transition-colors">LGPD</Link>
+              <Link to="/privacidade" className="hover:text-gold transition-colors">Privacidade</Link>
+              <Link to="/termos" className="hover:text-gold transition-colors">Termos</Link>
+              <Link to="/reembolso" className="hover:text-gold transition-colors">Reembolso</Link>
             </div>
             <p className="text-xs text-white/25">
               Desenvolvido por{" "}
