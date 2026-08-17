@@ -235,13 +235,20 @@ export default function Planos() {
                       {isCurrent ? "Plano atual" : user ? "Plano atual" : "Criar conta grátis"}
                     </Button>
                   ) : isCurrent ? (
-                    <Button variant="outline" className="w-full" onClick={openPortal}>
+                    <Button variant="outline" className="w-full" onClick={() => navigate("/conta")}>
                       Gerenciar assinatura
                     </Button>
                   ) : hasPaidPlan ? (
-                    <Button variant="outline" className="w-full" onClick={openPortal}>
-                      Trocar para {plan.name}
+                    <Button
+                      variant={plan.id === "escritorio" ? "default" : "outline"}
+                      className="w-full"
+                      disabled={changingPlan !== null}
+                      onClick={() => handleSubscribe(plan)}
+                    >
+                      {changingPlan === plan.id ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
+                      {plan.id === "escritorio" ? `Fazer upgrade para ${plan.name}` : `Mudar para ${plan.name}`}
                     </Button>
+
                   ) : (
                     <Button
                       className={`w-full ${plan.popular ? "bg-accent text-accent-foreground hover:bg-accent/90" : ""}`}
