@@ -60,8 +60,38 @@ Deno.serve(async (req) => {
 
     if (action === "summary") {
       if (!sub?.paddle_subscription_id) {
+        // No Paddle-backed subscription: fall back to whatever plan is stored
+        // locally for this environment (e.g. admin-granted access).
+        const { data: localSub } = await admin
+          .from("subscriptions")
+          .select("*")
+          .eq("user_id", user.id)
+          .eq("environment", env)
+          .order("created_at", { ascending: false })
+          .limit(1)
+          .maybeSingle();
+
+        if (localSub && localSub.plan_id !== "free") {
+          return json({
+            environment: env,
+            plan_id: localSub.plan_id,
+            subscription: {
+              id: localSub.id,
+              status: localSub.status,
+              plan_id: localSub.plan_id,
+              current_period_start: localSub.current_period_start,
+              current_period_end: localSub.current_period_end,
+              next_billed_at: null,
+              cancel_at_period_end: localSub.cancel_at_period_end ?? false,
+              scheduled_change: null,
+            },
+            invoices: [],
+          });
+        }
+
         return json({ environment: env, plan_id: "free", subscription: null, invoices: [] });
       }
+
 
       let remote: any = null;
       try {
