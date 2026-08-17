@@ -139,6 +139,20 @@ export default function Conta() {
         <h1 className="font-heading text-3xl font-bold text-foreground">Minha conta</h1>
         <p className="mt-2 text-sm text-muted-foreground">{user?.email}</p>
 
+        {data?.environment && (
+          <div className="mt-4 flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
+            <Badge variant={data.environment === "sandbox" ? "secondary" : "outline"}>
+              {data.environment === "sandbox" ? "Ambiente de teste" : "Ambiente de produção"}
+            </Badge>
+            <span>
+              {data.environment === "sandbox"
+                ? "Assinaturas feitas aqui usam cartões de teste e não valem no site publicado."
+                : "Assinaturas do modo de teste (pré-visualização) não são válidas neste ambiente."}
+            </span>
+          </div>
+        )}
+
+
         {isLoading ? (
           <div className="mt-10 flex items-center gap-2 text-muted-foreground">
             <Loader2 className="h-4 w-4 animate-spin" /> Carregando assinatura...
