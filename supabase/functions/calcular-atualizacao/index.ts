@@ -1,6 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-import { requireUser } from "../_shared/auth.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -13,8 +12,20 @@ const VIGENCIA_14905 = "2024-08-30";
 /** Juros legais de 1% a.m. a partir da vigência do CC/2002. */
 const CC2002 = "2003-01-11";
 
-type Indice = "ipca" | "inpc" | "igpm" | "selic_mensal" | "fixo";
+const INDICES_VALIDOS = [
+  "ipca",
+  "ipca_e",
+  "inpc",
+  "igpm",
+  "selic_mensal",
+  "tr",
+  "poupanca",
+  "fixo",
+] as const;
+
+type Indice = typeof INDICES_VALIDOS[number];
 type RegimeJuros = "legal_14905" | "taxa_fixa" | "nenhum";
+type TipoJuros = "simples" | "compostos";
 
 interface Body {
   valor: number;
@@ -23,6 +34,7 @@ interface Body {
   indice: Indice;
   pro_rata?: boolean;
   regime_juros?: RegimeJuros;
+  tipo_juros?: TipoJuros;
   taxa_juros_mensal?: number;
   juros_data_inicial?: string | null;
   juros_data_final?: string | null;
@@ -30,6 +42,7 @@ interface Body {
   multa_incide_sobre_juros?: boolean;
   honorarios_percentual?: number;
 }
+
 
 interface LinhaMemoria {
   mes_ref: string;
@@ -82,9 +95,6 @@ const r2 = (n: number) => Math.round(n * 100) / 100;
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
-  const auth = await requireUser(req);
-  if (auth instanceof Response) return auth;
-
   let body: Body;
   try {
     body = await req.json();
@@ -101,15 +111,17 @@ serve(async (req) => {
   if (dFim < dIni) return bad("A data final deve ser posterior à data inicial");
 
   const indiceEscolhido: Indice = body.indice ?? "ipca";
-  if (!["ipca", "inpc", "igpm", "selic_mensal", "fixo"].includes(indiceEscolhido)) {
+  if (!INDICES_VALIDOS.includes(indiceEscolhido)) {
     return bad("Índice inválido");
   }
   const proRata = body.pro_rata === true;
   const regimeJuros: RegimeJuros = body.regime_juros ?? "legal_14905";
+  const tipoJuros: TipoJuros = body.tipo_juros ?? "simples";
   const taxaFixa = Number(body.taxa_juros_mensal ?? 0);
   const jurosIni = body.juros_data_inicial ? parseISO(body.juros_data_inicial) : dIni;
   const jurosFim = body.juros_data_final ? parseISO(body.juros_data_final) : dFim;
   if (!jurosIni || !jurosFim) return bad("Datas de juros inválidas");
+
 
   const multaPerc = Number(body.multa_percentual ?? 0);
   const multaSobreJuros = body.multa_incide_sobre_juros === true;
@@ -156,7 +168,8 @@ serve(async (req) => {
   const mesesFaltantes: Array<{ mes_ref: string; indice: string }> = [];
 
   let fatorAcumulado = 1;
-  let saldo = valor;
+  let saldoCorrigido = valor;
+  let saldoCapitalizado = valor;
   let jurosAcumulados = 0;
 
   for (const mes of meses) {
@@ -191,7 +204,7 @@ serve(async (req) => {
 
     const fatorMes = 1 + (variacao / 100) * proporcao;
     fatorAcumulado *= fatorMes;
-    saldo = valor * fatorAcumulado;
+    saldoCorrigido = valor * fatorAcumulado;
 
     // ── Juros de mora ──
     const dentroJuros = ultimoDia >= jurosIni &&
@@ -218,9 +231,19 @@ serve(async (req) => {
       taxaMes *= proporcao;
     }
 
-    // Juros simples, sem capitalização, sobre o saldo corrigido do mês
-    const jurosMes = saldo * (taxaMes / 100);
+    // Aplica correção também sobre o saldo capitalizado para juros compostos
+    if (tipoJuros === "compostos") {
+      saldoCapitalizado *= fatorMes;
+    }
+
+    // Juros simples sobre saldo corrigido; juros compostos sobre saldo capitalizado
+    const baseJuros = tipoJuros === "compostos" ? saldoCapitalizado : saldoCorrigido;
+    const jurosMes = baseJuros * (taxaMes / 100);
     jurosAcumulados += jurosMes;
+
+    if (tipoJuros === "compostos") {
+      saldoCapitalizado += jurosMes;
+    }
 
     memoria.push({
       mes_ref: key,
@@ -228,15 +251,17 @@ serve(async (req) => {
       variacao_percentual: variacao,
       fator_do_mes: Number(fatorMes.toFixed(10)),
       fator_acumulado: Number(fatorAcumulado.toFixed(10)),
-      saldo_corrigido: r2(saldo),
+      saldo_corrigido: r2(saldoCorrigido),
       juros_do_mes: r2(jurosMes),
       juros_acumulados: r2(jurosAcumulados),
       regime,
     });
   }
 
-  const valorCorrigido = r2(saldo);
+
+  const valorCorrigido = r2(saldoCorrigido);
   const juros = r2(jurosAcumulados);
+
   const baseMulta = multaSobreJuros ? valorCorrigido + juros : valorCorrigido;
   const multa = r2(baseMulta * (multaPerc / 100));
   const subtotal = valorCorrigido + juros + multa;

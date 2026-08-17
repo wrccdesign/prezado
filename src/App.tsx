@@ -11,6 +11,10 @@ import History from "./pages/History";
 import Petition from "./pages/Petition";
 import Chat from "./pages/Chat";
 import Calculators from "./pages/Calculators";
+import CorrecaoMonetariaLanding from "./pages/calculators/CorrecaoMonetariaLanding";
+import PrazoProcessualLanding from "./pages/calculators/PrazoProcessualLanding";
+import CpfCnpjLanding from "./pages/calculators/CpfCnpjLanding";
+import OperacoesDatasLanding from "./pages/calculators/OperacoesDatasLanding";
 import LawyerDashboard from "./pages/LawyerDashboard";
 import Diagnostico from "./pages/Diagnostico";
 import Jurisprudencia from "./pages/Jurisprudencia";
@@ -25,6 +29,7 @@ import Termos from "./pages/Termos";
 import Reembolso from "./pages/Reembolso";
 import Privacidade from "./pages/Privacidade";
 import ResetPassword from "./pages/ResetPassword";
+
 
 const queryClient = new QueryClient();
 
@@ -58,7 +63,11 @@ const App = () => (
               <Route path="/peticao" element={<ProtectedRoute><Petition /></ProtectedRoute>} />
               <Route path="/chat" element={<ProtectedRoute><Chat /></ProtectedRoute>} />
               <Route path="/historico" element={<ProtectedRoute><History /></ProtectedRoute>} />
-              <Route path="/calculadoras" element={<ProtectedRoute><Calculators /></ProtectedRoute>} />
+              <Route path="/calculadoras" element={<Calculators />} />
+              <Route path="/calculadoras/correcao-monetaria-juros-lei-14905" element={<CorrecaoMonetariaLanding />} />
+              <Route path="/calculadoras/prazo-processual" element={<PrazoProcessualLanding />} />
+              <Route path="/calculadoras/validador-cpf-cnpj" element={<CpfCnpjLanding />} />
+              <Route path="/calculadoras/operacoes-datas" element={<OperacoesDatasLanding />} />
               <Route path="/diagnostico" element={<ProtectedRoute><Diagnostico /></ProtectedRoute>} />
               <Route path="/jurisprudencia" element={<Jurisprudencia />} />
               <Route path="/decisao/:id" element={<DecisaoDetalhe />} />
