@@ -9,11 +9,18 @@ export default function Termos() {
       updatedAt="10 de julho de 2026"
     >
       <p>
-        Estes Termos e Condições ("Termos") regem o uso da plataforma <strong>Prezados.AI</strong> ("nós",
-        "nosso", "Serviço"), operada por Prezados.AI ("Prezados.AI"). Ao acessar, cadastrar-se ou utilizar o
-        Serviço, você declara ter lido, compreendido e concordado com estes Termos. Se você não concorda,
-        não utilize o Serviço.
+        Estes Termos e Condições ("Termos") regem o uso da plataforma <strong>Prezados.AI</strong> ("Serviço"),
+        nome fantasia operado por <strong>Wrcc Design</strong> ("nós", "nosso", "Vendedor"), pessoa jurídica
+        estabelecida no Brasil. Ao contratar um plano ou utilizar o Serviço, você celebra contrato diretamente
+        com a Wrcc Design, titular do Serviço e responsável por sua prestação. Ao acessar, cadastrar-se ou
+        utilizar o Serviço, você declara ter lido, compreendido e concordado com estes Termos. Se você não
+        concorda, não utilize o Serviço.
       </p>
+      <p>
+        <strong>Identificação do Vendedor:</strong> Wrcc Design — nome fantasia "Prezados.AI". Contato:{" "}
+        <a href="mailto:wrccdesign@gmail.com">wrccdesign@gmail.com</a>.
+      </p>
+
 
       <h2>1. Sobre o Serviço</h2>
       <p>
