@@ -258,7 +258,10 @@ export default function Conta() {
               </CardContent>
             </Card>
 
+            <UsageSummary />
+
             <Card>
+
               <CardHeader>
                 <CardTitle className="flex items-center gap-2 font-heading text-lg">
                   <Receipt className="h-4 w-4" /> Faturas

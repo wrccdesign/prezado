@@ -140,7 +140,10 @@ export function AppHeader() {
       <DropdownMenuContent align="end" className={dropdownContent}>
         <div className="px-2 py-2">{profileBadge("full")}</div>
         <DropdownMenuSeparator className="bg-white/10" />
+        <UsageSummaryCompact />
+        <DropdownMenuSeparator className="bg-white/10" />
         {accountNav.map((item) => (
+
           <DropdownMenuItem key={item.path} className={dropdownItem} onClick={() => navigate(item.path)}>
             <item.icon className="h-4 w-4" />
             {item.label}
