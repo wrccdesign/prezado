@@ -379,7 +379,7 @@ export default function LandingPage() {
               {" "}— inclusive do interior
             </h2>
             <p className="text-white/50 mt-3 max-w-xl">
-              A maioria das plataformas cobre apenas os grandes tribunais. O Prezado vai além: indexa decisões de comarcas do interior que nenhum outro serviço alcança.
+              A maioria das plataformas cobre apenas os grandes tribunais. O HonorÃ­fico vai além: indexa decisões de comarcas do interior que nenhum outro serviço alcança.
             </p>
           </div>
           <div className="grid lg:grid-cols-2 gap-12 items-start">
