@@ -1,9 +1,18 @@
 import { useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useUserProfile } from "@/contexts/UserProfileContext";
-import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
-import { History, LogOut, Plus, FileSignature, MessageCircle, Briefcase, User, Calculator, LayoutDashboard, Menu, Stethoscope, Scale, Crown, FileText } from "lucide-react";
+import {
+  History, LogOut, Plus, FileSignature, MessageCircle, Briefcase, User, Calculator,
+  LayoutDashboard, Menu, Stethoscope, Scale, Crown, FileText, ChevronDown, Wrench,
+} from "lucide-react";
 import Logo from "@/components/Logo";
 import { useNavigate, useLocation } from "react-router-dom";
 
@@ -12,35 +21,39 @@ interface NavItem {
   label: string;
   icon: React.ComponentType<{ className?: string }>;
   lawyerOnly?: boolean;
-  primary?: boolean;
 }
 
-const navItems: NavItem[] = [
-  { path: "/", label: "Análise", icon: Plus, primary: true },
-  { path: "/diagnostico", label: "Diagnóstico", icon: Stethoscope, primary: true },
-  { path: "/peticao", label: "Petição", icon: FileSignature, primary: true },
-  { path: "/jurisprudencia", label: "Jurisprudência", icon: Scale, primary: true },
-  { path: "/chat", label: "Chat", icon: MessageCircle },
-  { path: "/calculadoras", label: "Calculadoras", icon: Calculator },
-  { path: "/modelos-de-minutas", label: "Modelos", icon: FileText },
-  { path: "/painel-advogado", label: "Painel", icon: LayoutDashboard, lawyerOnly: true },
-  { path: "/historico", label: "Histórico", icon: History },
-  { path: "/planos", label: "Planos", icon: Crown },
-  { path: "/conta", label: "Conta", icon: User },
+const primaryNav: NavItem[] = [
+  { path: "/", label: "Análise", icon: Plus },
+  { path: "/diagnostico", label: "Diagnóstico", icon: Stethoscope },
+  { path: "/peticao", label: "Petição", icon: FileSignature },
+  { path: "/jurisprudencia", label: "Jurisprudência", icon: Scale },
 ];
 
-function NavButton({ item, active, onClick }: { item: NavItem; active: boolean; onClick: () => void }) {
+const toolsNav: NavItem[] = [
+  { path: "/chat", label: "Chat Jurídico", icon: MessageCircle },
+  { path: "/calculadoras", label: "Calculadoras", icon: Calculator },
+  { path: "/modelos-de-minutas", label: "Modelos de Minutas", icon: FileText },
+  { path: "/painel-advogado", label: "Painel do Advogado", icon: LayoutDashboard, lawyerOnly: true },
+];
+
+const accountNav: NavItem[] = [
+  { path: "/conta", label: "Minha Conta", icon: User },
+  { path: "/historico", label: "Histórico", icon: History },
+  { path: "/planos", label: "Planos", icon: Crown },
+];
+
+function NavButton({ item, active, onClick, compact }: { item: NavItem; active: boolean; onClick: () => void; compact?: boolean }) {
   return (
     <button
       onClick={onClick}
+      title={compact ? item.label : undefined}
       className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
-        active
-          ? "bg-white/10 text-white"
-          : "text-white/60 hover:text-white hover:bg-white/5"
+        active ? "bg-white/10 text-white" : "text-white/60 hover:text-white hover:bg-white/5"
       }`}
     >
       <item.icon className="h-4 w-4" />
-      {item.label}
+      {!compact && item.label}
     </button>
   );
 }
@@ -52,13 +65,20 @@ export function AppHeader() {
   const location = useLocation();
   const [sheetOpen, setSheetOpen] = useState(false);
 
-  const filteredNavItems = navItems.filter(item => !item.lawyerOnly || isLawyer);
-  const primaryItems = filteredNavItems.filter(item => item.primary);
-  const secondaryItems = filteredNavItems.filter(item => !item.primary);
+  const visible = (items: NavItem[]) => items.filter((i) => !i.lawyerOnly || isLawyer);
+  const tools = visible(toolsNav);
+  const isActive = (path: string) => location.pathname === path;
+  const groupActive = (items: NavItem[]) => items.some((i) => isActive(i.path));
 
   const handleNavigate = (path: string) => {
     navigate(path);
     setSheetOpen(false);
+  };
+
+  const handleSignOut = async () => {
+    await signOut();
+    setSheetOpen(false);
+    navigate("/auth");
   };
 
   const profileBadge = (variant: "small" | "full" = "full") => {
@@ -73,7 +93,69 @@ export function AppHeader() {
     );
   };
 
-  const sheetNav = (items: NavItem[], label: string) => (
+  const dropdownContent = "w-56 bg-navy border border-gold/20 text-white/80";
+  const dropdownItem = "gap-2 text-white/70 focus:bg-white/10 focus:text-white cursor-pointer";
+
+  const toolsMenu = (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <button
+          className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
+            groupActive(tools) ? "bg-white/10 text-white" : "text-white/60 hover:text-white hover:bg-white/5"
+          }`}
+        >
+          <Wrench className="h-4 w-4" />
+          Ferramentas
+          <ChevronDown className="h-3.5 w-3.5 opacity-60" />
+        </button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end" className={dropdownContent}>
+        {tools.map((item) => (
+          <DropdownMenuItem key={item.path} className={dropdownItem} onClick={() => navigate(item.path)}>
+            <item.icon className="h-4 w-4" />
+            {item.label}
+          </DropdownMenuItem>
+        ))}
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+
+  const accountMenu = (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <button
+          className={`inline-flex items-center gap-1.5 h-9 px-2 rounded-md transition-colors ${
+            groupActive(accountNav) ? "bg-white/10" : "hover:bg-white/5"
+          }`}
+          aria-label="Menu da conta"
+        >
+          <span className={`h-7 w-7 inline-flex items-center justify-center rounded-full ${
+            isLawyer ? "bg-gold/20 text-gold-light" : "bg-white/10 text-white/70"
+          }`}>
+            {isLawyer ? <Briefcase className="h-3.5 w-3.5" /> : <User className="h-3.5 w-3.5" />}
+          </span>
+          <ChevronDown className="h-3.5 w-3.5 text-white/50" />
+        </button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end" className={dropdownContent}>
+        <div className="px-2 py-2">{profileBadge("full")}</div>
+        <DropdownMenuSeparator className="bg-white/10" />
+        {accountNav.map((item) => (
+          <DropdownMenuItem key={item.path} className={dropdownItem} onClick={() => navigate(item.path)}>
+            <item.icon className="h-4 w-4" />
+            {item.label}
+          </DropdownMenuItem>
+        ))}
+        <DropdownMenuSeparator className="bg-white/10" />
+        <DropdownMenuItem className="gap-2 text-red-400/90 focus:bg-white/10 focus:text-red-400 cursor-pointer" onClick={handleSignOut}>
+          <LogOut className="h-4 w-4" />
+          Sair
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+
+  const sheetSection = (items: NavItem[], label: string) => (
     <>
       <div className="text-xs font-semibold text-white/40 px-2 mb-2 tracking-wider">{label}</div>
       {items.map((item) => (
@@ -81,9 +163,7 @@ export function AppHeader() {
           key={item.path}
           onClick={() => handleNavigate(item.path)}
           className={`flex items-center gap-3 w-full px-3 py-2.5 rounded-md text-sm font-medium transition-colors ${
-            location.pathname === item.path
-              ? "bg-white/10 text-white"
-              : "text-white/60 hover:text-white hover:bg-white/5"
+            isActive(item.path) ? "bg-white/10 text-white" : "text-white/60 hover:text-white hover:bg-white/5"
           }`}
         >
           <item.icon className="h-5 w-5" />
@@ -100,53 +180,27 @@ export function AppHeader() {
           <Logo className="h-8 sm:h-9" />
         </button>
 
-        {/* Desktop Navigation (lg+) */}
-        <nav className="hidden lg:flex items-center gap-1 xl:gap-2">
-          {profileBadge("full")}
-          <div className="w-px h-6 bg-white/10 mx-1" />
-          {filteredNavItems.map((item) => (
-            <NavButton key={item.path} item={item} active={location.pathname === item.path} onClick={() => navigate(item.path)} />
+        {/* Desktop (lg+) */}
+        <nav className="hidden lg:flex items-center gap-1">
+          {primaryNav.map((item) => (
+            <NavButton key={item.path} item={item} active={isActive(item.path)} onClick={() => navigate(item.path)} />
           ))}
+          {toolsMenu}
           <div className="w-px h-6 bg-white/10 mx-1" />
-        <button onClick={async () => { await signOut(); navigate("/auth"); }} className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm font-medium text-white/40 hover:text-red-400 hover:bg-white/5 transition-colors">
-            <LogOut className="h-4 w-4" />
-            Sair
-          </button>
+          {accountMenu}
         </nav>
 
-        {/* Tablet Navigation (md to lg) */}
+        {/* Tablet (md–lg): ícones sem rótulo */}
         <nav className="hidden md:flex lg:hidden items-center gap-1">
-          {profileBadge("small")}
-          {primaryItems.map((item) => (
-            <NavButton key={item.path} item={item} active={location.pathname === item.path} onClick={() => navigate(item.path)} />
+          {primaryNav.map((item) => (
+            <NavButton key={item.path} item={item} active={isActive(item.path)} onClick={() => navigate(item.path)} compact />
           ))}
-          <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
-            <SheetTrigger asChild>
-              <button className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm font-medium text-white/60 hover:text-white hover:bg-white/5 transition-colors">
-                <Menu className="h-4 w-4" />
-                Mais
-              </button>
-            </SheetTrigger>
-            <SheetContent side="right" className="w-72 bg-navy border-l border-gold/20 p-6">
-              <SheetHeader className="text-left">
-                <SheetTitle className="flex items-center text-white">
-                  <Logo className="h-8" />
-                </SheetTitle>
-              </SheetHeader>
-              <div className="mt-4">{profileBadge("full")}</div>
-              <nav className="mt-6 flex flex-col gap-1">
-                {sheetNav(secondaryItems, "FERRAMENTAS")}
-                <div className="h-px bg-white/10 my-3" />
-                <button onClick={async () => { await signOut(); navigate("/auth"); setSheetOpen(false); }} className="flex items-center gap-3 w-full px-3 py-2.5 rounded-md text-sm font-medium text-red-400/80 hover:text-red-400 hover:bg-white/5 transition-colors">
-                  <LogOut className="h-5 w-5" />
-                  Sair
-                </button>
-              </nav>
-            </SheetContent>
-          </Sheet>
+          {toolsMenu}
+          <div className="w-px h-6 bg-white/10 mx-1" />
+          {accountMenu}
         </nav>
 
-        {/* Mobile Navigation (<768px) */}
+        {/* Mobile (<768px) */}
         <div className="flex md:hidden items-center gap-2">
           {profileBadge("small")}
           <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
@@ -156,7 +210,7 @@ export function AppHeader() {
                 <span className="sr-only">Abrir menu</span>
               </button>
             </SheetTrigger>
-            <SheetContent side="right" className="w-72 sm:w-80 bg-navy border-l border-gold/20 p-6">
+            <SheetContent side="right" className="w-72 sm:w-80 bg-navy border-l border-gold/20 p-6 overflow-y-auto">
               <SheetHeader className="text-left">
                 <SheetTitle className="flex items-center text-white">
                   <Logo className="h-8" />
@@ -164,11 +218,13 @@ export function AppHeader() {
               </SheetHeader>
               <div className="mt-4">{profileBadge("full")}</div>
               <nav className="mt-6 flex flex-col gap-1">
-                {sheetNav(primaryItems, "PRINCIPAIS")}
+                {sheetSection(primaryNav, "PRINCIPAIS")}
                 <div className="mt-4" />
-                {sheetNav(secondaryItems, "FERRAMENTAS")}
+                {sheetSection(tools, "FERRAMENTAS")}
+                <div className="mt-4" />
+                {sheetSection(accountNav, "CONTA")}
                 <div className="h-px bg-white/10 my-3" />
-                <button onClick={async () => { await signOut(); navigate("/auth"); setSheetOpen(false); }} className="flex items-center gap-3 w-full px-3 py-2.5 rounded-md text-sm font-medium text-red-400/80 hover:text-red-400 hover:bg-white/5 transition-colors">
+                <button onClick={handleSignOut} className="flex items-center gap-3 w-full px-3 py-2.5 rounded-md text-sm font-medium text-red-400/80 hover:text-red-400 hover:bg-white/5 transition-colors">
                   <LogOut className="h-5 w-5" />
                   Sair
                 </button>
