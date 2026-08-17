@@ -10,7 +10,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { SEO } from "@/components/SEO";
-import logo from "@/assets/logo.png";
+import Logo from "@/components/Logo";
 
 const UF_LIST = [
   "AC", "AL", "AP", "AM", "BA", "CE", "DF", "ES", "GO", "MA",
@@ -117,7 +117,7 @@ export default function Auth() {
       <SEO title="Entrar ou Cadastrar — Honorífico" description="Acesse sua conta Honorífico ou crie um cadastro gratuito para usar as ferramentas de IA jurídica." path="/auth" />
       <div className="w-full max-w-md animate-fade-in">
         <div className="mb-8 text-center">
-          <img src={logo} alt="Honorífico" className="h-12 mx-auto mb-4" />
+          <Logo className="h-12 mx-auto mb-4" />
           <p className="mt-2 text-primary-foreground">Assistente jurídico inteligente para o Direito brasileiro</p>
         </div>
 

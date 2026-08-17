@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import { Check, X, Minus, Share2, Shield, Users, Briefcase, Globe } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { AppFooter } from "@/components/AppFooter";
-import logo from "@/assets/logo.png";
+import Logo from "@/components/Logo";
 import { toast } from "@/hooks/use-toast";
 
 const features = [
@@ -52,7 +52,7 @@ export default function Comparativo() {
         <div className="absolute inset-0 opacity-20" style={{ background: "radial-gradient(ellipse at 30% 20%, hsl(var(--gold) / 0.25), transparent 60%)" }} />
         <div className="container mx-auto px-4 sm:px-6 relative z-10 text-center max-w-3xl">
           <Link to="/">
-            <img src={logo} alt="Honorífico" className="h-10 mx-auto mb-8" />
+            <Logo className="h-10 mx-auto mb-8" />
           </Link>
           <h1 className="font-serif text-3xl sm:text-5xl font-bold mb-5 leading-tight" style={{ color: "hsl(var(--cream))" }}>
             Por que o <span style={{ color: "hsl(var(--gold))" }}>Honorífico</span>?

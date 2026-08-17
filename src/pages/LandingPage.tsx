@@ -5,7 +5,7 @@ import {
   Search, FileText, MessageSquare, Calculator, Stethoscope, LayoutDashboard,
   ArrowRight, Check, Scale, ChevronRight, Menu, X, MapPin, Database, Users
 } from "lucide-react";
-import logo from "@/assets/logo.png";
+import Logo from "@/components/Logo";
 import { supabase } from "@/integrations/supabase/client";
 import { SEO } from "@/components/SEO";
 
@@ -202,7 +202,7 @@ export default function LandingPage() {
       >
         <div className="container mx-auto flex items-center justify-between px-4 sm:px-6">
           <Link to="/" className="flex items-center">
-            <img src={logo} alt="Honorífico" className="h-8" />
+            <Logo className="h-8" />
           </Link>
           <div className="hidden md:flex items-center gap-6">
             {["funcionalidades", "jurisprudencia", "como-funciona", "planos"].map((s) => (
@@ -538,7 +538,7 @@ export default function LandingPage() {
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-10 mb-12">
             <div>
               <Link to="/" className="flex items-center mb-4">
-                <img src={logo} alt="Honorífico" className="h-7" />
+                <Logo className="h-7" />
               </Link>
               <p className="text-sm text-white/40 leading-relaxed">Plataforma de inteligência artificial jurídica desenvolvida para o direito brasileiro.</p>
             </div>

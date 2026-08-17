@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import logo from "@/assets/logo.png";
+import Logo from "@/components/Logo";
 
 export function AppFooter() {
   return (
@@ -65,7 +65,7 @@ export function AppFooter() {
           <div>
             <h4 className="font-sans font-semibold text-white text-sm mb-4">Sobre</h4>
             <div className="mb-3">
-              <img src={logo} alt="Honorífico" className="h-7" />
+              <Logo className="h-7" />
             </div>
             <p className="text-sm text-white/40 leading-relaxed">
               Inteligência Artificial Jurídica Brasileira. Ferramentas de análise, petições e consultoria com IA para advogados e cidadãos.

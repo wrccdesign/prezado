@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { SEO } from "@/components/SEO";
-import logo from "@/assets/logo.png";
+import Logo from "@/components/Logo";
 
 export default function ResetPassword() {
   const navigate = useNavigate();
@@ -52,7 +52,7 @@ export default function ResetPassword() {
     <main className="flex min-h-screen items-center justify-center bg-navy px-4 py-8">
       <SEO title="Redefinir senha — Honorífico" description="Crie uma nova senha para acessar sua conta Honorífico." path="/reset-password" />
       <div className="w-full max-w-md">
-        <img src={logo} alt="Honorífico" className="mx-auto mb-6 h-12" />
+        <Logo className="mx-auto mb-6 h-12" />
         <Card>
           <CardHeader>
             <CardTitle>Redefinir senha</CardTitle>

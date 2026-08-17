@@ -14,7 +14,7 @@ import { useToast } from "@/hooks/use-toast";
 import { AppFooter } from "@/components/AppFooter";
 import { Send, Loader2, Scale, User } from "lucide-react";
 import ReactMarkdown from "react-markdown";
-import logoImg from "@/assets/logo.png";
+import Logo from "@/components/Logo";
 
 type Message = { role: "user" | "assistant"; content: string };
 
@@ -222,7 +222,7 @@ export default function Chat() {
           {messages.length === 0 && (
             <div className="flex flex-col items-center justify-center py-16 text-center">
               <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-primary">
-                <img src={logoImg} alt="Honorífico" className="h-10 w-10 object-contain" />
+                <Logo className="h-10 w-10 object-contain" />
               </div>
               <h3 className="text-lg font-semibold text-foreground">Honorífico Chat</h3>
               <p className="mt-2 max-w-md text-sm text-muted-foreground">
