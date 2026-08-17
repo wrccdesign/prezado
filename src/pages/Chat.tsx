@@ -148,6 +148,7 @@ export default function Chat() {
       }
 
       if (!resp.body) throw new Error("No response body");
+      notifyUsageConsumed();
 
       const reader = resp.body.getReader();
       const decoder = new TextDecoder();

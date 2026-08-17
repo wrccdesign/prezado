@@ -125,6 +125,7 @@ export default function Diagnostico() {
       }
 
       setResult(data.diagnostico);
+      notifyUsageConsumed();
 
       // Consumir teaser diário se aplicável
       if (!isPro && teaserAvailable && user) {
