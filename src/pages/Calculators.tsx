@@ -42,7 +42,7 @@ export default function Calculators() {
   return (
     <div className="min-h-screen bg-background">
       <AppHeader />
-      <SEO title="Calculadoras Jurídicas — Prezado AI" description="Rescisão trabalhista, pensão alimentícia, correção monetária, prazos processuais, validador de CPF/CNPJ e operações com datas. Ferramentas grátis do Prezado.ai." path="/calculadoras" />
+      <SEO title="Calculadoras Jurídicas — HonorÃ­fico" description="Rescisão trabalhista, pensão alimentícia, correção monetária, prazos processuais, validador de CPF/CNPJ e operações com datas. Ferramentas grátis do HonorÃ­fico." path="/calculadoras" />
       <main className="container py-6 sm:py-8 px-4 sm:px-6 space-y-6 sm:space-y-8">
         <div>
           <h1 className="text-2xl sm:text-3xl font-bold font-serif text-foreground">Calculadoras Jurídicas</h1>

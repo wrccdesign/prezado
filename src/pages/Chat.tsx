@@ -208,7 +208,7 @@ export default function Chat() {
   return (
     <div className="flex min-h-screen flex-col bg-background">
       <AppHeader /><PaymentTestModeBanner />
-      <SEO title="Chat Jurídico com IA — Prezado AI" description="Converse com a IA jurídica do Prezado.ai sobre qualquer tema do Direito brasileiro, com respostas fundamentadas." path="/chat" />
+      <SEO title="Chat Jurídico com IA — HonorÃ­fico" description="Converse com a IA jurídica do HonorÃ­fico sobre qualquer tema do Direito brasileiro, com respostas fundamentadas." path="/chat" />
       <LegalDisclaimer />
       <main className="flex flex-1 flex-col container max-w-3xl py-4">
         <div className="mb-4">
@@ -222,9 +222,9 @@ export default function Chat() {
           {messages.length === 0 && (
             <div className="flex flex-col items-center justify-center py-16 text-center">
               <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-primary">
-                <img src={logoImg} alt="Prezado.ai" className="h-10 w-10 object-contain" />
+                <img src={logoImg} alt="HonorÃ­fico" className="h-10 w-10 object-contain" />
               </div>
-              <h3 className="text-lg font-semibold text-foreground">Prezado.ai Chat</h3>
+              <h3 className="text-lg font-semibold text-foreground">HonorÃ­fico Chat</h3>
               <p className="mt-2 max-w-md text-sm text-muted-foreground">
                 Tire dúvidas sobre direitos, legislação brasileira, prazos processuais e muito mais.
                 {!isLawyer && " Respostas adaptadas para linguagem acessível."}

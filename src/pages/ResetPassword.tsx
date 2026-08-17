@@ -50,9 +50,9 @@ export default function ResetPassword() {
 
   return (
     <main className="flex min-h-screen items-center justify-center bg-navy px-4 py-8">
-      <SEO title="Redefinir senha — Prezado AI" description="Crie uma nova senha para acessar sua conta Prezado.ai." path="/reset-password" />
+      <SEO title="Redefinir senha — HonorÃ­fico" description="Crie uma nova senha para acessar sua conta HonorÃ­fico." path="/reset-password" />
       <div className="w-full max-w-md">
-        <img src={logo} alt="Prezado.ai" className="mx-auto mb-6 h-12" />
+        <img src={logo} alt="HonorÃ­fico" className="mx-auto mb-6 h-12" />
         <Card>
           <CardHeader>
             <CardTitle>Redefinir senha</CardTitle>

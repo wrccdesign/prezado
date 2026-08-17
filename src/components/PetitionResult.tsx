@@ -91,11 +91,11 @@ export function PetitionResult({ text, petitionType, onNewPetition }: PetitionRe
     const usableWidth = pageWidth - mLeft - mRight;
     const bodyIndent = 12.5;
     const dateStr = getFormattedDate();
-    const warningText = "Gerado por Prezado.ai — Documento deve ser revisado por advogado habilitado";
+    const warningText = "Gerado por HonorÃ­fico — Documento deve ser revisado por advogado habilitado";
 
     const addPageHeaderFooter = (d: jsPDF) => {
       d.setFont("times", "bold"); d.setFontSize(10);
-      d.text("Prezado.ai", mLeft, 15);
+      d.text("HonorÃ­fico", mLeft, 15);
       d.setFont("times", "normal"); d.setFontSize(9);
       d.text(dateStr, pageWidth - mRight, 15, { align: "right" });
       d.setDrawColor(150); d.line(mLeft, 18, pageWidth - mRight, 18);
@@ -190,7 +190,7 @@ export function PetitionResult({ text, petitionType, onNewPetition }: PetitionRe
           default: new Header({
             children: [new Paragraph({
               children: [
-                new TextRun({ text: "Prezado.ai", font: "Times New Roman", size: 20, bold: true }),
+                new TextRun({ text: "HonorÃ­fico", font: "Times New Roman", size: 20, bold: true }),
                 new TextRun({ text: `    ${getFormattedDate()}`, font: "Times New Roman", size: 18 }),
               ],
               alignment: AlignmentType.LEFT,
@@ -201,7 +201,7 @@ export function PetitionResult({ text, petitionType, onNewPetition }: PetitionRe
           default: new Footer({
             children: [new Paragraph({
               children: [new TextRun({
-                text: "Gerado por Prezado.ai — Documento deve ser revisado por advogado habilitado",
+                text: "Gerado por HonorÃ­fico — Documento deve ser revisado por advogado habilitado",
                 font: "Times New Roman", size: 16, italics: true,
               })],
               alignment: AlignmentType.CENTER,

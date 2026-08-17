@@ -4,21 +4,21 @@ export default function Privacidade() {
   return (
     <LegalPageLayout
       title="Aviso de Privacidade"
-      description="Aviso de Privacidade do Prezados.AI — como tratamos seus dados pessoais em conformidade com a LGPD."
+      description="Aviso de Privacidade do HonorÃ­fico — como tratamos seus dados pessoais em conformidade com a LGPD."
       path="/privacidade"
       updatedAt="10 de julho de 2026"
     >
       <p>
-        Este Aviso descreve como a <strong>Wrcc Design</strong>, que opera a plataforma sob o nome fantasia <strong>Prezados.AI</strong> ("nós"), coleta, usa, compartilha e protege
-        seus dados pessoais no uso da plataforma Prezados.AI ("Serviço"), em conformidade com a Lei Geral de
+        Este Aviso descreve como a <strong>Wrcc Design</strong>, que opera a plataforma sob o nome fantasia <strong>HonorÃ­fico</strong> ("nós"), coleta, usa, compartilha e protege
+        seus dados pessoais no uso da plataforma HonorÃ­fico ("Serviço"), em conformidade com a Lei Geral de
         Proteção de Dados Pessoais (Lei nº 13.709/2018 — LGPD).
       </p>
 
       <h2>1. Controlador dos dados</h2>
       <p>
-        A Wrcc Design (Prezados.AI) é a <strong>controladora</strong> dos dados pessoais tratados no Serviço, respondendo
+        A Wrcc Design (HonorÃ­fico) é a <strong>controladora</strong> dos dados pessoais tratados no Serviço, respondendo
         pelas decisões sobre o tratamento. Para exercer seus direitos ou tirar dúvidas, use
-        <a href="mailto:contato@prezados.ai"> contato@prezados.ai</a>.
+        <a href="mailto:contato@honorifico.com.br"> contato@honorifico.com.br</a>.
       </p>
 
       <h2>2. Dados que coletamos</h2>
@@ -97,7 +97,7 @@ export default function Privacidade() {
         <li>Peticionar perante a Autoridade Nacional de Proteção de Dados (<a href="https://www.gov.br/anpd" target="_blank" rel="noopener noreferrer">ANPD</a>).</li>
       </ul>
       <p>
-        Para exercer qualquer direito, escreva para <a href="mailto:contato@prezados.ai">contato@prezados.ai</a>.
+        Para exercer qualquer direito, escreva para <a href="mailto:contato@honorifico.com.br">contato@honorifico.com.br</a>.
         Responderemos em até 15 dias.
       </p>
 
@@ -122,7 +122,7 @@ export default function Privacidade() {
 
       <h2>12. Encarregado (DPO) e contato</h2>
       <p>
-        Encarregado de Proteção de Dados: <a href="mailto:contato@prezados.ai">contato@prezados.ai</a>.
+        Encarregado de Proteção de Dados: <a href="mailto:contato@honorifico.com.br">contato@honorifico.com.br</a>.
       </p>
     </LegalPageLayout>
   );

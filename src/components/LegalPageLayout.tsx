@@ -15,7 +15,7 @@ export function LegalPageLayout({ title, description, path, updatedAt, children 
   return (
     <div className="flex min-h-screen flex-col bg-background">
       <AppHeader />
-      <SEO title={`${title} — Prezados.AI`} description={description} path={path} />
+      <SEO title={`${title} — HonorÃ­fico`} description={description} path={path} />
       <main className="flex-1 container max-w-3xl py-10 px-4 sm:px-6">
         <div className="mb-6">
           <h1 className="text-3xl sm:text-4xl font-bold font-serif text-foreground">{title}</h1>

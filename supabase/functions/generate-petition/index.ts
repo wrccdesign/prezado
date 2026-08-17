@@ -139,7 +139,7 @@ serve(async (req) => {
 ${precedents.map((p, i) => `[P${i + 1}] ${[p.tribunal, p.numero_processo, p.comarca, p.data_decisao].filter(Boolean).join(" · ")}\n"${(p.ementa || "").slice(0, 400)}"`).join("\n\n")}`
       : `\n\nATENÇÃO: Não foram encontrados precedentes específicos no nosso banco para este caso. NÃO invente números de processo, ementas ou súmulas. Baseie a fundamentação apenas na legislação.`;
 
-    const systemPrompt = `Você é Prezado.ai, especialista em redação de peças processuais e documentos jurídicos brasileiros.
+    const systemPrompt = `Você é HonorÃ­fico, especialista em redação de peças processuais e documentos jurídicos brasileiros.
 
 ## IMPORTANTE: INFERIR FUNDAMENTOS JURÍDICOS
 Seu papel é receber os FATOS e PEDIDOS do advogado e INFERIR toda a fundamentação jurídica adequada.

@@ -81,7 +81,7 @@ export function PensaoCalc() {
     const f = parseInt(filhos) || 1;
 
     doc.setFontSize(16);
-    doc.text("Relatório de Pensão Alimentícia — Prezado.ai", 14, 20);
+    doc.text("Relatório de Pensão Alimentícia — HonorÃ­fico", 14, 20);
     doc.setFontSize(10);
     doc.text(`Data: ${new Date().toLocaleDateString("pt-BR")}`, 14, 28);
 
@@ -125,7 +125,7 @@ export function PensaoCalc() {
     doc.text("Este é um valor de referência. O juiz decidirá com base nas necessidades", 14, y);
     doc.text("e possibilidades das partes.", 14, y + 5);
 
-    doc.save("pensao-alimenticia-prezado.pdf");
+    doc.save("pensao-alimenticia-honorifico.pdf");
     toast.success("PDF gerado com sucesso!");
   };
 

@@ -114,16 +114,16 @@ export default function Auth() {
 
   return (
     <div className="flex min-h-screen items-center justify-center px-4 py-8 bg-navy">
-      <SEO title="Entrar ou Cadastrar — Prezado AI" description="Acesse sua conta Prezado.ai ou crie um cadastro gratuito para usar as ferramentas de IA jurídica." path="/auth" />
+      <SEO title="Entrar ou Cadastrar — HonorÃ­fico" description="Acesse sua conta HonorÃ­fico ou crie um cadastro gratuito para usar as ferramentas de IA jurídica." path="/auth" />
       <div className="w-full max-w-md animate-fade-in">
         <div className="mb-8 text-center">
-          <img src={logo} alt="Prezado.ai" className="h-12 mx-auto mb-4" />
+          <img src={logo} alt="HonorÃ­fico" className="h-12 mx-auto mb-4" />
           <p className="mt-2 text-primary-foreground">Assistente jurídico inteligente para o Direito brasileiro</p>
         </div>
 
         <Card>
           <CardHeader>
-            <h1 className="sr-only">Acesse sua conta ou cadastre-se no Prezado.ai</h1>
+            <h1 className="sr-only">Acesse sua conta ou cadastre-se no HonorÃ­fico</h1>
             <CardTitle className="text-xl">{isSignUp ? "Criar conta" : "Entrar"}</CardTitle>
             <CardDescription>
               {isSignUp ? "Crie sua conta para salvar suas análises" : "Acesse sua conta para continuar"}
