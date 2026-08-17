@@ -1,5 +1,7 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { getPaddleClient, type PaddleEnv } from "../_shared/paddle.ts";
+import { resolvePaymentEnv } from "../_shared/payment-env.ts";
+
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
