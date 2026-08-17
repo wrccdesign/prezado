@@ -14,6 +14,7 @@ import {
   LayoutDashboard, Menu, Stethoscope, Scale, Crown, FileText, ChevronDown, Wrench,
 } from "lucide-react";
 import Logo from "@/components/Logo";
+import { UsageSummaryCompact } from "@/components/UsageSummary";
 import { useNavigate, useLocation } from "react-router-dom";
 
 interface NavItem {
