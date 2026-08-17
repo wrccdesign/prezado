@@ -1,5 +1,5 @@
-import logoOnDark from "@/assets/honorifico-light-text.png.asset.json";
-import logoOnLight from "@/assets/honorifico-dark-text.png.asset.json";
+import logoOnDark from "@/assets/honorifico-light-text.png";
+import logoOnLight from "@/assets/honorifico-dark-text.png";
 
 type LogoVariant = "onDark" | "onLight" | "auto";
 
@@ -22,13 +22,13 @@ export const Logo = ({ variant = "onDark", className = "h-8", alt = "Honorífico
   if (variant === "auto") {
     return (
       <>
-        <img src={logoOnLight.url} alt={alt} className={`${className} block dark:hidden`} />
-        <img src={logoOnDark.url} alt="" aria-hidden="true" className={`${className} hidden dark:block`} />
+        <img src={logoOnLight} alt={alt} className={`${className} block dark:hidden`} />
+        <img src={logoOnDark} alt="" aria-hidden="true" className={`${className} hidden dark:block`} />
       </>
     );
   }
 
-  const src = variant === "onLight" ? logoOnLight.url : logoOnDark.url;
+  const src = variant === "onLight" ? logoOnLight : logoOnDark;
   return <img src={src} alt={alt} className={className} />;
 };
 
