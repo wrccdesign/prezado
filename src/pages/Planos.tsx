@@ -76,6 +76,9 @@ export default function Planos() {
   const { planId, isLoading, subscription } = useSubscription();
   const { openCheckout, loading: checkoutLoading } = usePaddleCheckout();
   const hasPaidPlan = planId !== "free";
+  const [changingPlan, setChangingPlan] = useState<PlanId | null>(null);
+  const isPastDue = subscription?.status === "past_due";
+
 
   useEffect(() => {
     if (searchParams.get("checkout") === "success") {
