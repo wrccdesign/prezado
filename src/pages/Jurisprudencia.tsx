@@ -134,7 +134,8 @@ if (!res.ok) {
         throw new Error(errData?.error || `Erro ${res.status}`);
       }
 
-const response = await res.json() as SearchResponse;
+      const response = await res.json() as SearchResponse;
+      notifyUsageConsumed();
       setResults(response.results || []);
       setAiExpansion(response.ai_expansion);
     } catch (e: any) {
