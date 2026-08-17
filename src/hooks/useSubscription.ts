@@ -27,18 +27,20 @@ export function useSubscription() {
         .select("plan_id, status, current_period_end, cancel_at_period_end")
         .eq("user_id", user.id)
         .eq("environment", env)
-        .order("created_at", { ascending: false })
-        .limit(1)
-        .maybeSingle();
+        .order("created_at", { ascending: false });
 
       if (error) {
         console.error("Error fetching subscription:", error);
         return null;
       }
-      return data as Subscription | null;
+      const rows = (data ?? []) as Subscription[];
+      // A user can hold several rows (seeded free row + one per Paddle
+      // subscription). Prefer the most recent paid one, else the free row.
+      return rows.find((r) => r.plan_id !== "free") ?? rows[0] ?? null;
     },
     enabled: !!user,
   });
+
 
   // After checkout success, /planos dispatches this event a few times
   // to bridge the webhook delay.
