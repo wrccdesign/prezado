@@ -221,6 +221,10 @@ export function AppHeader() {
                 </SheetTitle>
               </SheetHeader>
               <div className="mt-4">{profileBadge("full")}</div>
+              <div className="mt-3 rounded-md bg-white/5">
+                <UsageSummaryCompact onNavigate={() => setSheetOpen(false)} />
+              </div>
+
               <nav className="mt-6 flex flex-col gap-1">
                 {sheetSection(primaryNav, "PRINCIPAIS")}
                 <div className="mt-4" />
