@@ -21,7 +21,7 @@ const SERIES: Serie[] = [
   { codigo_indice: "igpm", codigo_sgs: 189, inicio: "01/01/1994" },
   { codigo_indice: "selic_mensal", codigo_sgs: 4390, inicio: "01/01/1994" },
   { codigo_indice: "tr", codigo_sgs: 226, inicio: "01/01/1994" },
-  { codigo_indice: "poupanca", codigo_sgs: 196, inicio: "01/01/1994" },
+  { codigo_indice: "poupanca", codigo_sgs: 196, inicio: "01/01/2012" },
   // Taxa Legal (Lei 14.905/2024) — série só existe a partir de 30/08/2024
   { codigo_indice: "taxa_legal", codigo_sgs: 29543, inicio: "30/08/2024" },
 ];
