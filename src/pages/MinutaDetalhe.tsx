@@ -49,18 +49,18 @@ export default function MinutaDetalhe() {
       "@context": "https://schema.org",
       "@type": "BreadcrumbList",
       itemListElement: [
-        { "@type": "ListItem", position: 1, name: "Início", item: "https://prezado.lovable.app/" },
+        { "@type": "ListItem", position: 1, name: "Início", item: "https://honorifico.com.br/" },
         {
           "@type": "ListItem",
           position: 2,
           name: "Modelos de minutas",
-          item: "https://prezado.lovable.app/modelos-de-minutas",
+          item: "https://honorifico.com.br/modelos-de-minutas",
         },
         {
           "@type": "ListItem",
           position: 3,
           name: minuta.title,
-          item: `https://prezado.lovable.app/modelos-de-minutas/${minuta.slug}`,
+          item: `https://honorifico.com.br/modelos-de-minutas/${minuta.slug}`,
         },
       ],
     },

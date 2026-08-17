@@ -13,4 +13,4 @@ Allow: /
 User-agent: *
 Allow: /
 
-Sitemap: https://prezado.lovable.app/sitemap.xml
+Sitemap: https://honorifico.com.br/sitemap.xml

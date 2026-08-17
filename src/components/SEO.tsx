@@ -1,6 +1,6 @@
 import { Helmet } from "react-helmet-async";
 
-const SITE_URL = "https://prezado.lovable.app";
+const SITE_URL = "https://honorifico.com.br";
 
 interface SEOProps {
   title: string;
