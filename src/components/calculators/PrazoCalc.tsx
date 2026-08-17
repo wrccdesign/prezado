@@ -168,10 +168,11 @@ export function PrazoCalc() {
           dias: diasPrazo,
           contagem,
           uf,
-          codigo_ibge: codigoIbge || null,
-          tribunal: tribunal || null,
+          codigo_ibge: codigoIbge && codigoIbge !== "__todos__" ? codigoIbge : null,
+          tribunal: tribunal && tribunal !== "__nenhum__" ? tribunal : null,
         },
       });
+
       if (error) throw error;
       if ((data as { error?: string })?.error) throw new Error((data as { error: string }).error);
       setResult(data as Resultado);
@@ -213,9 +214,11 @@ export function PrazoCalc() {
     : "";
 
   const tribunalLabel = useMemo(() => {
+    if (!tribunal || tribunal === "__nenhum__") return "";
     const t = tribunais.find(x => x.tribunal === tribunal);
     return t ? `${t.tribunal} — ${t.nome_completo}` : tribunal;
   }, [tribunal, tribunais]);
+
 
   return (
     <div className="space-y-6">
@@ -285,38 +288,39 @@ export function PrazoCalc() {
         </div>
         <div className="space-y-2">
           <Label>Município (feriados locais)</Label>
-          <Select value={codigoIbge} onValueChange={setCodigoIbge} disabled={carregandoMunicipios || municipios.length === 0}>
+          <Select value={codigoIbge || "__todos__"} onValueChange={setCodigoIbge} disabled={carregandoMunicipios || municipios.length === 0}>
             <SelectTrigger>
               <SelectValue placeholder={carregandoMunicipios ? "Carregando..." : "Selecione o município"} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">Todos os municípios do estado</SelectItem>
+              <SelectItem value="__todos__">Todos os municípios do estado</SelectItem>
               {municipios.map(m => <SelectItem key={m.id} value={String(m.id)}>{m.nome}</SelectItem>)}
             </SelectContent>
           </Select>
         </div>
         <div className="space-y-2">
           <Label>Tribunal (suspensões forenses)</Label>
-          <Select value={tribunal} onValueChange={setTribunal}>
+          <Select value={tribunal || "__nenhum__"} onValueChange={setTribunal}>
             <SelectTrigger>
               <SelectValue placeholder="Selecione o tribunal" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">Nenhum tribunal específico</SelectItem>
+              <SelectItem value="__nenhum__">Nenhum tribunal específico</SelectItem>
               {tribunais.map(t => <SelectItem key={t.tribunal} value={t.tribunal}>{t.tribunal} — {t.nome_completo}</SelectItem>)}
             </SelectContent>
           </Select>
         </div>
         <div className="space-y-2">
           <Label>Vara / Unidade judiciária</Label>
-          <Select value={vara} onValueChange={setVara}>
+          <Select value={vara || "__nao__"} onValueChange={setVara}>
             <SelectTrigger><SelectValue placeholder="Selecione a vara" /></SelectTrigger>
             <SelectContent>
-              <SelectItem value="">Não especificar</SelectItem>
+              <SelectItem value="__nao__">Não especificar</SelectItem>
               {VARAS.map(v => <SelectItem key={v} value={v}>{v}</SelectItem>)}
             </SelectContent>
           </Select>
         </div>
+
       </div>
 
       <Button onClick={calcular} className="w-full sm:w-auto" disabled={loading || !dataReferencia || !diasPrazo}>
@@ -344,13 +348,14 @@ export function PrazoCalc() {
                 <span>Início da contagem: {format(parseISO(result.data_inicio_contagem), "dd/MM/yyyy")}</span>
                 <span>Contagem: {result.contagem === "uteis" ? "dias úteis" : "dias corridos"}</span>
               </div>
-              {(codigoIbge || tribunal) && (
+              {(codigoIbge && codigoIbge !== "__todos__") || (tribunal && tribunal !== "__nenhum__") ? (
                 <div className="text-xs text-muted-foreground pt-1">
-                  {codigoIbge && `Município: ${municipios.find(m => String(m.id) === codigoIbge)?.nome || codigoIbge}`}
-                  {codigoIbge && tribunal && " · "}
-                  {tribunal && `Tribunal: ${tribunalLabel}`}
+                  {codigoIbge && codigoIbge !== "__todos__" && `Município: ${municipios.find(m => String(m.id) === codigoIbge)?.nome || codigoIbge}`}
+                  {codigoIbge && codigoIbge !== "__todos__" && tribunal && tribunal !== "__nenhum__" && " · "}
+                  {tribunal && tribunal !== "__nenhum__" && `Tribunal: ${tribunalLabel}`}
                 </div>
-              )}
+              ) : null}
+
               <Button variant="outline" size="sm" onClick={baixarICS} className="mt-2">
                 <Download className="mr-1.5 h-4 w-4" /> Adicionar ao calendário (.ics)
               </Button>
