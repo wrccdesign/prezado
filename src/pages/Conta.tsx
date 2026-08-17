@@ -5,6 +5,7 @@ import { AppHeader } from "@/components/AppHeader";
 import { AppFooter } from "@/components/AppFooter";
 import { SEO } from "@/components/SEO";
 import { PaymentTestModeBanner } from "@/components/PaymentTestModeBanner";
+import { UsageSummary } from "@/components/UsageSummary";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -257,7 +258,10 @@ export default function Conta() {
               </CardContent>
             </Card>
 
+            <UsageSummary />
+
             <Card>
+
               <CardHeader>
                 <CardTitle className="flex items-center gap-2 font-heading text-lg">
                   <Receipt className="h-4 w-4" /> Faturas

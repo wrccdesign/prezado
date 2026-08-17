@@ -1,7 +1,7 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { resolvePaymentEnv, type PaddleEnv } from "./payment-env.ts";
 
-const PLAN_LIMITS: Record<string, Record<string, number>> = {
+export const PLAN_LIMITS: Record<string, Record<string, number>> = {
   free: { search: 5, chat: 3, diagnostico: 2, peticao: 0 },
   profissional: { search: 50, chat: 30, diagnostico: 15, peticao: 10 },
   escritorio: { search: 200, chat: 100, diagnostico: 50, peticao: 30 },

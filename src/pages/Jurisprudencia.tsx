@@ -14,6 +14,7 @@ import { Search, Filter, MapPin, Calendar, Scale, ChevronDown, ChevronUp, Extern
 import { formatCitation } from "@/lib/citation";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { notifyUsageConsumed } from "@/hooks/useUsage";
 
 interface Decision {
   id: string;
@@ -133,7 +134,8 @@ if (!res.ok) {
         throw new Error(errData?.error || `Erro ${res.status}`);
       }
 
-const response = await res.json() as SearchResponse;
+      const response = await res.json() as SearchResponse;
+      notifyUsageConsumed();
       setResults(response.results || []);
       setAiExpansion(response.ai_expansion);
     } catch (e: any) {

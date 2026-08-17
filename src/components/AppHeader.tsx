@@ -14,6 +14,7 @@ import {
   LayoutDashboard, Menu, Stethoscope, Scale, Crown, FileText, ChevronDown, Wrench,
 } from "lucide-react";
 import Logo from "@/components/Logo";
+import { UsageSummaryCompact } from "@/components/UsageSummary";
 import { useNavigate, useLocation } from "react-router-dom";
 
 interface NavItem {
@@ -140,7 +141,10 @@ export function AppHeader() {
       <DropdownMenuContent align="end" className={dropdownContent}>
         <div className="px-2 py-2">{profileBadge("full")}</div>
         <DropdownMenuSeparator className="bg-white/10" />
+        <UsageSummaryCompact />
+        <DropdownMenuSeparator className="bg-white/10" />
         {accountNav.map((item) => (
+
           <DropdownMenuItem key={item.path} className={dropdownItem} onClick={() => navigate(item.path)}>
             <item.icon className="h-4 w-4" />
             {item.label}
@@ -217,6 +221,10 @@ export function AppHeader() {
                 </SheetTitle>
               </SheetHeader>
               <div className="mt-4">{profileBadge("full")}</div>
+              <div className="mt-3 rounded-md bg-white/5">
+                <UsageSummaryCompact onNavigate={() => setSheetOpen(false)} />
+              </div>
+
               <nav className="mt-6 flex flex-col gap-1">
                 {sheetSection(primaryNav, "PRINCIPAIS")}
                 <div className="mt-4" />

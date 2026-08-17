@@ -18,6 +18,7 @@ import { Search, Scale, ClipboardList, DollarSign, Building2, Zap, ArrowRight, M
 import { toast } from "@/hooks/use-toast";
 import { exportToPDF, exportToDOCX, type ExportSection } from "@/lib/exportDocument";
 import { format } from "date-fns";
+import { notifyUsageConsumed } from "@/hooks/useUsage";
 
 interface Diagnostico {
   o_que_esta_acontecendo: string;
@@ -124,6 +125,7 @@ export default function Diagnostico() {
       }
 
       setResult(data.diagnostico);
+      notifyUsageConsumed();
 
       // Consumir teaser diário se aplicável
       if (!isPro && teaserAvailable && user) {
