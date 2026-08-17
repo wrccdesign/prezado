@@ -95,13 +95,9 @@ export default function Planos() {
 
   const openPortal = async () => {
     try {
-      const { data, error } = await supabase.functions.invoke("paddle-customer-portal", {
-        headers: {
-          "x-payment-env": import.meta.env.VITE_PAYMENTS_CLIENT_TOKEN?.startsWith("test_") ? "sandbox" : "live",
-        },
-      });
+      const { data, error } = await supabase.functions.invoke("paddle-customer-portal");
       if (error || !data?.url) throw new Error(data?.error || "Portal indisponível");
-      window.open(data.url, "_blank");
+      window.open(data.url, "_blank", "noopener");
     } catch (err: unknown) {
       toast.error(err instanceof Error ? err.message : "Erro ao abrir portal");
     }
@@ -114,10 +110,23 @@ export default function Planos() {
     }
     if (!plan.priceId) return;
 
-    // If user already has a paid plan, force them to the portal for plan changes.
+    // Already paying: change the existing subscription in-app instead of
+    // opening a second checkout.
     if (hasPaidPlan) {
-      toast.info("Você já tem um plano pago. Use 'Gerenciar assinatura' para trocar.");
-      await openPortal();
+      setChangingPlan(plan.id);
+      try {
+        const { data, error } = await supabase.functions.invoke("paddle-account", {
+          body: { action: "change-plan", priceId: plan.priceId },
+        });
+        if (error) throw new Error(error.message);
+        if ((data as { error?: string })?.error) throw new Error((data as { error: string }).error);
+        toast.success((data as { message?: string }).message || "Plano atualizado.");
+        window.dispatchEvent(new Event("refetch-subscription"));
+      } catch (err: unknown) {
+        toast.error(err instanceof Error ? err.message : "Erro ao trocar de plano");
+      } finally {
+        setChangingPlan(null);
+      }
       return;
     }
 
@@ -133,6 +142,7 @@ export default function Planos() {
       toast.error("Erro ao iniciar checkout: " + message);
     }
   };
+
 
   return (
     <div className="flex min-h-screen flex-col bg-background">
