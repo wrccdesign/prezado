@@ -34,11 +34,11 @@ export default function ModelosMinutas() {
       name: "Modelos de minutas e peças jurídicas",
       description:
         "Biblioteca gratuita de modelos de minutas e peças jurídicas editáveis, com base legal e checklist de conferência.",
-      url: "https://prezado.lovable.app/modelos-de-minutas",
+      url: "https://honorifico.com.br/modelos-de-minutas",
       hasPart: MINUTAS.map((m) => ({
         "@type": "CreativeWork",
         name: m.title,
-        url: `https://prezado.lovable.app/modelos-de-minutas/${m.slug}`,
+        url: `https://honorifico.com.br/modelos-de-minutas/${m.slug}`,
         about: m.category,
       })),
     },
@@ -46,12 +46,12 @@ export default function ModelosMinutas() {
       "@context": "https://schema.org",
       "@type": "BreadcrumbList",
       itemListElement: [
-        { "@type": "ListItem", position: 1, name: "Início", item: "https://prezado.lovable.app/" },
+        { "@type": "ListItem", position: 1, name: "Início", item: "https://honorifico.com.br/" },
         {
           "@type": "ListItem",
           position: 2,
           name: "Modelos de minutas",
-          item: "https://prezado.lovable.app/modelos-de-minutas",
+          item: "https://honorifico.com.br/modelos-de-minutas",
         },
       ],
     },

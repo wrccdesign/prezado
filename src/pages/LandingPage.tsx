@@ -191,7 +191,7 @@ export default function LandingPage() {
           name: "Honorífico",
           applicationCategory: "LegalService",
           operatingSystem: "Web",
-          url: "https://prezado.lovable.app/",
+          url: "https://honorifico.com.br/",
           offers: { "@type": "Offer", price: "0", priceCurrency: "BRL" },
         }}
       />
