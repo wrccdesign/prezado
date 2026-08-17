@@ -346,13 +346,14 @@ export function PrazoCalc() {
                 <span>Início da contagem: {format(parseISO(result.data_inicio_contagem), "dd/MM/yyyy")}</span>
                 <span>Contagem: {result.contagem === "uteis" ? "dias úteis" : "dias corridos"}</span>
               </div>
-              {(codigoIbge || tribunal) && (
+              {(codigoIbge && codigoIbge !== "__todos__") || (tribunal && tribunal !== "__nenhum__") ? (
                 <div className="text-xs text-muted-foreground pt-1">
-                  {codigoIbge && `Município: ${municipios.find(m => String(m.id) === codigoIbge)?.nome || codigoIbge}`}
-                  {codigoIbge && tribunal && " · "}
-                  {tribunal && `Tribunal: ${tribunalLabel}`}
+                  {codigoIbge && codigoIbge !== "__todos__" && `Município: ${municipios.find(m => String(m.id) === codigoIbge)?.nome || codigoIbge}`}
+                  {codigoIbge && codigoIbge !== "__todos__" && tribunal && tribunal !== "__nenhum__" && " · "}
+                  {tribunal && tribunal !== "__nenhum__" && `Tribunal: ${tribunalLabel}`}
                 </div>
-              )}
+              ) : null}
+
               <Button variant="outline" size="sm" onClick={baixarICS} className="mt-2">
                 <Download className="mr-1.5 h-4 w-4" /> Adicionar ao calendário (.ics)
               </Button>
