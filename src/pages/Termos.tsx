@@ -91,7 +91,7 @@ export default function Termos() {
       <h2>7. Propriedade intelectual</h2>
       <p>
         Todo o Serviço, incluindo software, marca, layout, base de decisões indexadas e materiais, é de
-        propriedade da Prezados.AI ou de seus licenciadores. Concedemos a você uma licença limitada, não
+        propriedade da Wrcc Design (Prezados.AI) ou de seus licenciadores. Concedemos a você uma licença limitada, não
         exclusiva, revogável e intransferível para uso pessoal e profissional dentro do plano contratado.
       </p>
       <p>
@@ -126,7 +126,7 @@ export default function Termos() {
       <h2>11. Legislação aplicável e foro</h2>
       <p>
         Estes Termos são regidos pelas leis brasileiras. Fica eleito o foro do domicílio do consumidor
-        (quando aplicável) ou o foro da comarca da sede da Prezados.AI, com renúncia a qualquer outro,
+        (quando aplicável) ou o foro da comarca da sede da Wrcc Design, com renúncia a qualquer outro,
         por mais privilegiado que seja.
       </p>
 

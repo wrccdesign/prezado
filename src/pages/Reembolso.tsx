@@ -11,7 +11,7 @@ export default function Reembolso() {
       <h2>Garantia de satisfação de 30 dias</h2>
       <p>
         Oferecemos uma <strong>garantia de reembolso de 30 dias</strong> a partir da data da compra ou
-        renovação da assinatura. Se você não estiver satisfeito com o Prezados.AI, pode solicitar o reembolso
+        renovação da assinatura. Se você não estiver satisfeito com o Prezados.AI (serviço operado por Wrcc Design), pode solicitar o reembolso
         integral do valor pago dentro deste prazo, sem necessidade de justificar.
       </p>
 

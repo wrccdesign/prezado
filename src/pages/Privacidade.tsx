@@ -9,14 +9,14 @@ export default function Privacidade() {
       updatedAt="10 de julho de 2026"
     >
       <p>
-        Este Aviso descreve como a <strong>Prezados.AI</strong> ("nós") coleta, usa, compartilha e protege
+        Este Aviso descreve como a <strong>Wrcc Design</strong>, que opera a plataforma sob o nome fantasia <strong>Prezados.AI</strong> ("nós"), coleta, usa, compartilha e protege
         seus dados pessoais no uso da plataforma Prezados.AI ("Serviço"), em conformidade com a Lei Geral de
         Proteção de Dados Pessoais (Lei nº 13.709/2018 — LGPD).
       </p>
 
       <h2>1. Controlador dos dados</h2>
       <p>
-        A Prezados.AI é a <strong>controladora</strong> dos dados pessoais tratados no Serviço, respondendo
+        A Wrcc Design (Prezados.AI) é a <strong>controladora</strong> dos dados pessoais tratados no Serviço, respondendo
         pelas decisões sobre o tratamento. Para exercer seus direitos ou tirar dúvidas, use
         <a href="mailto:contato@prezados.ai"> contato@prezados.ai</a>.
       </p>
@@ -27,7 +27,7 @@ export default function Privacidade() {
         <li><strong>Perfil de advogado (opcional):</strong> número e UF da OAB, nome do escritório, endereço, telefone, e‑mail do escritório, logo.</li>
         <li><strong>Conteúdo enviado:</strong> descrições de situações, fatos e pedidos de petição, mensagens de chat, documentos carregados para análise.</li>
         <li><strong>Dados de uso:</strong> páginas visitadas, ações realizadas, contadores de uso diário por funcionalidade, data e hora de acesso, endereço IP, tipo de navegador/dispositivo.</li>
-        <li><strong>Dados de pagamento:</strong> os dados de cartão e faturamento são coletados e processados diretamente pela Paddle.com; a Prezados.AI recebe apenas identificadores de transação, status da assinatura, plano contratado e e-mail do pagador.</li>
+        <li><strong>Dados de pagamento:</strong> os dados de cartão e faturamento são coletados e processados diretamente pela Paddle.com; a Wrcc Design recebe apenas identificadores de transação, status da assinatura, plano contratado e e-mail do pagador.</li>
         <li><strong>Cookies estritamente necessários</strong> para autenticação e funcionamento do Serviço.</li>
       </ul>
 
