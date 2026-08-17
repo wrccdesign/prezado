@@ -14,6 +14,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useToast } from "@/hooks/use-toast";
 import { Loader2, FileSignature } from "lucide-react";
 import { AppFooter } from "@/components/AppFooter";
+import { notifyUsageConsumed } from "@/hooks/useUsage";
 
 const TIPO_ACAO = [
   "Indenização por danos morais e/ou materiais",

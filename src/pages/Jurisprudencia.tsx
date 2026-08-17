@@ -14,6 +14,7 @@ import { Search, Filter, MapPin, Calendar, Scale, ChevronDown, ChevronUp, Extern
 import { formatCitation } from "@/lib/citation";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { notifyUsageConsumed } from "@/hooks/useUsage";
 
 interface Decision {
   id: string;

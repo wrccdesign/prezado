@@ -15,6 +15,7 @@ import { AppFooter } from "@/components/AppFooter";
 import { Send, Loader2, Scale, User } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import Logo from "@/components/Logo";
+import { notifyUsageConsumed } from "@/hooks/useUsage";
 
 type Message = { role: "user" | "assistant"; content: string };
 
