@@ -1,6 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-import { checkRateLimit } from "../_shared/rate-limit.ts";
+import { checkRateLimit, extractEnv } from "../_shared/rate-limit.ts";
 import { fetchGroundingContext } from "../_shared/grounding.ts";
 
 const corsHeaders = {
@@ -77,7 +77,7 @@ serve(async (req) => {
 
     // Rate limit check
     {
-      const env = (req.headers.get("x-payment-env") === "sandbox" ? "sandbox" : "live") as "sandbox" | "live";
+      const env = extractEnv(req);
       const { allowed, used, limit } = await checkRateLimit(user.id, "peticao", supabaseUrl, supabaseKey, env);
       if (!allowed) {
         return new Response(JSON.stringify({
