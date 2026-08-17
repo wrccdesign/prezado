@@ -163,6 +163,21 @@ export default function Planos() {
           </p>
         </div>
 
+        {isPastDue && (
+          <div className="mb-8 rounded-lg border border-destructive/40 bg-destructive/10 p-4 text-sm">
+            <p className="font-semibold text-destructive">Pagamento pendente</p>
+            <p className="mt-1 text-muted-foreground">
+              Sua última cobrança falhou. Atualize o meio de pagamento em{" "}
+              <button className="underline font-medium" onClick={() => navigate("/conta")}>
+                Minha conta
+              </button>{" "}
+              para manter o acesso.
+            </p>
+          </div>
+        )}
+
+
+
         <div className="grid md:grid-cols-3 gap-6 mb-12">
           {plans.map((plan) => {
             const isCurrent = planId === plan.id;
