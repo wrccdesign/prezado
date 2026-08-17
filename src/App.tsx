@@ -19,6 +19,7 @@ import LandingPage from "./pages/LandingPage";
 import AdminIngestao from "./pages/AdminIngestao";
 import Comparativo from "./pages/Comparativo";
 import Planos from "./pages/Planos";
+import Conta from "./pages/Conta";
 import NotFound from "./pages/NotFound";
 import Termos from "./pages/Termos";
 import Reembolso from "./pages/Reembolso";
@@ -64,6 +65,7 @@ const App = () => (
               <Route path="/painel-advogado" element={<ProtectedRoute><LawyerDashboard /></ProtectedRoute>} />
               <Route path="/comparativo" element={<Comparativo />} />
               <Route path="/planos" element={<Planos />} />
+              <Route path="/conta" element={<ProtectedRoute><Conta /></ProtectedRoute>} />
               <Route path="/admin/ingestao" element={<ProtectedRoute><AdminIngestao /></ProtectedRoute>} />
               <Route path="/termos" element={<Termos />} />
               <Route path="/reembolso" element={<Reembolso />} />

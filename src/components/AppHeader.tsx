@@ -25,6 +25,7 @@ const navItems: NavItem[] = [
   { path: "/painel-advogado", label: "Painel", icon: LayoutDashboard, lawyerOnly: true },
   { path: "/historico", label: "Histórico", icon: History },
   { path: "/planos", label: "Planos", icon: Crown },
+  { path: "/conta", label: "Conta", icon: User },
 ];
 
 function NavButton({ item, active, onClick }: { item: NavItem; active: boolean; onClick: () => void }) {

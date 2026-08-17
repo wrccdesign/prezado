@@ -1,4 +1,5 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { resolvePaymentEnv, type PaddleEnv } from "./payment-env.ts";
 
 const PLAN_LIMITS: Record<string, Record<string, number>> = {
   free: { search: 5, chat: 3, diagnostico: 2, peticao: 0 },
@@ -6,14 +7,15 @@ const PLAN_LIMITS: Record<string, Record<string, number>> = {
   escritorio: { search: 200, chat: 100, diagnostico: 50, peticao: 30 },
 };
 
-export type PaddleEnv = "sandbox" | "live";
+export type { PaddleEnv };
 
+/**
+ * The environment is derived from the request origin, never from a header the
+ * client controls — otherwise a production user could claim "sandbox" and
+ * inherit an entitlement paid with a test card.
+ */
 export function extractEnv(req: Request): PaddleEnv {
-  // Client passes env via header so preview (sandbox subs) unlocks features
-  // exactly like live. This is safe: the sandbox client token is Lovable-auth
-  // gated; production builds ship the live token.
-  const h = req.headers.get("x-payment-env")?.toLowerCase();
-  return h === "sandbox" ? "sandbox" : "live";
+  return resolvePaymentEnv(req);
 }
 
 export async function checkRateLimit(

@@ -314,6 +314,36 @@ export type Database = {
         }
         Relationships: []
       }
+      payment_events: {
+        Row: {
+          created_at: string
+          environment: string
+          event_id: string
+          event_type: string
+          occurred_at: string | null
+          paddle_subscription_id: string | null
+          payload: Json | null
+        }
+        Insert: {
+          created_at?: string
+          environment: string
+          event_id: string
+          event_type: string
+          occurred_at?: string | null
+          paddle_subscription_id?: string | null
+          payload?: Json | null
+        }
+        Update: {
+          created_at?: string
+          environment?: string
+          event_id?: string
+          event_type?: string
+          occurred_at?: string | null
+          paddle_subscription_id?: string | null
+          payload?: Json | null
+        }
+        Relationships: []
+      }
       petition_templates: {
         Row: {
           area: string | null
