@@ -93,17 +93,17 @@ async function fetchJanela(
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
-  // TEMPORÁRIO: backfill dos novos índices sem autenticação.
-  // Será restaurado imediatamente após a carga dos novos índices.
-  // const syncSecret = Deno.env.get("SYNC_INDICES_SECRET");
-  // const headerSecret = req.headers.get("x-sync-secret");
-  // if (!syncSecret || headerSecret !== syncSecret) {
-  //   const svcErr = requireServiceRole(req);
-  //   if (svcErr) return svcErr;
-  // }
+  // Chamada interna: service role OU segredo do cron
+  const syncSecret = Deno.env.get("SYNC_INDICES_SECRET");
+  const headerSecret = req.headers.get("x-sync-secret");
+  if (!syncSecret || headerSecret !== syncSecret) {
+    const svcErr = requireServiceRole(req);
+    if (svcErr) return svcErr;
+  }
 
 
   const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
+
 
   const SERVICE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
   const supabase = createClient(SUPABASE_URL, SERVICE_KEY);
