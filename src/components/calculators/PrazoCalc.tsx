@@ -285,38 +285,39 @@ export function PrazoCalc() {
         </div>
         <div className="space-y-2">
           <Label>Município (feriados locais)</Label>
-          <Select value={codigoIbge} onValueChange={setCodigoIbge} disabled={carregandoMunicipios || municipios.length === 0}>
+          <Select value={codigoIbge || "__todos__"} onValueChange={setCodigoIbge} disabled={carregandoMunicipios || municipios.length === 0}>
             <SelectTrigger>
               <SelectValue placeholder={carregandoMunicipios ? "Carregando..." : "Selecione o município"} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">Todos os municípios do estado</SelectItem>
+              <SelectItem value="__todos__">Todos os municípios do estado</SelectItem>
               {municipios.map(m => <SelectItem key={m.id} value={String(m.id)}>{m.nome}</SelectItem>)}
             </SelectContent>
           </Select>
         </div>
         <div className="space-y-2">
           <Label>Tribunal (suspensões forenses)</Label>
-          <Select value={tribunal} onValueChange={setTribunal}>
+          <Select value={tribunal || "__nenhum__"} onValueChange={setTribunal}>
             <SelectTrigger>
               <SelectValue placeholder="Selecione o tribunal" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">Nenhum tribunal específico</SelectItem>
+              <SelectItem value="__nenhum__">Nenhum tribunal específico</SelectItem>
               {tribunais.map(t => <SelectItem key={t.tribunal} value={t.tribunal}>{t.tribunal} — {t.nome_completo}</SelectItem>)}
             </SelectContent>
           </Select>
         </div>
         <div className="space-y-2">
           <Label>Vara / Unidade judiciária</Label>
-          <Select value={vara} onValueChange={setVara}>
+          <Select value={vara || "__nao__"} onValueChange={setVara}>
             <SelectTrigger><SelectValue placeholder="Selecione a vara" /></SelectTrigger>
             <SelectContent>
-              <SelectItem value="">Não especificar</SelectItem>
+              <SelectItem value="__nao__">Não especificar</SelectItem>
               {VARAS.map(v => <SelectItem key={v} value={v}>{v}</SelectItem>)}
             </SelectContent>
           </Select>
         </div>
+
       </div>
 
       <Button onClick={calcular} className="w-full sm:w-auto" disabled={loading || !dataReferencia || !diasPrazo}>
