@@ -168,10 +168,11 @@ export function PrazoCalc() {
           dias: diasPrazo,
           contagem,
           uf,
-          codigo_ibge: codigoIbge || null,
-          tribunal: tribunal || null,
+          codigo_ibge: codigoIbge && codigoIbge !== "__todos__" ? codigoIbge : null,
+          tribunal: tribunal && tribunal !== "__nenhum__" ? tribunal : null,
         },
       });
+
       if (error) throw error;
       if ((data as { error?: string })?.error) throw new Error((data as { error: string }).error);
       setResult(data as Resultado);
