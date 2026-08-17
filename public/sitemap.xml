@@ -17,5 +17,14 @@
   <url><loc>https://prezado.lovable.app/termos</loc><changefreq>monthly</changefreq><priority>0.3</priority></url>
   <url><loc>https://prezado.lovable.app/reembolso</loc><changefreq>monthly</changefreq><priority>0.3</priority></url>
   <url><loc>https://prezado.lovable.app/privacidade</loc><changefreq>monthly</changefreq><priority>0.3</priority></url>
+  <url><loc>https://prezado.lovable.app/modelos-de-minutas</loc><changefreq>weekly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://prezado.lovable.app/modelos-de-minutas/peticao-inicial-cobranca</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://prezado.lovable.app/modelos-de-minutas/contestacao-civel</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://prezado.lovable.app/modelos-de-minutas/reclamacao-trabalhista</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://prezado.lovable.app/modelos-de-minutas/notificacao-extrajudicial</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://prezado.lovable.app/modelos-de-minutas/procuracao-ad-judicia</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://prezado.lovable.app/modelos-de-minutas/recurso-apelacao</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://prezado.lovable.app/modelos-de-minutas/contrato-prestacao-servicos-advocaticios</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://prezado.lovable.app/modelos-de-minutas/acordo-extrajudicial-homologacao</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
 </urlset>
 
