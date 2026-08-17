@@ -23,9 +23,9 @@ Deno.serve(async (req) => {
     const { data: { user }, error: userError } = await supabase.auth.getUser(token);
     if (userError || !user) throw new Error("Unauthorized");
 
-    // Env is derived from the header the client sends (matches its token prefix).
-    const headerEnv = req.headers.get("x-payment-env");
-    const environment: PaddleEnv = headerEnv === "sandbox" ? "sandbox" : "live";
+    // Env is derived server-side from the request origin (never client input).
+    const environment: PaddleEnv = resolvePaymentEnv(req);
+
 
     const { data: sub } = await supabase
       .from("subscriptions")
