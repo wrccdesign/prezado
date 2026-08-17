@@ -23,6 +23,8 @@ import LandingPage from "./pages/LandingPage";
 import AdminIngestao from "./pages/AdminIngestao";
 import Comparativo from "./pages/Comparativo";
 import Planos from "./pages/Planos";
+import ModelosMinutas from "./pages/ModelosMinutas";
+import MinutaDetalhe from "./pages/MinutaDetalhe";
 import Conta from "./pages/Conta";
 import NotFound from "./pages/NotFound";
 import Termos from "./pages/Termos";
@@ -72,6 +74,8 @@ const App = () => (
               <Route path="/jurisprudencia" element={<Jurisprudencia />} />
               <Route path="/decisao/:id" element={<DecisaoDetalhe />} />
               <Route path="/painel-advogado" element={<ProtectedRoute><LawyerDashboard /></ProtectedRoute>} />
+              <Route path="/modelos-de-minutas" element={<ModelosMinutas />} />
+              <Route path="/modelos-de-minutas/:slug" element={<MinutaDetalhe />} />
               <Route path="/comparativo" element={<Comparativo />} />
               <Route path="/planos" element={<Planos />} />
               <Route path="/conta" element={<ProtectedRoute><Conta /></ProtectedRoute>} />
