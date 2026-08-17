@@ -586,6 +586,13 @@ export default function LandingPage() {
           </div>
           <div className="border-t pt-5 flex flex-col items-center gap-2 text-center" style={{ borderColor: "hsl(var(--gold) / 0.1)" }}>
             <p className="text-xs text-white/30">© {new Date().getFullYear()} Honorífico. Todos os direitos reservados.</p>
+            <p className="text-xs text-white/30 max-w-2xl leading-relaxed">
+              Honorífico é um nome fantasia operado por <strong className="font-medium text-white/50">Wrcc Design</strong> — CNPJ 15.236.018/0001-64.
+              Contato e suporte:{" "}
+              <a href="mailto:contato@honorifico.com.br" className="hover:text-gold transition-colors underline underline-offset-2">contato@honorifico.com.br</a>.
+              Pagamentos processados pela Paddle.com Market Ltd., que atua como Merchant of Record (revendedora autorizada) das assinaturas.
+            </p>
+
             <div className="flex gap-4 text-xs text-white/30">
               <Link to="/privacidade" className="hover:text-gold transition-colors">LGPD</Link>
               <Link to="/privacidade" className="hover:text-gold transition-colors">Privacidade</Link>
