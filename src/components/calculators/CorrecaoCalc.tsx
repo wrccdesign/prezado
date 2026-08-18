@@ -11,6 +11,9 @@ import { AlertTriangle, ChevronDown, FileDown, FileText, Loader2 } from "lucide-
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 import { exportToPDF, exportToDOCX, slugify, type ExportSection } from "@/lib/exportDocument";
+import { readFunctionError } from "@/lib/usageLimit";
+import { notifyUsageConsumed } from "@/hooks/useUsage";
+
 
 interface LinhaMemoria {
   mes_ref: string;
@@ -21,7 +24,7 @@ interface LinhaMemoria {
   saldo_corrigido: number;
   juros_do_mes: number;
   juros_acumulados: number;
-  regime: "pre_14905" | "pos_14905";
+  regime: "pre_14905" | "transicao_14905" | "pos_14905";
 }
 
 interface Resultado {
@@ -33,10 +36,18 @@ interface Resultado {
   total: number;
   memoria: LinhaMemoria[];
   meses_faltantes: Array<{ mes_ref: string; indice: string }>;
+  manter_indice_contratual?: boolean;
   fonte: string;
   ultima_sincronizacao: string | null;
-  base_legal: string;
+  base_legal: string[];
 }
+
+const REGIME_LABEL: Record<LinhaMemoria["regime"], string> = {
+  pre_14905: "regime anterior",
+  transicao_14905: "transição (Lei 14.905/2024 em 30–31/08/2024)",
+  pos_14905: "Lei 14.905/2024",
+};
+
 
 const INDICES = [
   { id: "ipca", label: "IPCA (IBGE)" },
@@ -65,6 +76,7 @@ export function CorrecaoCalc() {
   const [dataFinal, setDataFinal] = useState("");
   const [indice, setIndice] = useState("ipca");
   const [proRata, setProRata] = useState(true);
+  const [manterIndiceContratual, setManterIndiceContratual] = useState(false);
   const [regimeJuros, setRegimeJuros] = useState("legal_14905");
   const [tipoJuros, setTipoJuros] = useState("simples");
   const [taxaFixa, setTaxaFixa] = useState("1");
@@ -94,6 +106,7 @@ export function CorrecaoCalc() {
           data_final: dataFinal,
           indice,
           pro_rata: proRata,
+          manter_indice_contratual: manterIndiceContratual,
           regime_juros: regimeJuros,
           tipo_juros: tipoJuros,
           taxa_juros_mensal: parseFloat(taxaFixa) || 0,
@@ -105,9 +118,18 @@ export function CorrecaoCalc() {
           honorarios_percentual: parseFloat(honorarios) || 0,
         },
       });
-      if (error) throw error;
+      if (error) {
+        const info = await readFunctionError(error, "Falha ao calcular");
+        toast({
+          title: info.limitReached ? "Limite diário atingido" : "Erro no cálculo",
+          description: info.message,
+          variant: "destructive",
+        });
+        return;
+      }
       if ((data as { error?: string })?.error) throw new Error((data as { error: string }).error);
       setResult(data as Resultado);
+      notifyUsageConsumed();
     } catch (e) {
       const msg = e instanceof Error ? e.message : "Falha ao calcular";
       toast({ title: "Erro no cálculo", description: msg, variant: "destructive" });
@@ -115,6 +137,7 @@ export function CorrecaoCalc() {
       setLoading(false);
     }
   };
+
 
   const buildSections = (r: Resultado): ExportSection[] => [
     {
@@ -135,7 +158,7 @@ export function CorrecaoCalc() {
       body: r.memoria
         .map(
           l =>
-            `${mesLabel(l.mes_ref)} | ${l.indice_utilizado.toUpperCase()} ${l.variacao_percentual.toFixed(2)}% | fator acum. ${l.fator_acumulado.toFixed(6)} | saldo ${fmt(l.saldo_corrigido)} | juros do mês ${fmt(l.juros_do_mes)} | juros acum. ${fmt(l.juros_acumulados)} | ${l.regime === "pos_14905" ? "Lei 14.905/2024" : "regime anterior"}`,
+            `${mesLabel(l.mes_ref)} | ${l.indice_utilizado.toUpperCase()} ${l.variacao_percentual.toFixed(2)}% | fator acum. ${l.fator_acumulado.toFixed(6)} | saldo ${fmt(l.saldo_corrigido)} | juros do mês ${fmt(l.juros_do_mes)} | juros acum. ${fmt(l.juros_acumulados)} | ${REGIME_LABEL[l.regime]}`,
         )
         .join("\n"),
     },
@@ -143,8 +166,9 @@ export function CorrecaoCalc() {
       heading: "Fonte e base legal",
       body: `${r.fonte}\nÚltima sincronização dos índices: ${
         r.ultima_sincronizacao ? new Date(r.ultima_sincronizacao).toLocaleString("pt-BR") : "—"
-      }\n${r.base_legal}`,
+      }\n${r.base_legal.join("\n")}`,
     },
+
   ];
 
   const exportar = (tipo: "pdf" | "docx") => {
@@ -219,6 +243,20 @@ export function CorrecaoCalc() {
             </span>
           </div>
         </div>
+        {indice !== "ipca" && indice !== "fixo" && (
+          <div className="space-y-2">
+            <Label>Manter o índice escolhido após 30/08/2024</Label>
+            <div className="flex items-center gap-3 pt-1">
+              <Switch checked={manterIndiceContratual} onCheckedChange={setManterIndiceContratual} />
+              <span className="text-sm text-muted-foreground">
+                {manterIndiceContratual
+                  ? "Índice contratual mantido (art. 389, § único, CC — norma supletiva)"
+                  : "Substituir pelo IPCA a partir da vigência da Lei 14.905/2024"}
+              </span>
+            </div>
+          </div>
+        )}
+
         <div className="space-y-2">
           <Label>Multa (%)</Label>
           <Input type="number" step="0.1" placeholder="2" value={multa} onChange={e => setMulta(e.target.value)} />
@@ -338,8 +376,9 @@ export function CorrecaoCalc() {
                         <TableCell className="text-right">{fmt(l.juros_do_mes)}</TableCell>
                         <TableCell className="text-right">{fmt(l.juros_acumulados)}</TableCell>
                         <TableCell className="text-xs">
-                          {l.regime === "pos_14905" ? "Lei 14.905/2024" : "Regime anterior"}
+                          {REGIME_LABEL[l.regime]}
                         </TableCell>
+
                       </TableRow>
                     ))}
                   </TableBody>
@@ -357,12 +396,21 @@ export function CorrecaoCalc() {
                   ? new Date(result.ultima_sincronizacao).toLocaleString("pt-BR")
                   : "—"}
               </p>
-              <p><strong className="text-foreground">Base legal:</strong> {result.base_legal}</p>
+              <div>
+                <strong className="text-foreground">Base legal:</strong>
+                <ul className="mt-1 list-disc space-y-1 pl-4">
+                  {result.base_legal.map(b => <li key={b}>{b}</li>)}
+                </ul>
+              </div>
               <p>
-                A partir de 30/08/2024 a correção segue o IPCA (art. 389, parágrafo único, do CC) e os juros
-                a Taxa Legal divulgada pelo Banco Central (art. 406, §1º, do CC), desconsiderando-se resultado
-                negativo (art. 406, §3º).
+                Agosto/2024 é mês de transição, calculado pro rata die: regime anterior até 29/08 e
+                Lei 14.905/2024 nos dias 30 e 31 (Res. CMN 5.171/2024). A partir daí a correção segue o
+                {result.manter_indice_contratual
+                  ? " índice contratual mantido"
+                  : " IPCA (art. 389, parágrafo único, do CC)"} e os juros a Taxa Legal divulgada pelo
+                Banco Central (art. 406, §1º, do CC), desconsiderando-se resultado negativo (art. 406, §3º).
               </p>
+
             </CardContent>
           </Card>
         </div>

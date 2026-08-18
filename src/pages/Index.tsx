@@ -1,6 +1,8 @@
 import { useState, useRef } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
+import { readFunctionError } from "@/lib/usageLimit";
+import { notifyUsageConsumed } from "@/hooks/useUsage";
 import { AppHeader } from "@/components/AppHeader";
 import { LegalDisclaimer } from "@/components/LegalDisclaimer";
 import { AnalysisResult } from "@/components/AnalysisResult";
@@ -100,6 +102,7 @@ export default function Index() {
       setParseStage("Concluído!");
       setText(data.text);
       setShowPreview(true);
+      notifyUsageConsumed();
       const ocrNote = data.ocr ? " (via OCR — documento escaneado)" : "";
       const partialNote = data.partial ? " ⚠️ Extração parcial — PDF muito grande, apenas parte do texto foi extraída." : "";
       toast({ title: "Documento processado!", description: `Texto extraído de ${file.name}${ocrNote}.${partialNote}` });
@@ -107,7 +110,15 @@ export default function Index() {
       if (err?.name === "AbortError") {
         toast({ title: "Timeout no upload", description: "O processamento demorou demais. Tente um PDF menor, TXT ou cole o texto manualmente.", variant: "destructive" });
       } else {
-        toast({ title: "Erro ao processar", description: "Não foi possível extrair o texto do arquivo.", variant: "destructive" });
+        const { message, limitReached } = await readFunctionError(
+          err,
+          "Não foi possível extrair o texto do arquivo.",
+        );
+        toast({
+          title: limitReached ? "Limite diário atingido" : "Erro ao processar",
+          description: limitReached ? `${message} Veja os planos em /planos.` : message,
+          variant: "destructive",
+        });
       }
       setFileName(null);
     } finally {
@@ -139,20 +150,13 @@ export default function Index() {
       if (data?.error) throw new Error(data.error);
 
       setResult(data.result as LegalAnalysis);
+      notifyUsageConsumed();
       toast({ title: "Análise concluída!" });
     } catch (err: any) {
-      let msg = err.message;
-      if (err?.context instanceof Response) {
-        try {
-          const body = await err.context.json();
-          msg = body?.error || msg;
-        } catch {
-          // mantém msg original se não conseguir ler o corpo
-        }
-      }
+      const { message, limitReached } = await readFunctionError(err, "Tente novamente mais tarde.");
       toast({
-        title: "Erro na análise",
-        description: msg || "Tente novamente mais tarde.",
+        title: limitReached ? "Limite diário atingido" : "Erro na análise",
+        description: limitReached ? `${message} Veja os planos em /planos.` : message,
         variant: "destructive",
       });
     } finally {

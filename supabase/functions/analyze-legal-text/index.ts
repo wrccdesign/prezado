@@ -1,5 +1,7 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { checkRateLimit, extractEnv } from "../_shared/rate-limit.ts";
+
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -161,10 +163,38 @@ serve(async (req) => {
     const { data: { user }, error: userError } = await supabase.auth.getUser(token);
     if (userError || !user) throw new Error("Unauthorized");
 
+    // Esta é a função mais caras do produto (duas chamadas de IA), portanto
+    // entra na grade de créditos como ação "analise".
+    const env = extractEnv(req);
+    const { allowed, used, limit, plan } = await checkRateLimit(
+      user.id,
+      "analise",
+      supabaseUrl,
+      supabaseKey,
+      env,
+    );
+    if (!allowed) {
+      return new Response(
+        JSON.stringify({
+          error: limit === 0
+            ? "A análise de documentos não está disponível no seu plano. Assine um plano para liberar."
+            : `Você atingiu o limite de ${limit} análise(s) por dia do plano ${plan}. Faça upgrade para continuar.`,
+          used,
+          limit,
+          plan,
+          limit_reached: true,
+          upgrade_url: "/planos",
+        }),
+
+        { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+      );
+    }
+
     const { text, file_name } = await req.json();
     if (!text || typeof text !== "string" || text.trim().length < 20) {
       throw new Error("Texto muito curto para análise");
     }
+
 
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY not configured");

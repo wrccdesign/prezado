@@ -1,16 +1,20 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { requireCalculoQuota } from "../_shared/calculo-guard.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type, x-payment-env",
+    "authorization, x-client-info, apikey, content-type, x-payment-env, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
 /** Lei 14.905/2024 — vigência a partir de 30/08/2024. */
 const VIGENCIA_14905 = "2024-08-30";
+/** Mês de transição: regime antigo até 29/08/2024, novo regime em 30 e 31/08/2024. */
+const MES_TRANSICAO = "2024-08-01";
 /** Juros legais de 1% a.m. a partir da vigência do CC/2002. */
 const CC2002 = "2003-01-11";
+
 
 const INDICES_VALIDOS = [
   "ipca",
@@ -26,6 +30,7 @@ const INDICES_VALIDOS = [
 type Indice = typeof INDICES_VALIDOS[number];
 type RegimeJuros = "legal_14905" | "taxa_fixa" | "nenhum";
 type TipoJuros = "simples" | "compostos";
+type Regime = "pre_14905" | "transicao_14905" | "pos_14905";
 
 interface Body {
   valor: number;
@@ -33,6 +38,12 @@ interface Body {
   data_final: string;
   indice: Indice;
   pro_rata?: boolean;
+  /**
+   * Art. 389, parágrafo único, do CC é supletivo ("salvo disposição em
+   * contrário"): quando true, o índice escolhido continua a ser aplicado
+   * também após 30/08/2024, em vez de ser substituído pelo IPCA.
+   */
+  manter_indice_contratual?: boolean;
   regime_juros?: RegimeJuros;
   tipo_juros?: TipoJuros;
   taxa_juros_mensal?: number;
@@ -53,8 +64,9 @@ interface LinhaMemoria {
   saldo_corrigido: number;
   juros_do_mes: number;
   juros_acumulados: number;
-  regime: "pre_14905" | "pos_14905";
+  regime: Regime;
 }
+
 
 function bad(msg: string, status = 400) {
   return new Response(JSON.stringify({ error: msg }), {
@@ -95,7 +107,11 @@ const r2 = (n: number) => Math.round(n * 100) / 100;
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
+  const quota = await requireCalculoQuota(req, corsHeaders);
+  if (quota instanceof Response) return quota;
+
   let body: Body;
+
   try {
     body = await req.json();
   } catch {
@@ -115,6 +131,8 @@ serve(async (req) => {
     return bad("Índice inválido");
   }
   const proRata = body.pro_rata === true;
+  const manterIndiceContratual = body.manter_indice_contratual === true;
+
   const regimeJuros: RegimeJuros = body.regime_juros ?? "legal_14905";
   const tipoJuros: TipoJuros = body.tipo_juros ?? "simples";
   const taxaFixa = Number(body.taxa_juros_mensal ?? 0);
@@ -172,37 +190,77 @@ serve(async (req) => {
   let saldoCapitalizado = valor;
   let jurosAcumulados = 0;
 
+  /** Índice que passa a valer na correção após a Lei 14.905/2024. */
+  const indicePosLei: Indice = manterIndiceContratual ? indiceEscolhido : "ipca";
+
   for (const mes of meses) {
     const key = monthKey(mes);
-    const ultimoDia = new Date(
-      Date.UTC(mes.getUTCFullYear(), mes.getUTCMonth(), daysInMonth(mes)),
-    );
-    // Agosto/2024 (mês da vigência, em 30/08) permanece no regime anterior;
-    // a partir de setembro/2024 aplica-se o regime da Lei 14.905/2024.
-    const regime: "pre_14905" | "pos_14905" = key > "2024-08-01" ? "pos_14905" : "pre_14905";
+    const dim = daysInMonth(mes);
+    const ultimoDia = new Date(Date.UTC(mes.getUTCFullYear(), mes.getUTCMonth(), dim));
 
-    // ── Correção monetária ──
-    const codigoCorrecao = regime === "pos_14905" ? "ipca" : indiceEscolhido;
-    let variacao = 0;
-    if (codigoCorrecao !== "fixo") {
-      const v = mapa.get(`${codigoCorrecao}|${key}`);
+    const varIndice = (codigo: Indice): number => {
+      if (codigo === "fixo") return 0;
+      const v = mapa.get(`${codigo}|${key}`);
       if (v === undefined) {
-        mesesFaltantes.push({ mes_ref: key, indice: codigoCorrecao });
-      } else {
-        variacao = v;
+        mesesFaltantes.push({ mes_ref: key, indice: codigo });
+        return 0;
       }
-    }
+      return v;
+    };
+    const varTaxaLegal = (): number => {
+      const tl = mapa.get(`taxa_legal|${key}`);
+      if (tl === undefined) {
+        mesesFaltantes.push({ mes_ref: key, indice: "taxa_legal" });
+        return 0;
+      }
+      // Art. 406, §3º, CC — taxa legal negativa considera-se zero.
+      return Math.max(0, tl);
+    };
+
+    // Agosto/2024 é mês de TRANSIÇÃO: a Lei 14.905/2024 entrou em vigor em
+    // 30/08/2024 e a Res. CMN 5.171/2024 determina que a taxa legal aplicável
+    // aos dias 30 e 31/08/2024 é a divulgada para agosto/2024. Logo, o mês é
+    // rateado pro rata die: regime anterior até 29/08 e novo regime em 30–31/08.
+    const isTransicao = key === MES_TRANSICAO;
+    const regime: Regime = isTransicao
+      ? "transicao_14905"
+      : key > MES_TRANSICAO
+      ? "pos_14905"
+      : "pre_14905";
 
     // Pro rata die nos meses parciais das pontas
-    let proporcao = 1;
-    if (proRata) {
-      const dim = daysInMonth(mes);
-      const inicioDia = key === primeiroMes ? dIni.getUTCDate() : 1;
-      const fimDia = key === ultimoMes ? dFim.getUTCDate() : dim;
-      proporcao = Math.max(0, (fimDia - inicioDia + 1)) / dim;
+    const inicioDia = proRata && key === primeiroMes ? dIni.getUTCDate() : 1;
+    const fimDia = proRata && key === ultimoMes ? dFim.getUTCDate() : dim;
+    const proporcao = proRata ? Math.max(0, fimDia - inicioDia + 1) / dim : 1;
+
+    // Frações do mês de transição (dias 1–29 x dias 30–31)
+    const diasPre = Math.max(0, Math.min(fimDia, 29) - inicioDia + 1);
+    const diasPos = Math.max(0, fimDia - Math.max(inicioDia, 30) + 1);
+    const propPre = diasPre / dim;
+    const propPos = diasPos / dim;
+
+    // ── Correção monetária ──
+    let fatorMes: number;
+    let variacaoRegistrada: number;
+    let indiceUtilizado: string;
+
+    if (isTransicao) {
+      const varPre = varIndice(indiceEscolhido);
+      const varPos = varIndice(indicePosLei);
+      fatorMes = 1 + (varPre / 100) * propPre + (varPos / 100) * propPos;
+      variacaoRegistrada = Number(((fatorMes - 1) * 100).toFixed(6));
+      indiceUtilizado = indiceEscolhido === indicePosLei
+        ? `${indiceEscolhido} (mês de transição da Lei 14.905/2024)`
+        : `${indiceEscolhido} (1–29/08) + ${indicePosLei} (30–31/08)`;
+    } else {
+      const codigoCorrecao = regime === "pos_14905" ? indicePosLei : indiceEscolhido;
+      variacaoRegistrada = varIndice(codigoCorrecao);
+      fatorMes = 1 + (variacaoRegistrada / 100) * proporcao;
+      indiceUtilizado = regime === "pos_14905" && manterIndiceContratual
+        ? `${codigoCorrecao} (índice contratual mantido — art. 389, § único, CC)`
+        : codigoCorrecao;
     }
 
-    const fatorMes = 1 + (variacao / 100) * proporcao;
     fatorAcumulado *= fatorMes;
     saldoCorrigido = valor * fatorAcumulado;
 
@@ -214,21 +272,17 @@ serve(async (req) => {
     let taxaMes = 0;
     if (dentroJuros && regimeJuros !== "nenhum") {
       if (regimeJuros === "taxa_fixa") {
-        taxaMes = taxaFixa;
+        taxaMes = taxaFixa * proporcao;
       } else if (regime === "pos_14905") {
-        // Art. 406, §1º, CC — Taxa Legal (SGS 29543); se negativa, considera-se zero (§3º)
-        const tl = mapa.get(`taxa_legal|${key}`);
-        if (tl === undefined) {
-          mesesFaltantes.push({ mes_ref: key, indice: "taxa_legal" });
-          taxaMes = 0;
-        } else {
-          taxaMes = Math.max(0, tl);
-        }
+        // Art. 406, §1º, CC — Taxa Legal (SGS 29543)
+        taxaMes = varTaxaLegal() * proporcao;
+      } else if (regime === "transicao_14905") {
+        // 1% a.m. até 29/08/2024 + Taxa Legal de agosto/2024 nos dias 30 e 31.
+        taxaMes = 1 * propPre + varTaxaLegal() * propPos;
       } else {
         // Regra prática: 1% a.m. a partir de 11/01/2003; 0,5% a.m. antes
-        taxaMes = ultimoDia >= parseISO(CC2002)! ? 1 : 0.5;
+        taxaMes = (ultimoDia >= parseISO(CC2002)! ? 1 : 0.5) * proporcao;
       }
-      taxaMes *= proporcao;
     }
 
     // Aplica correção também sobre o saldo capitalizado para juros compostos
@@ -247,8 +301,8 @@ serve(async (req) => {
 
     memoria.push({
       mes_ref: key,
-      indice_utilizado: codigoCorrecao,
-      variacao_percentual: variacao,
+      indice_utilizado: indiceUtilizado,
+      variacao_percentual: variacaoRegistrada,
       fator_do_mes: Number(fatorMes.toFixed(10)),
       fator_acumulado: Number(fatorAcumulado.toFixed(10)),
       saldo_corrigido: r2(saldoCorrigido),
@@ -257,6 +311,7 @@ serve(async (req) => {
       regime,
     });
   }
+
 
 
   const valorCorrigido = r2(saldoCorrigido);
@@ -279,10 +334,17 @@ serve(async (req) => {
       fator_acumulado: Number(fatorAcumulado.toFixed(10)),
       memoria,
       meses_faltantes: mesesFaltantes,
+      manter_indice_contratual: manterIndiceContratual,
       fonte: "Banco Central do Brasil — Sistema Gerenciador de Séries Temporais (SGS)",
       ultima_sincronizacao: syncRow?.sincronizado_em ?? null,
-      base_legal:
-        "Arts. 389 e 406 do Código Civil, com redação da Lei 14.905/2024 (vigência em 30/08/2024).",
+      base_legal: [
+        `Arts. 389 e 406 do Código Civil, com redação da Lei 14.905/2024 (vigência em ${VIGENCIA_14905}).`,
+        "Res. CMN 5.171/2024 — a taxa legal aplicável aos dias 30 e 31/08/2024 é a divulgada para agosto/2024; agosto/2024 é calculado pro rata die como mês de transição.",
+        manterIndiceContratual
+          ? "Art. 389, parágrafo único, do CC (norma supletiva): mantido o índice contratual/específico também após a vigência da Lei 14.905/2024."
+          : "Art. 389, parágrafo único, do CC: correção pelo IPCA a partir da vigência da Lei 14.905/2024, na falta de disposição em contrário.",
+      ],
+
     }),
     { headers: { ...corsHeaders, "Content-Type": "application/json" } },
   );

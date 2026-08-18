@@ -12,6 +12,9 @@ import { format, parseISO } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
+import { readFunctionError } from "@/lib/usageLimit";
+import { notifyUsageConsumed } from "@/hooks/useUsage";
+
 
 const PRAZOS_TIPO = [
   { id: "contestacao", label: "Contestação", dias: 15, materia: "civel" },
@@ -110,14 +113,38 @@ export function PrazoCalc() {
 
   useEffect(() => {
     async function carregarTribunais() {
-      const { data, error } = await supabase
-        .from("tj_scraping_config")
-        .select("tribunal, nome_completo")
-        .order("priority", { ascending: false });
-      if (!error && data) setTribunais(data);
+      // Junta os tribunais conhecidos com aqueles que já possuem suspensões
+      // forenses cadastradas na tabela `feriados` (inclui a Justiça Federal).
+      const [{ data: config }, { data: forenses }] = await Promise.all([
+        supabase
+          .from("tj_scraping_config")
+          .select("tribunal, nome_completo")
+          .order("priority", { ascending: false }),
+        supabase.from("feriados").select("tribunal").eq("tipo", "forense"),
+      ]);
+
+      const nomes = new Map<string, string>();
+      for (const t of config ?? []) nomes.set(t.tribunal, t.nome_completo);
+
+      const comSuspensao = new Set(
+        (forenses ?? []).map(f => f.tribunal).filter((t): t is string => !!t),
+      );
+
+      const lista: Tribunal[] = [];
+      for (const codigo of comSuspensao) {
+        lista.push({
+          tribunal: codigo,
+          nome_completo: `${nomes.get(codigo) ?? codigo} — suspensões cadastradas`,
+        });
+      }
+      for (const [codigo, nome] of nomes) {
+        if (!comSuspensao.has(codigo)) lista.push({ tribunal: codigo, nome_completo: nome });
+      }
+      setTribunais(lista);
     }
     carregarTribunais();
   }, []);
+
 
   useEffect(() => {
     async function carregarMunicipios() {
@@ -173,9 +200,19 @@ export function PrazoCalc() {
         },
       });
 
-      if (error) throw error;
+      if (error) {
+        const info = await readFunctionError(error, "Falha ao calcular o prazo");
+        toast({
+          title: info.limitReached ? "Limite diário atingido" : "Erro no cálculo",
+          description: info.message,
+          variant: "destructive",
+        });
+        return;
+      }
       if ((data as { error?: string })?.error) throw new Error((data as { error: string }).error);
       setResult(data as Resultado);
+      notifyUsageConsumed();
+
     } catch (e) {
       const msg = e instanceof Error ? e.message : "Falha ao calcular o prazo";
       toast({ title: "Erro no cálculo", description: msg, variant: "destructive" });

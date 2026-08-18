@@ -1,11 +1,14 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { requireCalculoQuota } from "../_shared/calculo-guard.ts";
+
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type, x-payment-env",
+    "authorization, x-client-info, apikey, content-type, x-payment-env, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
+
 
 type Materia = "civel" | "penal" | "trabalhista";
 type TipoData = "disponibilizacao" | "publicacao";
@@ -52,6 +55,11 @@ function noRecesso(d: Date): boolean {
 
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
+
+  const quota = await requireCalculoQuota(req, corsHeaders);
+  if (quota instanceof Response) return quota;
+
+
 
   let body: Body;
   try {
@@ -160,8 +168,19 @@ serve(async (req) => {
       if (contados < dias) cursor = addDays(cursor, 1);
     }
   } else {
-    cursor = addDays(cursor, dias - 1);
+    // Dias corridos: o recesso do art. 220 do CPC SUSPENDE a contagem — não é
+    // apenas um "dia não útil" a ser pulado. Os dias entre 20/12 e 20/01
+    // empurram o vencimento para frente (não se aplica ao processo penal).
+    while (contados < dias) {
+      if (materia !== "penal" && noRecesso(cursor)) {
+        registrar(cursor, "Recesso forense — contagem suspensa (art. 220 do CPC)");
+      } else {
+        contados++;
+      }
+      if (contados < dias) cursor = addDays(cursor, 1);
+    }
   }
+
 
   // 3) Prorrogação quando o vencimento cai em dia sem expediente (art. 224, §1º)
   while (motivoNaoUtil(cursor) !== null) {

@@ -1,5 +1,10 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-import { PLAN_LIMITS, extractEnv } from "../_shared/rate-limit.ts";
+import {
+  PLAN_LIMITS,
+  extractEnv,
+  saoPauloDayEnd,
+  saoPauloDayStart,
+} from "../_shared/rate-limit.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -11,8 +16,13 @@ const ACTION_LABELS: Record<string, string> = {
   search: "Buscas de jurisprudência",
   chat: "Chat jurídico",
   diagnostico: "Diagnósticos",
+  diagnostico_completo_free: "Diagnósticos completos (prévia)",
   peticao: "Petições",
+  analise: "Análises de documentos",
+  documento: "Leituras/OCR de documentos",
+  calculo: "Cálculos jurídicos",
 };
+
 
 function json(body: unknown, status = 200) {
   return new Response(JSON.stringify(body), {
@@ -44,12 +54,13 @@ Deno.serve(async (req) => {
     const plan = (planData as string) || "free";
     const limits = PLAN_LIMITS[plan] || PLAN_LIMITS.free;
 
-    const today = new Date().toISOString().split("T")[0];
+    // Dia de uso em America/Sao_Paulo, igual ao checkRateLimit.
     const { data: rows } = await admin
       .from("usage_tracking")
       .select("action")
       .eq("user_id", user.id)
-      .gte("created_at", `${today}T00:00:00.000Z`);
+      .gte("created_at", saoPauloDayStart().toISOString())
+      .lt("created_at", saoPauloDayEnd().toISOString());
 
     const counts: Record<string, number> = {};
     for (const row of rows ?? []) {
@@ -57,19 +68,24 @@ Deno.serve(async (req) => {
       counts[action] = (counts[action] ?? 0) + 1;
     }
 
-    const resets = new Date();
-    resets.setUTCHours(24, 0, 0, 0);
+    const resets = saoPauloDayEnd();
+
 
     return json({
       plan,
       environment: env,
       resets_at: resets.toISOString(),
-      actions: Object.keys(limits).map((action) => ({
-        action,
-        label: ACTION_LABELS[action] ?? action,
-        used: Math.min(counts[action] ?? 0, limits[action]),
-        limit: limits[action],
-      })),
+      // `diagnostico_completo_free` é o teaser interno do paywall, não é um
+      // benefício anunciado — fica fora do painel de uso.
+      actions: Object.keys(limits)
+        .filter((action) => action !== "diagnostico_completo_free")
+        .map((action) => ({
+          action,
+          label: ACTION_LABELS[action] ?? action,
+          used: Math.min(counts[action] ?? 0, limits[action]),
+          limit: limits[action],
+        })),
+
     });
   } catch (e) {
     console.error("usage-summary error:", e);
