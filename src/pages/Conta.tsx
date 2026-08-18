@@ -33,20 +33,26 @@ interface Invoice {
   total: string | null;
 }
 
+interface AccessInfo {
+  id: string;
+  status: string;
+  plan_id: string;
+  access_type?: "recurring" | "one_time";
+  access_expires_at?: string | null;
+  current_period_start: string | null;
+  current_period_end: string | null;
+  next_billed_at: string | null;
+  cancel_at_period_end: boolean;
+}
+
 interface Summary {
   environment: "sandbox" | "live";
   plan_id: "free" | "profissional" | "escritorio";
-  subscription: {
-    id: string;
-    status: string;
-    plan_id: string;
-    current_period_start: string | null;
-    current_period_end: string | null;
-    next_billed_at: string | null;
-    cancel_at_period_end: boolean;
-  } | null;
+  subscription: AccessInfo | null;
+  recurring_subscription?: AccessInfo | null;
   invoices: Invoice[];
 }
+
 
 const PLAN_LABEL: Record<string, string> = {
   free: "Gratuito",
