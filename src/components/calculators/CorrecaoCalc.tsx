@@ -243,6 +243,20 @@ export function CorrecaoCalc() {
             </span>
           </div>
         </div>
+        {indice !== "ipca" && indice !== "fixo" && (
+          <div className="space-y-2">
+            <Label>Manter o índice escolhido após 30/08/2024</Label>
+            <div className="flex items-center gap-3 pt-1">
+              <Switch checked={manterIndiceContratual} onCheckedChange={setManterIndiceContratual} />
+              <span className="text-sm text-muted-foreground">
+                {manterIndiceContratual
+                  ? "Índice contratual mantido (art. 389, § único, CC — norma supletiva)"
+                  : "Substituir pelo IPCA a partir da vigência da Lei 14.905/2024"}
+              </span>
+            </div>
+          </div>
+        )}
+
         <div className="space-y-2">
           <Label>Multa (%)</Label>
           <Input type="number" step="0.1" placeholder="2" value={multa} onChange={e => setMulta(e.target.value)} />
