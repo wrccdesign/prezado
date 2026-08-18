@@ -15,9 +15,9 @@ function barColor(a: UsageAction) {
   return "bg-primary";
 }
 
-function formatReset(iso: string | undefined) {
+function formatRenewal(iso: string | undefined) {
   if (!iso) return "";
-  return new Date(iso).toLocaleString("pt-BR", { hour: "2-digit", minute: "2-digit" });
+  return new Date(iso).toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit" });
 }
 
 /** Versão compacta usada no menu do avatar. */
@@ -36,8 +36,9 @@ export function UsageSummaryCompact({ onNavigate }: { onNavigate?: () => void })
   return (
     <div className="px-2 py-2">
       <p className="mb-2 text-[11px] font-semibold uppercase tracking-wider text-white/40">
-        Uso de hoje
+        Uso neste mês
       </p>
+
       <ul className="space-y-1.5">
         {data.actions.map((a) => (
           <li key={a.action} className="flex items-center justify-between gap-3 text-xs">
