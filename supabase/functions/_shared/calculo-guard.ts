@@ -1,5 +1,5 @@
 import { requireUser } from "./auth.ts";
-import { checkRateLimit, extractEnv, monthlyLimitMessage } from "./rate-limit.ts";
+import { burstLimitMessage, checkRateLimit, extractEnv, monthlyLimitMessage } from "./rate-limit.ts";
 
 const MENSAGEM_SEM_PLANO: Record<string, string> = {
   calculo: "As calculadoras não estão disponíveis no seu plano.",
@@ -21,7 +21,7 @@ export async function requireQuota(
   const auth = await requireUser(req);
   if (auth instanceof Response) return auth;
 
-  const { allowed, used, limit, plan, renewsAt } = await checkRateLimit(
+  const { allowed, used, limit, plan, renewsAt, burstLimited } = await checkRateLimit(
     auth.userId,
     action,
     Deno.env.get("SUPABASE_URL")!,
@@ -32,14 +32,17 @@ export async function requireQuota(
   if (!allowed) {
     return new Response(
       JSON.stringify({
-        error: limit === 0
+        error: burstLimited
+          ? burstLimitMessage()
+          : limit === 0
           ? MENSAGEM_SEM_PLANO[action] ?? "Este recurso não está disponível no seu plano."
           : monthlyLimitMessage(action, limit, plan),
         used,
         limit,
         plan,
         renews_at: renewsAt,
-        limit_reached: true,
+        limit_reached: !burstLimited,
+        burst_limit: burstLimited === true,
         upgrade_url: "/planos",
       }),
       { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } },
