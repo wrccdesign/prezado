@@ -300,6 +300,19 @@ export default function Conta() {
 
             <UsageSummary />
 
+            <div className="rounded-lg border border-border bg-muted/40 p-4 text-sm text-muted-foreground">
+              <p className="font-medium text-foreground">Mudança nas cotas</p>
+              <p className="mt-1">
+                As cotas deixaram de ser diárias e passaram a ser <strong>mensais</strong>, com
+                volumes bem maiores por mês e renovação no primeiro dia de cada mês (horário de
+                Brasília). Saldo não utilizado não acumula para o mês seguinte. Esta mudança vale
+                a partir de agora; se ela prejudicar seu uso, fale com{" "}
+                <a className="underline" href="mailto:wrccdesign@gmail.com">wrccdesign@gmail.com</a>{" "}
+                nos próximos 30 dias.
+              </p>
+            </div>
+
+
             <Card>
 
               <CardHeader>

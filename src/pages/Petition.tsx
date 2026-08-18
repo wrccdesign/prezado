@@ -77,10 +77,10 @@ export default function Petition() {
       notifyUsageConsumed();
       toast({ title: "Petição gerada com sucesso!" });
     } catch (err: any) {
-      const isLimitReached = err?.message?.includes("Limite diário") || err?.context?.status === 429;
+      const isLimitReached = err?.message?.includes("Limite mensal") || err?.message?.includes("limite mensal") || err?.context?.status === 429;
       if (isLimitReached || (err?.status === 429)) {
         toast({
-          title: "Limite diário atingido",
+          title: "Limite mensal atingido",
           description: err.message || "Você atingiu o limite de petições do plano gratuito.",
           variant: "destructive",
           action: (

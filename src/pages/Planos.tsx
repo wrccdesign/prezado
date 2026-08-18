@@ -23,13 +23,13 @@ interface PlanFeature {
 }
 
 const features: PlanFeature[] = [
-  { label: "Buscas de jurisprudência / dia", free: 5, profissional: 50, escritorio: 200 },
-  { label: "Mensagens no Chat / dia", free: 3, profissional: 30, escritorio: 100 },
-  { label: "Diagnósticos jurídicos / dia", free: 2, profissional: 15, escritorio: 50 },
-  { label: "Análises de documentos / dia", free: 3, profissional: 30, escritorio: 100 },
-  { label: "Leituras/OCR de documentos / dia", free: 5, profissional: 50, escritorio: 150 },
-  { label: "Cálculos jurídicos / dia", free: 10, profissional: 100, escritorio: 300 },
-  { label: "Petições geradas / dia", free: 0, profissional: 10, escritorio: 30 },
+  { label: "Buscas de jurisprudência / mês", free: 20, profissional: 500, escritorio: 2000 },
+  { label: "Mensagens no Chat / mês", free: 10, profissional: 300, escritorio: 1000 },
+  { label: "Diagnósticos jurídicos / mês", free: 1, profissional: 60, escritorio: 200 },
+  { label: "Análises de documentos / mês", free: 3, profissional: 100, escritorio: 400 },
+  { label: "Leituras/OCR de documentos / mês", free: 5, profissional: 200, escritorio: 800 },
+  { label: "Cálculos jurídicos / mês", free: 5, profissional: 300, escritorio: 1000 },
+  { label: "Petições geradas / mês", free: 0, profissional: 60, escritorio: 200 },
   {
     label: "Calculadoras (prazo, correção, rescisão, pensão, datas, CPF/CNPJ)",
     free: "✓",
@@ -42,6 +42,7 @@ const features: PlanFeature[] = [
   { label: "Histórico de consultas", free: "✓", profissional: "✓", escritorio: "✓" },
   { label: "Painel do advogado (clientes, petições, modelos)", free: "—", profissional: "✓", escritorio: "✓" },
 ];
+
 
 
 type BillingCycle = "mensal" | "anual";
@@ -195,7 +196,12 @@ export default function Planos() {
           </h1>
           <p className="text-muted-foreground max-w-2xl mx-auto">
             Comece gratuitamente e evolua conforme sua necessidade. Todos os planos incluem acesso às calculadoras e busca pública.
+            As cotas são mensais e renovam no primeiro dia de cada mês.
           </p>
+          <p className="mt-3 text-sm font-medium text-accent">
+            Toda conta nova começa com 7 dias grátis no plano Profissional — sem cartão.
+          </p>
+
         </div>
 
         {isPastDue && (

@@ -5,21 +5,27 @@ import { useAuth } from "@/contexts/AuthContext";
 import { getPaymentEnvironmentSafe } from "@/lib/stripe";
 
 export type PlanId = "free" | "profissional" | "escritorio";
+export type AccessType = "recurring" | "one_time" | "trial";
 
 export interface Subscription {
   plan_id: PlanId;
   status: string;
   current_period_end: string | null;
   cancel_at_period_end: boolean;
-  access_type: "recurring" | "one_time" | null;
+  access_type: AccessType | null;
   access_expires_at: string | null;
 }
 
 const TIER_RANK: Record<string, number> = { escritorio: 2, profissional: 1, free: 0 };
 
+function isDatedAccess(row: Subscription) {
+  const type = row.access_type ?? "recurring";
+  return type === "one_time" || type === "trial";
+}
+
 function isActiveRow(row: Subscription): boolean {
   if (row.plan_id === "free") return false;
-  if ((row.access_type ?? "recurring") === "one_time") {
+  if (isDatedAccess(row)) {
     return !!row.access_expires_at && new Date(row.access_expires_at) > new Date();
   }
   const notExpired = !row.current_period_end || new Date(row.current_period_end) > new Date();
@@ -33,10 +39,10 @@ export function useSubscription() {
   const env = getPaymentEnvironmentSafe();
   const queryClient = useQueryClient();
 
-  const { data: subscription, isLoading } = useQuery({
+  const { data: rows, isLoading } = useQuery({
     queryKey: ["subscription", user?.id, env],
     queryFn: async () => {
-      if (!user) return null;
+      if (!user) return [] as Subscription[];
       const { data, error } = await supabase
         .from("subscriptions")
         .select(
@@ -48,15 +54,9 @@ export function useSubscription() {
 
       if (error) {
         console.error("Error fetching subscription:", error);
-        return null;
+        return [] as Subscription[];
       }
-      const rows = (data ?? []) as Subscription[];
-      // A user can hold several rows (seeded free row, monthly subscription,
-      // annual upfront access). The highest active tier wins.
-      const active = rows
-        .filter(isActiveRow)
-        .sort((a, b) => (TIER_RANK[b.plan_id] ?? 0) - (TIER_RANK[a.plan_id] ?? 0));
-      return active[0] ?? rows[0] ?? null;
+      return (data ?? []) as Subscription[];
     },
     enabled: !!user,
   });
@@ -69,11 +69,28 @@ export function useSubscription() {
     return () => window.removeEventListener("refetch-subscription", handler);
   }, [queryClient]);
 
-  const raw = subscription;
-  const hasAccess = !!raw && isActiveRow(raw);
+  const all = rows ?? [];
+  // A user can hold several rows (seeded free row, trial, monthly
+  // subscription, annual upfront access). The highest active tier wins.
+  const active = all
+    .filter(isActiveRow)
+    .sort((a, b) => (TIER_RANK[b.plan_id] ?? 0) - (TIER_RANK[a.plan_id] ?? 0));
+  const raw = active[0] ?? all[0] ?? null;
+  const hasAccess = active.length > 0;
 
-  const planId: PlanId = hasAccess ? (raw!.plan_id as PlanId) : "free";
+  const planId: PlanId = hasAccess ? (active[0].plan_id as PlanId) : "free";
 
+  const trialRow = all.find((r) => r.access_type === "trial") ?? null;
+  const trialActive = !!trialRow && isActiveRow(trialRow);
+  // Só é "trial puro" quando não há assinatura paga por trás.
+  const paidActive = active.some((r) => r.access_type !== "trial");
+  const trialEndsAt = trialActive ? trialRow!.access_expires_at : null;
+  const trialDaysLeft = trialEndsAt
+    ? Math.max(
+        0,
+        Math.ceil((new Date(trialEndsAt).getTime() - Date.now()) / 86_400_000),
+      )
+    : 0;
 
   return {
     subscription: raw,
@@ -81,5 +98,9 @@ export function useSubscription() {
     isLoading,
     isPro: planId === "profissional" || planId === "escritorio",
     isEscritorio: planId === "escritorio",
+    isTrial: trialActive && !paidActive,
+    trialEndsAt,
+    trialDaysLeft,
+    hadTrial: !!trialRow,
   };
 }

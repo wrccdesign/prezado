@@ -29,7 +29,7 @@ export default function Privacidade() {
         <li><strong>Cadastro:</strong> e‑mail, nome, senha (armazenada com <em>hash</em>), perfil (cidadão ou advogado).</li>
         <li><strong>Perfil de advogado (opcional):</strong> número e UF da OAB, nome do escritório, endereço, telefone, e‑mail do escritório, logo.</li>
         <li><strong>Conteúdo enviado:</strong> descrições de situações, fatos e pedidos de petição, mensagens de chat, documentos carregados para análise.</li>
-        <li><strong>Dados de uso:</strong> páginas visitadas, ações realizadas, contadores de uso diário por funcionalidade, data e hora de acesso, endereço IP, tipo de navegador/dispositivo.</li>
+        <li><strong>Dados de uso:</strong> páginas visitadas, ações realizadas, contadores de uso mensal por funcionalidade, data e hora de acesso, endereço IP, tipo de navegador/dispositivo.</li>
         <li><strong>Dados de pagamento:</strong> os dados de cartão são coletados e processados diretamente pela Stripe (provedor certificado PCI-DSS); o Honorífico recebe apenas identificadores de transação, status da assinatura, plano contratado e e-mail do pagador.</li>
         <li><strong>Cookies estritamente necessários</strong> para autenticação e funcionamento do Serviço.</li>
       </ul>
