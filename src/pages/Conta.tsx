@@ -130,7 +130,13 @@ export default function Conta() {
 
   const sub = data?.subscription ?? null;
   const planId = data?.plan_id ?? "free";
+  const isOneTime = sub?.access_type === "one_time";
   const isPastDue = sub?.status === "past_due";
+  const daysLeft = isOneTime && sub?.access_expires_at
+    ? Math.ceil((new Date(sub.access_expires_at).getTime() - Date.now()) / 86400000)
+    : null;
+  const expiryWarning = daysLeft !== null && daysLeft <= 30;
+
 
   return (
     <div className="flex min-h-screen flex-col bg-background">
