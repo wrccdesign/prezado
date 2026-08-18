@@ -178,7 +178,9 @@ export function AppHeader() {
   );
 
   return (
+    <>
     <header className="sticky top-0 z-50 bg-navy border-b border-gold/20">
+
       <div className="container flex h-14 sm:h-16 items-center justify-between px-4">
         <button onClick={() => navigate("/")} className="flex items-center flex-shrink-0">
           <Logo className="h-8 sm:h-9" />
