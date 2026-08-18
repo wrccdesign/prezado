@@ -1,4 +1,4 @@
-export type PaddleEnv = "sandbox" | "live";
+export type PaymentEnv = "sandbox" | "live";
 
 /**
  * Resolve the payment environment SERVER-SIDE.
@@ -8,7 +8,7 @@ export type PaddleEnv = "sandbox" | "live";
  * derive the environment from the request Origin/Referer instead: only the
  * Lovable preview and local dev map to sandbox, everything else is live.
  */
-export function resolvePaymentEnv(req: Request): PaddleEnv {
+export function resolvePaymentEnv(req: Request): PaymentEnv {
   const raw = req.headers.get("origin") || req.headers.get("referer") || "";
   let host = "";
   try {

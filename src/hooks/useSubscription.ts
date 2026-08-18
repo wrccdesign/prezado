@@ -2,7 +2,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
-import { getPaddleEnvironment } from "@/lib/paddle";
+import { getPaymentEnvironmentSafe } from "@/lib/stripe";
 
 export type PlanId = "free" | "profissional" | "escritorio";
 
@@ -15,7 +15,7 @@ export interface Subscription {
 
 export function useSubscription() {
   const { user } = useAuth();
-  const env = getPaddleEnvironment();
+  const env = getPaymentEnvironmentSafe();
   const queryClient = useQueryClient();
 
   const { data: subscription, isLoading } = useQuery({
@@ -34,13 +34,12 @@ export function useSubscription() {
         return null;
       }
       const rows = (data ?? []) as Subscription[];
-      // A user can hold several rows (seeded free row + one per Paddle
+      // A user can hold several rows (seeded free row + one per paid
       // subscription). Prefer the most recent paid one, else the free row.
       return rows.find((r) => r.plan_id !== "free") ?? rows[0] ?? null;
     },
     enabled: !!user,
   });
-
 
   // After checkout success, /planos dispatches this event a few times
   // to bridge the webhook delay.

@@ -71,7 +71,7 @@ export function AppFooter() {
               Inteligência Artificial Jurídica Brasileira. Ferramentas de análise, petições e consultoria com IA para advogados e cidadãos.
             </p>
             <p className="text-xs text-white/30 mt-3 leading-relaxed">
-              Pagamentos processados por <strong className="text-white/50">Paddle.com</strong> (Merchant of Record).
+              Pagamentos processados com segurança via <strong className="text-white/50">Stripe</strong>.
             </p>
           </div>
         </div>

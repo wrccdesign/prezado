@@ -50,17 +50,16 @@ export default function Termos() {
 
       <h2>4. Planos, pagamento e assinatura</h2>
       <p>
-        O processamento de pagamentos, faturamento, cobrança de impostos e suporte a transações são conduzidos
-        pelo nosso revendedor <strong>Paddle.com Market Limited</strong>, que atua como <em>Merchant of
-        Record</em> (MoR) para todos os pedidos. Nosso processo de pedido é conduzido pelo revendedor
-        online Paddle.com. A Paddle.com é o <em>Merchant of Record</em> para todos os nossos pedidos e presta
-        atendimento ao cliente e trata de devoluções.
+        As assinaturas são vendidas diretamente pela <strong>Wrcc Design</strong> (CNPJ 15.236.018/0001-64),
+        responsável pelo faturamento e pelo atendimento ao cliente. O processamento dos pagamentos com cartão
+        é realizado pela <strong>Stripe</strong>, provedor certificado PCI-DSS; não armazenamos dados completos
+        de cartão em nossos servidores.
       </p>
       <p>
-        As condições comerciais completas de pagamento, cancelamento e reembolso estão disponíveis nos
-        <a href="https://www.paddle.com/legal/checkout-buyer-terms" target="_blank" rel="noopener noreferrer"> Termos
-        do Comprador da Paddle</a>. Assinaturas são renovadas automaticamente conforme a periodicidade
-        contratada até o cancelamento, que pode ser feito a qualquer momento pelo portal do cliente.
+        As condições comerciais completas de pagamento, cancelamento e reembolso estão descritas na nossa
+        <a href="/reembolso">Política de Reembolso</a>. Assinaturas são renovadas automaticamente conforme a
+        periodicidade contratada até o cancelamento, que pode ser feito a qualquer momento em
+        <a href="/conta">Minha conta</a>.
       </p>
 
       <h2>5. Uso aceitável</h2>
@@ -139,7 +138,7 @@ export default function Termos() {
       <h2>13. Contato</h2>
       <p>
         Dúvidas sobre estes Termos: <a href="mailto:contato@honorifico.com.br">contato@honorifico.com.br</a>.
-        Questões sobre pagamento, fatura ou reembolso: consulte <a href="https://paddle.net" target="_blank" rel="noopener noreferrer">paddle.net</a>.
+        Questões sobre pagamento, fatura ou reembolso: <a href="mailto:contato@honorifico.com.br">contato@honorifico.com.br</a>.
       </p>
     </LegalPageLayout>
   );

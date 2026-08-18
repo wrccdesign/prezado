@@ -10,7 +10,8 @@ import { Badge } from "@/components/ui/badge";
 import { Check, X, Loader2, Crown, Building2, User } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useSubscription, type PlanId } from "@/hooks/useSubscription";
-import { usePaddleCheckout } from "@/hooks/usePaddleCheckout";
+import { useStripeCheckout } from "@/hooks/useStripeCheckout";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -74,7 +75,7 @@ export default function Planos() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { planId, isLoading, subscription } = useSubscription();
-  const { openCheckout, loading: checkoutLoading } = usePaddleCheckout();
+  const { openCheckout, closeCheckout, isOpen, checkoutElement } = useStripeCheckout();
   const hasPaidPlan = planId !== "free";
   const [changingPlan, setChangingPlan] = useState<PlanId | null>(null);
   const isPastDue = subscription?.status === "past_due";
@@ -84,11 +85,9 @@ export default function Planos() {
     if (searchParams.get("checkout") === "success") {
       toast.success("Pagamento realizado! Ativando seu plano...");
       // Webhook can take a few seconds — poll the subscription query.
-      const key = ["subscription", user?.id];
       let attempts = 0;
-      const interval = setInterval(async () => {
+      const interval = setInterval(() => {
         attempts++;
-        // Invalidate via reload of the query — simplest without importing queryClient here
         window.dispatchEvent(new Event("refetch-subscription"));
         if (attempts >= 6) clearInterval(interval);
       }, 2000);
@@ -111,7 +110,7 @@ export default function Planos() {
     if (hasPaidPlan) {
       setChangingPlan(plan.id);
       try {
-        const { data, error } = await supabase.functions.invoke("paddle-account", {
+        const { data, error } = await supabase.functions.invoke("billing-account", {
           body: { action: "change-plan", priceId: plan.priceId },
         });
         if (error) throw new Error(error.message);
@@ -127,11 +126,9 @@ export default function Planos() {
     }
 
     try {
-      await openCheckout({
+      openCheckout({
         priceId: plan.priceId,
-        customerEmail: user.email,
-        customData: { userId: user.id },
-        successUrl: `${window.location.origin}/planos?checkout=success`,
+        returnUrl: `${window.location.origin}/planos?checkout=success&session_id={CHECKOUT_SESSION_ID}`,
       });
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : "Erro desconhecido";
@@ -260,12 +257,9 @@ export default function Planos() {
                   ) : (
                     <Button
                       className={`w-full ${plan.popular ? "bg-accent text-accent-foreground hover:bg-accent/90" : ""}`}
-                      disabled={checkoutLoading || isLoading}
+                      disabled={isLoading}
                       onClick={() => handleSubscribe(plan)}
                     >
-                      {checkoutLoading ? (
-                        <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                      ) : null}
                       Assinar {plan.name}
                     </Button>
                   )}
@@ -280,6 +274,15 @@ export default function Planos() {
           <p>Limites são renovados diariamente à meia-noite (horário de Brasília).</p>
         </div>
       </main>
+
+      <Dialog open={isOpen} onOpenChange={(open) => !open && closeCheckout()}>
+        <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="font-heading">Finalizar assinatura</DialogTitle>
+          </DialogHeader>
+          {checkoutElement}
+        </DialogContent>
+      </Dialog>
 
       <AppFooter />
     </div>

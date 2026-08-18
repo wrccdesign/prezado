@@ -83,7 +83,7 @@ export default function Conta() {
     queryKey: ["account-summary", user?.id],
     enabled: !!user,
     queryFn: async () => {
-      const { data, error } = await supabase.functions.invoke("paddle-account", {
+      const { data, error } = await supabase.functions.invoke("billing-account", {
         body: { action: "summary" },
       });
       if (error) throw new Error(error.message);
@@ -94,7 +94,7 @@ export default function Conta() {
   const run = async (action: string, payload: Record<string, unknown> = {}) => {
     setBusy(action);
     try {
-      const { data, error } = await supabase.functions.invoke("paddle-account", {
+      const { data, error } = await supabase.functions.invoke("billing-account", {
         body: { action, ...payload },
       });
       if (error) throw new Error(error.message);
@@ -112,7 +112,7 @@ export default function Conta() {
   const openPortal = async () => {
     setBusy("portal");
     try {
-      const { data, error } = await supabase.functions.invoke("paddle-customer-portal");
+      const { data, error } = await supabase.functions.invoke("create-portal-session", { body: {} });
       if (error || !data?.url) throw new Error(data?.error || "Portal indisponível");
       window.open(data.url, "_blank", "noopener");
     } catch (err) {
