@@ -73,6 +73,7 @@ export function CorrecaoCalc() {
   const [dataFinal, setDataFinal] = useState("");
   const [indice, setIndice] = useState("ipca");
   const [proRata, setProRata] = useState(true);
+  const [manterIndiceContratual, setManterIndiceContratual] = useState(false);
   const [regimeJuros, setRegimeJuros] = useState("legal_14905");
   const [tipoJuros, setTipoJuros] = useState("simples");
   const [taxaFixa, setTaxaFixa] = useState("1");
@@ -102,6 +103,7 @@ export function CorrecaoCalc() {
           data_final: dataFinal,
           indice,
           pro_rata: proRata,
+          manter_indice_contratual: manterIndiceContratual,
           regime_juros: regimeJuros,
           tipo_juros: tipoJuros,
           taxa_juros_mensal: parseFloat(taxaFixa) || 0,
@@ -113,9 +115,18 @@ export function CorrecaoCalc() {
           honorarios_percentual: parseFloat(honorarios) || 0,
         },
       });
-      if (error) throw error;
+      if (error) {
+        const info = await readFunctionError(error, "Falha ao calcular");
+        toast({
+          title: info.limitReached ? "Limite diário atingido" : "Erro no cálculo",
+          description: info.message,
+          variant: "destructive",
+        });
+        return;
+      }
       if ((data as { error?: string })?.error) throw new Error((data as { error: string }).error);
       setResult(data as Resultado);
+      notifyUsageConsumed();
     } catch (e) {
       const msg = e instanceof Error ? e.message : "Falha ao calcular";
       toast({ title: "Erro no cálculo", description: msg, variant: "destructive" });
@@ -123,6 +134,7 @@ export function CorrecaoCalc() {
       setLoading(false);
     }
   };
+
 
   const buildSections = (r: Resultado): ExportSection[] => [
     {
