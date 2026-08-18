@@ -11,14 +11,14 @@ export default function Reembolso() {
       <h2>Garantia de satisfação de 30 dias</h2>
       <p>
         Oferecemos uma <strong>garantia de reembolso de 30 dias</strong> a partir da data da compra ou
-        renovação da assinatura. Se você não estiver satisfeito com o Honorífico (serviço operado por Wrcc Design), pode solicitar o reembolso
+        renovação da assinatura. Se você não estiver satisfeito com o Honorífico, pode solicitar o reembolso
         integral do valor pago dentro deste prazo, sem necessidade de justificar.
       </p>
 
       <h2>Como solicitar o reembolso</h2>
       <p>
-        As assinaturas são vendidas pela <strong>Wrcc Design</strong> e os pagamentos são processados com
-        segurança pela <strong>Stripe</strong>. Para solicitar reembolso:
+        As assinaturas são vendidas pelo <strong>Honorífico</strong>, entidade sediada na Irlanda, e os
+        pagamentos são processados com segurança pela <strong>Stripe</strong>. Para solicitar reembolso:
       </p>
       <ol>
         <li>
