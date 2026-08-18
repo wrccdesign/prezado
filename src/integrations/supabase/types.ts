@@ -468,12 +468,15 @@ export type Database = {
       }
       subscriptions: {
         Row: {
+          access_expires_at: string | null
+          access_type: string
           cancel_at_period_end: boolean | null
           created_at: string | null
           current_period_end: string | null
           current_period_start: string | null
           environment: string
           id: string
+          payment_provider_ref: string | null
           plan_id: string
           price_id: string | null
           product_id: string | null
@@ -484,12 +487,15 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          access_expires_at?: string | null
+          access_type?: string
           cancel_at_period_end?: boolean | null
           created_at?: string | null
           current_period_end?: string | null
           current_period_start?: string | null
           environment?: string
           id?: string
+          payment_provider_ref?: string | null
           plan_id?: string
           price_id?: string | null
           product_id?: string | null
@@ -500,12 +506,15 @@ export type Database = {
           user_id: string
         }
         Update: {
+          access_expires_at?: string | null
+          access_type?: string
           cancel_at_period_end?: boolean | null
           created_at?: string | null
           current_period_end?: string | null
           current_period_start?: string | null
           environment?: string
           id?: string
+          payment_provider_ref?: string | null
           plan_id?: string
           price_id?: string | null
           product_id?: string | null
