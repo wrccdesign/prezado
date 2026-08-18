@@ -211,6 +211,42 @@ export default function Planos() {
           </div>
         )}
 
+        <div className="mb-8 flex flex-col items-center gap-2">
+          <div className="inline-flex rounded-lg border border-border bg-muted/40 p-1">
+            <button
+              type="button"
+              onClick={() => setCycle("mensal")}
+              className={`rounded-md px-4 py-2 text-sm font-medium transition-colors ${
+                cycle === "mensal" ? "bg-background text-foreground shadow-sm" : "text-muted-foreground"
+              }`}
+            >
+              Mensal
+            </button>
+            <button
+              type="button"
+              onClick={() => setCycle("anual")}
+              className={`rounded-md px-4 py-2 text-sm font-medium transition-colors ${
+                cycle === "anual" ? "bg-background text-foreground shadow-sm" : "text-muted-foreground"
+              }`}
+            >
+              Anual
+              <span className="ml-2 rounded bg-accent px-1.5 py-0.5 text-[10px] font-semibold text-accent-foreground">
+                -30%
+              </span>
+            </button>
+          </div>
+          {cycle === "anual" && (
+            <p className="text-xs text-muted-foreground text-center max-w-md">
+              Pagamento único de 12 meses, à vista no Pix ou cartão. Sem renovação automática.
+            </p>
+          )}
+          {cycle === "anual" && creditCents !== null && creditCents > 0 && (
+            <p className="text-xs font-medium text-accent text-center">
+              Crédito de {(creditCents / 100).toLocaleString("pt-BR", { style: "currency", currency: "BRL" })} pelo
+              período não usado da sua assinatura mensal será aplicado no checkout.
+            </p>
+          )}
+        </div>
 
 
         <div className="grid md:grid-cols-3 gap-6 mb-12">
