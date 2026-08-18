@@ -74,12 +74,17 @@ Deno.serve(async (req) => {
       plan,
       environment: env,
       resets_at: resets.toISOString(),
-      actions: Object.keys(limits).map((action) => ({
-        action,
-        label: ACTION_LABELS[action] ?? action,
-        used: Math.min(counts[action] ?? 0, limits[action]),
-        limit: limits[action],
-      })),
+      // `diagnostico_completo_free` é o teaser interno do paywall, não é um
+      // benefício anunciado — fica fora do painel de uso.
+      actions: Object.keys(limits)
+        .filter((action) => action !== "diagnostico_completo_free")
+        .map((action) => ({
+          action,
+          label: ACTION_LABELS[action] ?? action,
+          used: Math.min(counts[action] ?? 0, limits[action]),
+          limit: limits[action],
+        })),
+
     });
   } catch (e) {
     console.error("usage-summary error:", e);
