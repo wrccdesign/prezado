@@ -339,6 +339,14 @@ export default function Planos() {
                     >
                       {isCurrent ? "Plano atual" : user ? "Plano atual" : "Criar conta grátis"}
                     </Button>
+                  ) : cycle === "anual" && plan.annualPriceId ? (
+                    <Button
+                      className={`w-full ${plan.popular ? "bg-accent text-accent-foreground hover:bg-accent/90" : ""}`}
+                      disabled={isLoading}
+                      onClick={() => handleSubscribe(plan)}
+                    >
+                      {isCurrent ? `Migrar para o anual` : `Assinar ${plan.name} anual`}
+                    </Button>
                   ) : isCurrent ? (
                     <Button variant="outline" className="w-full" onClick={() => navigate("/conta")}>
                       Gerenciar assinatura
@@ -363,6 +371,7 @@ export default function Planos() {
                       Assinar {plan.name}
                     </Button>
                   )}
+
                 </CardContent>
               </Card>
             );
