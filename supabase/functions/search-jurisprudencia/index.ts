@@ -2,7 +2,7 @@ import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { requireUser } from "../_shared/auth.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { generateQueryEmbedding } from "../_shared/embeddings.ts";
-import { checkRateLimit, extractEnv } from "../_shared/rate-limit.ts";
+import { checkRateLimit, extractEnv, monthlyLimitMessage } from "../_shared/rate-limit.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -59,11 +59,11 @@ serve(async (req) => {
       const { data: { user } } = await supa.auth.getUser(token);
       if (user) {
         const env = extractEnv(req);
-        const { allowed, used, limit } = await checkRateLimit(user.id, "search", SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, env);
+        const { allowed, used, limit, plan, renewsAt } = await checkRateLimit(user.id, "search", SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, env);
         if (!allowed) {
           return new Response(JSON.stringify({
-            error: `Limite diário de ${limit} buscas atingido. Faça upgrade para continuar.`,
-            limit_reached: true, used, limit,
+            error: monthlyLimitMessage("search", limit, plan),
+            limit_reached: true, used, limit, plan, renews_at: renewsAt, upgrade_url: "/planos",
           }), { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } });
         }
       }
