@@ -1,16 +1,20 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { requireCalculoQuota } from "../_shared/calculo-guard.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type, x-payment-env",
+    "authorization, x-client-info, apikey, content-type, x-payment-env, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
 /** Lei 14.905/2024 — vigência a partir de 30/08/2024. */
 const VIGENCIA_14905 = "2024-08-30";
+/** Mês de transição: regime antigo até 29/08/2024, novo regime em 30 e 31/08/2024. */
+const MES_TRANSICAO = "2024-08-01";
 /** Juros legais de 1% a.m. a partir da vigência do CC/2002. */
 const CC2002 = "2003-01-11";
+
 
 const INDICES_VALIDOS = [
   "ipca",
