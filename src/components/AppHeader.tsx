@@ -15,6 +15,8 @@ import {
 } from "lucide-react";
 import Logo from "@/components/Logo";
 import { UsageSummaryCompact } from "@/components/UsageSummary";
+import { TrialBanner } from "@/components/TrialBanner";
+
 import { useNavigate, useLocation } from "react-router-dom";
 
 interface NavItem {
