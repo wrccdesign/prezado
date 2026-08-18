@@ -30,6 +30,7 @@ const INDICES_VALIDOS = [
 type Indice = typeof INDICES_VALIDOS[number];
 type RegimeJuros = "legal_14905" | "taxa_fixa" | "nenhum";
 type TipoJuros = "simples" | "compostos";
+type Regime = "pre_14905" | "transicao_14905" | "pos_14905";
 
 interface Body {
   valor: number;
@@ -37,6 +38,12 @@ interface Body {
   data_final: string;
   indice: Indice;
   pro_rata?: boolean;
+  /**
+   * Art. 389, parágrafo único, do CC é supletivo ("salvo disposição em
+   * contrário"): quando true, o índice escolhido continua a ser aplicado
+   * também após 30/08/2024, em vez de ser substituído pelo IPCA.
+   */
+  manter_indice_contratual?: boolean;
   regime_juros?: RegimeJuros;
   tipo_juros?: TipoJuros;
   taxa_juros_mensal?: number;
@@ -57,8 +64,9 @@ interface LinhaMemoria {
   saldo_corrigido: number;
   juros_do_mes: number;
   juros_acumulados: number;
-  regime: "pre_14905" | "pos_14905";
+  regime: Regime;
 }
+
 
 function bad(msg: string, status = 400) {
   return new Response(JSON.stringify({ error: msg }), {
