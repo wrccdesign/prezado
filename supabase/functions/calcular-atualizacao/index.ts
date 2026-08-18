@@ -131,6 +131,8 @@ serve(async (req) => {
     return bad("Índice inválido");
   }
   const proRata = body.pro_rata === true;
+  const manterIndiceContratual = body.manter_indice_contratual === true;
+
   const regimeJuros: RegimeJuros = body.regime_juros ?? "legal_14905";
   const tipoJuros: TipoJuros = body.tipo_juros ?? "simples";
   const taxaFixa = Number(body.taxa_juros_mensal ?? 0);
