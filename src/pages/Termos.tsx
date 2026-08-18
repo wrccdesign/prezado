@@ -9,15 +9,14 @@ export default function Termos() {
       updatedAt="10 de julho de 2026"
     >
       <p>
-        Estes Termos e Condições ("Termos") regem o uso da plataforma <strong>Honorífico</strong> ("Serviço"),
-        nome fantasia operado por <strong>Wrcc Design</strong> ("nós", "nosso", "Vendedor"), pessoa jurídica
-        estabelecida no Brasil. Ao contratar um plano ou utilizar o Serviço, você celebra contrato diretamente
-        com a Wrcc Design, titular do Serviço e responsável por sua prestação. Ao acessar, cadastrar-se ou
-        utilizar o Serviço, você declara ter lido, compreendido e concordado com estes Termos. Se você não
-        concorda, não utilize o Serviço.
+        Estes Termos e Condições ("Termos") regem o uso da plataforma <strong>Honorífico</strong> ("Serviço",
+        "nós", "nosso", "Vendedor"), entidade estabelecida na <strong>Irlanda</strong>. Ao contratar um plano
+        ou utilizar o Serviço, você celebra contrato diretamente com o Honorífico, titular do Serviço e
+        responsável por sua prestação. Ao acessar, cadastrar-se ou utilizar o Serviço, você declara ter lido,
+        compreendido e concordado com estes Termos. Se você não concorda, não utilize o Serviço.
       </p>
       <p>
-        <strong>Identificação do Vendedor:</strong> Wrcc Design — nome fantasia "Honorífico". Contato:{" "}
+        <strong>Identificação do Vendedor:</strong> Honorífico — entidade sediada na Irlanda. Contato:{" "}
         <a href="mailto:wrccdesign@gmail.com">wrccdesign@gmail.com</a>.
       </p>
 
