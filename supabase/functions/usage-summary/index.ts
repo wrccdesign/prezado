@@ -53,12 +53,13 @@ Deno.serve(async (req) => {
     const plan = (planData as string) || "free";
     const limits = PLAN_LIMITS[plan] || PLAN_LIMITS.free;
 
-    const today = new Date().toISOString().split("T")[0];
+    // Dia de uso em America/Sao_Paulo, igual ao checkRateLimit.
     const { data: rows } = await admin
       .from("usage_tracking")
       .select("action")
       .eq("user_id", user.id)
-      .gte("created_at", `${today}T00:00:00.000Z`);
+      .gte("created_at", saoPauloDayStart().toISOString())
+      .lt("created_at", saoPauloDayEnd().toISOString());
 
     const counts: Record<string, number> = {};
     for (const row of rows ?? []) {
@@ -66,8 +67,8 @@ Deno.serve(async (req) => {
       counts[action] = (counts[action] ?? 0) + 1;
     }
 
-    const resets = new Date();
-    resets.setUTCHours(24, 0, 0, 0);
+    const resets = saoPauloDayEnd();
+
 
     return json({
       plan,
