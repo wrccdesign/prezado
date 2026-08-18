@@ -22,26 +22,34 @@ export const PLAN_LIMITS: Record<string, Record<string, number>> = {
     calculo: 5,
   },
   profissional: {
-    search: 500,
-    chat: 300,
+    search: 400,
+    chat: 200,
     diagnostico: 60,
     diagnostico_completo_free: 60,
     peticao: 60,
-    analise: 100,
-    documento: 200,
-    calculo: 300,
+    analise: 40,
+    documento: 80,
+    calculo: 150,
   },
   escritorio: {
-    search: 2000,
-    chat: 1000,
+    search: 1500,
+    chat: 800,
     diagnostico: 200,
     diagnostico_completo_free: 200,
     peticao: 200,
-    analise: 400,
-    documento: 800,
-    calculo: 1000,
+    analise: 150,
+    documento: 300,
+    calculo: 500,
   },
 };
+
+/**
+ * Trava anti-abuso: cota mensal sem teto instantâneo permite drenar o mês em
+ * minutos com script. Máximo de chamadas por hora somando TODAS as ações,
+ * igual para todos os planos.
+ */
+export const BURST_LIMIT_PER_HOUR = 30;
+
 
 export type { PaymentEnv };
 
