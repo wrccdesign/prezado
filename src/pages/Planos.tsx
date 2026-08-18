@@ -103,6 +103,8 @@ export default function Planos() {
   const { openCheckout, closeCheckout, isOpen, checkoutElement } = useStripeCheckout();
   const hasPaidPlan = planId !== "free";
   const [changingPlan, setChangingPlan] = useState<PlanId | null>(null);
+  const [cycle, setCycle] = useState<BillingCycle>("mensal");
+  const [creditCents, setCreditCents] = useState<number | null>(null);
   const isPastDue = subscription?.status === "past_due";
 
 
@@ -120,23 +122,40 @@ export default function Planos() {
     }
   }, [searchParams, user?.id]);
 
-
-
+  // Estimate the pro-rata credit from an active monthly subscription.
+  useEffect(() => {
+    if (!user || cycle !== "anual" || !hasPaidPlan) {
+      setCreditCents(null);
+      return;
+    }
+    let cancelled = false;
+    supabase.functions
+      .invoke("billing-account", { body: { action: "credit-estimate", priceId: "profissional_anual" } })
+      .then(({ data }) => {
+        if (!cancelled) setCreditCents((data as { credit_cents?: number })?.credit_cents ?? 0);
+      })
+      .catch(() => setCreditCents(null));
+    return () => {
+      cancelled = true;
+    };
+  }, [user, cycle, hasPaidPlan]);
 
   const handleSubscribe = async (plan: typeof plans[number]) => {
     if (!user) {
       navigate("/auth", { state: { redirectTo: "/planos" } });
       return;
     }
-    if (!plan.priceId) return;
+    const annual = cycle === "anual" && !!plan.annualPriceId;
+    const priceId = annual ? plan.annualPriceId! : plan.priceId;
+    if (!priceId) return;
 
-    // Already paying: change the existing subscription in-app instead of
-    // opening a second checkout.
-    if (hasPaidPlan) {
+    // Already on a recurring plan and staying monthly: change the existing
+    // subscription in-app instead of opening a second checkout.
+    if (hasPaidPlan && !annual) {
       setChangingPlan(plan.id);
       try {
         const { data, error } = await supabase.functions.invoke("billing-account", {
-          body: { action: "change-plan", priceId: plan.priceId },
+          body: { action: "change-plan", priceId },
         });
         if (error) throw new Error(error.message);
         if ((data as { error?: string })?.error) throw new Error((data as { error: string }).error);
@@ -152,7 +171,7 @@ export default function Planos() {
 
     try {
       openCheckout({
-        priceId: plan.priceId,
+        priceId,
         returnUrl: `${window.location.origin}/planos?checkout=success&session_id={CHECKOUT_SESSION_ID}`,
       });
     } catch (err: unknown) {
@@ -160,6 +179,7 @@ export default function Planos() {
       toast.error("Erro ao iniciar checkout: " + message);
     }
   };
+
 
 
   return (
