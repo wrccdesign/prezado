@@ -13,7 +13,10 @@ export interface UsageAction {
 export interface UsageSummaryData {
   plan: "free" | "profissional" | "escritorio";
   environment: "sandbox" | "live";
-  resets_at: string;
+  /** Início do mês-calendário (America/Sao_Paulo). */
+  period_start: string;
+  /** Primeiro dia do mês seguinte — quando as cotas renovam. */
+  renews_at: string;
   actions: UsageAction[];
 }
 
