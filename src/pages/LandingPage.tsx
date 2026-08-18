@@ -262,14 +262,18 @@ export default function LandingPage() {
               <p className="text-lg text-white/60 max-w-[480px] mb-8 font-sans">
                 Encontre jurisprudência de qualquer tribunal do Brasil — inclusive do interior — com busca semântica que entende o direito, não só palavras.
               </p>
-              <div className="flex flex-wrap gap-3 mb-10">
+              <div className="flex flex-wrap gap-3 mb-4">
                 <Button size="lg" className="bg-gold text-navy hover:bg-gold-light font-semibold text-base px-8" asChild>
-                  <Link to="/auth">Começar Gratuitamente <ArrowRight className="ml-2 h-5 w-5" /></Link>
+                  <Link to="/auth">Começar com 7 dias grátis <ArrowRight className="ml-2 h-5 w-5" /></Link>
                 </Button>
                 <Button size="lg" className="bg-transparent border border-white/20 text-white hover:bg-white/10 text-base" asChild>
                   <a href="#funcionalidades">Ver Funcionalidades</a>
                 </Button>
               </div>
+              <p className="mb-10 text-sm text-white/50">
+                Toda conta nova começa com 7 dias no plano Profissional — sem cartão.
+              </p>
+
               <div className="flex gap-8 text-sm">
                 {[{ value: "27", label: "Tribunais cobertos" }, { value: "5k+", label: "Decisões indexadas" }, { value: "100%", label: "Dados públicos oficiais" }].map((s) => (
                   <div key={s.label}>
