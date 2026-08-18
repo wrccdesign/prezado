@@ -2,6 +2,7 @@ import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { requireUser } from "../_shared/auth.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { generateEmbedding } from "../_shared/embeddings.ts";
+import { aiChatTool } from "../_shared/ai.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -152,8 +153,8 @@ serve(async (req) => {
       });
     }
 
-    const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
-    if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY not configured");
+
+
 
     const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
     const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
@@ -237,47 +238,28 @@ serve(async (req) => {
         const rawText = rawParts.join("\n");
 
         // Step 3: AI metadata extraction via tool calling
-        const aiResponse = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${LOVABLE_API_KEY}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            model: "google/gemini-3-flash-preview",
+        let metadata: any = null;
+        try {
+          metadata = await aiChatTool<any>({
+            model: "light",
+            functionName: "ingest-datajud",
             messages: [
               { role: "system", content: EXTRACTION_SYSTEM_PROMPT },
               { role: "user", content: `Extraia os metadados desta decisão judicial:\n\n${rawText}` },
             ],
             tools: [EXTRACTION_TOOL],
             tool_choice: { type: "function", function: { name: "extract_metadata" } },
-          }),
-        });
-
-        if (!aiResponse.ok) {
-          const status = aiResponse.status;
-          if (status === 429) {
-            errors.push(`Rate limited na extração do processo ${numeroProcesso || externalId}`);
-            continue;
-          }
-          errors.push(`AI error ${status} para ${numeroProcesso || externalId}`);
+          });
+        } catch (e) {
+          errors.push(`AI error para ${numeroProcesso || externalId}: ${e instanceof Error ? e.message : e}`);
           continue;
         }
 
-        const aiResult = await aiResponse.json();
-        const toolCall = aiResult.choices?.[0]?.message?.tool_calls?.[0];
-        if (!toolCall?.function?.arguments) {
-          errors.push(`AI não retornou tool call para ${numeroProcesso || externalId}`);
+        if (!metadata) {
+          errors.push(`AI não retornou metadados para ${numeroProcesso || externalId}`);
           continue;
         }
 
-        let metadata: any;
-        try {
-          metadata = JSON.parse(toolCall.function.arguments);
-        } catch {
-          errors.push(`JSON inválido da AI para ${numeroProcesso || externalId}`);
-          continue;
-        }
 
         // Step 4: Upsert into decisions table (ON CONFLICT numero_processo)
         const decisionData = buildDecisionData(metadata, source, tribunal, externalId);

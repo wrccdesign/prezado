@@ -69,19 +69,17 @@ Baseie-se SEMPRE em legislação brasileira vigente:
 ## FORMATO
 Use a ferramenta diagnostico_juridico para estruturar a resposta.${groundingBlock}`;
 
-    const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${LOVABLE_API_KEY}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        model: "google/gemini-3-flash-preview",
-        messages: [
-          { role: "system", content: systemPrompt },
-          { role: "user", content: `Minha situação: ${situacao.trim().slice(0, 5000)}` },
-        ],
-        tools: [
+    const diagnostico = await aiChatTool<any>({
+      model: "main",
+      functionName: "diagnostico-juridico",
+      userId: user.id,
+      environment: env,
+      messages: [
+        { role: "system", content: systemPrompt },
+        { role: "user", content: `Minha situação: ${situacao.trim().slice(0, 5000)}` },
+      ],
+      tools: [
+
           {
             type: "function",
             function: {
@@ -138,42 +136,21 @@ Use a ferramenta diagnostico_juridico para estruturar a resposta.${groundingBloc
               }
             }
           }
-        ],
-        tool_choice: { type: "function", function: { name: "diagnostico_juridico" } },
-      }),
+      ],
+      tool_choice: { type: "function", function: { name: "diagnostico_juridico" } },
     });
 
-    if (!response.ok) {
-      const status = response.status;
-      if (status === 429) {
-        return new Response(JSON.stringify({ error: "Muitas solicitações. Aguarde um momento e tente novamente." }), {
-          status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
-      }
-      if (status === 402) {
-        return new Response(JSON.stringify({ error: "Serviço temporariamente indisponível." }), {
-          status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
-      }
-      const errText = await response.text();
-      console.error("AI gateway error:", status, errText);
-      throw new Error("Erro ao processar diagnóstico");
-    }
-
-    const aiData = await response.json();
-    const toolCall = aiData.choices?.[0]?.message?.tool_calls?.[0];
-    if (!toolCall) throw new Error("Não foi possível gerar o diagnóstico");
-
-    const diagnostico = JSON.parse(toolCall.function.arguments);
+    if (!diagnostico) throw new Error("Não foi possível gerar o diagnóstico");
 
     return new Response(JSON.stringify({ diagnostico, citations: grounding }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } catch (e) {
     console.error("diagnostico-juridico error:", e);
+    const status = e instanceof AIError ? e.status : 500;
     return new Response(
       JSON.stringify({ error: e instanceof Error ? e.message : "Erro desconhecido" }),
-      { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      { status, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   }
 });
