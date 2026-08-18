@@ -22,26 +22,34 @@ export const PLAN_LIMITS: Record<string, Record<string, number>> = {
     calculo: 5,
   },
   profissional: {
-    search: 500,
-    chat: 300,
+    search: 400,
+    chat: 200,
     diagnostico: 60,
     diagnostico_completo_free: 60,
     peticao: 60,
-    analise: 100,
-    documento: 200,
-    calculo: 300,
+    analise: 40,
+    documento: 80,
+    calculo: 150,
   },
   escritorio: {
-    search: 2000,
-    chat: 1000,
+    search: 1500,
+    chat: 800,
     diagnostico: 200,
     diagnostico_completo_free: 200,
     peticao: 200,
-    analise: 400,
-    documento: 800,
-    calculo: 1000,
+    analise: 150,
+    documento: 300,
+    calculo: 500,
   },
 };
+
+/**
+ * Trava anti-abuso: cota mensal sem teto instantâneo permite drenar o mês em
+ * minutos com script. Máximo de chamadas por hora somando TODAS as ações,
+ * igual para todos os planos.
+ */
+export const BURST_LIMIT_PER_HOUR = 30;
+
 
 export type { PaymentEnv };
 
@@ -91,6 +99,7 @@ export async function checkRateLimit(
   plan: string;
   renewsAt: string;
   unknownAction?: boolean;
+  burstLimited?: boolean;
 }> {
   const supabase = createClient(supabaseUrl, supabaseServiceKey);
   const renewsAt = saoPauloMonthEnd().toISOString();
@@ -113,6 +122,19 @@ export async function checkRateLimit(
   if (limit === 0) {
     return { allowed: false, used: 0, limit: 0, plan, renewsAt };
   }
+
+  // Trava de rajada antes da cota mensal: todas as ações da última hora.
+  const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000).toISOString();
+  const { count: burstCount } = await supabase
+    .from("usage_tracking")
+    .select("*", { count: "exact", head: true })
+    .eq("user_id", userId)
+    .gte("created_at", oneHourAgo);
+
+  if ((burstCount ?? 0) >= BURST_LIMIT_PER_HOUR) {
+    return { allowed: false, used: 0, limit, plan, renewsAt, burstLimited: true };
+  }
+
 
   const { count } = await supabase
     .from("usage_tracking")
@@ -150,5 +172,17 @@ export function monthlyLimitMessage(action: string, limit: number, plan: string)
     return "Este recurso não está disponível no seu plano. Faça upgrade em /planos para liberar.";
   }
   const noun = ACTION_NOUNS[action] ?? "usos";
-  return `Você usou suas ${limit} ${noun} deste mês (plano ${plan}). O limite renova em ${formatRenewal()}. Faça upgrade em /planos para continuar agora.`;
+  const upgradePlan = plan === "profissional" ? "escritorio" : "profissional";
+  const upgradeLabel = upgradePlan === "escritorio" ? "Escritório" : "Profissional";
+  const upgradeLimit = PLAN_LIMITS[upgradePlan]?.[action];
+  const upgradeHint = plan === "escritorio" || upgradeLimit === undefined || upgradeLimit <= limit
+    ? ""
+    : ` O plano ${upgradeLabel} libera ${upgradeLimit} ${noun} por mês — veja em /planos.`;
+  return `Você usou suas ${limit} ${noun} deste mês (plano ${plan}). O limite renova em ${formatRenewal()}.${upgradeHint}`;
 }
+
+/** Mensagem da trava de rajada — situação diferente de cota mensal esgotada. */
+export function burstLimitMessage(): string {
+  return `Muitas requisições em pouco tempo (limite de ${BURST_LIMIT_PER_HOUR} por hora). Aguarde alguns minutos — sua cota mensal continua disponível.`;
+}
+

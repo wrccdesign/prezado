@@ -5,7 +5,10 @@
  */
 export interface LimitErrorInfo {
   message: string;
+  /** Cota mensal do plano esgotada — vale oferecer upgrade. */
   limitReached: boolean;
+  /** Trava de rajada (muitas chamadas por hora) — não é problema de plano. */
+  burstLimited: boolean;
 }
 
 export async function readFunctionError(error: unknown, fallback: string): Promise<LimitErrorInfo> {
@@ -13,14 +16,16 @@ export async function readFunctionError(error: unknown, fallback: string): Promi
   if (context && typeof context.json === "function") {
     try {
       const body = await context.clone().json();
+      const burstLimited = body?.burst_limit === true;
       return {
         message: typeof body?.error === "string" ? body.error : fallback,
-        limitReached: context.status === 429 || body?.limit_reached === true,
+        limitReached: !burstLimited && (context.status === 429 || body?.limit_reached === true),
+        burstLimited,
       };
     } catch {
       // corpo não-JSON — segue para o fallback
     }
   }
   const message = error instanceof Error ? error.message : fallback;
-  return { message, limitReached: false };
+  return { message, limitReached: false, burstLimited: false };
 }

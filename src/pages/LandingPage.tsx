@@ -52,9 +52,9 @@ const steps = [
 
 const plans: { name: string; price: string; period: string; desc: string; features: string[]; cta: string; highlight: boolean; annualNote?: string }[] = [
   { name: "Gratuito", price: "R$ 0", period: "/mês", desc: "Para conhecer a plataforma", features: ["20 buscas de jurisprudência/mês", "10 mensagens de chat/mês", "1 diagnóstico jurídico/mês", "Calculadoras (5 cálculos/mês)", "Petições não incluídas"], cta: "Começar Grátis", highlight: false },
-  { name: "Profissional", price: "R$ 49", period: "/mês", desc: "Para advogados autônomos", annualNote: "ou R$ 409/ano à vista no Pix (R$ 34,08/mês, -30%)", features: ["500 buscas e 300 mensagens/mês", "60 petições e 60 diagnósticos/mês", "100 análises de documentos/mês", "Painel do advogado", "Download PDF/DOCX"], cta: "Assinar Agora", highlight: true },
+  { name: "Profissional", price: "R$ 49", period: "/mês", desc: "Para advogados autônomos", annualNote: "ou R$ 409/ano à vista no Pix (R$ 34,08/mês, -30%)", features: ["400 buscas e 200 mensagens/mês", "60 petições e 60 diagnósticos/mês", "40 análises e 150 cálculos/mês", "Painel do advogado", "Download PDF/DOCX"], cta: "Assinar Agora", highlight: true },
 
-  { name: "Escritório", price: "R$ 149", period: "/mês", desc: "Para escritórios de advocacia", annualNote: "ou R$ 1.249/ano à vista no Pix (R$ 104,08/mês, -30%)", features: ["Tudo do Profissional", "Gestão de clientes", "Modelos de petição", "Logo personalizado", "Suporte prioritário"], cta: "Falar com Vendas", highlight: false },
+  { name: "Escritório", price: "R$ 149", period: "/mês", desc: "Para escritórios de advocacia", annualNote: "ou R$ 1.249/ano à vista no Pix (R$ 104,08/mês, -30%)", features: ["1500 buscas e 800 mensagens/mês", "150 análises e 500 cálculos/mês", "Gestão de clientes", "Modelos de petição", "Logo personalizado", "Suporte prioritário"], cta: "Falar com Vendas", highlight: false },
 ];
 
 const tjs = [
@@ -262,14 +262,18 @@ export default function LandingPage() {
               <p className="text-lg text-white/60 max-w-[480px] mb-8 font-sans">
                 Encontre jurisprudência de qualquer tribunal do Brasil — inclusive do interior — com busca semântica que entende o direito, não só palavras.
               </p>
-              <div className="flex flex-wrap gap-3 mb-10">
+              <div className="flex flex-wrap gap-3 mb-4">
                 <Button size="lg" className="bg-gold text-navy hover:bg-gold-light font-semibold text-base px-8" asChild>
-                  <Link to="/auth">Começar Gratuitamente <ArrowRight className="ml-2 h-5 w-5" /></Link>
+                  <Link to="/auth">Começar com 7 dias grátis <ArrowRight className="ml-2 h-5 w-5" /></Link>
                 </Button>
                 <Button size="lg" className="bg-transparent border border-white/20 text-white hover:bg-white/10 text-base" asChild>
                   <a href="#funcionalidades">Ver Funcionalidades</a>
                 </Button>
               </div>
+              <p className="mb-10 text-sm text-white/50">
+                Toda conta nova começa com 7 dias no plano Profissional — sem cartão.
+              </p>
+
               <div className="flex gap-8 text-sm">
                 {[{ value: "27", label: "Tribunais cobertos" }, { value: "5k+", label: "Decisões indexadas" }, { value: "100%", label: "Dados públicos oficiais" }].map((s) => (
                   <div key={s.label}>

@@ -203,7 +203,7 @@ export function PrazoCalc() {
       if (error) {
         const info = await readFunctionError(error, "Falha ao calcular o prazo");
         toast({
-          title: info.limitReached ? "Limite diário atingido" : "Erro no cálculo",
+          title: info.burstLimited ? "Muitas requisições" : info.limitReached ? "Limite mensal atingido" : "Erro no cálculo",
           description: info.message,
           variant: "destructive",
         });

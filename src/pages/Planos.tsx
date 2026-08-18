@@ -23,12 +23,13 @@ interface PlanFeature {
 }
 
 const features: PlanFeature[] = [
-  { label: "Buscas de jurisprudência / mês", free: 20, profissional: 500, escritorio: 2000 },
-  { label: "Mensagens no Chat / mês", free: 10, profissional: 300, escritorio: 1000 },
+  { label: "Buscas de jurisprudência / mês", free: 20, profissional: 400, escritorio: 1500 },
+  { label: "Mensagens no Chat / mês", free: 10, profissional: 200, escritorio: 800 },
   { label: "Diagnósticos jurídicos / mês", free: 1, profissional: 60, escritorio: 200 },
-  { label: "Análises de documentos / mês", free: 3, profissional: 100, escritorio: 400 },
-  { label: "Leituras/OCR de documentos / mês", free: 5, profissional: 200, escritorio: 800 },
-  { label: "Cálculos jurídicos / mês", free: 5, profissional: 300, escritorio: 1000 },
+  { label: "Análises de documentos / mês", free: 3, profissional: 40, escritorio: 150 },
+  { label: "Leituras/OCR de documentos / mês", free: 5, profissional: 80, escritorio: 300 },
+  { label: "Cálculos jurídicos / mês", free: 5, profissional: 150, escritorio: 500 },
+
   { label: "Petições geradas / mês", free: 0, profissional: 60, escritorio: 200 },
   {
     label: "Calculadoras (prazo, correção, rescisão, pensão, datas, CPF/CNPJ)",

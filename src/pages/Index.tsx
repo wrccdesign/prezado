@@ -110,13 +110,13 @@ export default function Index() {
       if (err?.name === "AbortError") {
         toast({ title: "Timeout no upload", description: "O processamento demorou demais. Tente um PDF menor, TXT ou cole o texto manualmente.", variant: "destructive" });
       } else {
-        const { message, limitReached } = await readFunctionError(
+        const { message, limitReached, burstLimited } = await readFunctionError(
           err,
           "Não foi possível extrair o texto do arquivo.",
         );
         toast({
-          title: limitReached ? "Limite mensal atingido" : "Erro ao processar",
-          description: limitReached ? `${message} Veja os planos em /planos.` : message,
+          title: burstLimited ? "Muitas requisições" : limitReached ? "Limite mensal atingido" : "Erro ao processar",
+          description: message,
           variant: "destructive",
         });
       }
@@ -153,10 +153,10 @@ export default function Index() {
       notifyUsageConsumed();
       toast({ title: "Análise concluída!" });
     } catch (err: any) {
-      const { message, limitReached } = await readFunctionError(err, "Tente novamente mais tarde.");
+      const { message, limitReached, burstLimited } = await readFunctionError(err, "Tente novamente mais tarde.");
       toast({
-        title: limitReached ? "Limite mensal atingido" : "Erro na análise",
-        description: limitReached ? `${message} Veja os planos em /planos.` : message,
+        title: burstLimited ? "Muitas requisições" : limitReached ? "Limite mensal atingido" : "Erro na análise",
+        description: message,
         variant: "destructive",
       });
     } finally {
