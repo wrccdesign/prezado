@@ -9,15 +9,14 @@ export default function Termos() {
       updatedAt="10 de julho de 2026"
     >
       <p>
-        Estes Termos e Condições ("Termos") regem o uso da plataforma <strong>Honorífico</strong> ("Serviço"),
-        nome fantasia operado por <strong>Wrcc Design</strong> ("nós", "nosso", "Vendedor"), pessoa jurídica
-        estabelecida no Brasil. Ao contratar um plano ou utilizar o Serviço, você celebra contrato diretamente
-        com a Wrcc Design, titular do Serviço e responsável por sua prestação. Ao acessar, cadastrar-se ou
-        utilizar o Serviço, você declara ter lido, compreendido e concordado com estes Termos. Se você não
-        concorda, não utilize o Serviço.
+        Estes Termos e Condições ("Termos") regem o uso da plataforma <strong>Honorífico</strong> ("Serviço",
+        "nós", "nosso", "Vendedor"), entidade estabelecida na <strong>Irlanda</strong>. Ao contratar um plano
+        ou utilizar o Serviço, você celebra contrato diretamente com o Honorífico, titular do Serviço e
+        responsável por sua prestação. Ao acessar, cadastrar-se ou utilizar o Serviço, você declara ter lido,
+        compreendido e concordado com estes Termos. Se você não concorda, não utilize o Serviço.
       </p>
       <p>
-        <strong>Identificação do Vendedor:</strong> Wrcc Design — nome fantasia "Honorífico". Contato:{" "}
+        <strong>Identificação do Vendedor:</strong> Honorífico — entidade sediada na Irlanda. Contato:{" "}
         <a href="mailto:wrccdesign@gmail.com">wrccdesign@gmail.com</a>.
       </p>
 
@@ -50,10 +49,16 @@ export default function Termos() {
 
       <h2>4. Planos, pagamento e assinatura</h2>
       <p>
-        As assinaturas são vendidas diretamente pela <strong>Wrcc Design</strong> (CNPJ 15.236.018/0001-64),
+        As assinaturas são vendidas diretamente pelo <strong>Honorífico</strong>, entidade sediada na Irlanda,
         responsável pelo faturamento e pelo atendimento ao cliente. O processamento dos pagamentos com cartão
         é realizado pela <strong>Stripe</strong>, provedor certificado PCI-DSS; não armazenamos dados completos
         de cartão em nossos servidores.
+      </p>
+      <p>
+        Os preços são exibidos e cobrados em <strong>reais (BRL)</strong>. Por se tratar de cobrança
+        processada no exterior, a operação pode ser classificada pelo seu banco como compra internacional,
+        com eventual incidência de IOF e de tarifas de conversão cobradas pela instituição emissora do
+        cartão — valores que não são recebidos por nós.
       </p>
       <p>
         As condições comerciais completas de pagamento, cancelamento e reembolso estão descritas na nossa
@@ -90,7 +95,7 @@ export default function Termos() {
       <h2>7. Propriedade intelectual</h2>
       <p>
         Todo o Serviço, incluindo software, marca, layout, base de decisões indexadas e materiais, é de
-        propriedade da Wrcc Design (Honorífico) ou de seus licenciadores. Concedemos a você uma licença limitada, não
+        propriedade do Honorífico ou de seus licenciadores. Concedemos a você uma licença limitada, não
         exclusiva, revogável e intransferível para uso pessoal e profissional dentro do plano contratado.
       </p>
       <p>
@@ -124,9 +129,9 @@ export default function Termos() {
 
       <h2>11. Legislação aplicável e foro</h2>
       <p>
-        Estes Termos são regidos pelas leis brasileiras. Fica eleito o foro do domicílio do consumidor
-        (quando aplicável) ou o foro da comarca da sede da Wrcc Design, com renúncia a qualquer outro,
-        por mais privilegiado que seja.
+        Estes Termos são regidos pelas leis da Irlanda, sem prejuízo das normas de proteção ao consumidor
+        aplicáveis no país de residência do usuário. Consumidores residentes no Brasil mantêm o direito de
+        demandar no foro de seu domicílio, nos termos do Código de Defesa do Consumidor.
       </p>
 
       <h2>12. Alterações</h2>
@@ -137,8 +142,8 @@ export default function Termos() {
 
       <h2>13. Contato</h2>
       <p>
-        Dúvidas sobre estes Termos: <a href="mailto:contato@honorifico.com.br">contato@honorifico.com.br</a>.
-        Questões sobre pagamento, fatura ou reembolso: <a href="mailto:contato@honorifico.com.br">contato@honorifico.com.br</a>.
+        Dúvidas sobre estes Termos: <a href="mailto:wrccdesign@gmail.com">wrccdesign@gmail.com</a>.
+        Questões sobre pagamento, fatura ou reembolso: <a href="mailto:wrccdesign@gmail.com">wrccdesign@gmail.com</a>.
       </p>
     </LegalPageLayout>
   );

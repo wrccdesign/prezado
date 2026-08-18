@@ -9,16 +9,19 @@ export default function Privacidade() {
       updatedAt="10 de julho de 2026"
     >
       <p>
-        Este Aviso descreve como a <strong>Wrcc Design</strong>, que opera a plataforma sob o nome fantasia <strong>Honorífico</strong> ("nós"), coleta, usa, compartilha e protege
-        seus dados pessoais no uso da plataforma Honorífico ("Serviço"), em conformidade com a Lei Geral de
-        Proteção de Dados Pessoais (Lei nº 13.709/2018 — LGPD).
+        Este Aviso descreve como o <strong>Honorífico</strong> ("nós"), entidade sediada na Irlanda, coleta,
+        usa, compartilha e protege seus dados pessoais no uso da plataforma ("Serviço"), em conformidade com
+        a Lei Geral de Proteção de Dados Pessoais (Lei nº 13.709/2018 — LGPD) e com o Regulamento Geral de
+        Proteção de Dados da União Europeia (GDPR).
       </p>
 
       <h2>1. Controlador dos dados</h2>
       <p>
-        A Wrcc Design (Honorífico) é a <strong>controladora</strong> dos dados pessoais tratados no Serviço, respondendo
-        pelas decisões sobre o tratamento. Para exercer seus direitos ou tirar dúvidas, use
-        <a href="mailto:contato@honorifico.com.br"> contato@honorifico.com.br</a>.
+        O Honorífico é o <strong>controlador</strong> dos dados pessoais tratados no Serviço, respondendo
+        pelas decisões sobre o tratamento. Como o controlador está estabelecido na Irlanda, os dados de
+        usuários brasileiros podem ser transferidos e processados fora do Brasil, com as salvaguardas
+        exigidas pela LGPD. Para exercer seus direitos ou tirar dúvidas, use
+        <a href="mailto:wrccdesign@gmail.com"> wrccdesign@gmail.com</a>.
       </p>
 
       <h2>2. Dados que coletamos</h2>
@@ -27,7 +30,7 @@ export default function Privacidade() {
         <li><strong>Perfil de advogado (opcional):</strong> número e UF da OAB, nome do escritório, endereço, telefone, e‑mail do escritório, logo.</li>
         <li><strong>Conteúdo enviado:</strong> descrições de situações, fatos e pedidos de petição, mensagens de chat, documentos carregados para análise.</li>
         <li><strong>Dados de uso:</strong> páginas visitadas, ações realizadas, contadores de uso diário por funcionalidade, data e hora de acesso, endereço IP, tipo de navegador/dispositivo.</li>
-        <li><strong>Dados de pagamento:</strong> os dados de cartão são coletados e processados diretamente pela Stripe (provedor certificado PCI-DSS); a Wrcc Design recebe apenas identificadores de transação, status da assinatura, plano contratado e e-mail do pagador.</li>
+        <li><strong>Dados de pagamento:</strong> os dados de cartão são coletados e processados diretamente pela Stripe (provedor certificado PCI-DSS); o Honorífico recebe apenas identificadores de transação, status da assinatura, plano contratado e e-mail do pagador.</li>
         <li><strong>Cookies estritamente necessários</strong> para autenticação e funcionamento do Serviço.</li>
       </ul>
 
@@ -97,7 +100,7 @@ export default function Privacidade() {
         <li>Peticionar perante a Autoridade Nacional de Proteção de Dados (<a href="https://www.gov.br/anpd" target="_blank" rel="noopener noreferrer">ANPD</a>).</li>
       </ul>
       <p>
-        Para exercer qualquer direito, escreva para <a href="mailto:contato@honorifico.com.br">contato@honorifico.com.br</a>.
+        Para exercer qualquer direito, escreva para <a href="mailto:wrccdesign@gmail.com">wrccdesign@gmail.com</a>.
         Responderemos em até 15 dias.
       </p>
 
@@ -122,7 +125,7 @@ export default function Privacidade() {
 
       <h2>12. Encarregado (DPO) e contato</h2>
       <p>
-        Encarregado de Proteção de Dados: <a href="mailto:contato@honorifico.com.br">contato@honorifico.com.br</a>.
+        Encarregado de Proteção de Dados: <a href="mailto:wrccdesign@gmail.com">wrccdesign@gmail.com</a>.
       </p>
     </LegalPageLayout>
   );
