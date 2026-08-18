@@ -65,6 +65,7 @@ async function createCheckoutSession(options: {
     line_items: [{ price: stripePrice.id, quantity: 1 }],
     mode: isRecurring ? "subscription" : "payment",
     ui_mode: "embedded_page",
+    locale: "pt-BR",
     return_url: options.returnUrl,
     customer: customerId,
     metadata: { userId: options.userId },
