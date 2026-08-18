@@ -224,6 +224,33 @@ Deno.serve(async (req) => {
       return json({ message: "Plano atualizado com sucesso." });
     }
 
+    if (action === "credit-estimate") {
+      const priceId = typeof body?.priceId === "string" ? body.priceId : "";
+      if (!/^[a-zA-Z0-9_-]+$/.test(priceId)) return json({ error: "priceId inválido" }, 400);
+      try {
+        const stripe = createStripeClient(env);
+        const customerIds = await findCustomerIds(stripe, user.id, email);
+        const sub = await activeStripeSubscription(stripe, customerIds);
+        if (!sub || !["active", "trialing"].includes(sub.status)) return json({ credit_cents: 0 });
+        const prices = await stripe.prices.list({ lookup_keys: [priceId] });
+        if (!prices.data.length) return json({ credit_cents: 0 });
+        const annual = prices.data[0].unit_amount ?? 0;
+        const item: any = sub.items.data[0];
+        const monthly = item?.price?.unit_amount ?? 0;
+        const start = item?.current_period_start ?? (sub as any).current_period_start;
+        const end = item?.current_period_end ?? (sub as any).current_period_end;
+        if (!monthly || !start || !end || end <= start) return json({ credit_cents: 0 });
+        const now = Math.floor(Date.now() / 1000);
+        const remaining = Math.max(0, Math.min(end - now, end - start));
+        const raw = Math.floor((remaining / (end - start)) * monthly);
+        const credit = Math.max(0, Math.min(raw, monthly, Math.max(0, annual - 100)));
+        return json({ credit_cents: credit });
+      } catch (e) {
+        console.error("credit-estimate failed:", e);
+        return json({ credit_cents: 0 });
+      }
+    }
+
     return json({ error: "Ação desconhecida" }, 400);
   } catch (error) {
     console.error("billing-account error:", error);
