@@ -191,7 +191,7 @@ async function processLargePdfOcr(
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
-  const auth = await requireQuota(req, "analise", corsHeaders);
+  const auth = await requireQuota(req, "documento", corsHeaders);
   if (auth instanceof Response) return auth;
   const _userId = auth.userId;
 

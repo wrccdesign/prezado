@@ -19,6 +19,7 @@ const ACTION_LABELS: Record<string, string> = {
   diagnostico_completo_free: "Diagnósticos completos (prévia)",
   peticao: "Petições",
   analise: "Análises de documentos",
+  documento: "Leituras/OCR de documentos",
   calculo: "Cálculos jurídicos",
 };
 

@@ -15,6 +15,7 @@ export const PLAN_LIMITS: Record<string, Record<string, number>> = {
     diagnostico_completo_free: 1,
     peticao: 0,
     analise: 3,
+    documento: 5,
     calculo: 10,
   },
   profissional: {
@@ -24,6 +25,7 @@ export const PLAN_LIMITS: Record<string, Record<string, number>> = {
     diagnostico_completo_free: 15,
     peticao: 10,
     analise: 30,
+    documento: 50,
     calculo: 100,
   },
   escritorio: {
@@ -33,6 +35,7 @@ export const PLAN_LIMITS: Record<string, Record<string, number>> = {
     diagnostico_completo_free: 50,
     peticao: 30,
     analise: 100,
+    documento: 150,
     calculo: 300,
   },
 };
