@@ -590,7 +590,7 @@ export default function LandingPage() {
               Honorífico é um nome fantasia operado por <strong className="font-medium text-white/50">Wrcc Design</strong> — CNPJ 15.236.018/0001-64.
               Contato e suporte:{" "}
               <a href="mailto:contato@honorifico.com.br" className="hover:text-gold transition-colors underline underline-offset-2">contato@honorifico.com.br</a>.
-              Pagamentos processados pela Paddle.com Market Ltd., que atua como Merchant of Record (revendedora autorizada) das assinaturas.
+              Pagamentos processados com segurança pela Stripe. A Wrcc Design é a vendedora e emissora das assinaturas.
             </p>
 
             <div className="flex gap-4 text-xs text-white/30">
