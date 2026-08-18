@@ -21,7 +21,7 @@ interface LinhaMemoria {
   saldo_corrigido: number;
   juros_do_mes: number;
   juros_acumulados: number;
-  regime: "pre_14905" | "pos_14905";
+  regime: "pre_14905" | "transicao_14905" | "pos_14905";
 }
 
 interface Resultado {
@@ -33,10 +33,18 @@ interface Resultado {
   total: number;
   memoria: LinhaMemoria[];
   meses_faltantes: Array<{ mes_ref: string; indice: string }>;
+  manter_indice_contratual?: boolean;
   fonte: string;
   ultima_sincronizacao: string | null;
-  base_legal: string;
+  base_legal: string[];
 }
+
+const REGIME_LABEL: Record<LinhaMemoria["regime"], string> = {
+  pre_14905: "regime anterior",
+  transicao_14905: "transição (Lei 14.905/2024 em 30–31/08/2024)",
+  pos_14905: "Lei 14.905/2024",
+};
+
 
 const INDICES = [
   { id: "ipca", label: "IPCA (IBGE)" },
