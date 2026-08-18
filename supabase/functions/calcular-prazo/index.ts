@@ -168,8 +168,19 @@ serve(async (req) => {
       if (contados < dias) cursor = addDays(cursor, 1);
     }
   } else {
-    cursor = addDays(cursor, dias - 1);
+    // Dias corridos: o recesso do art. 220 do CPC SUSPENDE a contagem — não é
+    // apenas um "dia não útil" a ser pulado. Os dias entre 20/12 e 20/01
+    // empurram o vencimento para frente (não se aplica ao processo penal).
+    while (contados < dias) {
+      if (materia !== "penal" && noRecesso(cursor)) {
+        registrar(cursor, "Recesso forense — contagem suspensa (art. 220 do CPC)");
+      } else {
+        contados++;
+      }
+      if (contados < dias) cursor = addDays(cursor, 1);
+    }
   }
+
 
   // 3) Prorrogação quando o vencimento cai em dia sem expediente (art. 224, §1º)
   while (motivoNaoUtil(cursor) !== null) {
