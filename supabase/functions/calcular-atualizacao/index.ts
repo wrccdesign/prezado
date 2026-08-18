@@ -107,7 +107,11 @@ const r2 = (n: number) => Math.round(n * 100) / 100;
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
+  const quota = await requireCalculoQuota(req, corsHeaders);
+  if (quota instanceof Response) return quota;
+
   let body: Body;
+
   try {
     body = await req.json();
   } catch {
