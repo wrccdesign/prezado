@@ -75,7 +75,7 @@ export default function Planos() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { planId, isLoading, subscription } = useSubscription();
-  const { openCheckout, loading: checkoutLoading } = usePaddleCheckout();
+  const { openCheckout, closeCheckout, isOpen, checkoutElement } = useStripeCheckout();
   const hasPaidPlan = planId !== "free";
   const [changingPlan, setChangingPlan] = useState<PlanId | null>(null);
   const isPastDue = subscription?.status === "past_due";
@@ -85,11 +85,9 @@ export default function Planos() {
     if (searchParams.get("checkout") === "success") {
       toast.success("Pagamento realizado! Ativando seu plano...");
       // Webhook can take a few seconds — poll the subscription query.
-      const key = ["subscription", user?.id];
       let attempts = 0;
-      const interval = setInterval(async () => {
+      const interval = setInterval(() => {
         attempts++;
-        // Invalidate via reload of the query — simplest without importing queryClient here
         window.dispatchEvent(new Event("refetch-subscription"));
         if (attempts >= 6) clearInterval(interval);
       }, 2000);
@@ -112,7 +110,7 @@ export default function Planos() {
     if (hasPaidPlan) {
       setChangingPlan(plan.id);
       try {
-        const { data, error } = await supabase.functions.invoke("paddle-account", {
+        const { data, error } = await supabase.functions.invoke("billing-account", {
           body: { action: "change-plan", priceId: plan.priceId },
         });
         if (error) throw new Error(error.message);
@@ -128,11 +126,9 @@ export default function Planos() {
     }
 
     try {
-      await openCheckout({
+      openCheckout({
         priceId: plan.priceId,
-        customerEmail: user.email,
-        customData: { userId: user.id },
-        successUrl: `${window.location.origin}/planos?checkout=success`,
+        returnUrl: `${window.location.origin}/planos?checkout=success&session_id={CHECKOUT_SESSION_ID}`,
       });
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : "Erro desconhecido";
