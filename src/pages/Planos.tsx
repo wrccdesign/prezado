@@ -257,12 +257,9 @@ export default function Planos() {
                   ) : (
                     <Button
                       className={`w-full ${plan.popular ? "bg-accent text-accent-foreground hover:bg-accent/90" : ""}`}
-                      disabled={checkoutLoading || isLoading}
+                      disabled={isLoading}
                       onClick={() => handleSubscribe(plan)}
                     >
-                      {checkoutLoading ? (
-                        <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                      ) : null}
                       Assinar {plan.name}
                     </Button>
                   )}
@@ -277,6 +274,15 @@ export default function Planos() {
           <p>Limites são renovados diariamente à meia-noite (horário de Brasília).</p>
         </div>
       </main>
+
+      <Dialog open={isOpen} onOpenChange={(open) => !open && closeCheckout()}>
+        <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="font-heading">Finalizar assinatura</DialogTitle>
+          </DialogHeader>
+          {checkoutElement}
+        </DialogContent>
+      </Dialog>
 
       <AppFooter />
     </div>
