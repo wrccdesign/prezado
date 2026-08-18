@@ -69,19 +69,17 @@ Baseie-se SEMPRE em legislação brasileira vigente:
 ## FORMATO
 Use a ferramenta diagnostico_juridico para estruturar a resposta.${groundingBlock}`;
 
-    const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${LOVABLE_API_KEY}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        model: "google/gemini-3-flash-preview",
-        messages: [
-          { role: "system", content: systemPrompt },
-          { role: "user", content: `Minha situação: ${situacao.trim().slice(0, 5000)}` },
-        ],
-        tools: [
+    const diagnostico = await aiChatTool<any>({
+      model: "main",
+      functionName: "diagnostico-juridico",
+      userId: user.id,
+      environment: env,
+      messages: [
+        { role: "system", content: systemPrompt },
+        { role: "user", content: `Minha situação: ${situacao.trim().slice(0, 5000)}` },
+      ],
+      tools: [
+
           {
             type: "function",
             function: {
