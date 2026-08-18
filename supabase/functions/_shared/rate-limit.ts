@@ -99,6 +99,7 @@ export async function checkRateLimit(
   plan: string;
   renewsAt: string;
   unknownAction?: boolean;
+  burstLimited?: boolean;
 }> {
   const supabase = createClient(supabaseUrl, supabaseServiceKey);
   const renewsAt = saoPauloMonthEnd().toISOString();
@@ -121,6 +122,19 @@ export async function checkRateLimit(
   if (limit === 0) {
     return { allowed: false, used: 0, limit: 0, plan, renewsAt };
   }
+
+  // Trava de rajada antes da cota mensal: todas as ações da última hora.
+  const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000).toISOString();
+  const { count: burstCount } = await supabase
+    .from("usage_tracking")
+    .select("*", { count: "exact", head: true })
+    .eq("user_id", userId)
+    .gte("created_at", oneHourAgo);
+
+  if ((burstCount ?? 0) >= BURST_LIMIT_PER_HOUR) {
+    return { allowed: false, used: 0, limit, plan, renewsAt, burstLimited: true };
+  }
+
 
   const { count } = await supabase
     .from("usage_tracking")
