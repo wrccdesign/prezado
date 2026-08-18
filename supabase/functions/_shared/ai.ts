@@ -24,8 +24,12 @@ const GOOGLE_OPENAI_BASE =
   "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions";
 
 /** Modelos por variável de ambiente — nunca hardcoded nas functions. */
-export const MODEL_MAIN = Deno.env.get("GEMINI_MODEL_MAIN") || "gemini-flash-latest";
-export const MODEL_LIGHT = Deno.env.get("GEMINI_MODEL_LIGHT") || "gemini-flash-lite-latest";
+/**
+ * Defaults validados por chamada real em 18/08/2026 (tool calling OK nos dois).
+ * `gemini-3.7-flash` existe mas retornou 503 no teste — mantido fora do default.
+ */
+export const MODEL_MAIN = Deno.env.get("GEMINI_MODEL_MAIN") || "gemini-3.6-flash";
+export const MODEL_LIGHT = Deno.env.get("GEMINI_MODEL_LIGHT") || "gemini-3.5-flash-lite";
 
 export type ModelTier = "main" | "light";
 
