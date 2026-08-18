@@ -257,19 +257,17 @@ Baseie suas respostas SEMPRE em:
 
 Responda sempre em português brasileiro.${legislationContext}`;
 
-    const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${LOVABLE_API_KEY}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        model: "google/gemini-2.5-flash",
-        messages: [
-          { role: "system", content: systemPrompt },
-          { role: "user", content: text.trim().slice(0, 15000) },
-        ],
-        tools: [
+    const result = await aiChatTool<any>({
+      model: "main",
+      functionName: "analyze-legal-text",
+      userId: user.id,
+      environment: env,
+      messages: [
+        { role: "system", content: systemPrompt },
+        { role: "user", content: text.trim().slice(0, 15000) },
+      ],
+      tools: [
+
           {
             type: "function",
             function: {
