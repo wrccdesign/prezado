@@ -331,33 +331,12 @@ Responda sempre em português brasileiro.${legislationContext}`;
               },
             },
           },
-        ],
-        tool_choice: { type: "function", function: { name: "legal_analysis" } },
-      }),
+      ],
+      tool_choice: { type: "function", function: { name: "legal_analysis" } },
     });
 
-    if (!response.ok) {
-      const status = response.status;
-      if (status === 429) {
-        return new Response(JSON.stringify({ error: "Limite de requisições excedido. Tente novamente em alguns instantes." }), {
-          status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
-      }
-      if (status === 402) {
-        return new Response(JSON.stringify({ error: "Créditos insuficientes. Adicione créditos ao workspace." }), {
-          status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
-      }
-      const errText = await response.text();
-      console.error("AI gateway error:", status, errText);
-      throw new Error("Erro no serviço de IA");
-    }
+    if (!result) throw new Error("A IA não retornou uma análise válida");
 
-    const aiData = await response.json();
-    const toolCall = aiData.choices?.[0]?.message?.tool_calls?.[0];
-    if (!toolCall) throw new Error("A IA não retornou uma análise válida");
-
-    const result = JSON.parse(toolCall.function.arguments);
 
     // Add fixed portals (never dynamic)
     result.portais_relevantes = [
