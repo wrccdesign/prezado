@@ -11,6 +11,21 @@ export interface Subscription {
   status: string;
   current_period_end: string | null;
   cancel_at_period_end: boolean;
+  access_type: "recurring" | "one_time" | null;
+  access_expires_at: string | null;
+}
+
+const TIER_RANK: Record<string, number> = { escritorio: 2, profissional: 1, free: 0 };
+
+function isActiveRow(row: Subscription): boolean {
+  if (row.plan_id === "free") return false;
+  if ((row.access_type ?? "recurring") === "one_time") {
+    return !!row.access_expires_at && new Date(row.access_expires_at) > new Date();
+  }
+  const notExpired = !row.current_period_end || new Date(row.current_period_end) > new Date();
+  if (["active", "trialing", "past_due"].includes(row.status)) return notExpired;
+  return row.status === "canceled" && !!row.current_period_end &&
+    new Date(row.current_period_end) > new Date();
 }
 
 export function useSubscription() {
@@ -24,7 +39,9 @@ export function useSubscription() {
       if (!user) return null;
       const { data, error } = await supabase
         .from("subscriptions")
-        .select("plan_id, status, current_period_end, cancel_at_period_end")
+        .select(
+          "plan_id, status, current_period_end, cancel_at_period_end, access_type, access_expires_at",
+        )
         .eq("user_id", user.id)
         .eq("environment", env)
         .order("created_at", { ascending: false });
@@ -34,9 +51,12 @@ export function useSubscription() {
         return null;
       }
       const rows = (data ?? []) as Subscription[];
-      // A user can hold several rows (seeded free row + one per paid
-      // subscription). Prefer the most recent paid one, else the free row.
-      return rows.find((r) => r.plan_id !== "free") ?? rows[0] ?? null;
+      // A user can hold several rows (seeded free row, monthly subscription,
+      // annual upfront access). The highest active tier wins.
+      const active = rows
+        .filter(isActiveRow)
+        .sort((a, b) => (TIER_RANK[b.plan_id] ?? 0) - (TIER_RANK[a.plan_id] ?? 0));
+      return active[0] ?? rows[0] ?? null;
     },
     enabled: !!user,
   });
@@ -49,16 +69,11 @@ export function useSubscription() {
     return () => window.removeEventListener("refetch-subscription", handler);
   }, [queryClient]);
 
-  // Access is granted while status is active/trialing/past_due, OR canceled
-  // with a future period end (grace period).
   const raw = subscription;
-  const hasAccess = !!raw && raw.plan_id !== "free" && (
-    (["active", "trialing", "past_due"].includes(raw.status) &&
-      (!raw.current_period_end || new Date(raw.current_period_end) > new Date())) ||
-    (raw.status === "canceled" && raw.current_period_end && new Date(raw.current_period_end) > new Date())
-  );
+  const hasAccess = !!raw && isActiveRow(raw);
 
   const planId: PlanId = hasAccess ? (raw!.plan_id as PlanId) : "free";
+
 
   return {
     subscription: raw,
