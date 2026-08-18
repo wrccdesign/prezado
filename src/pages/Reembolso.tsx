@@ -25,10 +25,15 @@ export default function Reembolso() {
           Acesse <a href="/conta">Minha conta</a> e localize a fatura correspondente; e
         </li>
         <li>
-          Envie um e-mail para <a href="mailto:contato@honorifico.com.br">contato@honorifico.com.br</a> com o comprovante
+          Envie um e-mail para <a href="mailto:wrccdesign@gmail.com">wrccdesign@gmail.com</a> com o comprovante
           da compra que retornaremos em até 2 dias úteis.
         </li>
       </ol>
+      <p>
+        Reembolsamos integralmente o valor da assinatura. Eventuais encargos cobrados pelo seu banco em
+        compras internacionais (como IOF ou tarifa de conversão) não são recebidos por nós e seguem a
+        política da instituição emissora do cartão.
+      </p>
 
       <h2>Como o reembolso é processado</h2>
       <ul>
