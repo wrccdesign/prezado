@@ -30,7 +30,7 @@ export default function Privacidade() {
         <li><strong>Perfil de advogado (opcional):</strong> número e UF da OAB, nome do escritório, endereço, telefone, e‑mail do escritório, logo.</li>
         <li><strong>Conteúdo enviado:</strong> descrições de situações, fatos e pedidos de petição, mensagens de chat, documentos carregados para análise.</li>
         <li><strong>Dados de uso:</strong> páginas visitadas, ações realizadas, contadores de uso diário por funcionalidade, data e hora de acesso, endereço IP, tipo de navegador/dispositivo.</li>
-        <li><strong>Dados de pagamento:</strong> os dados de cartão são coletados e processados diretamente pela Stripe (provedor certificado PCI-DSS); a Wrcc Design recebe apenas identificadores de transação, status da assinatura, plano contratado e e-mail do pagador.</li>
+        <li><strong>Dados de pagamento:</strong> os dados de cartão são coletados e processados diretamente pela Stripe (provedor certificado PCI-DSS); o Honorífico recebe apenas identificadores de transação, status da assinatura, plano contratado e e-mail do pagador.</li>
         <li><strong>Cookies estritamente necessários</strong> para autenticação e funcionamento do Serviço.</li>
       </ul>
 
@@ -100,7 +100,7 @@ export default function Privacidade() {
         <li>Peticionar perante a Autoridade Nacional de Proteção de Dados (<a href="https://www.gov.br/anpd" target="_blank" rel="noopener noreferrer">ANPD</a>).</li>
       </ul>
       <p>
-        Para exercer qualquer direito, escreva para <a href="mailto:contato@honorifico.com.br">contato@honorifico.com.br</a>.
+        Para exercer qualquer direito, escreva para <a href="mailto:wrccdesign@gmail.com">wrccdesign@gmail.com</a>.
         Responderemos em até 15 dias.
       </p>
 
@@ -125,7 +125,7 @@ export default function Privacidade() {
 
       <h2>12. Encarregado (DPO) e contato</h2>
       <p>
-        Encarregado de Proteção de Dados: <a href="mailto:contato@honorifico.com.br">contato@honorifico.com.br</a>.
+        Encarregado de Proteção de Dados: <a href="mailto:wrccdesign@gmail.com">wrccdesign@gmail.com</a>.
       </p>
     </LegalPageLayout>
   );

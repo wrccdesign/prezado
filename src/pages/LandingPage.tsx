@@ -563,7 +563,7 @@ export default function LandingPage() {
               <ul className="space-y-2">
                 {[
                   { label: "Planos e Preços", href: "/planos" },
-                  { label: "Contato", href: "mailto:contato@honorifico.com.br" },
+                  { label: "Contato", href: "mailto:wrccdesign@gmail.com" },
                   { label: "Termos de Uso", href: "/termos" },
                   { label: "Política de Privacidade", href: "/privacidade" },
                   { label: "Política de Reembolso", href: "/reembolso" },
@@ -589,7 +589,7 @@ export default function LandingPage() {
             <p className="text-xs text-white/30 max-w-2xl leading-relaxed">
               Honorífico é um nome fantasia operado por <strong className="font-medium text-white/50">Wrcc Design</strong> — CNPJ 15.236.018/0001-64.
               Contato e suporte:{" "}
-              <a href="mailto:contato@honorifico.com.br" className="hover:text-gold transition-colors underline underline-offset-2">contato@honorifico.com.br</a>.
+              <a href="mailto:wrccdesign@gmail.com" className="hover:text-gold transition-colors underline underline-offset-2">wrccdesign@gmail.com</a>.
               Pagamentos processados com segurança pela Stripe. A Wrcc Design é a vendedora e emissora das assinaturas.
             </p>
 

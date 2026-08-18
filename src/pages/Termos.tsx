@@ -142,8 +142,8 @@ export default function Termos() {
 
       <h2>13. Contato</h2>
       <p>
-        Dúvidas sobre estes Termos: <a href="mailto:contato@honorifico.com.br">contato@honorifico.com.br</a>.
-        Questões sobre pagamento, fatura ou reembolso: <a href="mailto:contato@honorifico.com.br">contato@honorifico.com.br</a>.
+        Dúvidas sobre estes Termos: <a href="mailto:wrccdesign@gmail.com">wrccdesign@gmail.com</a>.
+        Questões sobre pagamento, fatura ou reembolso: <a href="mailto:wrccdesign@gmail.com">wrccdesign@gmail.com</a>.
       </p>
     </LegalPageLayout>
   );
