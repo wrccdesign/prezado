@@ -1,6 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-import { checkRateLimit, extractEnv, monthlyLimitMessage } from "../_shared/rate-limit.ts";
+import { burstLimitMessage, checkRateLimit, extractEnv, monthlyLimitMessage } from "../_shared/rate-limit.ts";
 import { fetchGroundingContext, buildGroundingBlock } from "../_shared/grounding.ts";
 
 const corsHeaders = {
@@ -25,11 +25,11 @@ serve(async (req) => {
 
     // Rate limit check
     const env = extractEnv(req);
-    const { allowed, used, limit, plan, renewsAt } = await checkRateLimit(user.id, "diagnostico", supabaseUrl, supabaseKey, env);
+    const { allowed, used, limit, plan, renewsAt, burstLimited } = await checkRateLimit(user.id, "diagnostico", supabaseUrl, supabaseKey, env);
     if (!allowed) {
       return new Response(JSON.stringify({
-        error: monthlyLimitMessage("diagnostico", limit, plan),
-        limit_reached: true, used, limit, plan, renews_at: renewsAt, upgrade_url: "/planos",
+        error: burstLimited ? burstLimitMessage() : monthlyLimitMessage("diagnostico", limit, plan),
+        limit_reached: !burstLimited, burst_limit: burstLimited === true, used, limit, plan, renews_at: renewsAt, upgrade_url: "/planos",
       }), { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
 

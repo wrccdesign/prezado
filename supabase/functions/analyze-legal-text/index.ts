@@ -1,6 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-import { checkRateLimit, extractEnv, monthlyLimitMessage } from "../_shared/rate-limit.ts";
+import { burstLimitMessage, checkRateLimit, extractEnv, monthlyLimitMessage } from "../_shared/rate-limit.ts";
 
 
 const corsHeaders = {
@@ -166,7 +166,7 @@ serve(async (req) => {
     // Esta é a função mais caras do produto (duas chamadas de IA), portanto
     // entra na grade de créditos como ação "analise".
     const env = extractEnv(req);
-    const { allowed, used, limit, plan, renewsAt } = await checkRateLimit(
+    const { allowed, used, limit, plan, renewsAt, burstLimited } = await checkRateLimit(
       user.id,
       "analise",
       supabaseUrl,
@@ -176,12 +176,13 @@ serve(async (req) => {
     if (!allowed) {
       return new Response(
         JSON.stringify({
-          error: monthlyLimitMessage("analise", limit, plan),
+          error: burstLimited ? burstLimitMessage() : monthlyLimitMessage("analise", limit, plan),
           used,
           limit,
           plan,
           renews_at: renewsAt,
-          limit_reached: true,
+          limit_reached: !burstLimited,
+          burst_limit: burstLimited === true,
           upgrade_url: "/planos",
         }),
 
