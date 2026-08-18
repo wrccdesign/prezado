@@ -115,7 +115,7 @@ export default function Index() {
           "Não foi possível extrair o texto do arquivo.",
         );
         toast({
-          title: limitReached ? "Limite diário atingido" : "Erro ao processar",
+          title: limitReached ? "Limite mensal atingido" : "Erro ao processar",
           description: limitReached ? `${message} Veja os planos em /planos.` : message,
           variant: "destructive",
         });
@@ -155,7 +155,7 @@ export default function Index() {
     } catch (err: any) {
       const { message, limitReached } = await readFunctionError(err, "Tente novamente mais tarde.");
       toast({
-        title: limitReached ? "Limite diário atingido" : "Erro na análise",
+        title: limitReached ? "Limite mensal atingido" : "Erro na análise",
         description: limitReached ? `${message} Veja os planos em /planos.` : message,
         variant: "destructive",
       });

@@ -119,7 +119,7 @@ if (!res.ok) {
         const errData = await res.json().catch(() => null);
         if (res.status === 429 && errData?.limit_reached) {
           toast({
-            title: "Limite diário atingido",
+            title: "Limite mensal atingido",
             description: errData.error || "Você atingiu o limite de buscas do plano gratuito.",
             variant: "destructive",
             action: (
