@@ -376,8 +376,9 @@ export function CorrecaoCalc() {
                         <TableCell className="text-right">{fmt(l.juros_do_mes)}</TableCell>
                         <TableCell className="text-right">{fmt(l.juros_acumulados)}</TableCell>
                         <TableCell className="text-xs">
-                          {l.regime === "pos_14905" ? "Lei 14.905/2024" : "Regime anterior"}
+                          {REGIME_LABEL[l.regime]}
                         </TableCell>
+
                       </TableRow>
                     ))}
                   </TableBody>
