@@ -2,6 +2,7 @@ import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { burstLimitMessage, checkRateLimit, extractEnv, monthlyLimitMessage } from "../_shared/rate-limit.ts";
 import { fetchGroundingContext, buildGroundingBlock } from "../_shared/grounding.ts";
+import { aiChatTool, AIError } from "../_shared/ai.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -38,8 +39,8 @@ serve(async (req) => {
       throw new Error("Descreva sua situação com mais detalhes (mínimo 20 caracteres)");
     }
 
-    const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
-    if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY not configured");
+
+
 
     // Grounding: fetch relevant decisions
     const grounding = await fetchGroundingContext(situacao, supabaseUrl, supabaseKey, 4);

@@ -1,6 +1,7 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { burstLimitMessage, checkRateLimit, extractEnv, monthlyLimitMessage } from "../_shared/rate-limit.ts";
+import { aiChatText, aiChatTool, AIError } from "../_shared/ai.ts";
 
 
 const corsHeaders = {
@@ -196,38 +197,28 @@ serve(async (req) => {
     }
 
 
-    const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
-    if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY not configured");
-
     // Step 1: Extract keywords using AI
     let keywords: string[] = [];
     try {
-      const keywordResponse = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${LOVABLE_API_KEY}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          model: "google/gemini-2.5-flash-lite",
-          messages: [
-            {
-              role: "system",
-              content: "Extraia de 2 a 5 termos jurídicos principais do texto para identificar a área do direito. Retorne APENAS os termos separados por vírgula, sem explicação. Ex: trabalho, rescisão, CLT, indenização",
-            },
-            { role: "user", content: text.trim().slice(0, 3000) },
-          ],
-        }),
+      const kwText = await aiChatText({
+        model: "light",
+        functionName: "analyze-legal-text",
+        userId: user.id,
+        environment: env,
+        messages: [
+          {
+            role: "system",
+            content: "Extraia de 2 a 5 termos jurídicos principais do texto para identificar a área do direito. Retorne APENAS os termos separados por vírgula, sem explicação. Ex: trabalho, rescisão, CLT, indenização",
+          },
+          { role: "user", content: text.trim().slice(0, 3000) },
+        ],
       });
-
-      if (keywordResponse.ok) {
-        const kwData = await keywordResponse.json();
-        keywords = kwData.choices?.[0]?.message?.content?.split(",").map((k: string) => k.trim()).filter(Boolean) || [];
-        console.log("Extracted keywords:", keywords);
-      }
+      keywords = kwText.split(",").map((k: string) => k.trim()).filter(Boolean);
+      console.log("Extracted keywords:", keywords);
     } catch (e) {
       console.error("Keyword extraction failed:", e);
     }
+
 
     // Step 2: Get relevant legislation based on keywords
     const normas = getLegislationByKeywords(keywords);
@@ -267,19 +258,17 @@ Baseie suas respostas SEMPRE em:
 
 Responda sempre em português brasileiro.${legislationContext}`;
 
-    const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${LOVABLE_API_KEY}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        model: "google/gemini-2.5-flash",
-        messages: [
-          { role: "system", content: systemPrompt },
-          { role: "user", content: text.trim().slice(0, 15000) },
-        ],
-        tools: [
+    const result = await aiChatTool<any>({
+      model: "main",
+      functionName: "analyze-legal-text",
+      userId: user.id,
+      environment: env,
+      messages: [
+        { role: "system", content: systemPrompt },
+        { role: "user", content: text.trim().slice(0, 15000) },
+      ],
+      tools: [
+
           {
             type: "function",
             function: {
@@ -343,33 +332,12 @@ Responda sempre em português brasileiro.${legislationContext}`;
               },
             },
           },
-        ],
-        tool_choice: { type: "function", function: { name: "legal_analysis" } },
-      }),
+      ],
+      tool_choice: { type: "function", function: { name: "legal_analysis" } },
     });
 
-    if (!response.ok) {
-      const status = response.status;
-      if (status === 429) {
-        return new Response(JSON.stringify({ error: "Limite de requisições excedido. Tente novamente em alguns instantes." }), {
-          status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
-      }
-      if (status === 402) {
-        return new Response(JSON.stringify({ error: "Créditos insuficientes. Adicione créditos ao workspace." }), {
-          status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
-      }
-      const errText = await response.text();
-      console.error("AI gateway error:", status, errText);
-      throw new Error("Erro no serviço de IA");
-    }
+    if (!result) throw new Error("A IA não retornou uma análise válida");
 
-    const aiData = await response.json();
-    const toolCall = aiData.choices?.[0]?.message?.tool_calls?.[0];
-    if (!toolCall) throw new Error("A IA não retornou uma análise válida");
-
-    const result = JSON.parse(toolCall.function.arguments);
 
     // Add fixed portals (never dynamic)
     result.portais_relevantes = [
@@ -394,9 +362,10 @@ Responda sempre em português brasileiro.${legislationContext}`;
     });
   } catch (e) {
     console.error("analyze-legal-text error:", e);
+    const status = e instanceof AIError ? e.status : 500;
     return new Response(
       JSON.stringify({ error: e instanceof Error ? e.message : "Erro desconhecido" }),
-      { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      { status, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   }
 });

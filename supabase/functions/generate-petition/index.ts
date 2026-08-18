@@ -2,6 +2,7 @@ import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { burstLimitMessage, checkRateLimit, extractEnv, monthlyLimitMessage } from "../_shared/rate-limit.ts";
 import { fetchGroundingContext } from "../_shared/grounding.ts";
+import { aiChatText, AIError } from "../_shared/ai.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -76,8 +77,8 @@ serve(async (req) => {
     if (userError || !user) throw new Error("Unauthorized");
 
     // Rate limit check
+    const env = extractEnv(req);
     {
-      const env = extractEnv(req);
       const { allowed, used, limit, plan, renewsAt, burstLimited } = await checkRateLimit(user.id, "peticao", supabaseUrl, supabaseKey, env);
       if (!allowed) {
         return new Response(JSON.stringify({
@@ -104,29 +105,23 @@ serve(async (req) => {
       throw new Error("Campos obrigatórios não preenchidos (fatos e pedidos)");
     }
 
-    const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
-    if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY not configured");
-
     // Extract keywords
     const combinedText = `${tipo_acao} ${fatos} ${pedidos}`;
     let keywords: string[] = [];
     try {
-      const kwResponse = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
-        method: "POST",
-        headers: { Authorization: `Bearer ${LOVABLE_API_KEY}`, "Content-Type": "application/json" },
-        body: JSON.stringify({
-          model: "google/gemini-2.5-flash-lite",
-          messages: [
-            { role: "system", content: "Extraia de 2 a 5 termos jurídicos principais do texto para identificar a área do direito. Retorne APENAS os termos separados por vírgula." },
-            { role: "user", content: combinedText.slice(0, 3000) },
-          ],
-        }),
+      const kwText = await aiChatText({
+        model: "light",
+        functionName: "generate-petition",
+        userId: user.id,
+        environment: env,
+        messages: [
+          { role: "system", content: "Extraia de 2 a 5 termos jurídicos principais do texto para identificar a área do direito. Retorne APENAS os termos separados por vírgula." },
+          { role: "user", content: combinedText.slice(0, 3000) },
+        ],
       });
-      if (kwResponse.ok) {
-        const kwData = await kwResponse.json();
-        keywords = kwData.choices?.[0]?.message?.content?.split(",").map((k: string) => k.trim()).filter(Boolean) || [];
-      }
+      keywords = kwText.split(",").map((k: string) => k.trim()).filter(Boolean);
     } catch (e) { console.error("Keyword extraction failed:", e); }
+
 
     const normas = getLegislationByKeywords(keywords);
     const legislationContext = buildLegislationContext(normas);
@@ -201,30 +196,18 @@ ${pedidos}
 
 INSTRUÇÕES: Com base nos fatos acima, INFIRA e SUGIRA toda a fundamentação jurídica adequada. O advogado NÃO forneceu os fundamentos — isso é seu trabalho.`;
 
-    const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
-      method: "POST",
-      headers: { Authorization: `Bearer ${LOVABLE_API_KEY}`, "Content-Type": "application/json" },
-      body: JSON.stringify({
-        model: "google/gemini-3-flash-preview",
-        messages: [
-          { role: "system", content: systemPrompt },
-          { role: "user", content: userPrompt },
-        ],
-      }),
+    const generatedText = await aiChatText({
+      model: "main",
+      functionName: "generate-petition",
+      userId: user.id,
+      environment: env,
+      messages: [
+        { role: "system", content: systemPrompt },
+        { role: "user", content: userPrompt },
+      ],
     });
-
-    if (!response.ok) {
-      const status = response.status;
-      if (status === 429) return new Response(JSON.stringify({ error: "Limite de requisições excedido." }), { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } });
-      if (status === 402) return new Response(JSON.stringify({ error: "Créditos insuficientes." }), { status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" } });
-      const errText = await response.text();
-      console.error("AI gateway error:", status, errText);
-      throw new Error("Erro no serviço de IA");
-    }
-
-    const aiData = await response.json();
-    const generatedText = aiData.choices?.[0]?.message?.content;
     if (!generatedText) throw new Error("A IA não retornou um texto válido");
+
 
     const formData = { tipo_acao, vara_juizo, fatos, pedidos, autor, reu, fundamentos, comarca };
 
@@ -241,9 +224,10 @@ INSTRUÇÕES: Com base nos fatos acima, INFIRA e SUGIRA toda a fundamentação j
     });
   } catch (e) {
     console.error("generate-petition error:", e);
+    const status = e instanceof AIError ? e.status : 500;
     return new Response(
       JSON.stringify({ error: e instanceof Error ? e.message : "Erro desconhecido" }),
-      { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      { status, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   }
 });
