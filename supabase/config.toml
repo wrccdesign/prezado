@@ -48,9 +48,6 @@ verify_jwt = false
 [functions.payments-webhook]
 verify_jwt = false
 
-[functions.get-paddle-price]
-verify_jwt = false
-
 [functions.sync-indices]
 verify_jwt = false
 
@@ -60,6 +57,11 @@ verify_jwt = false
 [functions.calcular-prazo]
 verify_jwt = false
 
+[functions.create-checkout]
+verify_jwt = false
 
-[functions.paddle-account]
+[functions.create-portal-session]
+verify_jwt = false
+
+[functions.billing-account]
 verify_jwt = false

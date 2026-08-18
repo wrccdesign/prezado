@@ -1,5 +1,5 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-import { resolvePaymentEnv, type PaddleEnv } from "./payment-env.ts";
+import { resolvePaymentEnv, type PaymentEnv } from "./payment-env.ts";
 
 export const PLAN_LIMITS: Record<string, Record<string, number>> = {
   free: { search: 5, chat: 3, diagnostico: 2, peticao: 0 },
@@ -7,14 +7,14 @@ export const PLAN_LIMITS: Record<string, Record<string, number>> = {
   escritorio: { search: 200, chat: 100, diagnostico: 50, peticao: 30 },
 };
 
-export type { PaddleEnv };
+export type { PaymentEnv };
 
 /**
  * The environment is derived from the request origin, never from a header the
  * client controls — otherwise a production user could claim "sandbox" and
  * inherit an entitlement paid with a test card.
  */
-export function extractEnv(req: Request): PaddleEnv {
+export function extractEnv(req: Request): PaymentEnv {
   return resolvePaymentEnv(req);
 }
 
@@ -23,7 +23,7 @@ export async function checkRateLimit(
   action: string,
   supabaseUrl: string,
   supabaseServiceKey: string,
-  env: PaddleEnv = "live",
+  env: PaymentEnv = "live",
 ): Promise<{ allowed: boolean; used: number; limit: number; plan: string }> {
   const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
