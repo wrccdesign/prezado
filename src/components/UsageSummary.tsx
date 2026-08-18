@@ -74,11 +74,12 @@ export function UsageSummary() {
     <Card>
       <CardHeader>
         <CardTitle className="flex items-center gap-2 font-heading text-lg">
-          <Gauge className="h-4 w-4" /> Seu uso hoje
+          <Gauge className="h-4 w-4" /> Seu uso neste mês
         </CardTitle>
         <CardDescription>
-          Os limites são diários e renovam automaticamente
-          {data?.resets_at ? ` às ${formatReset(data.resets_at)}.` : "."}
+          Os limites são mensais e renovam automaticamente
+          {data?.renews_at ? ` em ${formatRenewal(data.renews_at)}.` : "."}
+
         </CardDescription>
       </CardHeader>
       <CardContent>
