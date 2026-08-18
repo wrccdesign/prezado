@@ -138,42 +138,21 @@ Use a ferramenta diagnostico_juridico para estruturar a resposta.${groundingBloc
               }
             }
           }
-        ],
-        tool_choice: { type: "function", function: { name: "diagnostico_juridico" } },
-      }),
+      ],
+      tool_choice: { type: "function", function: { name: "diagnostico_juridico" } },
     });
 
-    if (!response.ok) {
-      const status = response.status;
-      if (status === 429) {
-        return new Response(JSON.stringify({ error: "Muitas solicitações. Aguarde um momento e tente novamente." }), {
-          status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
-      }
-      if (status === 402) {
-        return new Response(JSON.stringify({ error: "Serviço temporariamente indisponível." }), {
-          status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
-      }
-      const errText = await response.text();
-      console.error("AI gateway error:", status, errText);
-      throw new Error("Erro ao processar diagnóstico");
-    }
-
-    const aiData = await response.json();
-    const toolCall = aiData.choices?.[0]?.message?.tool_calls?.[0];
-    if (!toolCall) throw new Error("Não foi possível gerar o diagnóstico");
-
-    const diagnostico = JSON.parse(toolCall.function.arguments);
+    if (!diagnostico) throw new Error("Não foi possível gerar o diagnóstico");
 
     return new Response(JSON.stringify({ diagnostico, citations: grounding }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } catch (e) {
     console.error("diagnostico-juridico error:", e);
+    const status = e instanceof AIError ? e.status : 500;
     return new Response(
       JSON.stringify({ error: e instanceof Error ? e.message : "Erro desconhecido" }),
-      { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      { status, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   }
 });
