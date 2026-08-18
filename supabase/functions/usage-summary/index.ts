@@ -2,8 +2,8 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import {
   PLAN_LIMITS,
   extractEnv,
-  saoPauloDayEnd,
-  saoPauloDayStart,
+  saoPauloMonthEnd,
+  saoPauloMonthStart,
 } from "../_shared/rate-limit.ts";
 
 const corsHeaders = {
@@ -54,13 +54,13 @@ Deno.serve(async (req) => {
     const plan = (planData as string) || "free";
     const limits = PLAN_LIMITS[plan] || PLAN_LIMITS.free;
 
-    // Dia de uso em America/Sao_Paulo, igual ao checkRateLimit.
+    // Mês de uso em America/Sao_Paulo, igual ao checkRateLimit.
     const { data: rows } = await admin
       .from("usage_tracking")
       .select("action")
       .eq("user_id", user.id)
-      .gte("created_at", saoPauloDayStart().toISOString())
-      .lt("created_at", saoPauloDayEnd().toISOString());
+      .gte("created_at", saoPauloMonthStart().toISOString())
+      .lt("created_at", saoPauloMonthEnd().toISOString());
 
     const counts: Record<string, number> = {};
     for (const row of rows ?? []) {
@@ -68,13 +68,16 @@ Deno.serve(async (req) => {
       counts[action] = (counts[action] ?? 0) + 1;
     }
 
-    const resets = saoPauloDayEnd();
+    const periodStart = saoPauloMonthStart();
+    const renews = saoPauloMonthEnd();
 
 
     return json({
       plan,
       environment: env,
-      resets_at: resets.toISOString(),
+      period_start: periodStart.toISOString(),
+      renews_at: renews.toISOString(),
+      resets_at: renews.toISOString(),
       // `diagnostico_completo_free` é o teaser interno do paywall, não é um
       // benefício anunciado — fica fora do painel de uso.
       actions: Object.keys(limits)
