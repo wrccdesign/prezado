@@ -1,7 +1,7 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-import { requireUser } from "../_shared/auth.ts";
-import { checkRateLimit, extractEnv } from "../_shared/rate-limit.ts";
+import { requireCalculoQuota } from "../_shared/calculo-guard.ts";
+
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -55,6 +55,11 @@ function noRecesso(d: Date): boolean {
 
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
+
+  const quota = await requireCalculoQuota(req, corsHeaders);
+  if (quota instanceof Response) return quota;
+
+
 
   let body: Body;
   try {
