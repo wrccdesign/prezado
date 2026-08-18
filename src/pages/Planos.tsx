@@ -205,6 +205,12 @@ export default function Planos() {
                     <span className="text-3xl font-bold text-foreground">{plan.price}</span>
                     <span className="text-muted-foreground text-sm">{plan.period}</span>
                   </div>
+                  {plan.priceId && (
+                    <p className="mt-2 text-xs text-muted-foreground">
+                      Cobrança em reais (BRL). O processamento é internacional, portanto o
+                      seu banco pode aplicar IOF sobre a compra.
+                    </p>
+                  )}
                 </CardHeader>
 
                 <CardContent className="flex-1 flex flex-col">
