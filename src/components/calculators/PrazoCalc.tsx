@@ -12,6 +12,9 @@ import { format, parseISO } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
+import { readFunctionError } from "@/lib/usageLimit";
+import { notifyUsageConsumed } from "@/hooks/useUsage";
+
 
 const PRAZOS_TIPO = [
   { id: "contestacao", label: "Contestação", dias: 15, materia: "civel" },
@@ -197,9 +200,19 @@ export function PrazoCalc() {
         },
       });
 
-      if (error) throw error;
+      if (error) {
+        const info = await readFunctionError(error, "Falha ao calcular o prazo");
+        toast({
+          title: info.limitReached ? "Limite diário atingido" : "Erro no cálculo",
+          description: info.message,
+          variant: "destructive",
+        });
+        return;
+      }
       if ((data as { error?: string })?.error) throw new Error((data as { error: string }).error);
       setResult(data as Resultado);
+      notifyUsageConsumed();
+
     } catch (e) {
       const msg = e instanceof Error ? e.message : "Falha ao calcular o prazo";
       toast({ title: "Erro no cálculo", description: msg, variant: "destructive" });
