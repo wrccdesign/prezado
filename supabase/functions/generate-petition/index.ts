@@ -77,8 +77,8 @@ serve(async (req) => {
     if (userError || !user) throw new Error("Unauthorized");
 
     // Rate limit check
+    const env = extractEnv(req);
     {
-      const env = extractEnv(req);
       const { allowed, used, limit, plan, renewsAt, burstLimited } = await checkRateLimit(user.id, "peticao", supabaseUrl, supabaseKey, env);
       if (!allowed) {
         return new Response(JSON.stringify({
