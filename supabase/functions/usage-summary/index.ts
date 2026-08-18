@@ -1,5 +1,10 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-import { PLAN_LIMITS, extractEnv } from "../_shared/rate-limit.ts";
+import {
+  PLAN_LIMITS,
+  extractEnv,
+  saoPauloDayEnd,
+  saoPauloDayStart,
+} from "../_shared/rate-limit.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -11,8 +16,12 @@ const ACTION_LABELS: Record<string, string> = {
   search: "Buscas de jurisprudência",
   chat: "Chat jurídico",
   diagnostico: "Diagnósticos",
+  diagnostico_completo_free: "Diagnósticos completos (prévia)",
   peticao: "Petições",
+  analise: "Análises de documentos",
+  calculo: "Cálculos jurídicos",
 };
+
 
 function json(body: unknown, status = 200) {
   return new Response(JSON.stringify(body), {
