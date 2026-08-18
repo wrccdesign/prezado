@@ -33,20 +33,26 @@ interface Invoice {
   total: string | null;
 }
 
+interface AccessInfo {
+  id: string;
+  status: string;
+  plan_id: string;
+  access_type?: "recurring" | "one_time";
+  access_expires_at?: string | null;
+  current_period_start: string | null;
+  current_period_end: string | null;
+  next_billed_at: string | null;
+  cancel_at_period_end: boolean;
+}
+
 interface Summary {
   environment: "sandbox" | "live";
   plan_id: "free" | "profissional" | "escritorio";
-  subscription: {
-    id: string;
-    status: string;
-    plan_id: string;
-    current_period_start: string | null;
-    current_period_end: string | null;
-    next_billed_at: string | null;
-    cancel_at_period_end: boolean;
-  } | null;
+  subscription: AccessInfo | null;
+  recurring_subscription?: AccessInfo | null;
   invoices: Invoice[];
 }
+
 
 const PLAN_LABEL: Record<string, string> = {
   free: "Gratuito",
@@ -124,7 +130,13 @@ export default function Conta() {
 
   const sub = data?.subscription ?? null;
   const planId = data?.plan_id ?? "free";
+  const isOneTime = sub?.access_type === "one_time";
   const isPastDue = sub?.status === "past_due";
+  const daysLeft = isOneTime && sub?.access_expires_at
+    ? Math.ceil((new Date(sub.access_expires_at).getTime() - Date.now()) / 86400000)
+    : null;
+  const expiryWarning = daysLeft !== null && daysLeft <= 30;
+
 
   return (
     <div className="flex min-h-screen flex-col bg-background">
@@ -188,7 +200,34 @@ export default function Conta() {
                 </div>
               </CardHeader>
               <CardContent className="space-y-4">
-                {sub ? (
+                {sub && isOneTime ? (
+                  <>
+                    <dl className="grid gap-3 text-sm sm:grid-cols-2">
+                      <div>
+                        <dt className="text-muted-foreground">Tipo de acesso</dt>
+                        <dd className="font-medium text-foreground">Anual pago à vista</dd>
+                      </div>
+                      <div>
+                        <dt className="text-muted-foreground">Acesso ativo até</dt>
+                        <dd className="font-medium text-foreground">{formatDate(sub.access_expires_at)}</dd>
+                      </div>
+                    </dl>
+                    {expiryWarning && (
+                      <div className="rounded-lg border border-accent/40 bg-accent/10 p-3 text-sm text-foreground">
+                        Seu acesso anual termina em {daysLeft} {daysLeft === 1 ? "dia" : "dias"}. Renove para
+                        não perder os recursos pagos.
+                      </div>
+                    )}
+                    <p className="text-sm text-muted-foreground">
+                      Não há cobrança automática: ao final do período a conta volta ao plano gratuito.
+                    </p>
+                    <div className="flex flex-wrap gap-2 pt-2">
+                      <Button asChild>
+                        <Link to="/planos">Renovar agora</Link>
+                      </Button>
+                    </div>
+                  </>
+                ) : sub ? (
                   <>
                     <dl className="grid gap-3 text-sm sm:grid-cols-2">
                       <div>
@@ -246,6 +285,7 @@ export default function Conta() {
                     </div>
                   </>
                 ) : (
+
                   <div className="space-y-3">
                     <p className="text-sm text-muted-foreground">
                       Você está no plano gratuito. Faça upgrade para liberar petições, mais buscas e diagnósticos.

@@ -62,7 +62,16 @@ async function buildSummary(userId: string, email: string | undefined, env: Stri
     .order("created_at", { ascending: false });
 
   const rows = (localRows ?? []) as any[];
-  const localPaid = rows.find((r) => r.plan_id && r.plan_id !== "free") ?? null;
+  const localPaid = rows.find((r) =>
+    r.plan_id && r.plan_id !== "free" && (r.access_type ?? "recurring") === "recurring"
+  ) ?? null;
+
+  // Annual access paid upfront (Pix/card), still valid.
+  const oneTime = rows.find((r) =>
+    (r.access_type ?? "recurring") === "one_time" &&
+    r.plan_id && r.plan_id !== "free" &&
+    r.access_expires_at && new Date(r.access_expires_at) > new Date()
+  ) ?? null;
 
   let stripeSub: any = null;
   let invoices: any[] = [];
@@ -83,11 +92,13 @@ async function buildSummary(userId: string, email: string | undefined, env: Stri
   const periodStart = item?.current_period_start ?? stripeSub?.current_period_start;
   const periodEnd = item?.current_period_end ?? stripeSub?.current_period_end;
 
-  const subscription = stripeSub
+  const recurring = stripeSub
     ? {
       id: stripeSub.id,
       status: stripeSub.status,
       plan_id: planFromPriceId(priceId),
+      access_type: "recurring" as const,
+      access_expires_at: null as string | null,
       current_period_start: isoFromUnix(periodStart),
       current_period_end: isoFromUnix(periodEnd),
       next_billed_at: isoFromUnix(periodEnd),
@@ -98,6 +109,8 @@ async function buildSummary(userId: string, email: string | undefined, env: Stri
       id: localPaid.stripe_subscription_id ?? localPaid.id,
       status: localPaid.status,
       plan_id: localPaid.plan_id,
+      access_type: "recurring" as const,
+      access_expires_at: null as string | null,
       current_period_start: localPaid.current_period_start,
       current_period_end: localPaid.current_period_end,
       next_billed_at: localPaid.current_period_end,
@@ -105,10 +118,32 @@ async function buildSummary(userId: string, email: string | undefined, env: Stri
     }
     : null;
 
+  const annual = oneTime
+    ? {
+      id: oneTime.payment_provider_ref ?? oneTime.id,
+      status: "active",
+      plan_id: oneTime.plan_id,
+      access_type: "one_time" as const,
+      access_expires_at: oneTime.access_expires_at as string,
+      current_period_start: oneTime.current_period_start,
+      current_period_end: oneTime.access_expires_at,
+      next_billed_at: null,
+      cancel_at_period_end: false,
+    }
+    : null;
+
+  const rank = (p?: string) => (p === "escritorio" ? 2 : p === "profissional" ? 1 : 0);
+  // Highest active tier wins; ties prefer the annual (no further charges).
+  const subscription = annual && recurring
+    ? (rank(annual.plan_id) >= rank(recurring.plan_id) ? annual : recurring)
+    : annual ?? recurring;
+
   return {
     environment: env,
     plan_id: subscription?.plan_id ?? "free",
     subscription,
+    recurring_subscription: recurring,
+
     invoices: invoices
       .sort((a, b) => (b.created ?? 0) - (a.created ?? 0))
       .slice(0, 10)
@@ -187,6 +222,33 @@ Deno.serve(async (req) => {
         })
         .eq("stripe_subscription_id", sub.id).eq("environment", env);
       return json({ message: "Plano atualizado com sucesso." });
+    }
+
+    if (action === "credit-estimate") {
+      const priceId = typeof body?.priceId === "string" ? body.priceId : "";
+      if (!/^[a-zA-Z0-9_-]+$/.test(priceId)) return json({ error: "priceId inválido" }, 400);
+      try {
+        const stripe = createStripeClient(env);
+        const customerIds = await findCustomerIds(stripe, user.id, email);
+        const sub = await activeStripeSubscription(stripe, customerIds);
+        if (!sub || !["active", "trialing"].includes(sub.status)) return json({ credit_cents: 0 });
+        const prices = await stripe.prices.list({ lookup_keys: [priceId] });
+        if (!prices.data.length) return json({ credit_cents: 0 });
+        const annual = prices.data[0].unit_amount ?? 0;
+        const item: any = sub.items.data[0];
+        const monthly = item?.price?.unit_amount ?? 0;
+        const start = item?.current_period_start ?? (sub as any).current_period_start;
+        const end = item?.current_period_end ?? (sub as any).current_period_end;
+        if (!monthly || !start || !end || end <= start) return json({ credit_cents: 0 });
+        const now = Math.floor(Date.now() / 1000);
+        const remaining = Math.max(0, Math.min(end - now, end - start));
+        const raw = Math.floor((remaining / (end - start)) * monthly);
+        const credit = Math.max(0, Math.min(raw, monthly, Math.max(0, annual - 100)));
+        return json({ credit_cents: credit });
+      } catch (e) {
+        console.error("credit-estimate failed:", e);
+        return json({ credit_cents: 0 });
+      }
     }
 
     return json({ error: "Ação desconhecida" }, 400);

@@ -44,11 +44,16 @@ const features: PlanFeature[] = [
 ];
 
 
+type BillingCycle = "mensal" | "anual";
+
 const plans: {
   id: PlanId;
   name: string;
   price: string;
   period: string;
+  annualPrice?: string;
+  annualMonthly?: string;
+  annualPriceId?: string;
   description: string;
   icon: typeof User;
   priceId?: string;
@@ -67,6 +72,9 @@ const plans: {
     name: "Profissional",
     price: "R$ 49",
     period: "/mês",
+    annualPrice: "R$ 409",
+    annualMonthly: "R$ 34,08",
+    annualPriceId: "profissional_anual",
     description: "Para advogados que precisam de mais produtividade",
     icon: Crown,
     priceId: "profissional_mensal",
@@ -77,11 +85,15 @@ const plans: {
     name: "Escritório",
     price: "R$ 149",
     period: "/mês",
+    annualPrice: "R$ 1.249",
+    annualMonthly: "R$ 104,08",
+    annualPriceId: "escritorio_anual",
     description: "Para escritórios com alto volume de trabalho",
     icon: Building2,
     priceId: "escritorio_mensal",
   },
 ];
+
 
 export default function Planos() {
   const { user } = useAuth();
@@ -91,6 +103,8 @@ export default function Planos() {
   const { openCheckout, closeCheckout, isOpen, checkoutElement } = useStripeCheckout();
   const hasPaidPlan = planId !== "free";
   const [changingPlan, setChangingPlan] = useState<PlanId | null>(null);
+  const [cycle, setCycle] = useState<BillingCycle>("mensal");
+  const [creditCents, setCreditCents] = useState<number | null>(null);
   const isPastDue = subscription?.status === "past_due";
 
 
@@ -108,23 +122,40 @@ export default function Planos() {
     }
   }, [searchParams, user?.id]);
 
-
-
+  // Estimate the pro-rata credit from an active monthly subscription.
+  useEffect(() => {
+    if (!user || cycle !== "anual" || !hasPaidPlan) {
+      setCreditCents(null);
+      return;
+    }
+    let cancelled = false;
+    supabase.functions
+      .invoke("billing-account", { body: { action: "credit-estimate", priceId: "profissional_anual" } })
+      .then(({ data }) => {
+        if (!cancelled) setCreditCents((data as { credit_cents?: number })?.credit_cents ?? 0);
+      })
+      .catch(() => setCreditCents(null));
+    return () => {
+      cancelled = true;
+    };
+  }, [user, cycle, hasPaidPlan]);
 
   const handleSubscribe = async (plan: typeof plans[number]) => {
     if (!user) {
       navigate("/auth", { state: { redirectTo: "/planos" } });
       return;
     }
-    if (!plan.priceId) return;
+    const annual = cycle === "anual" && !!plan.annualPriceId;
+    const priceId = annual ? plan.annualPriceId! : plan.priceId;
+    if (!priceId) return;
 
-    // Already paying: change the existing subscription in-app instead of
-    // opening a second checkout.
-    if (hasPaidPlan) {
+    // Already on a recurring plan and staying monthly: change the existing
+    // subscription in-app instead of opening a second checkout.
+    if (hasPaidPlan && !annual) {
       setChangingPlan(plan.id);
       try {
         const { data, error } = await supabase.functions.invoke("billing-account", {
-          body: { action: "change-plan", priceId: plan.priceId },
+          body: { action: "change-plan", priceId },
         });
         if (error) throw new Error(error.message);
         if ((data as { error?: string })?.error) throw new Error((data as { error: string }).error);
@@ -140,7 +171,7 @@ export default function Planos() {
 
     try {
       openCheckout({
-        priceId: plan.priceId,
+        priceId,
         returnUrl: `${window.location.origin}/planos?checkout=success&session_id={CHECKOUT_SESSION_ID}`,
       });
     } catch (err: unknown) {
@@ -148,6 +179,7 @@ export default function Planos() {
       toast.error("Erro ao iniciar checkout: " + message);
     }
   };
+
 
 
   return (
@@ -179,6 +211,42 @@ export default function Planos() {
           </div>
         )}
 
+        <div className="mb-8 flex flex-col items-center gap-2">
+          <div className="inline-flex rounded-lg border border-border bg-muted/40 p-1">
+            <button
+              type="button"
+              onClick={() => setCycle("mensal")}
+              className={`rounded-md px-4 py-2 text-sm font-medium transition-colors ${
+                cycle === "mensal" ? "bg-background text-foreground shadow-sm" : "text-muted-foreground"
+              }`}
+            >
+              Mensal
+            </button>
+            <button
+              type="button"
+              onClick={() => setCycle("anual")}
+              className={`rounded-md px-4 py-2 text-sm font-medium transition-colors ${
+                cycle === "anual" ? "bg-background text-foreground shadow-sm" : "text-muted-foreground"
+              }`}
+            >
+              Anual
+              <span className="ml-2 rounded bg-accent px-1.5 py-0.5 text-[10px] font-semibold text-accent-foreground">
+                -30%
+              </span>
+            </button>
+          </div>
+          {cycle === "anual" && (
+            <p className="text-xs text-muted-foreground text-center max-w-md">
+              Pagamento único de 12 meses, à vista no Pix ou cartão. Sem renovação automática.
+            </p>
+          )}
+          {cycle === "anual" && creditCents !== null && creditCents > 0 && (
+            <p className="text-xs font-medium text-accent text-center">
+              Crédito de {(creditCents / 100).toLocaleString("pt-BR", { style: "currency", currency: "BRL" })} pelo
+              período não usado da sua assinatura mensal será aplicado no checkout.
+            </p>
+          )}
+        </div>
 
 
         <div className="grid md:grid-cols-3 gap-6 mb-12">
@@ -214,16 +282,29 @@ export default function Planos() {
                   </div>
                   <CardTitle className="text-xl font-heading">{plan.name}</CardTitle>
                   <CardDescription className="text-sm">{plan.description}</CardDescription>
-                  <div className="mt-4">
-                    <span className="text-3xl font-bold text-foreground">{plan.price}</span>
-                    <span className="text-muted-foreground text-sm">{plan.period}</span>
-                  </div>
+                  {cycle === "anual" && plan.annualPrice ? (
+                    <>
+                      <div className="mt-4">
+                        <span className="text-3xl font-bold text-foreground">{plan.annualPrice}</span>
+                        <span className="text-muted-foreground text-sm">/ano</span>
+                      </div>
+                      <p className="mt-1 text-xs text-muted-foreground">
+                        Equivale a {plan.annualMonthly}/mês · economia de 30%
+                      </p>
+                    </>
+                  ) : (
+                    <div className="mt-4">
+                      <span className="text-3xl font-bold text-foreground">{plan.price}</span>
+                      <span className="text-muted-foreground text-sm">{plan.period}</span>
+                    </div>
+                  )}
                   {plan.priceId && (
                     <p className="mt-2 text-xs text-muted-foreground">
                       Cobrança em reais (BRL). O processamento é internacional, portanto o
                       seu banco pode aplicar IOF sobre a compra.
                     </p>
                   )}
+
                 </CardHeader>
 
                 <CardContent className="flex-1 flex flex-col">
@@ -258,6 +339,14 @@ export default function Planos() {
                     >
                       {isCurrent ? "Plano atual" : user ? "Plano atual" : "Criar conta grátis"}
                     </Button>
+                  ) : cycle === "anual" && plan.annualPriceId ? (
+                    <Button
+                      className={`w-full ${plan.popular ? "bg-accent text-accent-foreground hover:bg-accent/90" : ""}`}
+                      disabled={isLoading}
+                      onClick={() => handleSubscribe(plan)}
+                    >
+                      {isCurrent ? `Migrar para o anual` : `Assinar ${plan.name} anual`}
+                    </Button>
                   ) : isCurrent ? (
                     <Button variant="outline" className="w-full" onClick={() => navigate("/conta")}>
                       Gerenciar assinatura
@@ -282,6 +371,7 @@ export default function Planos() {
                       Assinar {plan.name}
                     </Button>
                   )}
+
                 </CardContent>
               </Card>
             );

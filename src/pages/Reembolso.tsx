@@ -15,6 +15,23 @@ export default function Reembolso() {
         integral do valor pago dentro deste prazo, sem necessidade de justificar.
       </p>
 
+      <h2>Direito de arrependimento (7 dias)</h2>
+      <p>
+        Nas compras feitas pela internet, você tem <strong>7 dias corridos</strong> a partir da contratação
+        para desistir e receber a devolução integral do valor pago, conforme o art. 49 do Código de Defesa do
+        Consumidor. Isso vale também para o <strong>plano anual pago à vista</strong> (Pix ou cartão). Após os
+        7 dias, o plano anual continua coberto pela garantia de 30 dias descrita acima.
+      </p>
+
+      <h2>Plano anual pago à vista</h2>
+      <ul>
+        <li>O plano anual é uma compra única, sem renovação automática: ao final dos 12 meses a conta volta ao plano gratuito, sem nova cobrança.</li>
+        <li>Reembolsos de pagamentos feitos por <strong>Pix</strong> são devolvidos à chave/conta do pagador.</li>
+        <li>Se você migrou de um plano mensal e recebeu crédito proporcional pelo período não utilizado, o reembolso corresponde ao <strong>valor efetivamente pago</strong> no checkout, não ao preço cheio do plano.</li>
+        <li>Após o reembolso, o acesso aos recursos pagos é revogado e a conta retorna imediatamente ao plano gratuito.</li>
+      </ul>
+
+
       <h2>Como solicitar o reembolso</h2>
       <p>
         As assinaturas são vendidas pelo <strong>Honorífico</strong>, entidade sediada na Irlanda, e os

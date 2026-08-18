@@ -96,9 +96,22 @@ export async function verifyWebhook(
 export const PLAN_BY_PRICE: Record<string, string> = {
   profissional_mensal: "profissional",
   escritorio_mensal: "escritorio",
+  profissional_anual: "profissional",
+  escritorio_anual: "escritorio",
 };
+
+/** One-time (annual, paid upfront) prices and the access duration they grant. */
+export const ONE_TIME_ACCESS_DAYS: Record<string, number> = {
+  profissional_anual: 365,
+  escritorio_anual: 365,
+};
+
+export function isOneTimePrice(priceId?: string | null): boolean {
+  return !!priceId && priceId in ONE_TIME_ACCESS_DAYS;
+}
 
 export function planFromPriceId(priceId?: string | null): string {
   if (!priceId) return "free";
   return PLAN_BY_PRICE[priceId] ?? "free";
 }
+

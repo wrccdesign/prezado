@@ -18,11 +18,20 @@ export function StripeEmbeddedCheckout({ priceId, returnUrl }: StripeEmbeddedChe
     return data.clientSecret as string;
   };
 
+  const isAnnual = priceId.endsWith("_anual");
+
   return (
     <div id="checkout">
+      {isAnnual && (
+        <div className="mb-4 rounded-lg border border-border bg-muted/40 p-3 text-xs text-muted-foreground">
+          Pagando no Pix, o acesso é liberado assim que o pagamento é confirmado — normalmente em segundos,
+          podendo levar alguns minutos. O QR Code expira em 24 horas.
+        </div>
+      )}
       <EmbeddedCheckoutProvider stripe={getStripe()} options={{ fetchClientSecret }}>
         <EmbeddedCheckout />
       </EmbeddedCheckoutProvider>
     </div>
   );
 }
+
