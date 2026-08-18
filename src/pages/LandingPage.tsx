@@ -51,9 +51,10 @@ const steps = [
 ];
 
 const plans = [
+const pricing: { name: string; price: string; period: string; desc: string; features: string[]; cta: string; highlight: boolean; annualNote?: string }[] = [
   { name: "Gratuito", price: "R$ 0", period: "/mês", desc: "Para conhecer a plataforma", features: ["Diagnóstico jurídico", "Chat jurídico limitado", "Calculadoras", "1 petição por mês"], cta: "Começar Grátis", highlight: false },
-  { name: "Profissional", price: "R$ 49", period: "/mês", desc: "Para advogados autônomos", features: ["Tudo do Gratuito", "Petições ilimitadas", "Análise de documentos", "Painel do advogado", "Download PDF/DOCX"], cta: "Assinar Agora", highlight: true },
-  { name: "Escritório", price: "R$ 149", period: "/mês", desc: "Para escritórios de advocacia", features: ["Tudo do Profissional", "Gestão de clientes", "Modelos de petição", "Logo personalizado", "Suporte prioritário"], cta: "Falar com Vendas", highlight: false },
+  { name: "Profissional", price: "R$ 49", period: "/mês", desc: "Para advogados autônomos", annualNote: "ou R$ 409/ano à vista no Pix (R$ 34,08/mês, -30%)", features: ["Tudo do Gratuito", "Petições ilimitadas", "Análise de documentos", "Painel do advogado", "Download PDF/DOCX"], cta: "Assinar Agora", highlight: true },
+  { name: "Escritório", price: "R$ 149", period: "/mês", desc: "Para escritórios de advocacia", annualNote: "ou R$ 1.249/ano à vista no Pix (R$ 104,08/mês, -30%)", features: ["Tudo do Profissional", "Gestão de clientes", "Modelos de petição", "Logo personalizado", "Suporte prioritário"], cta: "Falar com Vendas", highlight: false },
 ];
 
 const tjs = [
