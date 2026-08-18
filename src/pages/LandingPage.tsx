@@ -587,10 +587,7 @@ export default function LandingPage() {
           <div className="border-t pt-5 flex flex-col items-center gap-2 text-center" style={{ borderColor: "hsl(var(--gold) / 0.1)" }}>
             <p className="text-xs text-white/30">© {new Date().getFullYear()} Honorífico. Todos os direitos reservados.</p>
             <p className="text-xs text-white/30 max-w-2xl leading-relaxed">
-              <strong className="font-medium text-white/50">Honorífico</strong> — entidade sediada na Irlanda, vendedora e emissora das assinaturas.
-              Contato e suporte:{" "}
-              <a href="mailto:wrccdesign@gmail.com" className="hover:text-gold transition-colors underline underline-offset-2">wrccdesign@gmail.com</a>.
-              Pagamentos processados com segurança pela Stripe, cobrados em reais (BRL).
+              <strong className="font-medium text-white/50">Honorífico</strong> — Ferramentas de IA jurídica desenvolvidas especificamente para o direito brasileiro. Pagamentos processados com segurança pela Stripe.
             </p>
 
             <div className="flex gap-4 text-xs text-white/30">
