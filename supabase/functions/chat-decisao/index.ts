@@ -20,8 +20,8 @@ serve(async (req) => {
     const { messages, decisionId } = await req.json();
     if (!decisionId) throw new Error("decisionId is required");
 
-    const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
-    if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
+
+
 
     // Fetch the decision from DB
     const supabase = createClient(
