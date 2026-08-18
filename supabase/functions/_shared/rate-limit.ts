@@ -6,37 +6,40 @@ import { resolvePaymentEnv, type PaymentEnv } from "./payment-env.ts";
  * silent default: an action missing from this table is denied (see
  * `checkRateLimit`), so adding a new paid feature without a limit fails loudly
  * instead of leaking an unlimited entitlement to the free plan.
+ *
+ * As cotas são MENSAIS (mês-calendário em America/Sao_Paulo), sem rolagem de
+ * saldo entre meses.
  */
 export const PLAN_LIMITS: Record<string, Record<string, number>> = {
   free: {
-    search: 5,
-    chat: 3,
-    diagnostico: 2,
+    search: 20,
+    chat: 10,
+    diagnostico: 1,
     diagnostico_completo_free: 1,
     peticao: 0,
     analise: 3,
     documento: 5,
-    calculo: 10,
+    calculo: 5,
   },
   profissional: {
-    search: 50,
-    chat: 30,
-    diagnostico: 15,
-    diagnostico_completo_free: 15,
-    peticao: 10,
-    analise: 30,
-    documento: 50,
-    calculo: 100,
+    search: 500,
+    chat: 300,
+    diagnostico: 60,
+    diagnostico_completo_free: 60,
+    peticao: 60,
+    analise: 100,
+    documento: 200,
+    calculo: 300,
   },
   escritorio: {
-    search: 200,
-    chat: 100,
-    diagnostico: 50,
-    diagnostico_completo_free: 50,
-    peticao: 30,
-    analise: 100,
-    documento: 150,
-    calculo: 300,
+    search: 2000,
+    chat: 1000,
+    diagnostico: 200,
+    diagnostico_completo_free: 200,
+    peticao: 200,
+    analise: 400,
+    documento: 800,
+    calculo: 1000,
   },
 };
 
@@ -52,21 +55,27 @@ export function extractEnv(req: Request): PaymentEnv {
 }
 
 /**
- * Usage day boundaries in America/Sao_Paulo (UTC-3, no DST since 2019), which
- * is what /planos promises to the user ("renovados à meia-noite, horário de
- * Brasília"). Using UTC here would reset counters at 21h local time.
+ * Janela de uso: mês-calendário em America/Sao_Paulo (UTC-3, sem horário de
+ * verão desde 2019). Usar UTC viraria o mês às 21h do último dia local.
  */
 const SP_OFFSET_MS = 3 * 60 * 60 * 1000;
 
-export function saoPauloDayStart(now: Date = new Date()): Date {
+export function saoPauloMonthStart(now: Date = new Date()): Date {
   const local = new Date(now.getTime() - SP_OFFSET_MS);
-  return new Date(
-    Date.UTC(local.getUTCFullYear(), local.getUTCMonth(), local.getUTCDate()) + SP_OFFSET_MS,
-  );
+  return new Date(Date.UTC(local.getUTCFullYear(), local.getUTCMonth(), 1) + SP_OFFSET_MS);
 }
 
-export function saoPauloDayEnd(now: Date = new Date()): Date {
-  return new Date(saoPauloDayStart(now).getTime() + 86_400_000);
+export function saoPauloMonthEnd(now: Date = new Date()): Date {
+  const local = new Date(now.getTime() - SP_OFFSET_MS);
+  return new Date(Date.UTC(local.getUTCFullYear(), local.getUTCMonth() + 1, 1) + SP_OFFSET_MS);
+}
+
+/** Data de renovação (1º dia do mês seguinte) formatada como dd/mm. */
+export function formatRenewal(date: Date = saoPauloMonthEnd()): string {
+  const local = new Date(date.getTime() - SP_OFFSET_MS);
+  const dd = String(local.getUTCDate()).padStart(2, "0");
+  const mm = String(local.getUTCMonth() + 1).padStart(2, "0");
+  return `${dd}/${mm}`;
 }
 
 export async function checkRateLimit(
@@ -75,8 +84,16 @@ export async function checkRateLimit(
   supabaseUrl: string,
   supabaseServiceKey: string,
   env: PaymentEnv = "live",
-): Promise<{ allowed: boolean; used: number; limit: number; plan: string; unknownAction?: boolean }> {
+): Promise<{
+  allowed: boolean;
+  used: number;
+  limit: number;
+  plan: string;
+  renewsAt: string;
+  unknownAction?: boolean;
+}> {
   const supabase = createClient(supabaseUrl, supabaseServiceKey);
+  const renewsAt = saoPauloMonthEnd().toISOString();
 
   const { data: planData } = await supabase.rpc("get_user_plan", {
     p_user_id: userId,
@@ -89,12 +106,12 @@ export async function checkRateLimit(
     console.error(
       `[rate-limit] Ação "${action}" não está cadastrada em PLAN_LIMITS (plano "${plan}"). Requisição negada.`,
     );
-    return { allowed: false, used: 0, limit: 0, plan, unknownAction: true };
+    return { allowed: false, used: 0, limit: 0, plan, renewsAt, unknownAction: true };
   }
 
   const limit = limits[action];
   if (limit === 0) {
-    return { allowed: false, used: 0, limit: 0, plan };
+    return { allowed: false, used: 0, limit: 0, plan, renewsAt };
   }
 
   const { count } = await supabase
@@ -102,16 +119,36 @@ export async function checkRateLimit(
     .select("*", { count: "exact", head: true })
     .eq("user_id", userId)
     .eq("action", action)
-    .gte("created_at", saoPauloDayStart().toISOString())
-    .lt("created_at", saoPauloDayEnd().toISOString());
+    .gte("created_at", saoPauloMonthStart().toISOString())
+    .lt("created_at", saoPauloMonthEnd().toISOString());
 
   const used = count ?? 0;
 
   if (used >= limit) {
-    return { allowed: false, used, limit, plan };
+    return { allowed: false, used, limit, plan, renewsAt };
   }
 
   await supabase.from("usage_tracking").insert({ user_id: userId, action });
 
-  return { allowed: true, used: used + 1, limit, plan };
+  return { allowed: true, used: used + 1, limit, plan, renewsAt };
+}
+
+const ACTION_NOUNS: Record<string, string> = {
+  search: "buscas",
+  chat: "mensagens de chat",
+  diagnostico: "diagnósticos",
+  diagnostico_completo_free: "diagnósticos completos",
+  peticao: "petições",
+  analise: "análises",
+  documento: "leituras de documento",
+  calculo: "cálculos",
+};
+
+/** Mensagem padrão de cota mensal estourada. */
+export function monthlyLimitMessage(action: string, limit: number, plan: string): string {
+  if (limit === 0) {
+    return "Este recurso não está disponível no seu plano. Faça upgrade em /planos para liberar.";
+  }
+  const noun = ACTION_NOUNS[action] ?? "usos";
+  return `Você usou suas ${limit} ${noun} deste mês (plano ${plan}). O limite renova em ${formatRenewal()}. Faça upgrade em /planos para continuar agora.`;
 }
