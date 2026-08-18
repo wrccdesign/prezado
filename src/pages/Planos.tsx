@@ -282,16 +282,29 @@ export default function Planos() {
                   </div>
                   <CardTitle className="text-xl font-heading">{plan.name}</CardTitle>
                   <CardDescription className="text-sm">{plan.description}</CardDescription>
-                  <div className="mt-4">
-                    <span className="text-3xl font-bold text-foreground">{plan.price}</span>
-                    <span className="text-muted-foreground text-sm">{plan.period}</span>
-                  </div>
+                  {cycle === "anual" && plan.annualPrice ? (
+                    <>
+                      <div className="mt-4">
+                        <span className="text-3xl font-bold text-foreground">{plan.annualPrice}</span>
+                        <span className="text-muted-foreground text-sm">/ano</span>
+                      </div>
+                      <p className="mt-1 text-xs text-muted-foreground">
+                        Equivale a {plan.annualMonthly}/mês · economia de 30%
+                      </p>
+                    </>
+                  ) : (
+                    <div className="mt-4">
+                      <span className="text-3xl font-bold text-foreground">{plan.price}</span>
+                      <span className="text-muted-foreground text-sm">{plan.period}</span>
+                    </div>
+                  )}
                   {plan.priceId && (
                     <p className="mt-2 text-xs text-muted-foreground">
                       Cobrança em reais (BRL). O processamento é internacional, portanto o
                       seu banco pode aplicar IOF sobre a compra.
                     </p>
                   )}
+
                 </CardHeader>
 
                 <CardContent className="flex-1 flex flex-col">
