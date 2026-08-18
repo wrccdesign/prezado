@@ -10,7 +10,8 @@ import { Badge } from "@/components/ui/badge";
 import { Check, X, Loader2, Crown, Building2, User } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useSubscription, type PlanId } from "@/hooks/useSubscription";
-import { usePaddleCheckout } from "@/hooks/usePaddleCheckout";
+import { useStripeCheckout } from "@/hooks/useStripeCheckout";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 
