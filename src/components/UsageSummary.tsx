@@ -103,8 +103,9 @@ export function UsageSummary() {
                       </span>
                     ) : (
                       <span className="text-muted-foreground">
-                        {a.used} de {a.limit} · restam {remaining(a)}
+                        {a.used} de {a.limit} usados neste mês
                       </span>
+
                     )}
                   </div>
                   <div className="mt-1.5 h-2 w-full overflow-hidden rounded-full bg-muted">
