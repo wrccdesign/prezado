@@ -69,60 +69,35 @@ serve(async (req) => {
       }
     }
 
-    const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
-    if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY not configured");
-
     const SUPABASE_ANON_KEY = Deno.env.get("SUPABASE_ANON_KEY")!;
     const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
     // Step 1: Use AI to expand the query
-    const aiResponse = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${LOVABLE_API_KEY}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        model: "google/gemini-3-flash-preview",
+    let searchQuery = query;
+    let aiData: any = null;
+
+    try {
+      const content = await aiChatText({
+        model: "light",
+        functionName: "search-jurisprudencia",
+        userId: _userId,
+        environment: extractEnv(req),
         messages: [
           { role: "system", content: SYSTEM_PROMPT_BUSCA },
           { role: "user", content: `Consulta: "${query}"\nFiltros ativos: ${JSON.stringify(filters || {})}` },
         ],
-      }),
-    });
-
-    if (!aiResponse.ok) {
-      if (aiResponse.status === 429) {
-        return new Response(JSON.stringify({ error: "Limite de requisições excedido. Tente novamente em alguns instantes." }), {
-          status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
-      }
-      if (aiResponse.status === 402) {
-        return new Response(JSON.stringify({ error: "Créditos insuficientes." }), {
-          status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
-      }
-      console.error("AI error:", aiResponse.status);
-    }
-
-    let searchQuery = query;
-    let aiData: any = null;
-
-    if (aiResponse.ok) {
-      try {
-        const aiResult = await aiResponse.json();
-        const content = aiResult.choices?.[0]?.message?.content || "";
-        const jsonMatch = content.match(/\{[\s\S]*\}/);
-        if (jsonMatch) {
-          aiData = JSON.parse(jsonMatch[0]);
-          if (aiData.keywords && aiData.keywords.length > 0) {
-            searchQuery = aiData.keywords.join(" OR ");
-          }
+      });
+      const jsonMatch = content.match(/\{[\s\S]*\}/);
+      if (jsonMatch) {
+        aiData = JSON.parse(jsonMatch[0]);
+        if (aiData.keywords && aiData.keywords.length > 0) {
+          searchQuery = aiData.keywords.join(" OR ");
         }
-      } catch (e) {
-        console.error("Failed to parse AI response, using original query:", e);
       }
+    } catch (e) {
+      console.error("Query expansion failed, using original query:", e instanceof Error ? e.message : e);
     }
+
 
     // Step 2: FTS search
     const ftsPromise = supabase.rpc("search_decisions", {
