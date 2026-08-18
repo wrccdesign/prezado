@@ -49,10 +49,16 @@ export default function Termos() {
 
       <h2>4. Planos, pagamento e assinatura</h2>
       <p>
-        As assinaturas são vendidas diretamente pela <strong>Wrcc Design</strong> (CNPJ 15.236.018/0001-64),
+        As assinaturas são vendidas diretamente pelo <strong>Honorífico</strong>, entidade sediada na Irlanda,
         responsável pelo faturamento e pelo atendimento ao cliente. O processamento dos pagamentos com cartão
         é realizado pela <strong>Stripe</strong>, provedor certificado PCI-DSS; não armazenamos dados completos
         de cartão em nossos servidores.
+      </p>
+      <p>
+        Os preços são exibidos e cobrados em <strong>reais (BRL)</strong>. Por se tratar de cobrança
+        processada no exterior, a operação pode ser classificada pelo seu banco como compra internacional,
+        com eventual incidência de IOF e de tarifas de conversão cobradas pela instituição emissora do
+        cartão — valores que não são recebidos por nós.
       </p>
       <p>
         As condições comerciais completas de pagamento, cancelamento e reembolso estão descritas na nossa
