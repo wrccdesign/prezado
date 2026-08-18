@@ -50,10 +50,10 @@ const steps = [
   { n: "04", title: "Baixe o documento", desc: "Gere petições em PDF/DOCX prontas para protocolo." },
 ];
 
-const plans = [
+const plans: { name: string; price: string; period: string; desc: string; features: string[]; cta: string; highlight: boolean; annualNote?: string }[] = [
   { name: "Gratuito", price: "R$ 0", period: "/mês", desc: "Para conhecer a plataforma", features: ["Diagnóstico jurídico", "Chat jurídico limitado", "Calculadoras", "1 petição por mês"], cta: "Começar Grátis", highlight: false },
-  { name: "Profissional", price: "R$ 49", period: "/mês", desc: "Para advogados autônomos", features: ["Tudo do Gratuito", "Petições ilimitadas", "Análise de documentos", "Painel do advogado", "Download PDF/DOCX"], cta: "Assinar Agora", highlight: true },
-  { name: "Escritório", price: "R$ 149", period: "/mês", desc: "Para escritórios de advocacia", features: ["Tudo do Profissional", "Gestão de clientes", "Modelos de petição", "Logo personalizado", "Suporte prioritário"], cta: "Falar com Vendas", highlight: false },
+  { name: "Profissional", price: "R$ 49", period: "/mês", desc: "Para advogados autônomos", annualNote: "ou R$ 409/ano à vista no Pix (R$ 34,08/mês, -30%)", features: ["Tudo do Gratuito", "Petições ilimitadas", "Análise de documentos", "Painel do advogado", "Download PDF/DOCX"], cta: "Assinar Agora", highlight: true },
+  { name: "Escritório", price: "R$ 149", period: "/mês", desc: "Para escritórios de advocacia", annualNote: "ou R$ 1.249/ano à vista no Pix (R$ 104,08/mês, -30%)", features: ["Tudo do Profissional", "Gestão de clientes", "Modelos de petição", "Logo personalizado", "Suporte prioritário"], cta: "Falar com Vendas", highlight: false },
 ];
 
 const tjs = [
@@ -496,7 +496,8 @@ export default function LandingPage() {
                 {p.highlight && (<div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-gold text-navy text-xs font-bold px-4 py-1 rounded-full">Mais popular</div>)}
                 <h3 className="font-serif text-xl font-bold text-navy">{p.name}</h3>
                 <p className="text-sm text-muted-foreground mt-1 mb-4">{p.desc}</p>
-                <div className="mb-6"><span className="text-4xl font-bold text-navy">{p.price}</span><span className="text-muted-foreground text-sm">{p.period}</span></div>
+                <div className="mb-2"><span className="text-4xl font-bold text-navy">{p.price}</span><span className="text-muted-foreground text-sm">{p.period}</span></div>
+                <p className="mb-6 text-xs text-muted-foreground min-h-[1rem]">{p.annualNote ?? ""}</p>
                 <ul className="space-y-2.5 mb-7">
                   {p.features.map((f) => (<li key={f} className="flex items-center gap-2 text-sm text-muted-foreground"><Check className="h-4 w-4 text-gold shrink-0" />{f}</li>))}
                 </ul>
