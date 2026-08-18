@@ -129,9 +129,9 @@ export default function Termos() {
 
       <h2>11. Legislação aplicável e foro</h2>
       <p>
-        Estes Termos são regidos pelas leis brasileiras. Fica eleito o foro do domicílio do consumidor
-        (quando aplicável) ou o foro da comarca da sede da Wrcc Design, com renúncia a qualquer outro,
-        por mais privilegiado que seja.
+        Estes Termos são regidos pelas leis da Irlanda, sem prejuízo das normas de proteção ao consumidor
+        aplicáveis no país de residência do usuário. Consumidores residentes no Brasil mantêm o direito de
+        demandar no foro de seu domicílio, nos termos do Código de Defesa do Consumidor.
       </p>
 
       <h2>12. Alterações</h2>
