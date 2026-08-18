@@ -9,16 +9,19 @@ export default function Privacidade() {
       updatedAt="10 de julho de 2026"
     >
       <p>
-        Este Aviso descreve como a <strong>Wrcc Design</strong>, que opera a plataforma sob o nome fantasia <strong>Honorífico</strong> ("nós"), coleta, usa, compartilha e protege
-        seus dados pessoais no uso da plataforma Honorífico ("Serviço"), em conformidade com a Lei Geral de
-        Proteção de Dados Pessoais (Lei nº 13.709/2018 — LGPD).
+        Este Aviso descreve como o <strong>Honorífico</strong> ("nós"), entidade sediada na Irlanda, coleta,
+        usa, compartilha e protege seus dados pessoais no uso da plataforma ("Serviço"), em conformidade com
+        a Lei Geral de Proteção de Dados Pessoais (Lei nº 13.709/2018 — LGPD) e com o Regulamento Geral de
+        Proteção de Dados da União Europeia (GDPR).
       </p>
 
       <h2>1. Controlador dos dados</h2>
       <p>
-        A Wrcc Design (Honorífico) é a <strong>controladora</strong> dos dados pessoais tratados no Serviço, respondendo
-        pelas decisões sobre o tratamento. Para exercer seus direitos ou tirar dúvidas, use
-        <a href="mailto:contato@honorifico.com.br"> contato@honorifico.com.br</a>.
+        O Honorífico é o <strong>controlador</strong> dos dados pessoais tratados no Serviço, respondendo
+        pelas decisões sobre o tratamento. Como o controlador está estabelecido na Irlanda, os dados de
+        usuários brasileiros podem ser transferidos e processados fora do Brasil, com as salvaguardas
+        exigidas pela LGPD. Para exercer seus direitos ou tirar dúvidas, use
+        <a href="mailto:wrccdesign@gmail.com"> wrccdesign@gmail.com</a>.
       </p>
 
       <h2>2. Dados que coletamos</h2>
