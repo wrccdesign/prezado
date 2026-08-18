@@ -1,19 +1,19 @@
-const clientToken = import.meta.env.VITE_PAYMENTS_CLIENT_TOKEN;
+const clientToken = import.meta.env.VITE_PAYMENTS_CLIENT_TOKEN as string | undefined;
 
 export function PaymentTestModeBanner() {
-  if (!clientToken?.startsWith("test_")) return null;
-
-  return (
-    <div className="w-full bg-orange-100 border-b border-orange-300 px-4 py-2 text-center text-sm text-orange-800">
-      Todos os pagamentos na pré-visualização são em modo de teste.{" "}
-      <a
-        href="https://docs.lovable.dev/features/payments#test-and-live-environments"
-        target="_blank"
-        rel="noopener noreferrer"
-        className="underline font-medium"
-      >
-        Saiba mais
-      </a>
-    </div>
-  );
+  if (!clientToken) {
+    return (
+      <div className="w-full border-b border-destructive/40 bg-destructive/10 px-4 py-2 text-center text-sm text-destructive">
+        O checkout de produção ainda não está configurado. Conclua a ativação dos pagamentos para receber pagamentos reais.
+      </div>
+    );
+  }
+  if (clientToken.startsWith("pk_test_")) {
+    return (
+      <div className="w-full border-b border-accent/40 bg-accent/10 px-4 py-2 text-center text-sm text-accent-foreground">
+        Ambiente de teste: os pagamentos feitos aqui usam cartões de teste e não geram cobrança real.
+      </div>
+    );
+  }
+  return null;
 }
