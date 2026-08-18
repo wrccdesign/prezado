@@ -395,12 +395,21 @@ export function CorrecaoCalc() {
                   ? new Date(result.ultima_sincronizacao).toLocaleString("pt-BR")
                   : "—"}
               </p>
-              <p><strong className="text-foreground">Base legal:</strong> {result.base_legal}</p>
+              <div>
+                <strong className="text-foreground">Base legal:</strong>
+                <ul className="mt-1 list-disc space-y-1 pl-4">
+                  {result.base_legal.map(b => <li key={b}>{b}</li>)}
+                </ul>
+              </div>
               <p>
-                A partir de 30/08/2024 a correção segue o IPCA (art. 389, parágrafo único, do CC) e os juros
-                a Taxa Legal divulgada pelo Banco Central (art. 406, §1º, do CC), desconsiderando-se resultado
-                negativo (art. 406, §3º).
+                Agosto/2024 é mês de transição, calculado pro rata die: regime anterior até 29/08 e
+                Lei 14.905/2024 nos dias 30 e 31 (Res. CMN 5.171/2024). A partir daí a correção segue o
+                {result.manter_indice_contratual
+                  ? " índice contratual mantido"
+                  : " IPCA (art. 389, parágrafo único, do CC)"} e os juros a Taxa Legal divulgada pelo
+                Banco Central (art. 406, §1º, do CC), desconsiderando-se resultado negativo (art. 406, §3º).
               </p>
+
             </CardContent>
           </Card>
         </div>
