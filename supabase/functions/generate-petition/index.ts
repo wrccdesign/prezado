@@ -105,29 +105,23 @@ serve(async (req) => {
       throw new Error("Campos obrigatórios não preenchidos (fatos e pedidos)");
     }
 
-    const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
-    if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY not configured");
-
     // Extract keywords
     const combinedText = `${tipo_acao} ${fatos} ${pedidos}`;
     let keywords: string[] = [];
     try {
-      const kwResponse = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
-        method: "POST",
-        headers: { Authorization: `Bearer ${LOVABLE_API_KEY}`, "Content-Type": "application/json" },
-        body: JSON.stringify({
-          model: "google/gemini-2.5-flash-lite",
-          messages: [
-            { role: "system", content: "Extraia de 2 a 5 termos jurídicos principais do texto para identificar a área do direito. Retorne APENAS os termos separados por vírgula." },
-            { role: "user", content: combinedText.slice(0, 3000) },
-          ],
-        }),
+      const kwText = await aiChatText({
+        model: "light",
+        functionName: "generate-petition",
+        userId: user.id,
+        environment: env,
+        messages: [
+          { role: "system", content: "Extraia de 2 a 5 termos jurídicos principais do texto para identificar a área do direito. Retorne APENAS os termos separados por vírgula." },
+          { role: "user", content: combinedText.slice(0, 3000) },
+        ],
       });
-      if (kwResponse.ok) {
-        const kwData = await kwResponse.json();
-        keywords = kwData.choices?.[0]?.message?.content?.split(",").map((k: string) => k.trim()).filter(Boolean) || [];
-      }
+      keywords = kwText.split(",").map((k: string) => k.trim()).filter(Boolean);
     } catch (e) { console.error("Keyword extraction failed:", e); }
+
 
     const normas = getLegislationByKeywords(keywords);
     const legislationContext = buildLegislationContext(normas);
