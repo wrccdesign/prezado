@@ -39,8 +39,8 @@ serve(async (req) => {
       throw new Error("Descreva sua situação com mais detalhes (mínimo 20 caracteres)");
     }
 
-    const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
-    if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY not configured");
+
+
 
     // Grounding: fetch relevant decisions
     const grounding = await fetchGroundingContext(situacao, supabaseUrl, supabaseKey, 4);
