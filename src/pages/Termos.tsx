@@ -95,7 +95,7 @@ export default function Termos() {
       <h2>7. Propriedade intelectual</h2>
       <p>
         Todo o Serviço, incluindo software, marca, layout, base de decisões indexadas e materiais, é de
-        propriedade da Wrcc Design (Honorífico) ou de seus licenciadores. Concedemos a você uma licença limitada, não
+        propriedade do Honorífico ou de seus licenciadores. Concedemos a você uma licença limitada, não
         exclusiva, revogável e intransferível para uso pessoal e profissional dentro do plano contratado.
       </p>
       <p>
