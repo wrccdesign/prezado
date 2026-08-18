@@ -26,10 +26,23 @@ const features: PlanFeature[] = [
   { label: "Buscas de jurisprudência / dia", free: 5, profissional: 50, escritorio: 200 },
   { label: "Mensagens no Chat / dia", free: 3, profissional: 30, escritorio: 100 },
   { label: "Diagnósticos jurídicos / dia", free: 2, profissional: 15, escritorio: 50 },
+  { label: "Análises de documentos / dia", free: 3, profissional: 30, escritorio: 100 },
+  { label: "Leituras/OCR de documentos / dia", free: 5, profissional: 50, escritorio: 150 },
+  { label: "Cálculos jurídicos / dia", free: 10, profissional: 100, escritorio: 300 },
   { label: "Petições geradas / dia", free: 0, profissional: 10, escritorio: 30 },
-  { label: "Calculadoras trabalhistas", free: "✓", profissional: "✓", escritorio: "✓" },
+  {
+    label: "Calculadoras (prazo, correção, rescisão, pensão, datas, CPF/CNPJ)",
+    free: "✓",
+    profissional: "✓",
+    escritorio: "✓",
+  },
   { label: "Busca pública de decisões", free: "✓", profissional: "✓", escritorio: "✓" },
+  { label: "Modelos de minutas e petições", free: "✓", profissional: "✓", escritorio: "✓" },
+  { label: "Exportação em PDF e Word", free: "✓", profissional: "✓", escritorio: "✓" },
+  { label: "Histórico de consultas", free: "✓", profissional: "✓", escritorio: "✓" },
+  { label: "Painel do advogado (clientes, petições, modelos)", free: "—", profissional: "✓", escritorio: "✓" },
 ];
+
 
 const plans: {
   id: PlanId;
