@@ -200,7 +200,34 @@ export default function Conta() {
                 </div>
               </CardHeader>
               <CardContent className="space-y-4">
-                {sub ? (
+                {sub && isOneTime ? (
+                  <>
+                    <dl className="grid gap-3 text-sm sm:grid-cols-2">
+                      <div>
+                        <dt className="text-muted-foreground">Tipo de acesso</dt>
+                        <dd className="font-medium text-foreground">Anual pago à vista</dd>
+                      </div>
+                      <div>
+                        <dt className="text-muted-foreground">Acesso ativo até</dt>
+                        <dd className="font-medium text-foreground">{formatDate(sub.access_expires_at)}</dd>
+                      </div>
+                    </dl>
+                    {expiryWarning && (
+                      <div className="rounded-lg border border-accent/40 bg-accent/10 p-3 text-sm text-foreground">
+                        Seu acesso anual termina em {daysLeft} {daysLeft === 1 ? "dia" : "dias"}. Renove para
+                        não perder os recursos pagos.
+                      </div>
+                    )}
+                    <p className="text-sm text-muted-foreground">
+                      Não há cobrança automática: ao final do período a conta volta ao plano gratuito.
+                    </p>
+                    <div className="flex flex-wrap gap-2 pt-2">
+                      <Button asChild>
+                        <Link to="/planos">Renovar agora</Link>
+                      </Button>
+                    </div>
+                  </>
+                ) : sub ? (
                   <>
                     <dl className="grid gap-3 text-sm sm:grid-cols-2">
                       <div>
@@ -258,6 +285,7 @@ export default function Conta() {
                     </div>
                   </>
                 ) : (
+
                   <div className="space-y-3">
                     <p className="text-sm text-muted-foreground">
                       Você está no plano gratuito. Faça upgrade para liberar petições, mais buscas e diagnósticos.
