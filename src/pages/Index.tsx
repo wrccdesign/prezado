@@ -2,6 +2,7 @@ import { useState, useRef } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { readFunctionError } from "@/lib/usageLimit";
+import { notifyUsageConsumed } from "@/hooks/useUsage";
 import { AppHeader } from "@/components/AppHeader";
 import { LegalDisclaimer } from "@/components/LegalDisclaimer";
 import { AnalysisResult } from "@/components/AnalysisResult";
@@ -101,6 +102,7 @@ export default function Index() {
       setParseStage("Concluído!");
       setText(data.text);
       setShowPreview(true);
+      notifyUsageConsumed();
       const ocrNote = data.ocr ? " (via OCR — documento escaneado)" : "";
       const partialNote = data.partial ? " ⚠️ Extração parcial — PDF muito grande, apenas parte do texto foi extraída." : "";
       toast({ title: "Documento processado!", description: `Texto extraído de ${file.name}${ocrNote}.${partialNote}` });
@@ -148,6 +150,7 @@ export default function Index() {
       if (data?.error) throw new Error(data.error);
 
       setResult(data.result as LegalAnalysis);
+      notifyUsageConsumed();
       toast({ title: "Análise concluída!" });
     } catch (err: any) {
       const { message, limitReached } = await readFunctionError(err, "Tente novamente mais tarde.");
