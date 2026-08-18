@@ -89,14 +89,9 @@ function bytesToBase64(bytes: Uint8Array): string {
 async function ocrWithVision(
   bytes: Uint8Array,
   fileName: string,
-  retries = 1
+  retries = 1,
+  userId?: string,
 ): Promise<{ text: string; timedOut: boolean }> {
-  const apiKey = Deno.env.get("LOVABLE_API_KEY");
-  if (!apiKey) {
-    console.error("LOVABLE_API_KEY not available for OCR fallback");
-    return { text: "", timedOut: false };
-  }
-
   const base64 = bytesToBase64(bytes);
 
   for (let attempt = 0; attempt <= retries; attempt++) {
@@ -105,65 +100,40 @@ async function ocrWithVision(
       await new Promise((r) => setTimeout(r, 2000 * attempt));
     }
 
-    const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), OCR_TIMEOUT_MS);
-
     try {
-      const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${apiKey}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          model: "google/gemini-2.5-flash-lite",
-          messages: [
-            {
-              role: "user",
-              content: [
-                {
-                  type: "text",
-                  text: `Extraia TODO o texto deste documento PDF escaneado (${fileName}). Retorne APENAS o texto extraído, sem comentários, explicações ou formatação markdown. Mantenha a estrutura original de parágrafos. Se houver tabelas, formate-as de forma legível. Texto em português do Brasil.`,
-                },
-                {
-                  type: "image_url",
-                  image_url: {
-                    url: `data:application/pdf;base64,${base64}`,
-                  },
-                },
-              ],
-            },
-          ],
-          max_tokens: 16000,
-          temperature: 0.1,
-        }),
-        signal: controller.signal,
+      const text = await aiChatText({
+        model: "light",
+        functionName: "parse-document",
+        userId,
+        timeoutMs: OCR_TIMEOUT_MS,
+        temperature: 0.1,
+        messages: [
+          {
+            role: "user",
+            content: [
+              {
+                type: "text",
+                text: `Extraia TODO o texto deste documento PDF escaneado (${fileName}). Retorne APENAS o texto extraído, sem comentários, explicações ou formatação markdown. Mantenha a estrutura original de parágrafos. Se houver tabelas, formate-as de forma legível. Texto em português do Brasil.`,
+              },
+              {
+                type: "image_url",
+                image_url: { url: `data:application/pdf;base64,${base64}` },
+              },
+            ],
+          },
+        ],
       });
 
-      clearTimeout(timeout);
-
-      if (!response.ok) {
-        const errText = await response.text();
-        console.error(`OCR API error [${response.status}]:`, errText);
-        if (attempt < retries) continue;
-        return { text: "", timedOut: false };
-      }
-
-      const data = await response.json();
-      const text = data?.choices?.[0]?.message?.content || "";
-      if (text.trim().length > 20) {
+      if (text.trim().length > 20 || attempt >= retries) {
         return { text: text.trim(), timedOut: false };
       }
-      if (attempt < retries) continue;
-      return { text: text.trim(), timedOut: false };
     } catch (e) {
-      clearTimeout(timeout);
       if (e instanceof DOMException && e.name === "AbortError") {
         console.error(`OCR timed out (attempt ${attempt + 1})`);
         if (attempt < retries) continue;
         return { text: "", timedOut: true };
       }
-      console.error("OCR fetch error:", e);
+      console.error("OCR error:", e instanceof Error ? e.message : e);
       if (attempt < retries) continue;
       return { text: "", timedOut: false };
     }
@@ -171,6 +141,7 @@ async function ocrWithVision(
 
   return { text: "", timedOut: false };
 }
+
 
 async function processLargePdfOcr(
   bytes: Uint8Array,
