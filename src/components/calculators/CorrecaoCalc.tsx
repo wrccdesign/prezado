@@ -11,6 +11,9 @@ import { AlertTriangle, ChevronDown, FileDown, FileText, Loader2 } from "lucide-
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 import { exportToPDF, exportToDOCX, slugify, type ExportSection } from "@/lib/exportDocument";
+import { readFunctionError } from "@/lib/usageLimit";
+import { notifyUsageConsumed } from "@/hooks/useUsage";
+
 
 interface LinhaMemoria {
   mes_ref: string;
