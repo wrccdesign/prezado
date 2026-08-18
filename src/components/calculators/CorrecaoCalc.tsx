@@ -158,7 +158,7 @@ export function CorrecaoCalc() {
       body: r.memoria
         .map(
           l =>
-            `${mesLabel(l.mes_ref)} | ${l.indice_utilizado.toUpperCase()} ${l.variacao_percentual.toFixed(2)}% | fator acum. ${l.fator_acumulado.toFixed(6)} | saldo ${fmt(l.saldo_corrigido)} | juros do mês ${fmt(l.juros_do_mes)} | juros acum. ${fmt(l.juros_acumulados)} | ${l.regime === "pos_14905" ? "Lei 14.905/2024" : "regime anterior"}`,
+            `${mesLabel(l.mes_ref)} | ${l.indice_utilizado.toUpperCase()} ${l.variacao_percentual.toFixed(2)}% | fator acum. ${l.fator_acumulado.toFixed(6)} | saldo ${fmt(l.saldo_corrigido)} | juros do mês ${fmt(l.juros_do_mes)} | juros acum. ${fmt(l.juros_acumulados)} | ${REGIME_LABEL[l.regime]}`,
         )
         .join("\n"),
     },
@@ -166,8 +166,9 @@ export function CorrecaoCalc() {
       heading: "Fonte e base legal",
       body: `${r.fonte}\nÚltima sincronização dos índices: ${
         r.ultima_sincronizacao ? new Date(r.ultima_sincronizacao).toLocaleString("pt-BR") : "—"
-      }\n${r.base_legal}`,
+      }\n${r.base_legal.join("\n")}`,
     },
+
   ];
 
   const exportar = (tipo: "pdf" | "docx") => {
