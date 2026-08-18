@@ -1,6 +1,7 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { requireQuota } from "../_shared/calculo-guard.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { aiChatStream, AIError } from "../_shared/ai.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
