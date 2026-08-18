@@ -30,8 +30,10 @@ export async function requireCalculoQuota(
         used,
         limit,
         plan,
+        limit_reached: true,
         upgrade_url: "/planos",
       }),
+
       { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } },
     );
   }
