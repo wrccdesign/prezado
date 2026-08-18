@@ -44,11 +44,16 @@ const features: PlanFeature[] = [
 ];
 
 
+type BillingCycle = "mensal" | "anual";
+
 const plans: {
   id: PlanId;
   name: string;
   price: string;
   period: string;
+  annualPrice?: string;
+  annualMonthly?: string;
+  annualPriceId?: string;
   description: string;
   icon: typeof User;
   priceId?: string;
@@ -67,6 +72,9 @@ const plans: {
     name: "Profissional",
     price: "R$ 49",
     period: "/mês",
+    annualPrice: "R$ 409",
+    annualMonthly: "R$ 34,08",
+    annualPriceId: "profissional_anual",
     description: "Para advogados que precisam de mais produtividade",
     icon: Crown,
     priceId: "profissional_mensal",
@@ -77,11 +85,15 @@ const plans: {
     name: "Escritório",
     price: "R$ 149",
     period: "/mês",
+    annualPrice: "R$ 1.249",
+    annualMonthly: "R$ 104,08",
+    annualPriceId: "escritorio_anual",
     description: "Para escritórios com alto volume de trabalho",
     icon: Building2,
     priceId: "escritorio_mensal",
   },
 ];
+
 
 export default function Planos() {
   const { user } = useAuth();
