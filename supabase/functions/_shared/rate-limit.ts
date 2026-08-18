@@ -172,5 +172,17 @@ export function monthlyLimitMessage(action: string, limit: number, plan: string)
     return "Este recurso não está disponível no seu plano. Faça upgrade em /planos para liberar.";
   }
   const noun = ACTION_NOUNS[action] ?? "usos";
-  return `Você usou suas ${limit} ${noun} deste mês (plano ${plan}). O limite renova em ${formatRenewal()}. Faça upgrade em /planos para continuar agora.`;
+  const upgradePlan = plan === "profissional" ? "escritorio" : "profissional";
+  const upgradeLabel = upgradePlan === "escritorio" ? "Escritório" : "Profissional";
+  const upgradeLimit = PLAN_LIMITS[upgradePlan]?.[action];
+  const upgradeHint = plan === "escritorio" || upgradeLimit === undefined || upgradeLimit <= limit
+    ? ""
+    : ` O plano ${upgradeLabel} libera ${upgradeLimit} ${noun} por mês — veja em /planos.`;
+  return `Você usou suas ${limit} ${noun} deste mês (plano ${plan}). O limite renova em ${formatRenewal()}.${upgradeHint}`;
 }
+
+/** Mensagem da trava de rajada — situação diferente de cota mensal esgotada. */
+export function burstLimitMessage(): string {
+  return `Muitas requisições em pouco tempo (limite de ${BURST_LIMIT_PER_HOUR} por hora). Aguarde alguns minutos — sua cota mensal continua disponível.`;
+}
+
