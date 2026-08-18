@@ -65,6 +65,3 @@ verify_jwt = false
 
 [functions.billing-account]
 verify_jwt = false
-
-[functions.stripe-diagnostico]
-verify_jwt = false
