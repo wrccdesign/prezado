@@ -110,14 +110,38 @@ export function PrazoCalc() {
 
   useEffect(() => {
     async function carregarTribunais() {
-      const { data, error } = await supabase
-        .from("tj_scraping_config")
-        .select("tribunal, nome_completo")
-        .order("priority", { ascending: false });
-      if (!error && data) setTribunais(data);
+      // Junta os tribunais conhecidos com aqueles que já possuem suspensões
+      // forenses cadastradas na tabela `feriados` (inclui a Justiça Federal).
+      const [{ data: config }, { data: forenses }] = await Promise.all([
+        supabase
+          .from("tj_scraping_config")
+          .select("tribunal, nome_completo")
+          .order("priority", { ascending: false }),
+        supabase.from("feriados").select("tribunal").eq("tipo", "forense"),
+      ]);
+
+      const nomes = new Map<string, string>();
+      for (const t of config ?? []) nomes.set(t.tribunal, t.nome_completo);
+
+      const comSuspensao = new Set(
+        (forenses ?? []).map(f => f.tribunal).filter((t): t is string => !!t),
+      );
+
+      const lista: Tribunal[] = [];
+      for (const codigo of comSuspensao) {
+        lista.push({
+          tribunal: codigo,
+          nome_completo: `${nomes.get(codigo) ?? codigo} — suspensões cadastradas`,
+        });
+      }
+      for (const [codigo, nome] of nomes) {
+        if (!comSuspensao.has(codigo)) lista.push({ tribunal: codigo, nome_completo: nome });
+      }
+      setTribunais(lista);
     }
     carregarTribunais();
   }, []);
+
 
   useEffect(() => {
     async function carregarMunicipios() {
