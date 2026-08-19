@@ -1,8 +1,8 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { requireUser } from "../_shared/auth.ts";
+import { requireQuotaOrGuest } from "../_shared/calculo-guard.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { generateQueryEmbedding } from "../_shared/embeddings.ts";
-import { burstLimitMessage, checkRateLimit, extractEnv, monthlyLimitMessage } from "../_shared/rate-limit.ts";
+import { extractEnv } from "../_shared/rate-limit.ts";
 import { aiChatText } from "../_shared/ai.ts";
 
 const corsHeaders = {
@@ -39,9 +39,10 @@ Exemplos de enriquecimento:
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
-  const auth = await requireUser(req);
+  const auth = await requireQuotaOrGuest(req, "search", corsHeaders, 3);
   if (auth instanceof Response) return auth;
-  const _userId = auth.userId;
+  const _userId = auth.userId ?? undefined;
+  const isGuest = auth.guest;
 
   try {
     const { query, filters } = await req.json();
@@ -52,24 +53,6 @@ serve(async (req) => {
     const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
     const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 
-    // Optional auth — rate limit only if user is authenticated
-    const authHeader = req.headers.get("Authorization");
-    if (authHeader) {
-      const supa = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
-      const token = authHeader.replace("Bearer ", "");
-      const { data: { user } } = await supa.auth.getUser(token);
-      if (user) {
-        const env = extractEnv(req);
-        const { allowed, used, limit, plan, renewsAt, burstLimited } = await checkRateLimit(user.id, "search", SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, env);
-        if (!allowed) {
-          return new Response(JSON.stringify({
-            error: burstLimited ? burstLimitMessage() : monthlyLimitMessage("search", limit, plan),
-            limit_reached: !burstLimited, burst_limit: burstLimited === true, used, limit, plan, renews_at: renewsAt, upgrade_url: "/planos",
-          }), { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } });
-        }
-      }
-    }
-
     const SUPABASE_ANON_KEY = Deno.env.get("SUPABASE_ANON_KEY")!;
     const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
@@ -78,6 +61,8 @@ serve(async (req) => {
     let aiData: any = null;
 
     try {
+      if (isGuest) throw new Error("guest-skip");
+
       const content = await aiChatText({
         model: "light",
         functionName: "search-jurisprudencia",
@@ -108,7 +93,7 @@ serve(async (req) => {
       filter_ramo: filters?.ramo || null,
       filter_instancia: filters?.instancia || null,
       filter_comarca_pequena: filters?.comarca_pequena ?? null,
-      result_limit: filters?.limit || 20,
+      result_limit: isGuest ? 3 : (filters?.limit || 20),
       result_offset: filters?.offset || 0,
     });
 
@@ -116,7 +101,9 @@ serve(async (req) => {
     let vectorResults: any[] = [];
     let vectorError: string | null = null;
     try {
+      if (isGuest) throw new Error("guest-skip");
       const queryEmbedding = await generateQueryEmbedding(aiData?.query_expandida || query);
+
       const embeddingStr = `[${queryEmbedding.join(",")}]`;
       const { data: vResults, error: vErr } = await supabase.rpc("search_decisions_vector", {
         query_embedding: embeddingStr,
@@ -178,12 +165,16 @@ serve(async (req) => {
     const mergedResults = Array.from(resultMap.values())
       .sort((a, b) => b.combined_score - a.combined_score);
 
+    const limited = isGuest ? mergedResults.slice(0, 3) : mergedResults;
+
     return new Response(JSON.stringify({
-      results: mergedResults,
-      ai_expansion: aiData,
+      results: limited,
+      ai_expansion: isGuest ? null : aiData,
       query_used: searchQuery,
-      total: mergedResults.length,
+      total: limited.length,
+      guest_preview: isGuest,
       search_modes: {
+
         fts: (ftsResults || []).length,
         vector: vectorResults.length,
         vector_error: vectorError,

@@ -33,7 +33,7 @@ function useScrollReveal() {
 }
 
 const features = [
-  { icon: Search, title: "Busca de Jurisprudência", desc: "Pesquisa semântica em 27 tribunais brasileiros. Encontra decisões pelo conceito jurídico, inclusive de comarcas do interior que outros serviços não cobrem.", tag: "IA", href: "/jurisprudencia" },
+  { icon: Search, title: "Busca de Jurisprudência", desc: "Pesquisa semântica em 33 tribunais brasileiros. Encontra decisões pelo conceito jurídico, inclusive de comarcas do interior que outros serviços não cobrem.", tag: "IA", href: "/jurisprudencia" },
   { icon: Stethoscope, title: "Diagnóstico Jurídico", desc: "Descreva sua situação em linguagem simples e receba orientação jurídica acessível, com passos práticos.", tag: "Cidadão", href: "/diagnostico" },
   { icon: FileText, title: "Geração de Petições", desc: "Descreva os fatos e a IA gera a petição com fundamentação jurídica completa. Pronta para download em PDF e DOCX.", tag: "IA", href: "/peticao" },
   { icon: MessageSquare, title: "Chat Jurídico", desc: "Converse com a IA sobre qualquer tema jurídico brasileiro. Respostas fundamentadas com legislação e jurisprudência.", tag: "Chat", href: "/chat" },
@@ -138,7 +138,7 @@ function TJCounter() {
     const observer = new IntersectionObserver(([entry]) => {
       if (entry.isIntersecting && !started.current) {
         started.current = true;
-        const target = 5000;
+        const target = 6400;
         const duration = 1500;
         const increment = target / (duration / 16);
         let current = 0;
@@ -184,7 +184,7 @@ export default function LandingPage() {
     <div ref={revealRef} className="min-h-screen font-sans">
       <SEO
         title="Honorífico — IA Jurídica Brasileira para Cidadãos e Advogados"
-        description="Análise de documentos, diagnóstico jurídico, geração de petições, busca de jurisprudência em 27 tribunais e calculadoras. IA jurídica brasileira."
+        description="Análise de documentos, diagnóstico jurídico, geração de petições, busca de jurisprudência em 33 tribunais e calculadoras. IA jurídica brasileira."
         path="/"
         jsonLd={{
           "@context": "https://schema.org",
@@ -275,7 +275,7 @@ export default function LandingPage() {
               </p>
 
               <div className="flex gap-8 text-sm">
-                {[{ value: "27", label: "Tribunais cobertos" }, { value: "5k+", label: "Decisões indexadas" }, { value: "100%", label: "Dados públicos oficiais" }].map((s) => (
+                {[{ value: "33", label: "Tribunais cobertos" }, { value: "6k+", label: "Decisões indexadas" }, { value: "100%", label: "Dados públicos oficiais" }].map((s) => (
                   <div key={s.label}>
                     <div className="text-2xl font-bold text-gold">{s.value}</div>
                     <div className="text-white/40">{s.label}</div>
@@ -411,7 +411,7 @@ export default function LandingPage() {
               </div>
             </div>
             <div data-reveal className="opacity-0 translate-y-6 transition-all duration-700 delay-200 rounded-2xl border border-white/10 bg-white/5 p-6">
-              <div className="text-xs text-white/30 uppercase tracking-widest mb-4">27 Tribunais de Justiça</div>
+              <div className="text-xs text-white/30 uppercase tracking-widest mb-4">33 Tribunais e Cortes</div>
               <div className="grid grid-cols-5 gap-2">
                 {tjs.map((tj) => (
                   <div key={tj} className="rounded-lg border border-gold/20 bg-gold/5 px-2 py-2 text-center text-xs font-mono font-semibold text-gold hover:bg-gold/15 transition-colors">
@@ -461,7 +461,7 @@ export default function LandingPage() {
               </div>
               <h3 className="font-serif text-2xl font-bold text-white mb-4">Advogados</h3>
               <ul className="space-y-3 mb-6">
-                {["Busca semântica de jurisprudência em 27 TJs", "Geração automática de petições com IA", "Painel completo com gestão de clientes", "Análise inteligente de documentos", "Download em PDF e DOCX"].map((b) => (
+                {["Busca semântica de jurisprudência em 33 tribunais", "Geração automática de petições com IA", "Painel completo com gestão de clientes", "Análise inteligente de documentos", "Download em PDF e DOCX"].map((b) => (
                   <li key={b} className="flex items-start gap-3 text-sm text-white/70"><Check className="h-4 w-4 text-gold mt-0.5 shrink-0" />{b}</li>
                 ))}
               </ul>

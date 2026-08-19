@@ -52,6 +52,8 @@ interface SearchResponse {
   } | null;
   query_used: string;
   total: number;
+  guest_preview?: boolean;
+
 }
 
 const TRIBUNAIS = ["STF", "STJ", "TST", "TJSP", "TJMG", "TJRS", "TJPR", "TJSC", "TJRJ", "TRF1", "TRF3"];
@@ -71,6 +73,8 @@ export default function Jurisprudencia() {
   const [showFilters, setShowFilters] = useState(false);
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [hasSearched, setHasSearched] = useState(false);
+  const [guestPreview, setGuestPreview] = useState(false);
+
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const { toast } = useToast();
 
@@ -131,13 +135,31 @@ if (!res.ok) {
           setLoading(false);
           return;
         }
+        if (res.status === 401) {
+          toast({
+            title: "Crie sua conta grátis para continuar",
+            description:
+              errData?.error ||
+              "As buscas de demonstração acabaram. A conta gratuita já vem com 7 dias do plano Profissional.",
+            action: (
+              <Button variant="outline" size="sm" onClick={() => navigate("/auth")}>
+                Criar conta
+              </Button>
+            ),
+          });
+          setLoading(false);
+          return;
+        }
         throw new Error(errData?.error || `Erro ${res.status}`);
       }
 
       const response = await res.json() as SearchResponse;
       notifyUsageConsumed();
+      setGuestPreview(!!response.guest_preview);
       setResults(response.results || []);
       setAiExpansion(response.ai_expansion);
+
+
     } catch (e: any) {
       console.error("Search error:", e);
       toast({
@@ -285,6 +307,24 @@ if (!res.ok) {
               {results.length === 0 ? "Nenhuma decisão encontrada." : `${results.length} decisão(ões) encontrada(s)`}
             </p>
           )}
+
+          {guestPreview && !loading && (
+            <Card className="mb-4 border-accent/30 bg-accent/5">
+              <CardContent className="flex flex-col gap-3 py-4 sm:flex-row sm:items-center sm:justify-between">
+                <div>
+                  <p className="text-sm font-medium text-foreground">Você está vendo uma prévia limitada</p>
+                  <p className="text-sm text-muted-foreground">
+                    Crie sua conta grátis para ver todos os resultados, usar a busca semântica com IA e filtros avançados.
+                  </p>
+                </div>
+                <Button className="shrink-0" onClick={() => navigate("/auth")}>
+                  Criar conta grátis
+                </Button>
+              </CardContent>
+            </Card>
+          )}
+
+
 
           {/* Loading */}
           {loading && (

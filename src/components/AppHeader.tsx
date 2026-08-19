@@ -62,8 +62,9 @@ function NavButton({ item, active, onClick, compact }: { item: NavItem; active: 
 }
 
 export function AppHeader() {
-  const { signOut } = useAuth();
+  const { signOut, user } = useAuth();
   const { isLawyer, loading } = useUserProfile();
+
   const navigate = useNavigate();
   const location = useLocation();
   const [sheetOpen, setSheetOpen] = useState(false);
@@ -85,7 +86,8 @@ export function AppHeader() {
   };
 
   const profileBadge = (variant: "small" | "full" = "full") => {
-    if (loading) return null;
+    if (loading || !user) return null;
+
     return (
       <span className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-medium ${
         isLawyer ? "bg-gold/20 text-gold-light" : "bg-white/10 text-white/70"
@@ -161,6 +163,26 @@ export function AppHeader() {
     </DropdownMenu>
   );
 
+  const guestActions = (
+    <div className="flex items-center gap-2">
+      <button
+        onClick={() => navigate("/auth")}
+        className="px-3 py-1.5 rounded-md text-sm font-medium text-white/70 hover:text-white hover:bg-white/5 transition-colors"
+      >
+        Entrar
+      </button>
+      <button
+        onClick={() => navigate("/auth?mode=signup")}
+        className="px-3 py-1.5 rounded-md text-sm font-semibold bg-gold text-navy hover:bg-gold-light transition-colors"
+      >
+        Criar conta grátis
+      </button>
+    </div>
+  );
+
+
+
+
   const sheetSection = (items: NavItem[], label: string) => (
     <>
       <div className="text-xs font-semibold text-white/40 px-2 mb-2 tracking-wider">{label}</div>
@@ -195,7 +217,7 @@ export function AppHeader() {
           ))}
           {toolsMenu}
           <div className="w-px h-6 bg-white/10 mx-1" />
-          {accountMenu}
+          {user ? accountMenu : guestActions}
         </nav>
 
         {/* Tablet (md–lg): ícones sem rótulo */}
@@ -205,7 +227,8 @@ export function AppHeader() {
           ))}
           {toolsMenu}
           <div className="w-px h-6 bg-white/10 mx-1" />
-          {accountMenu}
+          {user ? accountMenu : guestActions}
+
         </nav>
 
         {/* Mobile (<768px) */}
@@ -225,22 +248,41 @@ export function AppHeader() {
                 </SheetTitle>
               </SheetHeader>
               <div className="mt-4">{profileBadge("full")}</div>
-              <div className="mt-3 rounded-md bg-white/5">
-                <UsageSummaryCompact onNavigate={() => setSheetOpen(false)} />
-              </div>
+              {user && (
+                <div className="mt-3 rounded-md bg-white/5">
+                  <UsageSummaryCompact onNavigate={() => setSheetOpen(false)} />
+                </div>
+              )}
 
               <nav className="mt-6 flex flex-col gap-1">
                 {sheetSection(primaryNav, "PRINCIPAIS")}
                 <div className="mt-4" />
                 {sheetSection(tools, "FERRAMENTAS")}
                 <div className="mt-4" />
-                {sheetSection(accountNav, "CONTA")}
-                <div className="h-px bg-white/10 my-3" />
-                <button onClick={handleSignOut} className="flex items-center gap-3 w-full px-3 py-2.5 rounded-md text-sm font-medium text-red-400/80 hover:text-red-400 hover:bg-white/5 transition-colors">
-                  <LogOut className="h-5 w-5" />
-                  Sair
-                </button>
+                {user ? (
+                  <>
+                    {sheetSection(accountNav, "CONTA")}
+                    <div className="h-px bg-white/10 my-3" />
+                    <button onClick={handleSignOut} className="flex items-center gap-3 w-full px-3 py-2.5 rounded-md text-sm font-medium text-red-400/80 hover:text-red-400 hover:bg-white/5 transition-colors">
+                      <LogOut className="h-5 w-5" />
+                      Sair
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    {sheetSection([{ path: "/planos", label: "Planos", icon: Crown }], "CONTA")}
+                    <div className="h-px bg-white/10 my-3" />
+                    <button onClick={() => handleNavigate("/auth")} className="flex items-center gap-3 w-full px-3 py-2.5 rounded-md text-sm font-medium text-white/70 hover:text-white hover:bg-white/5 transition-colors">
+                      <User className="h-5 w-5" />
+                      Entrar
+                    </button>
+                    <button onClick={() => handleNavigate("/auth?mode=signup")} className="mt-1 flex items-center justify-center gap-2 w-full px-3 py-2.5 rounded-md text-sm font-semibold bg-gold text-navy hover:bg-gold-light transition-colors">
+                      Criar conta grátis
+                    </button>
+                  </>
+                )}
               </nav>
+
             </SheetContent>
           </Sheet>
         </div>
