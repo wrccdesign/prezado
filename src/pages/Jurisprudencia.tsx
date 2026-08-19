@@ -73,6 +73,8 @@ export default function Jurisprudencia() {
   const [showFilters, setShowFilters] = useState(false);
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [hasSearched, setHasSearched] = useState(false);
+  const [guestPreview, setGuestPreview] = useState(false);
+
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const { toast } = useToast();
 
