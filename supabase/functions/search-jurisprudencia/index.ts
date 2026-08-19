@@ -163,12 +163,16 @@ serve(async (req) => {
     const mergedResults = Array.from(resultMap.values())
       .sort((a, b) => b.combined_score - a.combined_score);
 
+    const limited = isGuest ? mergedResults.slice(0, 3) : mergedResults;
+
     return new Response(JSON.stringify({
-      results: mergedResults,
-      ai_expansion: aiData,
+      results: limited,
+      ai_expansion: isGuest ? null : aiData,
       query_used: searchQuery,
-      total: mergedResults.length,
+      total: limited.length,
+      guest_preview: isGuest,
       search_modes: {
+
         fts: (ftsResults || []).length,
         vector: vectorResults.length,
         vector_error: vectorError,
