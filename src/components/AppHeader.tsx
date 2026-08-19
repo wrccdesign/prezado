@@ -62,8 +62,9 @@ function NavButton({ item, active, onClick, compact }: { item: NavItem; active: 
 }
 
 export function AppHeader() {
-  const { signOut } = useAuth();
+  const { signOut, user } = useAuth();
   const { isLawyer, loading } = useUserProfile();
+
   const navigate = useNavigate();
   const location = useLocation();
   const [sheetOpen, setSheetOpen] = useState(false);
