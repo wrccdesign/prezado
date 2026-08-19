@@ -52,6 +52,8 @@ interface SearchResponse {
   } | null;
   query_used: string;
   total: number;
+  guest_preview?: boolean;
+
 }
 
 const TRIBUNAIS = ["STF", "STJ", "TST", "TJSP", "TJMG", "TJRS", "TJPR", "TJSC", "TJRJ", "TRF1", "TRF3"];
