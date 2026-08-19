@@ -525,11 +525,12 @@ if (!res.ok) {
             <div className="text-center py-16">
               <Scale className="h-12 w-12 mx-auto text-muted-foreground/30 mb-4" />
               <h2 className="font-serif text-lg font-semibold text-foreground mb-2">
-                Pesquise jurisprudência brasileira
+                Consulte processos e decisões
               </h2>
               <p className="text-sm text-muted-foreground max-w-md mx-auto">
-                Descreva a situação jurídica em linguagem natural. A IA expande sua busca com termos técnicos e encontra decisões relevantes.
+                Descreva a situação jurídica em linguagem natural. A IA expande sua busca com termos técnicos e localiza processos nos dados oficiais do CNJ, além das decisões com ementa já indexadas.
               </p>
+
             </div>
           )}
         </div>
