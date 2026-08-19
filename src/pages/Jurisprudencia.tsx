@@ -383,6 +383,11 @@ if (!res.ok) {
                           {d.tribunal}
                         </Badge>
                       )}
+                      {!d.ementa && (
+                        <Badge variant="outline" className="text-xs text-muted-foreground">
+                          Andamento processual
+                        </Badge>
+                      )}
                       {d.resultado && (
                         <Badge className={`text-xs ${resultadoColor(d.resultado)}`}>
                           {d.resultado}
@@ -394,6 +399,7 @@ if (!res.ok) {
                           Interior
                         </Badge>
                       )}
+
                       {d.instancia && (
                         <span className="text-xs text-muted-foreground">
                           {d.instancia === "1grau" ? "1º Grau" : d.instancia === "2grau" ? "2º Grau" : "Superior"}
@@ -417,8 +423,9 @@ if (!res.ok) {
     {d.ementa || d.resumo_ia}
   </p>
 ) : (
-  <p className="text-sm italic text-muted-foreground">Ementa não disponível</p>
+  <p className="text-sm italic text-muted-foreground">Sem teor decisório disponível — apenas dados de tramitação.</p>
 )}
+
 
                   {/* Processo number */}
                   {d.numero_processo && !d.numero_processo.includes('<UNKNOWN>') && (
@@ -487,19 +494,22 @@ if (!res.ok) {
                         {copiedId === d.id ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
                         {copiedId === d.id ? "Copiado" : "Citar"}
                       </button>
-                     {d.source_url && (
-  
-   <a href={d.source_url}
-    target="_blank"
-    rel="noopener noreferrer"
-    onClick={(e) => e.stopPropagation()}
-    className="text-xs text-emerald-600 hover:text-emerald-700 flex items-center gap-1 font-medium"
-    title="Decisão verificada — link para o tribunal original"
-  >
-    <Check className="h-3 w-3" />
-    Fonte verificada
-  </a>
-)}
+                     {d.numero_processo && !d.numero_processo.includes('<UNKNOWN>') && (
+                       <button
+                         onClick={(e) => {
+                           e.preventDefault();
+                           e.stopPropagation();
+                           navigator.clipboard.writeText(d.numero_processo!);
+                           toast({ title: "Nº CNJ copiado", description: "Cole na consulta processual do tribunal de origem." });
+                         }}
+                         className="text-xs text-muted-foreground hover:text-accent flex items-center gap-1 transition-colors"
+                         title="Copiar número CNJ do processo"
+                       >
+                         <Copy className="h-3 w-3" />
+                         Copiar nº CNJ
+                       </button>
+                     )}
+
                      
                     </div>
                   </div>
