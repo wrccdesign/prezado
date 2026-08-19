@@ -353,11 +353,13 @@ export default function DecisaoDetalhe() {
                   {decision.comarca}/{decision.uf}
                 </span>
               )}
-              {decision.source_url && (
-                <a href={decision.source_url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 text-accent hover:underline">
-                  <ExternalLink className="h-3.5 w-3.5" /> Fonte original
-                </a>
+              {decision.numero_processo && (
+                <span className="flex items-center gap-1">
+                  <ExternalLink className="h-3.5 w-3.5" />
+                  Consulte pelo nº CNJ no portal do tribunal de origem
+                </span>
               )}
+
             </div>
 
             {/* Ementa */}

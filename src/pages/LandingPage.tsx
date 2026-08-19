@@ -33,11 +33,11 @@ function useScrollReveal() {
 }
 
 const features = [
-  { icon: Search, title: "Busca de Jurisprudência", desc: "Pesquisa semântica em 33 tribunais brasileiros. Encontra decisões pelo conceito jurídico, inclusive de comarcas do interior que outros serviços não cobrem.", tag: "IA", href: "/jurisprudencia" },
+  { icon: Search, title: "Consulta Processual", desc: "Consulte processos de 33 tribunais brasileiros com dados oficiais do CNJ/DataJud, incluindo comarcas do interior, com resumo de tramitação gerado por IA.", tag: "CNJ", href: "/jurisprudencia" },
   { icon: Stethoscope, title: "Diagnóstico Jurídico", desc: "Descreva sua situação em linguagem simples e receba orientação jurídica acessível, com passos práticos.", tag: "Cidadão", href: "/diagnostico" },
   { icon: FileText, title: "Geração de Petições", desc: "Descreva os fatos e a IA gera a petição com fundamentação jurídica completa. Pronta para download em PDF e DOCX.", tag: "IA", href: "/peticao" },
   { icon: MessageSquare, title: "Chat Jurídico", desc: "Converse com a IA sobre qualquer tema jurídico brasileiro. Respostas fundamentadas com legislação e jurisprudência.", tag: "Chat", href: "/chat" },
-  { icon: Calculator, title: "Calculadoras", desc: "Calculadoras de rescisão trabalhista, pensão alimentícia, prazos processuais e correção monetária.", tag: "4 tipos", href: "/calculadoras" },
+  { icon: Calculator, title: "Calculadoras", desc: "Correção monetária com índices oficiais do Banco Central e Lei 14.905/2024, prazos processuais, rescisão trabalhista e pensão alimentícia.", tag: "Dados oficiais", href: "/calculadoras" },
   { icon: LayoutDashboard, title: "Painel do Advogado", desc: "Dashboard completo com gestão de clientes, petições, modelos e configurações do escritório.", tag: "Pro", href: "/painel-advogado" },
 ];
 
@@ -159,7 +159,7 @@ function TJCounter() {
         <div className="text-3xl font-bold font-serif text-gold">
           {count.toLocaleString("pt-BR")}+
         </div>
-        <div className="text-xs text-white/40 mt-1">decisões indexadas</div>
+        <div className="text-xs text-white/40 mt-1">processos consultáveis</div>
       </div>
       <div className="text-xs text-right text-gold">
         Crescendo<br />diariamente
@@ -184,7 +184,8 @@ export default function LandingPage() {
     <div ref={revealRef} className="min-h-screen font-sans">
       <SEO
         title="Honorífico — IA Jurídica Brasileira"
-        description="Analise documentos, gere petições e pesquise jurisprudência de 33 tribunais. Comece grátis, sem cartão."
+        description="Consulte processos de 33 tribunais, calcule com índices oficiais do Banco Central e gere petições com IA. Comece grátis, sem cartão."
+
         path="/"
         image="/og/home.jpg"
         imageAlt="Honorífico — IA jurídica brasileira"
@@ -262,7 +263,8 @@ export default function LandingPage() {
                 <br />ao seu alcance
               </h1>
               <p className="text-lg text-white/60 max-w-[480px] mb-8 font-sans">
-                Encontre jurisprudência de qualquer tribunal do Brasil — inclusive do interior — com busca semântica que entende o direito, não só palavras.
+                Consulta processual em 33 tribunais, cálculos com índices oficiais do Banco Central e análise de casos com IA — tudo em um só lugar.
+
               </p>
               <div className="flex flex-wrap gap-3 mb-4">
                 <Button size="lg" className="bg-gold text-navy hover:bg-gold-light font-semibold text-base px-8" asChild>
@@ -277,7 +279,7 @@ export default function LandingPage() {
               </p>
 
               <div className="flex gap-8 text-sm">
-                {[{ value: "33", label: "Tribunais cobertos" }, { value: "6k+", label: "Decisões indexadas" }, { value: "100%", label: "Dados públicos oficiais" }].map((s) => (
+                {[{ value: "33", label: "Tribunais cobertos" }, { value: "6k+", label: "Processos consultáveis" }, { value: "100%", label: "Dados públicos oficiais" }].map((s) => (
                   <div key={s.label}>
                     <div className="text-2xl font-bold text-gold">{s.value}</div>
                     <div className="text-white/40">{s.label}</div>
@@ -289,7 +291,7 @@ export default function LandingPage() {
             {/* Mock busca ao vivo */}
             <div data-reveal className="opacity-0 translate-y-6 transition-all duration-700 delay-200 hidden lg:block">
               <div className="animate-float rounded-2xl border border-white/10 bg-white/5 backdrop-blur-sm p-6 max-w-lg ml-auto shadow-2xl">
-                <div className="text-xs text-white/30 uppercase tracking-widest mb-4">Busca Semântica — Ao Vivo</div>
+                <div className="text-xs text-white/30 uppercase tracking-widest mb-4">Consulta Processual — Ao Vivo</div>
                 <div className="flex items-center gap-3 rounded-lg bg-black/30 border border-white/10 px-4 py-3 mb-4">
                   <Search className="h-4 w-4 text-gold/60 shrink-0" />
                   <span className="font-mono text-sm text-white/70">{activeQuery}</span>
@@ -322,12 +324,13 @@ export default function LandingPage() {
         <div className="container mx-auto px-4 sm:px-6">
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 divide-y sm:divide-y-0 sm:divide-x divide-white/10">
             <div className="text-center py-2 sm:py-0 sm:px-6">
-              <div className="text-gold font-semibold text-sm mb-1">Busca Semântica</div>
-              <div className="text-white/40 text-xs">Encontra pelo conceito jurídico, não pela palavra exata</div>
+              <div className="text-gold font-semibold text-sm mb-1">Busca Assistida por IA</div>
+              <div className="text-white/40 text-xs">A IA traduz sua descrição em termos técnicos da busca</div>
             </div>
             <div className="text-center py-2 sm:py-0 sm:px-6">
               <div className="text-gold font-semibold text-sm mb-1">Interior Coberto</div>
-              <div className="text-white/40 text-xs">Decisões de comarcas que o JusBrasil não indexa</div>
+              <div className="text-white/40 text-xs">Processos de mais de 600 comarcas, inclusive as pequenas</div>
+
             </div>
             <div className="text-center py-2 sm:py-0 sm:px-6">
               <div className="text-gold font-semibold text-sm mb-1">Dados Oficiais</div>
@@ -381,20 +384,22 @@ export default function LandingPage() {
           <div data-reveal className="opacity-0 translate-y-6 transition-all duration-700 mb-14">
             <span className="text-sm text-gold font-semibold uppercase tracking-wider">Cobertura Nacional</span>
             <h2 className="font-serif text-3xl md:text-4xl font-bold text-white mt-3">
-              Jurisprudência do{" "}
+              Processos do{" "}
               <em className="text-gold" style={{ fontStyle: "italic" }}>Brasil inteiro</em>
               {" "}— inclusive do interior
             </h2>
             <p className="text-white/50 mt-3 max-w-xl">
-              A maioria das plataformas cobre apenas os grandes tribunais. O Honorífico vai além: indexa decisões de comarcas do interior que nenhum outro serviço alcança.
+              Consulta processual com dados oficiais do CNJ, cobrindo 33 tribunais, 23 UFs e mais de 600 comarcas — inclusive as pequenas. Nosso acervo de jurisprudência com ementa está em construção e cresce a cada semana.
             </p>
+
           </div>
           <div className="grid lg:grid-cols-2 gap-12 items-start">
             <div data-reveal className="opacity-0 translate-y-6 transition-all duration-700 space-y-6">
               {[
-                { n: "1", icon: Database, title: "Fonte oficial CNJ / DataJud", desc: "Todos os tribunais são obrigados por lei a reportar ao CNJ. Cobertura garantida e atualizada diariamente." },
-                { n: "2", icon: MapPin, title: "Portais dos próprios tribunais", desc: "Scraping direto nos sistemas e-SAJ, PJe e portais próprios para capturar ementas e texto integral das decisões." },
-                { n: "3", icon: Users, title: "Crowdsourcing verificado", desc: "Advogados contribuem com decisões raras do interior. Cada upload é validado pela IA antes de publicar." },
+                { n: "1", icon: Database, title: "Fonte oficial CNJ / DataJud", desc: "Todos os tribunais são obrigados por lei a reportar ao CNJ. É daí que vêm os dados de tramitação: classe, assunto, órgão julgador e movimentos." },
+                { n: "2", icon: MapPin, title: "Portais dos próprios tribunais", desc: "Coleta nos sistemas e-SAJ, PJe e portais próprios para capturar ementas e teor das decisões. Cobertura em expansão, tribunal a tribunal." },
+                { n: "3", icon: Users, title: "Resumo com IA", desc: "Cada processo recebe um resumo objetivo da tramitação e dos temas jurídicos envolvidos, gerado a partir dos dados oficiais — sem inventar teor." },
+
               ].map((item) => (
                 <div key={item.n} className="flex items-start gap-4">
                   <div className="h-8 w-8 rounded-full border border-gold/30 bg-gold/10 flex items-center justify-center shrink-0 text-gold text-sm font-bold font-serif">
@@ -463,7 +468,7 @@ export default function LandingPage() {
               </div>
               <h3 className="font-serif text-2xl font-bold text-white mb-4">Advogados</h3>
               <ul className="space-y-3 mb-6">
-                {["Busca semântica de jurisprudência em 33 tribunais", "Geração automática de petições com IA", "Painel completo com gestão de clientes", "Análise inteligente de documentos", "Download em PDF e DOCX"].map((b) => (
+                {["Consulta processual em 33 tribunais com dados do CNJ", "Cálculos com índices oficiais do Banco Central", "Geração automática de petições com IA", "Painel completo com gestão de clientes", "Download em PDF e DOCX"].map((b) => (
                   <li key={b} className="flex items-start gap-3 text-sm text-white/70"><Check className="h-4 w-4 text-gold mt-0.5 shrink-0" />{b}</li>
                 ))}
               </ul>

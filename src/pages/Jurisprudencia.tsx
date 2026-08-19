@@ -184,11 +184,12 @@ if (!res.ok) {
     <div className="min-h-screen flex flex-col bg-background">
       <AppHeader />
       <SEO
-        title="Busca de Jurisprudência com IA — 33 Tribunais"
-        description="Pesquise precedentes pelo conceito jurídico, não só por palavra-chave. Decisões de 33 tribunais brasileiros. Busca grátis."
+        title="Consulta Processual e Jurisprudência — 33 Tribunais"
+        description="Consulte processos de 33 tribunais brasileiros com dados oficiais do CNJ e resumo por IA. Acervo de jurisprudência com ementa em expansão. Grátis."
         path="/jurisprudencia"
         image="/og/jurisprudencia.jpg"
-        imageAlt="Busca de jurisprudência em 33 tribunais brasileiros — Honorífico"
+        imageAlt="Consulta processual em 33 tribunais brasileiros — Honorífico"
+
         jsonLd={[
           {
             "@context": "https://schema.org",
@@ -350,7 +351,7 @@ if (!res.ok) {
                 <div>
                   <p className="text-sm font-medium text-foreground">Você está vendo uma prévia limitada</p>
                   <p className="text-sm text-muted-foreground">
-                    Crie sua conta grátis para ver todos os resultados, usar a busca semântica com IA e filtros avançados.
+                    Crie sua conta grátis para ver todos os resultados, usar a expansão de busca com IA e filtros avançados.
                   </p>
                 </div>
                 <Button className="shrink-0" onClick={() => navigate("/auth")}>
@@ -383,6 +384,11 @@ if (!res.ok) {
                           {d.tribunal}
                         </Badge>
                       )}
+                      {!d.ementa && (
+                        <Badge variant="outline" className="text-xs text-muted-foreground">
+                          Andamento processual
+                        </Badge>
+                      )}
                       {d.resultado && (
                         <Badge className={`text-xs ${resultadoColor(d.resultado)}`}>
                           {d.resultado}
@@ -394,6 +400,7 @@ if (!res.ok) {
                           Interior
                         </Badge>
                       )}
+
                       {d.instancia && (
                         <span className="text-xs text-muted-foreground">
                           {d.instancia === "1grau" ? "1º Grau" : d.instancia === "2grau" ? "2º Grau" : "Superior"}
@@ -417,8 +424,9 @@ if (!res.ok) {
     {d.ementa || d.resumo_ia}
   </p>
 ) : (
-  <p className="text-sm italic text-muted-foreground">Ementa não disponível</p>
+  <p className="text-sm italic text-muted-foreground">Sem teor decisório disponível — apenas dados de tramitação.</p>
 )}
+
 
                   {/* Processo number */}
                   {d.numero_processo && !d.numero_processo.includes('<UNKNOWN>') && (
@@ -487,19 +495,22 @@ if (!res.ok) {
                         {copiedId === d.id ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
                         {copiedId === d.id ? "Copiado" : "Citar"}
                       </button>
-                     {d.source_url && (
-  
-   <a href={d.source_url}
-    target="_blank"
-    rel="noopener noreferrer"
-    onClick={(e) => e.stopPropagation()}
-    className="text-xs text-emerald-600 hover:text-emerald-700 flex items-center gap-1 font-medium"
-    title="Decisão verificada — link para o tribunal original"
-  >
-    <Check className="h-3 w-3" />
-    Fonte verificada
-  </a>
-)}
+                     {d.numero_processo && !d.numero_processo.includes('<UNKNOWN>') && (
+                       <button
+                         onClick={(e) => {
+                           e.preventDefault();
+                           e.stopPropagation();
+                           navigator.clipboard.writeText(d.numero_processo!);
+                           toast({ title: "Nº CNJ copiado", description: "Cole na consulta processual do tribunal de origem." });
+                         }}
+                         className="text-xs text-muted-foreground hover:text-accent flex items-center gap-1 transition-colors"
+                         title="Copiar número CNJ do processo"
+                       >
+                         <Copy className="h-3 w-3" />
+                         Copiar nº CNJ
+                       </button>
+                     )}
+
                      
                     </div>
                   </div>
@@ -514,11 +525,12 @@ if (!res.ok) {
             <div className="text-center py-16">
               <Scale className="h-12 w-12 mx-auto text-muted-foreground/30 mb-4" />
               <h2 className="font-serif text-lg font-semibold text-foreground mb-2">
-                Pesquise jurisprudência brasileira
+                Consulte processos e decisões
               </h2>
               <p className="text-sm text-muted-foreground max-w-md mx-auto">
-                Descreva a situação jurídica em linguagem natural. A IA expande sua busca com termos técnicos e encontra decisões relevantes.
+                Descreva a situação jurídica em linguagem natural. A IA expande sua busca com termos técnicos e localiza processos nos dados oficiais do CNJ, além das decisões com ementa já indexadas.
               </p>
+
             </div>
           )}
         </div>
