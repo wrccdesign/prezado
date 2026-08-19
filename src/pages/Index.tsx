@@ -213,20 +213,19 @@ export default function Index() {
               disabled={loading || parsing}
             />
 
-
             {/* Text Preview after PDF extraction */}
             {fileName && text && (
-              <div className="rounded-lg border border-primary/20 bg-primary/5 p-3">
+              <div className="rounded-lg border border-primary/20 bg-primary/5 p-3 sm:p-4">
                 <button
                   onClick={() => setShowPreview(!showPreview)}
                   className="flex items-center gap-2 w-full text-left text-sm font-medium text-foreground"
                 >
-                  <Eye className="h-4 w-4 text-primary" />
-                  Preview do texto extraído de {fileName}
-                  {showPreview ? <ChevronUp className="h-4 w-4 ml-auto" /> : <ChevronDown className="h-4 w-4 ml-auto" />}
+                  <Eye className="h-4 w-4 shrink-0 text-primary" />
+                  <span className="truncate">Preview do texto extraído de {fileName}</span>
+                  {showPreview ? <ChevronUp className="h-4 w-4 ml-auto shrink-0" /> : <ChevronDown className="h-4 w-4 ml-auto shrink-0" />}
                 </button>
                 {showPreview && (
-                  <div className="mt-3 max-h-[300px] overflow-y-auto rounded border bg-background p-3 text-xs font-mono whitespace-pre-wrap text-muted-foreground">
+                  <div className="mt-3 max-h-[240px] sm:max-h-[320px] overflow-y-auto rounded-md border bg-background p-3 text-xs leading-relaxed font-mono whitespace-pre-wrap break-words text-muted-foreground">
                     {text.slice(0, 3000)}
                     {text.length > 3000 && (
                       <p className="mt-2 text-primary font-sans font-medium">
@@ -236,19 +235,19 @@ export default function Index() {
                   </div>
                 )}
                 {text.startsWith("[Não foi possível") && (
-                  <p className="mt-2 text-xs text-destructive">
+                  <p className="mt-3 text-xs leading-relaxed text-destructive">
                     ⚠️ A extração pode ter falhado. Tente copiar e colar o texto manualmente.
                   </p>
                 )}
                 {partialExtraction && !text.startsWith("[Não foi possível") && (
-                  <p className="mt-2 text-xs text-amber-600 dark:text-amber-400">
+                  <p className="mt-3 text-xs leading-relaxed text-amber-600 dark:text-amber-400">
                     ⚠️ Extração parcial — o PDF é grande e apenas parte do texto foi processada via OCR. Para melhores resultados, use um PDF menor ou cole o texto manualmente.
                   </p>
                 )}
               </div>
             )}
 
-            <div className="flex flex-wrap items-center gap-3">
+            <div className="flex flex-col sm:flex-row sm:flex-wrap sm:items-center gap-3">
               <input
                 ref={fileRef}
                 type="file"
@@ -258,6 +257,7 @@ export default function Index() {
               />
               <Button
                 variant="outline"
+                className="w-full sm:w-auto"
                 onClick={() => fileRef.current?.click()}
                 disabled={loading || parsing}
               >
@@ -270,20 +270,20 @@ export default function Index() {
               </Button>
 
               {parsing && (
-                <div className="flex-1 min-w-[200px] space-y-1">
-                  <div className="flex items-center justify-between text-xs text-muted-foreground">
-                    <span>{parseStage}</span>
-                    <span>{parseProgress}%</span>
+                <div className="w-full sm:flex-1 sm:min-w-[200px] space-y-1.5">
+                  <div className="flex items-center justify-between gap-2 text-xs text-muted-foreground">
+                    <span className="truncate">{parseStage}</span>
+                    <span className="shrink-0 tabular-nums">{parseProgress}%</span>
                   </div>
                   <Progress value={parseProgress} className="h-2" />
                 </div>
               )}
 
               {fileName && (
-                <div className="flex items-center gap-2 rounded-md bg-muted px-3 py-1.5 text-sm">
-                  <FileText className="h-4 w-4 text-muted-foreground" />
-                  <span className="text-foreground">{fileName}</span>
-                  <button onClick={() => { setFileName(null); setShowPreview(false); }} className="text-muted-foreground hover:text-foreground">
+                <div className="flex w-full sm:w-auto max-w-full items-center gap-2 rounded-md bg-muted px-3 py-2 text-sm">
+                  <FileText className="h-4 w-4 shrink-0 text-muted-foreground" />
+                  <span className="truncate text-foreground">{fileName}</span>
+                  <button onClick={() => { setFileName(null); setShowPreview(false); }} className="ml-auto shrink-0 text-muted-foreground hover:text-foreground">
                     <X className="h-3.5 w-3.5" />
                   </button>
                 </div>
@@ -291,7 +291,7 @@ export default function Index() {
             </div>
 
             <Button
-              className="w-full"
+              className="w-full h-12 text-base font-semibold"
               size="lg"
               onClick={handleAnalyze}
               disabled={loading || !text.trim()}
@@ -303,6 +303,7 @@ export default function Index() {
               )}
               {loading ? "Analisando..." : "Analisar Texto"}
             </Button>
+
           </CardContent>
         </Card>
       </main>
