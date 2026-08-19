@@ -33,11 +33,11 @@ function useScrollReveal() {
 }
 
 const features = [
-  { icon: Search, title: "Busca de Jurisprudência", desc: "Pesquisa semântica em 33 tribunais brasileiros. Encontra decisões pelo conceito jurídico, inclusive de comarcas do interior que outros serviços não cobrem.", tag: "IA", href: "/jurisprudencia" },
+  { icon: Search, title: "Consulta Processual", desc: "Consulte processos de 33 tribunais brasileiros com dados oficiais do CNJ/DataJud, incluindo comarcas do interior, com resumo de tramitação gerado por IA.", tag: "CNJ", href: "/jurisprudencia" },
   { icon: Stethoscope, title: "Diagnóstico Jurídico", desc: "Descreva sua situação em linguagem simples e receba orientação jurídica acessível, com passos práticos.", tag: "Cidadão", href: "/diagnostico" },
   { icon: FileText, title: "Geração de Petições", desc: "Descreva os fatos e a IA gera a petição com fundamentação jurídica completa. Pronta para download em PDF e DOCX.", tag: "IA", href: "/peticao" },
   { icon: MessageSquare, title: "Chat Jurídico", desc: "Converse com a IA sobre qualquer tema jurídico brasileiro. Respostas fundamentadas com legislação e jurisprudência.", tag: "Chat", href: "/chat" },
-  { icon: Calculator, title: "Calculadoras", desc: "Calculadoras de rescisão trabalhista, pensão alimentícia, prazos processuais e correção monetária.", tag: "4 tipos", href: "/calculadoras" },
+  { icon: Calculator, title: "Calculadoras", desc: "Correção monetária com índices oficiais do Banco Central e Lei 14.905/2024, prazos processuais, rescisão trabalhista e pensão alimentícia.", tag: "Dados oficiais", href: "/calculadoras" },
   { icon: LayoutDashboard, title: "Painel do Advogado", desc: "Dashboard completo com gestão de clientes, petições, modelos e configurações do escritório.", tag: "Pro", href: "/painel-advogado" },
 ];
 
@@ -159,7 +159,7 @@ function TJCounter() {
         <div className="text-3xl font-bold font-serif text-gold">
           {count.toLocaleString("pt-BR")}+
         </div>
-        <div className="text-xs text-white/40 mt-1">decisões indexadas</div>
+        <div className="text-xs text-white/40 mt-1">processos consultáveis</div>
       </div>
       <div className="text-xs text-right text-gold">
         Crescendo<br />diariamente
@@ -184,7 +184,8 @@ export default function LandingPage() {
     <div ref={revealRef} className="min-h-screen font-sans">
       <SEO
         title="Honorífico — IA Jurídica Brasileira"
-        description="Analise documentos, gere petições e pesquise jurisprudência de 33 tribunais. Comece grátis, sem cartão."
+        description="Consulte processos de 33 tribunais, calcule com índices oficiais do Banco Central e gere petições com IA. Comece grátis, sem cartão."
+
         path="/"
         image="/og/home.jpg"
         imageAlt="Honorífico — IA jurídica brasileira"
@@ -262,7 +263,8 @@ export default function LandingPage() {
                 <br />ao seu alcance
               </h1>
               <p className="text-lg text-white/60 max-w-[480px] mb-8 font-sans">
-                Encontre jurisprudência de qualquer tribunal do Brasil — inclusive do interior — com busca semântica que entende o direito, não só palavras.
+                Consulta processual em 33 tribunais, cálculos com índices oficiais do Banco Central e análise de casos com IA — tudo em um só lugar.
+
               </p>
               <div className="flex flex-wrap gap-3 mb-4">
                 <Button size="lg" className="bg-gold text-navy hover:bg-gold-light font-semibold text-base px-8" asChild>
@@ -277,7 +279,7 @@ export default function LandingPage() {
               </p>
 
               <div className="flex gap-8 text-sm">
-                {[{ value: "33", label: "Tribunais cobertos" }, { value: "6k+", label: "Decisões indexadas" }, { value: "100%", label: "Dados públicos oficiais" }].map((s) => (
+                {[{ value: "33", label: "Tribunais cobertos" }, { value: "6k+", label: "Processos consultáveis" }, { value: "100%", label: "Dados públicos oficiais" }].map((s) => (
                   <div key={s.label}>
                     <div className="text-2xl font-bold text-gold">{s.value}</div>
                     <div className="text-white/40">{s.label}</div>
