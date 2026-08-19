@@ -86,7 +86,8 @@ export function AppHeader() {
   };
 
   const profileBadge = (variant: "small" | "full" = "full") => {
-    if (loading) return null;
+    if (loading || !user) return null;
+
     return (
       <span className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-medium ${
         isLawyer ? "bg-gold/20 text-gold-light" : "bg-white/10 text-white/70"
