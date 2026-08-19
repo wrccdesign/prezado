@@ -58,7 +58,6 @@ serve(async (req) => {
 
   const quota = await requireQuotaOrGuest(req, "calculo", corsHeaders);
   if (quota instanceof Response) return quota;
-  const isGuest = quota.guest;
 
 
 
