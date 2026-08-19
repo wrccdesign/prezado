@@ -217,7 +217,7 @@ export function AppHeader() {
           ))}
           {toolsMenu}
           <div className="w-px h-6 bg-white/10 mx-1" />
-          {accountMenu}
+          {user ? accountMenu : guestActions}
         </nav>
 
         {/* Tablet (md–lg): ícones sem rótulo */}
@@ -227,7 +227,8 @@ export function AppHeader() {
           ))}
           {toolsMenu}
           <div className="w-px h-6 bg-white/10 mx-1" />
-          {accountMenu}
+          {user ? accountMenu : guestActions}
+
         </nav>
 
         {/* Mobile (<768px) */}
