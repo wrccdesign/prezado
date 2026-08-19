@@ -248,22 +248,41 @@ export function AppHeader() {
                 </SheetTitle>
               </SheetHeader>
               <div className="mt-4">{profileBadge("full")}</div>
-              <div className="mt-3 rounded-md bg-white/5">
-                <UsageSummaryCompact onNavigate={() => setSheetOpen(false)} />
-              </div>
+              {user && (
+                <div className="mt-3 rounded-md bg-white/5">
+                  <UsageSummaryCompact onNavigate={() => setSheetOpen(false)} />
+                </div>
+              )}
 
               <nav className="mt-6 flex flex-col gap-1">
                 {sheetSection(primaryNav, "PRINCIPAIS")}
                 <div className="mt-4" />
                 {sheetSection(tools, "FERRAMENTAS")}
                 <div className="mt-4" />
-                {sheetSection(accountNav, "CONTA")}
-                <div className="h-px bg-white/10 my-3" />
-                <button onClick={handleSignOut} className="flex items-center gap-3 w-full px-3 py-2.5 rounded-md text-sm font-medium text-red-400/80 hover:text-red-400 hover:bg-white/5 transition-colors">
-                  <LogOut className="h-5 w-5" />
-                  Sair
-                </button>
+                {user ? (
+                  <>
+                    {sheetSection(accountNav, "CONTA")}
+                    <div className="h-px bg-white/10 my-3" />
+                    <button onClick={handleSignOut} className="flex items-center gap-3 w-full px-3 py-2.5 rounded-md text-sm font-medium text-red-400/80 hover:text-red-400 hover:bg-white/5 transition-colors">
+                      <LogOut className="h-5 w-5" />
+                      Sair
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    {sheetSection([{ path: "/planos", label: "Planos", icon: Crown }], "CONTA")}
+                    <div className="h-px bg-white/10 my-3" />
+                    <button onClick={() => handleNavigate("/auth")} className="flex items-center gap-3 w-full px-3 py-2.5 rounded-md text-sm font-medium text-white/70 hover:text-white hover:bg-white/5 transition-colors">
+                      <User className="h-5 w-5" />
+                      Entrar
+                    </button>
+                    <button onClick={() => handleNavigate("/auth?mode=signup")} className="mt-1 flex items-center justify-center gap-2 w-full px-3 py-2.5 rounded-md text-sm font-semibold bg-gold text-navy hover:bg-gold-light transition-colors">
+                      Criar conta grátis
+                    </button>
+                  </>
+                )}
               </nav>
+
             </SheetContent>
           </Sheet>
         </div>
