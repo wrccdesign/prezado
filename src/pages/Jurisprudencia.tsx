@@ -183,7 +183,43 @@ if (!res.ok) {
   return (
     <div className="min-h-screen flex flex-col bg-background">
       <AppHeader />
-      <SEO title="Busca de Jurisprudência — Honorífico" description="Pesquisa semântica em decisões de 27 tribunais brasileiros. Encontre precedentes pelo conceito jurídico." path="/jurisprudencia" />
+      <SEO
+        title="Busca de Jurisprudência com IA — 33 Tribunais"
+        description="Pesquise precedentes pelo conceito jurídico, não só por palavra-chave. Decisões de 33 tribunais brasileiros. Busca grátis."
+        path="/jurisprudencia"
+        image="/og/jurisprudencia.jpg"
+        imageAlt="Busca de jurisprudência em 33 tribunais brasileiros — Honorífico"
+        jsonLd={[
+          {
+            "@context": "https://schema.org",
+            "@type": "WebSite",
+            name: "Honorífico",
+            url: "https://honorifico.com.br/",
+            inLanguage: "pt-BR",
+            potentialAction: {
+              "@type": "SearchAction",
+              target: {
+                "@type": "EntryPoint",
+                urlTemplate: "https://honorifico.com.br/jurisprudencia?q={search_term_string}",
+              },
+              "query-input": "required name=search_term_string",
+            },
+          },
+          {
+            "@context": "https://schema.org",
+            "@type": "BreadcrumbList",
+            itemListElement: [
+              { "@type": "ListItem", position: 1, name: "Início", item: "https://honorifico.com.br/" },
+              {
+                "@type": "ListItem",
+                position: 2,
+                name: "Jurisprudência",
+                item: "https://honorifico.com.br/jurisprudencia",
+              },
+            ],
+          },
+        ]}
+      />
       <main className="flex-1">
         {/* Hero Search */}
         <div className="bg-primary text-primary-foreground py-8 sm:py-12">

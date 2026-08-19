@@ -190,7 +190,13 @@ export default function Index() {
     <div className="min-h-screen bg-background">
       <AppHeader />
       <LegalDisclaimer />
-      <SEO title="Análise Jurídica com IA — Honorífico" description="Envie um documento ou cole um texto e receba análise jurídica estruturada com direitos, riscos e próximos passos." path="/" />
+      <SEO
+        title="Análise Jurídica com IA — Honorífico"
+        description="Envie um documento ou cole um texto e receba análise jurídica estruturada com direitos, riscos e próximos passos."
+        path="/"
+        image="/og/home.jpg"
+        imageAlt="Honorífico — IA jurídica brasileira"
+      />
       <main className="container max-w-3xl py-8 sm:py-12 px-4 sm:px-6">
         <div className="mb-6 sm:mb-8 animate-fade-in">
           <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold leading-tight text-foreground">Análise Jurídica com Inteligência Artificial</h1>
