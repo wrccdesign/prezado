@@ -184,11 +184,12 @@ if (!res.ok) {
     <div className="min-h-screen flex flex-col bg-background">
       <AppHeader />
       <SEO
-        title="Busca de Jurisprudência com IA — 33 Tribunais"
-        description="Pesquise precedentes pelo conceito jurídico, não só por palavra-chave. Decisões de 33 tribunais brasileiros. Busca grátis."
+        title="Consulta Processual e Jurisprudência — 33 Tribunais"
+        description="Consulte processos de 33 tribunais brasileiros com dados oficiais do CNJ e resumo por IA. Acervo de jurisprudência com ementa em expansão. Grátis."
         path="/jurisprudencia"
         image="/og/jurisprudencia.jpg"
-        imageAlt="Busca de jurisprudência em 33 tribunais brasileiros — Honorífico"
+        imageAlt="Consulta processual em 33 tribunais brasileiros — Honorífico"
+
         jsonLd={[
           {
             "@context": "https://schema.org",
@@ -350,7 +351,7 @@ if (!res.ok) {
                 <div>
                   <p className="text-sm font-medium text-foreground">Você está vendo uma prévia limitada</p>
                   <p className="text-sm text-muted-foreground">
-                    Crie sua conta grátis para ver todos os resultados, usar a busca semântica com IA e filtros avançados.
+                    Crie sua conta grátis para ver todos os resultados, usar a expansão de busca com IA e filtros avançados.
                   </p>
                 </div>
                 <Button className="shrink-0" onClick={() => navigate("/auth")}>
