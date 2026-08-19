@@ -291,7 +291,7 @@ export default function LandingPage() {
             {/* Mock busca ao vivo */}
             <div data-reveal className="opacity-0 translate-y-6 transition-all duration-700 delay-200 hidden lg:block">
               <div className="animate-float rounded-2xl border border-white/10 bg-white/5 backdrop-blur-sm p-6 max-w-lg ml-auto shadow-2xl">
-                <div className="text-xs text-white/30 uppercase tracking-widest mb-4">Busca Semântica — Ao Vivo</div>
+                <div className="text-xs text-white/30 uppercase tracking-widest mb-4">Consulta Processual — Ao Vivo</div>
                 <div className="flex items-center gap-3 rounded-lg bg-black/30 border border-white/10 px-4 py-3 mb-4">
                   <Search className="h-4 w-4 text-gold/60 shrink-0" />
                   <span className="font-mono text-sm text-white/70">{activeQuery}</span>
@@ -383,13 +383,14 @@ export default function LandingPage() {
           <div data-reveal className="opacity-0 translate-y-6 transition-all duration-700 mb-14">
             <span className="text-sm text-gold font-semibold uppercase tracking-wider">Cobertura Nacional</span>
             <h2 className="font-serif text-3xl md:text-4xl font-bold text-white mt-3">
-              Jurisprudência do{" "}
+              Processos do{" "}
               <em className="text-gold" style={{ fontStyle: "italic" }}>Brasil inteiro</em>
               {" "}— inclusive do interior
             </h2>
             <p className="text-white/50 mt-3 max-w-xl">
-              A maioria das plataformas cobre apenas os grandes tribunais. O Honorífico vai além: indexa decisões de comarcas do interior que nenhum outro serviço alcança.
+              Consulta processual com dados oficiais do CNJ, cobrindo 33 tribunais, 23 UFs e mais de 600 comarcas — inclusive as pequenas. Nosso acervo de jurisprudência com ementa está em construção e cresce a cada semana.
             </p>
+
           </div>
           <div className="grid lg:grid-cols-2 gap-12 items-start">
             <div data-reveal className="opacity-0 translate-y-6 transition-all duration-700 space-y-6">
