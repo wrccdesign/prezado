@@ -308,6 +308,24 @@ if (!res.ok) {
             </p>
           )}
 
+          {guestPreview && !loading && (
+            <Card className="mb-4 border-accent/30 bg-accent/5">
+              <CardContent className="flex flex-col gap-3 py-4 sm:flex-row sm:items-center sm:justify-between">
+                <div>
+                  <p className="text-sm font-medium text-foreground">Você está vendo uma prévia limitada</p>
+                  <p className="text-sm text-muted-foreground">
+                    Crie sua conta grátis para ver todos os resultados, usar a busca semântica com IA e filtros avançados.
+                  </p>
+                </div>
+                <Button className="shrink-0" onClick={() => navigate("/auth")}>
+                  Criar conta grátis
+                </Button>
+              </CardContent>
+            </Card>
+          )}
+
+
+
           {/* Loading */}
           {loading && (
             <div className="flex flex-col items-center justify-center py-16 gap-3">
