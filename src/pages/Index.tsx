@@ -177,8 +177,8 @@ export default function Index() {
       <div className="min-h-screen bg-background">
         <AppHeader />
         <LegalDisclaimer />
-        <main className="container max-w-3xl py-6 sm:py-8 px-4 sm:px-6">
-          <h1 className="mb-4 sm:mb-6 text-xl sm:text-2xl font-bold text-foreground">Resultado da Análise</h1>
+        <main className="container max-w-3xl py-8 sm:py-12 px-4 sm:px-6">
+          <h1 className="mb-6 sm:mb-8 text-2xl sm:text-3xl lg:text-4xl font-bold text-foreground">Resultado da Análise</h1>
           <AnalysisResult result={result} onNewAnalysis={handleNewAnalysis} />
         </main>
         <AppFooter />
@@ -191,27 +191,28 @@ export default function Index() {
       <AppHeader />
       <LegalDisclaimer />
       <SEO title="Análise Jurídica com IA — Honorífico" description="Envie um documento ou cole um texto e receba análise jurídica estruturada com direitos, riscos e próximos passos." path="/" />
-      <main className="container max-w-3xl py-6 sm:py-8 px-4 sm:px-6">
+      <main className="container max-w-3xl py-8 sm:py-12 px-4 sm:px-6">
         <div className="mb-6 sm:mb-8 animate-fade-in">
-          <h1 className="text-xl sm:text-2xl font-bold text-foreground">Análise Jurídica com Inteligência Artificial</h1>
-          <p className="mt-1 text-sm sm:text-base text-muted-foreground">
+          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold leading-tight text-foreground">Análise Jurídica com Inteligência Artificial</h1>
+          <p className="mt-2 sm:mt-3 max-w-2xl text-sm sm:text-base leading-relaxed text-muted-foreground">
             Insira o texto ou faça upload de um documento para receber uma análise estruturada pela Honorífico.
           </p>
         </div>
 
         <Card className="animate-fade-in">
-          <CardHeader className="pb-3 sm:pb-6">
-            <CardTitle className="text-base sm:text-lg">Texto para Análise</CardTitle>
-            <CardDescription className="text-xs sm:text-sm">Cole o texto jurídico ou envie um arquivo (PDF: máx 5MB / TXT e DOCX: máx 10MB)</CardDescription>
+          <CardHeader className="pb-4 space-y-1.5">
+            <CardTitle className="text-lg sm:text-xl font-semibold">Texto para Análise</CardTitle>
+            <CardDescription className="text-xs sm:text-sm leading-relaxed">Cole o texto jurídico ou envie um arquivo (PDF: máx 5MB / TXT e DOCX: máx 10MB)</CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4">
+          <CardContent className="space-y-5">
             <Textarea
               placeholder="Cole aqui o texto jurídico que deseja analisar..."
-              className="min-h-[200px] resize-y font-sans"
+              className="min-h-[180px] sm:min-h-[240px] resize-y font-sans text-sm sm:text-base leading-relaxed"
               value={text}
               onChange={(e) => setText(e.target.value)}
               disabled={loading || parsing}
             />
+
 
             {/* Text Preview after PDF extraction */}
             {fileName && text && (
