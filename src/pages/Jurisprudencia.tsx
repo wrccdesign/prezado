@@ -135,13 +135,28 @@ if (!res.ok) {
           setLoading(false);
           return;
         }
+        if (res.status === 401) {
+          toast({
+            title: "Crie sua conta grátis para continuar",
+            description:
+              errData?.error ||
+              "As buscas de demonstração acabaram. A conta gratuita já vem com 7 dias do plano Profissional.",
+            action: (
+              <Button variant="outline" size="sm" onClick={() => navigate("/auth")}>
+                Criar conta
+              </Button>
+            ),
+          });
+          setLoading(false);
+          return;
+        }
         throw new Error(errData?.error || `Erro ${res.status}`);
       }
 
       const response = await res.json() as SearchResponse;
       notifyUsageConsumed();
-      setResults(response.results || []);
-      setAiExpansion(response.ai_expansion);
+      setGuestPreview(!!response.guest_preview);
+
     } catch (e: any) {
       console.error("Search error:", e);
       toast({
