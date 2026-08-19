@@ -341,11 +341,12 @@ export default function Planos() {
                     <Button
                       variant="outline"
                       className="w-full"
-                      disabled={isCurrent}
-                      onClick={() => !user && navigate("/auth")}
+                      disabled={!!user && isCurrent}
+                      onClick={() => !user && navigate("/auth?mode=signup")}
                     >
-                      {isCurrent ? "Plano atual" : user ? "Plano atual" : "Criar conta grátis"}
+                      {user ? (isCurrent ? "Plano atual" : "Incluído na sua conta") : "Criar conta grátis"}
                     </Button>
+
                   ) : cycle === "anual" && plan.annualPriceId ? (
                     <Button
                       className={`w-full ${plan.popular ? "bg-accent text-accent-foreground hover:bg-accent/90" : ""}`}
