@@ -395,9 +395,10 @@ export default function LandingPage() {
           <div className="grid lg:grid-cols-2 gap-12 items-start">
             <div data-reveal className="opacity-0 translate-y-6 transition-all duration-700 space-y-6">
               {[
-                { n: "1", icon: Database, title: "Fonte oficial CNJ / DataJud", desc: "Todos os tribunais são obrigados por lei a reportar ao CNJ. Cobertura garantida e atualizada diariamente." },
-                { n: "2", icon: MapPin, title: "Portais dos próprios tribunais", desc: "Scraping direto nos sistemas e-SAJ, PJe e portais próprios para capturar ementas e texto integral das decisões." },
-                { n: "3", icon: Users, title: "Crowdsourcing verificado", desc: "Advogados contribuem com decisões raras do interior. Cada upload é validado pela IA antes de publicar." },
+                { n: "1", icon: Database, title: "Fonte oficial CNJ / DataJud", desc: "Todos os tribunais são obrigados por lei a reportar ao CNJ. É daí que vêm os dados de tramitação: classe, assunto, órgão julgador e movimentos." },
+                { n: "2", icon: MapPin, title: "Portais dos próprios tribunais", desc: "Coleta nos sistemas e-SAJ, PJe e portais próprios para capturar ementas e teor das decisões. Cobertura em expansão, tribunal a tribunal." },
+                { n: "3", icon: Users, title: "Resumo com IA", desc: "Cada processo recebe um resumo objetivo da tramitação e dos temas jurídicos envolvidos, gerado a partir dos dados oficiais — sem inventar teor." },
+
               ].map((item) => (
                 <div key={item.n} className="flex items-start gap-4">
                   <div className="h-8 w-8 rounded-full border border-gold/30 bg-gold/10 flex items-center justify-center shrink-0 text-gold text-sm font-bold font-serif">
@@ -466,7 +467,7 @@ export default function LandingPage() {
               </div>
               <h3 className="font-serif text-2xl font-bold text-white mb-4">Advogados</h3>
               <ul className="space-y-3 mb-6">
-                {["Busca semântica de jurisprudência em 33 tribunais", "Geração automática de petições com IA", "Painel completo com gestão de clientes", "Análise inteligente de documentos", "Download em PDF e DOCX"].map((b) => (
+                {["Consulta processual em 33 tribunais com dados do CNJ", "Cálculos com índices oficiais do Banco Central", "Geração automática de petições com IA", "Painel completo com gestão de clientes", "Download em PDF e DOCX"].map((b) => (
                   <li key={b} className="flex items-start gap-3 text-sm text-white/70"><Check className="h-4 w-4 text-gold mt-0.5 shrink-0" />{b}</li>
                 ))}
               </ul>
