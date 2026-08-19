@@ -101,7 +101,9 @@ serve(async (req) => {
     let vectorResults: any[] = [];
     let vectorError: string | null = null;
     try {
+      if (isGuest) throw new Error("guest-skip");
       const queryEmbedding = await generateQueryEmbedding(aiData?.query_expandida || query);
+
       const embeddingStr = `[${queryEmbedding.join(",")}]`;
       const { data: vResults, error: vErr } = await supabase.rpc("search_decisions_vector", {
         query_embedding: embeddingStr,
