@@ -61,6 +61,8 @@ serve(async (req) => {
     let aiData: any = null;
 
     try {
+      if (isGuest) throw new Error("guest-skip");
+
       const content = await aiChatText({
         model: "light",
         functionName: "search-jurisprudencia",
