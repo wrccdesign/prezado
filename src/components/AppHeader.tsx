@@ -163,6 +163,23 @@ export function AppHeader() {
     </DropdownMenu>
   );
 
+  const guestActions = (
+    <div className="flex items-center gap-2">
+      <button
+        onClick={() => navigate("/auth")}
+        className="px-3 py-1.5 rounded-md text-sm font-medium text-white/70 hover:text-white hover:bg-white/5 transition-colors"
+      >
+        Entrar
+      </button>
+      <button
+        onClick={() => navigate("/auth?mode=signup")}
+        className="px-3 py-1.5 rounded-md text-sm font-semibold bg-gold text-navy hover:bg-gold-light transition-colors"
+      >
+        Criar conta grátis
+      </button>
+    </div>
+
+
   const sheetSection = (items: NavItem[], label: string) => (
     <>
       <div className="text-xs font-semibold text-white/40 px-2 mb-2 tracking-wider">{label}</div>
