@@ -183,9 +183,11 @@ export default function LandingPage() {
   return (
     <div ref={revealRef} className="min-h-screen font-sans">
       <SEO
-        title="Honorífico — IA Jurídica Brasileira para Cidadãos e Advogados"
-        description="Análise de documentos, diagnóstico jurídico, geração de petições, busca de jurisprudência em 33 tribunais e calculadoras. IA jurídica brasileira."
+        title="Honorífico — IA Jurídica Brasileira"
+        description="Analise documentos, gere petições e pesquise jurisprudência de 33 tribunais. Comece grátis, sem cartão."
         path="/"
+        image="/og/home.jpg"
+        imageAlt="Honorífico — IA jurídica brasileira"
         jsonLd={{
           "@context": "https://schema.org",
           "@type": "SoftwareApplication",

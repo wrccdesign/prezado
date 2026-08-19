@@ -187,7 +187,54 @@ export default function Planos() {
   return (
     <div className="flex min-h-screen flex-col bg-background">
       <AppHeader />
-      <SEO title="Planos e Preços — Honorífico" description="Compare os planos Gratuito, Profissional e Escritório do Honorífico. Assine e desbloqueie todas as ferramentas de IA jurídica." path="/planos" />
+      <SEO
+        title="Planos e Preços — Honorífico"
+        description="Gratuito, Profissional (R$ 49/mês) e Escritório. 7 dias grátis no Profissional, sem cartão. Pagamento em reais."
+        path="/planos"
+        image="/og/planos.jpg"
+        imageAlt="Planos e preços do Honorífico a partir de R$ 49 por mês"
+        jsonLd={[
+          {
+            "@context": "https://schema.org",
+            "@type": "Product",
+            name: "Honorífico — IA jurídica",
+            description:
+              "Plataforma de IA jurídica brasileira: análise de documentos, petições, jurisprudência e calculadoras.",
+            brand: { "@type": "Brand", name: "Honorífico" },
+            offers: [
+              {
+                "@type": "Offer",
+                name: "Gratuito",
+                price: "0",
+                priceCurrency: "BRL",
+                url: "https://honorifico.com.br/planos",
+              },
+              {
+                "@type": "Offer",
+                name: "Profissional",
+                price: "49",
+                priceCurrency: "BRL",
+                url: "https://honorifico.com.br/planos",
+              },
+              {
+                "@type": "Offer",
+                name: "Escritório",
+                price: "149",
+                priceCurrency: "BRL",
+                url: "https://honorifico.com.br/planos",
+              },
+            ],
+          },
+          {
+            "@context": "https://schema.org",
+            "@type": "BreadcrumbList",
+            itemListElement: [
+              { "@type": "ListItem", position: 1, name: "Início", item: "https://honorifico.com.br/" },
+              { "@type": "ListItem", position: 2, name: "Planos", item: "https://honorifico.com.br/planos" },
+            ],
+          },
+        ]}
+      />
       <PaymentTestModeBanner />
 
       <main className="flex-1 container max-w-5xl py-12 px-4">
