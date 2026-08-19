@@ -324,12 +324,13 @@ export default function LandingPage() {
         <div className="container mx-auto px-4 sm:px-6">
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 divide-y sm:divide-y-0 sm:divide-x divide-white/10">
             <div className="text-center py-2 sm:py-0 sm:px-6">
-              <div className="text-gold font-semibold text-sm mb-1">Busca Semântica</div>
-              <div className="text-white/40 text-xs">Encontra pelo conceito jurídico, não pela palavra exata</div>
+              <div className="text-gold font-semibold text-sm mb-1">Busca Assistida por IA</div>
+              <div className="text-white/40 text-xs">A IA traduz sua descrição em termos técnicos da busca</div>
             </div>
             <div className="text-center py-2 sm:py-0 sm:px-6">
               <div className="text-gold font-semibold text-sm mb-1">Interior Coberto</div>
-              <div className="text-white/40 text-xs">Decisões de comarcas que o JusBrasil não indexa</div>
+              <div className="text-white/40 text-xs">Processos de mais de 600 comarcas, inclusive as pequenas</div>
+
             </div>
             <div className="text-center py-2 sm:py-0 sm:px-6">
               <div className="text-gold font-semibold text-sm mb-1">Dados Oficiais</div>
