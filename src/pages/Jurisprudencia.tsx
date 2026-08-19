@@ -156,6 +156,9 @@ if (!res.ok) {
       const response = await res.json() as SearchResponse;
       notifyUsageConsumed();
       setGuestPreview(!!response.guest_preview);
+      setResults(response.results || []);
+      setAiExpansion(response.ai_expansion);
+
 
     } catch (e: any) {
       console.error("Search error:", e);
