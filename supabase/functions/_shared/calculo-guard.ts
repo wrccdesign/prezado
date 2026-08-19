@@ -57,3 +57,60 @@ export async function requireQuota(
 export function requireCalculoQuota(req: Request, corsHeaders: Record<string, string>) {
   return requireQuota(req, "calculo", corsHeaders);
 }
+
+// ---------------------------------------------------------------------------
+// Modo convidado (visitante sem login)
+// ---------------------------------------------------------------------------
+
+const GUEST_WINDOW_MS = 24 * 60 * 60 * 1000;
+const guestHits = new Map<string, { count: number; resetAt: number }>();
+
+function guestKey(req: Request): string {
+  const fwd = req.headers.get("x-forwarded-for") ?? "";
+  return fwd.split(",")[0].trim() || req.headers.get("cf-connecting-ip") || "unknown";
+}
+
+/**
+ * Permite uso limitado por visitantes anônimos. Usuários autenticados seguem
+ * pelo fluxo normal de cota mensal. Retorna `{ userId, guest }` ou uma
+ * `Response` (limite de convidado ou cota do plano estourada).
+ */
+export async function requireQuotaOrGuest(
+  req: Request,
+  action: string,
+  corsHeaders: Record<string, string>,
+  guestLimit = 3,
+): Promise<{ userId: string | null; guest: boolean } | Response> {
+  const auth = await requireUser(req);
+
+  if (!(auth instanceof Response)) {
+    const quota = await requireQuota(req, action, corsHeaders);
+    if (quota instanceof Response) return quota;
+    return { userId: quota.userId, guest: false };
+  }
+
+  const key = guestKey(req);
+  const now = Date.now();
+  const entry = guestHits.get(key);
+
+  if (!entry || entry.resetAt <= now) {
+    guestHits.set(key, { count: 1, resetAt: now + GUEST_WINDOW_MS });
+    return { userId: null, guest: true };
+  }
+
+  if (entry.count >= guestLimit) {
+    return new Response(
+      JSON.stringify({
+        error:
+          "Você usou suas consultas gratuitas de demonstração. Crie sua conta grátis para continuar — são 7 dias com todos os recursos do plano Profissional.",
+        guest_limit: true,
+        upgrade_url: "/auth",
+      }),
+      { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+    );
+  }
+
+  entry.count += 1;
+  return { userId: null, guest: true };
+}
+
