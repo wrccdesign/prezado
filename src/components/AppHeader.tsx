@@ -178,6 +178,9 @@ export function AppHeader() {
         Criar conta grátis
       </button>
     </div>
+  );
+
+
 
 
   const sheetSection = (items: NavItem[], label: string) => (
