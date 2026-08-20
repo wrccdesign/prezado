@@ -87,21 +87,62 @@ export function PetitionResult({ text, petitionType, onNewPetition }: PetitionRe
     const doc = new jsPDF({ unit: "mm", format: "a4" });
     const pageWidth = doc.internal.pageSize.getWidth();
     const pageHeight = doc.internal.pageSize.getHeight();
-    const mLeft = 30, mRight = 20, mTop = 30, mBottom = 20;
+    const mLeft = 30, mRight = 20, mBottom = 20;
     const usableWidth = pageWidth - mLeft - mRight;
     const bodyIndent = 12.5;
     const dateStr = getFormattedDate();
-    const warningText = "Gerado por Honorífico — Documento deve ser revisado por advogado habilitado";
+    // A marca da plataforma não entra no documento: ele é do advogado e vai a
+    // protocolo. O aviso de revisão permanece.
+    const warningText = "Documento deve ser revisado por advogado habilitado";
+
+    // Timbre: logo redimensionado pela proporção natural, nunca achatado.
+    const logo = branding.logo;
+    const LOGO_MAX_W = 28, LOGO_MAX_H = 16;
+    let logoW = 0, logoH = 0;
+    if (logo) {
+      const scale = Math.min(LOGO_MAX_W / logo.width, LOGO_MAX_H / logo.height);
+      logoW = logo.width * scale;
+      logoH = logo.height * scale;
+    }
+    const contact = contactLine(branding);
+    const letterhead = hasLetterhead(branding);
+    const headerTop = 12;
+    const textX = mLeft + (logoW ? logoW + 4 : 0);
+    let textBottom = headerTop;
+    if (branding.officeName) textBottom += 4.5;
+    if (contact) textBottom += 3.5;
+    const ruleY = Math.max(headerTop + logoH, textBottom, 18) + 2;
+    const mTop = Math.max(30, ruleY + 8);
 
     const addPageHeaderFooter = (d: jsPDF) => {
-      d.setFont("times", "bold"); d.setFontSize(10);
-      d.text("Honorífico", mLeft, 15);
+      if (letterhead) {
+        if (logo) {
+          try {
+            d.addImage(logo.dataUrl, logo.format, mLeft, headerTop, logoW, logoH);
+          } catch (err) {
+            // C2: falha de imagem nunca derruba o download.
+            console.warn("Não foi possível desenhar o logo no PDF.", err);
+          }
+        }
+        let ty = headerTop + 4;
+        if (branding.officeName) {
+          d.setFont("times", "bold"); d.setFontSize(11);
+          d.text(branding.officeName, textX, ty);
+          ty += 4;
+        }
+        if (contact) {
+          d.setFont("times", "normal"); d.setFontSize(8);
+          d.text(contact, textX, ty, { maxWidth: pageWidth - mRight - textX - 22 });
+        }
+      }
       d.setFont("times", "normal"); d.setFontSize(9);
-      d.text(dateStr, pageWidth - mRight, 15, { align: "right" });
-      d.setDrawColor(150); d.line(mLeft, 18, pageWidth - mRight, 18);
+      d.text(dateStr, pageWidth - mRight, headerTop + 3, { align: "right" });
+      d.setDrawColor(150); d.line(mLeft, ruleY, pageWidth - mRight, ruleY);
       d.setFontSize(7); d.setFont("times", "italic");
       d.text(warningText, pageWidth / 2, pageHeight - 8, { align: "center" });
     };
+
+
 
     addPageHeaderFooter(doc);
     let y = mTop;
