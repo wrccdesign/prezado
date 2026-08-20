@@ -120,17 +120,20 @@ export async function checkRateLimit(
   const plan = (planData as string) || "free";
   const limits = PLAN_LIMITS[plan] || PLAN_LIMITS.free;
 
-  if (!(action in limits)) {
+  const unmetered = UNMETERED_ACTIONS.has(action);
+
+  if (!unmetered && !(action in limits)) {
     console.error(
       `[rate-limit] Ação "${action}" não está cadastrada em PLAN_LIMITS (plano "${plan}"). Requisição negada.`,
     );
     return { allowed: false, used: 0, limit: 0, plan, renewsAt, unknownAction: true };
   }
 
-  const limit = limits[action];
+  const limit = unmetered ? UNLIMITED : limits[action];
   if (limit === 0) {
     return { allowed: false, used: 0, limit: 0, plan, renewsAt };
   }
+
 
   // Trava de rajada antes da cota mensal: todas as ações da última hora.
   const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000).toISOString();
