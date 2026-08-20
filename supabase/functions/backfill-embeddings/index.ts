@@ -34,10 +34,25 @@ serve(async (req) => {
 
     if (fetchError) throw new Error(`Fetch error: ${fetchError.message}`);
     if (!records || records.length === 0) {
-      return new Response(JSON.stringify({ processed: 0, errors: 0, message: "Nenhum registro pendente" }), {
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+      // Backfill concluído: o cron temporário se autodesativa para não ficar
+      // disparando a cada 5 minutos para sempre.
+      const { data: unscheduled, error: cronError } = await supabase.rpc(
+        "unschedule_backfill_embeddings",
+      );
+      if (cronError) console.error("falha ao desagendar cron:", cronError.message);
+      else if (unscheduled) console.log("cron backfill-embeddings-5min desagendado (fila vazia)");
+
+      return new Response(
+        JSON.stringify({
+          processed: 0,
+          errors: 0,
+          message: "Nenhum registro pendente",
+          cron_unscheduled: unscheduled === true,
+        }),
+        { headers: { ...corsHeaders, "Content-Type": "application/json" } },
+      );
     }
+
 
     let processed = 0;
     let errors = 0;
