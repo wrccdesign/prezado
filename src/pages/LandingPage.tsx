@@ -279,7 +279,7 @@ export default function LandingPage() {
             <div aria-hidden className="hidden lg:block absolute left-0 right-0 top-[26px] h-px" style={{ backgroundColor: "hsl(var(--gold) / 0.25)" }} />
             <ol className="relative grid gap-8 lg:grid-cols-4 lg:gap-6">
               {etapas.map((e, i) => (
-                <li key={e.title} className="relative pl-14 lg:pl-0">
+                <li key={e.title} className="relative pl-14 lg:flex lg:h-full lg:flex-col lg:pl-0">
                   <span
                     aria-hidden
                     className="absolute left-0 top-0 lg:relative lg:mb-5 flex h-[52px] w-[52px] items-center justify-center rounded-full font-serif text-lg font-bold text-gold"
@@ -287,13 +287,14 @@ export default function LandingPage() {
                   >
                     {i + 1}
                   </span>
-                  <Link to={e.href} className="group block">
+                  <Link to={e.href} className="group block lg:flex lg:h-full lg:flex-col">
                     <h3 className="font-serif text-xl font-bold text-white group-hover:text-gold transition-colors">{e.title}</h3>
                     <p className="mt-2 text-sm text-white/60 leading-relaxed">{e.body}</p>
-                    <span className="mt-3 inline-flex items-center gap-1 text-sm text-gold/80 group-hover:text-gold transition-colors">
+                    <span className="mt-3 inline-flex items-center gap-1 text-sm text-gold/80 group-hover:text-gold transition-colors lg:mt-auto lg:pt-3">
                       {e.cta} <ArrowRight className="h-3.5 w-3.5" />
                     </span>
                   </Link>
+
                 </li>
               ))}
             </ol>
