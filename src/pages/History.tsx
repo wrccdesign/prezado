@@ -195,7 +195,7 @@ export default function History() {
         <h2 className="mb-6 text-2xl font-bold text-foreground">Histórico</h2>
 
         <Tabs defaultValue="analyses" className="w-full">
-          <TabsList className="grid w-full grid-cols-2 mb-6">
+          <TabsList className="grid w-full grid-cols-3 mb-6">
             <TabsTrigger value="analyses" className="flex items-center gap-2">
               <Scale className="h-4 w-4" />
               Análises ({analyses.length})
@@ -203,6 +203,10 @@ export default function History() {
             <TabsTrigger value="petitions" className="flex items-center gap-2">
               <FileSignature className="h-4 w-4" />
               Petições ({petitions.length})
+            </TabsTrigger>
+            <TabsTrigger value="calculos" className="flex items-center gap-2">
+              <Calculator className="h-4 w-4" />
+              Cálculos ({calculos.length})
             </TabsTrigger>
           </TabsList>
 
