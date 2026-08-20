@@ -271,6 +271,7 @@ serve(async (req) => {
           metadata = await aiChatTool<any>({
             model: "light",
             functionName: "ingest-datajud",
+            userId: _auth.userId,
             messages: [
               { role: "system", content: EXTRACTION_SYSTEM_PROMPT },
               { role: "user", content: `Extraia os metadados desta decisão judicial:\n\n${rawText}` },
