@@ -357,10 +357,15 @@ export function CorrecaoCalc({ onUsarValor, usarValorLabel = "Usar este valor", 
               <FileText className="mr-1.5 h-4 w-4" /> Exportar Word
             </Button>
             {onUsarValor && (
-              <Button size="sm" onClick={() => onUsarValor(result.total)}>
+              <Button
+                variant={usarValorVariant}
+                size="sm"
+                onClick={() => onUsarValor(result.total, { dataInicial, dataFinal, indice })}
+              >
                 {usarValorLabel} ({fmt(result.total)})
               </Button>
             )}
+
           </div>
 
           <Collapsible open={memoriaAberta} onOpenChange={setMemoriaAberta}>
