@@ -75,12 +75,6 @@ const plans: { name: string; price: string; period: string; desc: string; featur
   { name: "Escritório", price: "R$ 149", period: "/mês", desc: "Para escritórios de advocacia", annualNote: "ou R$ 1.249/ano à vista no Pix (R$ 104,08/mês, -30%)", features: ["Calculadoras ilimitadas", "1500 consultas e 800 mensagens/mês", "200 petições e 150 análises/mês", "Gestão de clientes e modelos", "Logo personalizado"], cta: "Falar com Vendas", highlight: false },
 ];
 
-const tambem = [
-  "Prazos processuais com feriados forenses e a contagem do art. 220 do CPC.",
-  "Custas do TJSP com a UFESP vigente na data do recolhimento.",
-  "Consulta processual e de andamentos.",
-  "Petições e análise de documentos com IA.",
-];
 
 export default function LandingPage() {
   const [scrolled, setScrolled] = useState(false);
