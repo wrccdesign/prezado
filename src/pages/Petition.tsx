@@ -1,5 +1,7 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { consumePeticaoPrefill, prefillLinha } from "@/lib/peticaoPrefill";
+
 import { supabase } from "@/integrations/supabase/client";
 import { AppHeader } from "@/components/AppHeader";
 import { PaymentTestModeBanner } from "@/components/PaymentTestModeBanner";
