@@ -50,6 +50,18 @@ export default function Petition() {
   const [fatos, setFatos] = useState("");
   const [pedidos, setPedidos] = useState("");
 
+  // Ponte vinda da calculadora de correção monetária: pré-preenche o valor
+  // atualizado no campo de pedidos, sem alterar o restante do formulário.
+  useEffect(() => {
+    const prefill = consumePeticaoPrefill();
+    if (!prefill) return;
+    const linha = prefillLinha(prefill);
+    setPedidos((atual) => (atual ? `${atual}\n${linha}` : linha));
+    toast({ title: "Valor calculado importado", description: linha });
+  }, [toast]);
+
+
+
   const handleGenerate = async () => {
     if (!tipoAcao || !fatos.trim() || !pedidos.trim()) {
       toast({ title: "Campos obrigatórios", description: "Preencha tipo de ação, fatos e pedido principal.", variant: "destructive" });
