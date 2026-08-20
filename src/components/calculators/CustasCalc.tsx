@@ -23,6 +23,17 @@ import { exportToPDF, exportToDOCX, slugify, type ExportSection } from "@/lib/ex
 import { readFunctionError } from "@/lib/usageLimit";
 import { notifyUsageConsumed } from "@/hooks/useUsage";
 import { CorrecaoCalc } from "@/components/calculators/CorrecaoCalc";
+import { StepIndicator } from "@/components/calculators/shared/StepIndicator";
+import { CurrencyInput } from "@/components/calculators/shared/CurrencyInput";
+import { ResultCard } from "@/components/calculators/shared/ResultCard";
+import { MemoriaList } from "@/components/calculators/shared/MemoriaList";
+import {
+  fmtBRL as fmt,
+  centsToNumber,
+  numberToCents,
+  todayISO as hoje,
+  formatDateBR as dataBR,
+} from "@/lib/currency";
 
 const ATOS = [
   {
@@ -112,59 +123,15 @@ interface Resultado {
   rodape_legal: string;
 }
 
-const fmt = (v: number) => v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
-const hoje = () => new Date().toISOString().slice(0, 10);
-const dataBR = (iso: string) => {
-  const [y, m, d] = iso.split("-");
-  return `${d}/${m}/${y}`;
-};
-
-/** Máscara de moeda: o estado guarda apenas os dígitos (centavos). */
-const digitos = (s: string) => s.replace(/\D/g, "");
-const centavosParaNumero = (raw: string) => (raw ? parseInt(raw, 10) / 100 : 0);
-const numeroParaCentavos = (v: number) => String(Math.round(v * 100));
-const exibirMoeda = (raw: string) =>
-  raw
-    ? centavosParaNumero(raw).toLocaleString("pt-BR", {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2,
-      })
-    : "";
-
 const RODAPE_PADRAO =
   "O Honorífico calcula e fundamenta o valor. A emissão e o pagamento da guia são feitos exclusivamente no portal oficial do tribunal, e o valor deve ser conferido no ato da emissão.";
 
-function Passos({ etapa }: { etapa: 1 | 2 | 3 }) {
-  const passos = [
-    { n: 1, label: "Ato" },
-    { n: 2, label: "Dados" },
-    { n: 3, label: "Resultado" },
-  ] as const;
-  return (
-    <ol className="flex items-center gap-2 text-xs" aria-label="Etapas do cálculo">
-      {passos.map((p, i) => (
-        <li key={p.n} className="flex items-center gap-2">
-          <span
-            aria-current={etapa === p.n ? "step" : undefined}
-            className={`flex h-6 w-6 items-center justify-center rounded-full border text-[11px] font-medium ${
-              etapa === p.n
-                ? "border-primary bg-primary text-primary-foreground"
-                : etapa > p.n
-                ? "border-primary/40 bg-primary/10 text-primary"
-                : "border-border text-muted-foreground"
-            }`}
-          >
-            {p.n}
-          </span>
-          <span className={etapa === p.n ? "font-medium text-foreground" : "text-muted-foreground"}>
-            {p.label}
-          </span>
-          {i < passos.length - 1 && <span className="h-px w-4 bg-border sm:w-8" aria-hidden />}
-        </li>
-      ))}
-    </ol>
-  );
-}
+const PASSOS = [
+  { n: 1, label: "Ato" },
+  { n: 2, label: "Dados" },
+  { n: 3, label: "Resultado" },
+] as const;
+
 
 export function CustasCalc() {
   const [etapa, setEtapa] = useState<1 | 2 | 3>(1);
@@ -183,7 +150,7 @@ export function CustasCalc() {
   const [correcaoAberta, setCorrecaoAberta] = useState(false);
 
   const atoInfo = ATOS.find(a => a.id === ato) ?? null;
-  const valorBaseNum = centavosParaNumero(valorBase);
+  const valorBaseNum = centsToNumber(valorBase);
   const recolhimentoEfetivo = dataRecolhimento || dataAto;
 
   const calcular = async () => {
@@ -328,7 +295,7 @@ export function CustasCalc() {
   if (etapa === 1) {
     return (
       <div className="space-y-5">
-        <Passos etapa={1} />
+        <StepIndicator steps={PASSOS} current={1} ariaLabel="Etapas do cálculo" />
         <p className="text-sm text-muted-foreground">
           Selecione o ato processual. Nesta primeira versão as regras são do <strong>TJSP</strong>.
         </p>
@@ -370,7 +337,7 @@ export function CustasCalc() {
   if (etapa === 2 && atoInfo) {
     return (
       <div className="space-y-5">
-        <Passos etapa={2} />
+        <StepIndicator steps={PASSOS} current={2} ariaLabel="Etapas do cálculo" />
 
         <Button variant="ghost" size="sm" className="h-11 px-0" onClick={() => setEtapa(1)}>
           <ArrowLeft className="mr-1.5 h-4 w-4" /> Trocar o ato
@@ -394,13 +361,11 @@ export function CustasCalc() {
                   atualizar este valor
                 </button>
               </div>
-              <Input
+              <CurrencyInput
                 id="custas-base"
-                inputMode="decimal"
-                className="h-11"
                 placeholder="10.000,00"
-                value={exibirMoeda(valorBase)}
-                onChange={e => setValorBase(digitos(e.target.value))}
+                value={valorBase}
+                onChange={setValorBase}
               />
             </div>
           )}
@@ -500,7 +465,7 @@ export function CustasCalc() {
             <CorrecaoCalc
               usarValorLabel="Usar como base das custas"
               onUsarValor={v => {
-                setValorBase(numeroParaCentavos(v));
+                setValorBase(numberToCents(v));
                 setCorrecaoAberta(false);
                 toast({ title: "Valor atualizado aplicado como base de cálculo" });
               }}
@@ -515,25 +480,25 @@ export function CustasCalc() {
   if (etapa === 3 && result) {
     return (
       <div className="space-y-5">
-        <Passos etapa={3} />
+        <StepIndicator steps={PASSOS} current={3} ariaLabel="Etapas do cálculo" />
 
         <Button variant="ghost" size="sm" className="h-11 px-0" onClick={() => setEtapa(2)}>
           <ArrowLeft className="mr-1.5 h-4 w-4" /> Ajustar dados
         </Button>
 
         {/* valor + ações */}
-        <Card className="border-primary/30 bg-primary/5">
-          <CardContent className="space-y-4 p-5 sm:p-6">
-            <div className="space-y-1">
-              <p className="text-xs uppercase tracking-wide text-muted-foreground">
-                Taxa judiciária devida — {result.tribunal}
-              </p>
-              <p className="text-3xl font-bold text-primary sm:text-4xl">{fmt(result.valor_devido)}</p>
-              <p className="text-sm text-muted-foreground">
-                {atoInfo?.titulo ?? result.tipo_ato} · ato em {dataBR(dataAto)} · recolhimento previsto
-                em {dataBR(recolhimentoEfetivo)} · {result.unidade_fiscal.codigo}{" "}
-                {result.unidade_fiscal.ano} = {fmt(result.unidade_fiscal.valor)}
-              </p>
+        <ResultCard
+          label={`Taxa judiciária devida — ${result.tribunal}`}
+          value={fmt(result.valor_devido)}
+          meta={
+            <>
+              {atoInfo?.titulo ?? result.tipo_ato} · ato em {dataBR(dataAto)} · recolhimento previsto
+              em {dataBR(recolhimentoEfetivo)} · {result.unidade_fiscal.codigo}{" "}
+              {result.unidade_fiscal.ano} = {fmt(result.unidade_fiscal.valor)}
+            </>
+          }
+          notes={
+            <>
               {result.isento && result.motivo_isencao && (
                 <p className="pt-2 text-sm text-foreground">{result.motivo_isencao}</p>
               )}
@@ -547,9 +512,10 @@ export function CustasCalc() {
                   Teto legal aplicado: o percentual resultaria em {fmt(result.valor_bruto)}.
                 </p>
               )}
-            </div>
-
-            <div className="grid gap-2 sm:flex sm:flex-wrap">
+            </>
+          }
+          actions={
+            <>
               <Button
                 variant="outline"
                 className="h-11 w-full sm:w-auto"
@@ -573,9 +539,9 @@ export function CustasCalc() {
                 {salvando && <Loader2 className="mr-1.5 h-4 w-4 animate-spin" />}
                 Salvar cálculo
               </Button>
-            </div>
-          </CardContent>
-        </Card>
+            </>
+          }
+        />
 
         {/* memória colapsada */}
         <Collapsible open={memoriaAberta} onOpenChange={setMemoriaAberta}>
@@ -588,22 +554,7 @@ export function CustasCalc() {
             </Button>
           </CollapsibleTrigger>
           <CollapsibleContent className="pt-2">
-            <ul className="divide-y rounded-lg border">
-              {result.memoria.map((l, i) => (
-                <li
-                  key={`${l.rotulo}-${i}`}
-                  className="flex flex-col gap-1 p-3 sm:flex-row sm:items-start sm:justify-between sm:gap-4"
-                >
-                  <div className="min-w-0 space-y-0.5">
-                    <p className="text-sm font-medium">{l.rotulo}</p>
-                    <p className="break-words text-xs text-muted-foreground">{l.detalhe}</p>
-                  </div>
-                  <p className="text-sm font-medium sm:whitespace-nowrap sm:text-right">
-                    {l.valor != null ? fmt(l.valor) : "—"}
-                  </p>
-                </li>
-              ))}
-            </ul>
+            <MemoriaList items={result.memoria} />
           </CollapsibleContent>
         </Collapsible>
 
