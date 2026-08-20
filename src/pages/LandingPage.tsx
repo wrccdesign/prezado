@@ -51,7 +51,7 @@ const steps = [
 ];
 
 const plans: { name: string; price: string; period: string; desc: string; features: string[]; cta: string; highlight: boolean; annualNote?: string }[] = [
-  { name: "Gratuito", price: "R$ 0", period: "/mês", desc: "Para conhecer a plataforma", features: ["20 buscas de jurisprudência/mês", "10 mensagens de chat/mês", "1 diagnóstico jurídico/mês", "Calculadoras (5 cálculos/mês)", "Petições não incluídas"], cta: "Começar Grátis", highlight: false },
+  { name: "Gratuito", price: "R$ 0", period: "/mês", desc: "Para conhecer a plataforma", features: ["20 consultas processuais/mês", "10 mensagens de chat/mês", "1 diagnóstico jurídico/mês", "Calculadoras (5 cálculos/mês)", "Petições não incluídas"], cta: "Começar Grátis", highlight: false },
   { name: "Profissional", price: "R$ 49", period: "/mês", desc: "Para advogados autônomos", annualNote: "ou R$ 409/ano à vista no Pix (R$ 34,08/mês, -30%)", features: ["400 buscas e 200 mensagens/mês", "60 petições e 60 diagnósticos/mês", "40 análises e 150 cálculos/mês", "Painel do advogado", "Download PDF/DOCX"], cta: "Assinar Agora", highlight: true },
 
   { name: "Escritório", price: "R$ 149", period: "/mês", desc: "Para escritórios de advocacia", annualNote: "ou R$ 1.249/ano à vista no Pix (R$ 104,08/mês, -30%)", features: ["1500 buscas e 800 mensagens/mês", "150 análises e 500 cálculos/mês", "Gestão de clientes", "Modelos de petição", "Logo personalizado", "Suporte prioritário"], cta: "Falar com Vendas", highlight: false },
@@ -389,7 +389,7 @@ export default function LandingPage() {
               {" "}— inclusive do interior
             </h2>
             <p className="text-white/50 mt-3 max-w-xl">
-              Consulta processual com dados oficiais do CNJ, cobrindo 33 tribunais, 23 UFs e mais de 600 comarcas — inclusive as pequenas. Nosso acervo de jurisprudência com ementa está em construção e cresce a cada semana.
+              Consulta processual com dados oficiais do CNJ, cobrindo 33 tribunais, 23 UFs e mais de 600 comarcas — inclusive as pequenas. Hoje entregamos consulta processual e de andamentos, com resumo por IA. Ementa e inteiro teor aparecem quando o tribunal de origem os disponibiliza.
             </p>
 
           </div>
@@ -413,7 +413,7 @@ export default function LandingPage() {
               ))}
               <div className="pt-4">
                 <Button size="lg" className="bg-gold text-navy hover:bg-gold-light font-semibold" asChild>
-                  <Link to="/jurisprudencia">Buscar Jurisprudência <ArrowRight className="ml-2 h-5 w-5" /></Link>
+                  <Link to="/jurisprudencia">Consultar Processos <ArrowRight className="ml-2 h-5 w-5" /></Link>
                 </Button>
               </div>
             </div>
@@ -558,7 +558,7 @@ export default function LandingPage() {
             <div>
               <h4 className="font-sans font-semibold text-white text-sm mb-4">Plataforma</h4>
               <ul className="space-y-2">
-                {[{ label: "Busca de Jurisprudência", href: "/jurisprudencia" }, { label: "Análise Jurídica", href: "/auth" }, { label: "Diagnóstico", href: "/auth" }, { label: "Petições", href: "/auth" }, { label: "Chat Jurídico", href: "/auth" }].map((l) => (
+                {[{ label: "Consulta Processual", href: "/jurisprudencia" }, { label: "Análise Jurídica", href: "/auth" }, { label: "Diagnóstico", href: "/auth" }, { label: "Petições", href: "/auth" }, { label: "Chat Jurídico", href: "/auth" }].map((l) => (
                   <li key={l.label}><Link to={l.href} className="text-sm text-white/40 hover:text-gold transition-colors">{l.label}</Link></li>
                 ))}
               </ul>

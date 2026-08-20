@@ -1,32 +1,36 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { requireServiceRole } from "../_shared/auth.ts";
+import { requireInternalCall } from "../_shared/auth.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-import { generateEmbedding } from "../_shared/embeddings.ts";
+import { generateEmbeddings, toVectorLiteral, VOYAGE_BATCH_SIZE } from "../_shared/embeddings.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-payment-env, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-payment-env, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version, x-sync-secret",
 };
 
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
-  const _svcErr = requireServiceRole(req);
+  const _svcErr = requireInternalCall(req);
   if (_svcErr) return _svcErr;
 
   try {
-    const { batch_size = 3 } = await req.json().catch(() => ({}));
+    // batch_size = total processado nesta invocação; enviado à Voyage em
+    // sub-lotes de VOYAGE_BATCH_SIZE. Teto de 256 para caber no tempo da função.
+    const body = await req.json().catch(() => ({}));
+    const requested = Number(body.batch_size ?? 128);
+    const batchSize = Math.min(Math.max(Number.isFinite(requested) ? requested : 128, 1), 256);
 
     const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
     const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
-    // Get records without embeddings
+    // Retomada: sempre pega o próximo bloco ainda sem embedding.
     const { data: records, error: fetchError } = await supabase
       .from("decisions")
       .select("id, ementa, resumo_ia")
       .is("embedding", null)
-      .limit(batch_size);
+      .limit(batchSize);
 
     if (fetchError) throw new Error(`Fetch error: ${fetchError.message}`);
     if (!records || records.length === 0) {
@@ -39,6 +43,7 @@ serve(async (req) => {
     let errors = 0;
     const errorDetails: string[] = [];
 
+    const eligible: { id: string; text: string }[] = [];
     for (const record of records) {
       const text = [record.ementa, record.resumo_ia].filter(Boolean).join(" ");
       if (text.length < 20) {
@@ -46,40 +51,40 @@ serve(async (req) => {
         errorDetails.push(`${record.id}: texto muito curto`);
         continue;
       }
+      eligible.push({ id: record.id as string, text });
+    }
 
+    for (let i = 0; i < eligible.length; i += VOYAGE_BATCH_SIZE) {
+      const chunk = eligible.slice(i, i + VOYAGE_BATCH_SIZE);
       try {
-        // Rate limit: wait 22s between calls (3 RPM)
-        if (processed > 0 || errors > 0) {
-          await new Promise(resolve => setTimeout(resolve, 22000));
-        }
+        const vectors = await generateEmbeddings(chunk.map((c) => c.text), {
+          functionName: "backfill-embeddings",
+        });
 
-        const embedding = await generateEmbedding(text);
-        const embeddingStr = `[${embedding.join(",")}]`;
+        for (let j = 0; j < chunk.length; j++) {
+          const { error: updateError } = await supabase
+            .from("decisions")
+            .update({ embedding: toVectorLiteral(vectors[j]) })
+            .eq("id", chunk[j].id);
 
-        const { error: updateError } = await supabase
-          .from("decisions")
-          .update({ embedding: embeddingStr })
-          .eq("id", record.id);
-
-        if (updateError) {
-          errors++;
-          errorDetails.push(`${record.id}: ${updateError.message}`);
-        } else {
-          processed++;
+          if (updateError) {
+            errors++;
+            errorDetails.push(`${chunk[j].id}: ${updateError.message}`);
+          } else {
+            processed++;
+          }
         }
       } catch (e) {
-        errors++;
-        errorDetails.push(`${record.id}: ${e instanceof Error ? e.message : "unknown"}`);
+        errors += chunk.length;
+        errorDetails.push(`lote ${i / VOYAGE_BATCH_SIZE}: ${e instanceof Error ? e.message : "unknown"}`);
       }
     }
 
-    // Count remaining without embedding
     const { count: remaining } = await supabase
       .from("decisions")
       .select("id", { count: "exact", head: true })
       .is("embedding", null);
 
-    // Count already processed
     const { count: withEmbedding } = await supabase
       .from("decisions")
       .select("id", { count: "exact", head: true })

@@ -228,8 +228,12 @@ serve(async (req) => {
     console.log(`DataJud returned ${hits.length} hits`);
 
     let ingested = 0;
+    let updated = 0;
     let skipped = 0;
     const errors: string[] = [];
+    // Dois hits do DataJud podem trazer o mesmo numero_processo: o upsert
+    // atualizaria a linha e a contagem inflaria. Deduplicamos no lote.
+    const seenNumeros = new Set<string>();
 
     // Step 2: Process each hit
     for (const hit of hits) {
@@ -237,17 +241,30 @@ serve(async (req) => {
       const externalId = `datajud_${hit._id || source.numeroProcesso || ""}`;
       const numeroProcesso = source.numeroProcesso || null;
 
+      if (numeroProcesso && seenNumeros.has(numeroProcesso)) {
+        skipped++;
+        continue;
+      }
+      if (numeroProcesso) seenNumeros.add(numeroProcesso);
+
       try {
-        // Fast pre-filter: skip if external_id already exists (avoids unnecessary AI calls)
+        // Fast pre-filter: pula se já existe por external_id OU por numero_processo
+        // (o upsert por numero_processo atualizaria em vez de inserir).
         const { data: existing } = await supabase
           .from("decisions")
           .select("id")
-          .eq("external_id", externalId)
+          .or(
+            numeroProcesso
+              ? `external_id.eq.${externalId},numero_processo.eq.${numeroProcesso}`
+              : `external_id.eq.${externalId}`,
+          )
+          .limit(1)
           .maybeSingle();
 
         if (existing) {
           skipped++;
           continue;
+
         }
 
         // Build raw text for AI extraction
@@ -304,19 +321,31 @@ serve(async (req) => {
           }
           ingested++;
         } else {
-          // Upsert: insert or update if numero_processo already exists
-          const { error: upsertError } = await supabase
-            .from("decisions")
-            .upsert(decisionData, { onConflict: "numero_processo" });
+          // Insert real: só conta como ingerido quando a linha é nova.
+          const { error: insertError } = await supabase.from("decisions").insert(decisionData);
 
-          if (upsertError) {
-            console.error("Upsert error:", upsertError);
-            errors.push(`Erro ao upsert ${numeroProcesso}: ${upsertError.message}`);
-            continue;
+          if (insertError) {
+            if (insertError.code === "23505") {
+              // Corrida com outra ingestão: a linha já existe → atualiza e conta como update.
+              const { error: updateError } = await supabase
+                .from("decisions")
+                .update(decisionData)
+                .eq("numero_processo", decisionData.numero_processo);
+              if (updateError) {
+                errors.push(`Erro ao atualizar ${numeroProcesso}: ${updateError.message}`);
+                continue;
+              }
+              updated++;
+            } else {
+              console.error("Insert error:", insertError);
+              errors.push(`Erro ao inserir ${numeroProcesso}: ${insertError.message}`);
+              continue;
+            }
+          } else {
+            ingested++;
           }
-          // Só chega aqui quando o registro é novo (existentes dão `continue` acima).
-          ingested++;
         }
+
 
         // Generate embedding (non-blocking)
         try {
@@ -339,10 +368,12 @@ serve(async (req) => {
 
     return new Response(JSON.stringify({
       ingested,
+      updated,
       skipped,
       errors,
       total_hits: datajudData.hits?.total?.value || hits.length,
     }), {
+
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } catch (e) {
