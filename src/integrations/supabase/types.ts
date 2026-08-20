@@ -74,6 +74,42 @@ export type Database = {
         }
         Relationships: []
       }
+      calculos: {
+        Row: {
+          created_at: string
+          environment: string
+          id: string
+          inputs: Json
+          resultado: Json
+          tipo: string
+          titulo: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          environment?: string
+          id?: string
+          inputs?: Json
+          resultado?: Json
+          tipo: string
+          titulo: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          environment?: string
+          id?: string
+          inputs?: Json
+          resultado?: Json
+          tipo?: string
+          titulo?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       chat_conversations: {
         Row: {
           area_do_direito: string | null
