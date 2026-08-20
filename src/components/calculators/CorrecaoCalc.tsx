@@ -70,7 +70,13 @@ function mesLabel(mesRef: string) {
   return `${m}/${y}`;
 }
 
-export function CorrecaoCalc() {
+interface CorrecaoCalcProps {
+  /** Quando informado, exibe um botão para devolver o total atualizado ao fluxo que abriu a calculadora. */
+  onUsarValor?: (valor: number) => void;
+  usarValorLabel?: string;
+}
+
+export function CorrecaoCalc({ onUsarValor, usarValorLabel = "Usar este valor" }: CorrecaoCalcProps = {}) {
   const [valor, setValor] = useState("");
   const [dataInicial, setDataInicial] = useState("");
   const [dataFinal, setDataFinal] = useState("");
@@ -341,6 +347,11 @@ export function CorrecaoCalc() {
             <Button variant="outline" size="sm" onClick={() => exportar("docx")}>
               <FileText className="mr-1.5 h-4 w-4" /> Exportar Word
             </Button>
+            {onUsarValor && (
+              <Button size="sm" onClick={() => onUsarValor(result.total)}>
+                {usarValorLabel} ({fmt(result.total)})
+              </Button>
+            )}
           </div>
 
           <Collapsible open={memoriaAberta} onOpenChange={setMemoriaAberta}>

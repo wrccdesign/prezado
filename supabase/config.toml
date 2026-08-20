@@ -57,6 +57,9 @@ verify_jwt = false
 [functions.calcular-prazo]
 verify_jwt = false
 
+[functions.calcular-custas]
+verify_jwt = false
+
 [functions.create-checkout]
 verify_jwt = false
 
