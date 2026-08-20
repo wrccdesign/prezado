@@ -21,19 +21,25 @@ export interface UsageSummaryData {
 }
 
 export function useUsage() {
-  const { user } = useAuth();
+  const { user, session } = useAuth();
   const queryClient = useQueryClient();
 
   const query = useQuery({
     queryKey: ["usage-summary", user?.id],
-    enabled: !!user,
+    enabled: !!user && !!session?.access_token,
     staleTime: 30_000,
+    retry: false,
     queryFn: async () => {
+      // Evita chamar a função sem sessão válida (ex.: logo após logout).
+      const { data: { session: current } } = await supabase.auth.getSession();
+      if (!current?.access_token) return null;
+
       const { data, error } = await supabase.functions.invoke("usage-summary");
       if (error) throw new Error(error.message);
       return data as UsageSummaryData;
     },
   });
+
 
   // Páginas que consomem uso disparam este evento para atualizar os contadores.
   useEffect(() => {
