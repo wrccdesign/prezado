@@ -1,5 +1,7 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { consumePeticaoPrefill, prefillLinha } from "@/lib/peticaoPrefill";
+
 import { supabase } from "@/integrations/supabase/client";
 import { AppHeader } from "@/components/AppHeader";
 import { PaymentTestModeBanner } from "@/components/PaymentTestModeBanner";
@@ -47,6 +49,18 @@ export default function Petition() {
   const [varaJuizo, setVaraJuizo] = useState("");
   const [fatos, setFatos] = useState("");
   const [pedidos, setPedidos] = useState("");
+
+  // Ponte vinda da calculadora de correção monetária: pré-preenche o valor
+  // atualizado no campo de pedidos, sem alterar o restante do formulário.
+  useEffect(() => {
+    const prefill = consumePeticaoPrefill();
+    if (!prefill) return;
+    const linha = prefillLinha(prefill);
+    setPedidos((atual) => (atual ? `${atual}\n${linha}` : linha));
+    toast({ title: "Valor calculado importado", description: linha });
+  }, [toast]);
+
+
 
   const handleGenerate = async () => {
     if (!tipoAcao || !fatos.trim() || !pedidos.trim()) {

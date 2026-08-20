@@ -73,11 +73,14 @@ function mesLabel(mesRef: string) {
 
 interface CorrecaoCalcProps {
   /** Quando informado, exibe um botão para devolver o total atualizado ao fluxo que abriu a calculadora. */
-  onUsarValor?: (valor: number) => void;
+  onUsarValor?: (valor: number, meta?: { dataInicial: string; dataFinal: string; indice: string }) => void;
   usarValorLabel?: string;
+  /** Variante do botão "usar valor". Use "ghost" quando a ação for secundária à exportação. */
+  usarValorVariant?: "default" | "ghost" | "outline";
 }
 
-export function CorrecaoCalc({ onUsarValor, usarValorLabel = "Usar este valor" }: CorrecaoCalcProps = {}) {
+export function CorrecaoCalc({ onUsarValor, usarValorLabel = "Usar este valor", usarValorVariant = "default" }: CorrecaoCalcProps = {}) {
+
   const [valor, setValor] = useState("");
   const [dataInicial, setDataInicial] = useState("");
   const [dataFinal, setDataFinal] = useState("");
@@ -354,10 +357,15 @@ export function CorrecaoCalc({ onUsarValor, usarValorLabel = "Usar este valor" }
               <FileText className="mr-1.5 h-4 w-4" /> Exportar Word
             </Button>
             {onUsarValor && (
-              <Button size="sm" onClick={() => onUsarValor(result.total)}>
+              <Button
+                variant={usarValorVariant}
+                size="sm"
+                onClick={() => onUsarValor(result.total, { dataInicial, dataFinal, indice })}
+              >
                 {usarValorLabel} ({fmt(result.total)})
               </Button>
             )}
+
           </div>
 
           <Collapsible open={memoriaAberta} onOpenChange={setMemoriaAberta}>

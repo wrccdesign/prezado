@@ -1,10 +1,12 @@
 import { useEffect, useRef, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Check, ChevronRight, FileDown, Menu, X } from "lucide-react";
 import Logo from "@/components/Logo";
 import { SEO } from "@/components/SEO";
 import { CorrecaoCalc } from "@/components/calculators/CorrecaoCalc";
+import { savePeticaoPrefill } from "@/lib/peticaoPrefill";
+
 
 function useScrollReveal() {
   const ref = useRef<HTMLDivElement>(null);
@@ -71,8 +73,9 @@ const etapas = [
 
 const plans: { name: string; price: string; period: string; desc: string; features: string[]; cta: string; highlight: boolean; annualNote?: string }[] = [
   { name: "Gratuito", price: "R$ 0", period: "/mês", desc: "Para conhecer a plataforma", features: ["Calculadoras ilimitadas", "20 consultas processuais/mês", "10 mensagens de chat/mês", "1 diagnóstico jurídico/mês", "Petições não incluídas"], cta: "Começar Grátis", highlight: false },
-  { name: "Profissional", price: "R$ 49", period: "/mês", desc: "Para advogados autônomos", annualNote: "ou R$ 409/ano à vista no Pix (R$ 34,08/mês, -30%)", features: ["Calculadoras ilimitadas", "400 consultas e 200 mensagens/mês", "60 petições e 60 diagnósticos/mês", "40 análises de documentos/mês", "Painel do advogado"], cta: "Assinar Agora", highlight: true },
-  { name: "Escritório", price: "R$ 149", period: "/mês", desc: "Para escritórios de advocacia", annualNote: "ou R$ 1.249/ano à vista no Pix (R$ 104,08/mês, -30%)", features: ["Calculadoras ilimitadas", "1500 consultas e 800 mensagens/mês", "200 petições e 150 análises/mês", "Gestão de clientes e modelos", "Logo personalizado"], cta: "Falar com Vendas", highlight: false },
+  { name: "Profissional", price: "R$ 49", period: "/mês", desc: "Para advogados autônomos", annualNote: "ou R$ 409/ano à vista no cartão (R$ 34,08/mês, -30%)", features: ["Calculadoras ilimitadas", "400 consultas e 200 mensagens/mês", "60 petições e 60 diagnósticos/mês", "40 análises de documentos/mês", "Painel do advogado"], cta: "Assinar Agora", highlight: true },
+  { name: "Escritório", price: "R$ 149", period: "/mês", desc: "Para escritórios de advocacia", annualNote: "ou R$ 1.249/ano à vista no cartão (R$ 104,08/mês, -30%)", features: ["Calculadoras ilimitadas", "1500 consultas e 800 mensagens/mês", "200 petições e 150 análises/mês", "300 leituras/OCR de documentos/mês", "Gestão de clientes e modelos"], cta: "Assinar Escritório", highlight: false },
+
 ];
 
 
@@ -80,6 +83,8 @@ export default function LandingPage() {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const revealRef = useScrollReveal();
+  const navigate = useNavigate();
+
 
   useEffect(() => {
     const handler = () => setScrolled(window.scrollY > 20);
@@ -174,6 +179,8 @@ export default function LandingPage() {
               </Button>
             </div>
             <p className="mt-4 text-sm text-white/50">Sem cadastro para calcular. Petições, análise e diagnóstico na conta.</p>
+            <p className="mt-1 text-sm text-white/40">Conta nova começa com 7 dias no plano Profissional, sem cartão.</p>
+
           </div>
         </div>
       </section>
@@ -187,7 +194,15 @@ export default function LandingPage() {
               <h2 className="font-serif text-2xl md:text-3xl font-bold text-navy mt-2">Calcule agora, sem cadastro</h2>
             </div>
             <div className="rounded-2xl border border-border bg-white p-5 sm:p-7 shadow-sm">
-              <CorrecaoCalc />
+              <CorrecaoCalc
+                usarValorLabel="Gerar petição com este valor"
+                usarValorVariant="ghost"
+                onUsarValor={(valor, meta) => {
+                  savePeticaoPrefill({ valor, ...(meta ?? {}) });
+                  navigate("/peticao");
+                }}
+              />
+
             </div>
             <p className="mt-4 text-sm text-muted-foreground">
               Outras calculadoras: <Link to="/calculadoras/prazo-processual" className="text-navy underline underline-offset-2 hover:text-gold">prazo processual</Link>,{" "}
@@ -326,6 +341,8 @@ export default function LandingPage() {
             <span className="text-sm text-gold font-semibold uppercase tracking-wider">Planos</span>
             <h2 className="font-serif text-3xl md:text-4xl font-bold text-navy mt-3">Calculadoras livres em todos os planos</h2>
             <p className="text-muted-foreground mt-3 max-w-lg mx-auto">A assinatura libera IA (petições, análise, diagnóstico e chat), histórico salvo e volume de consulta processual.</p>
+            <p className="text-sm text-muted-foreground mt-2">Conta nova começa com 7 dias no plano Profissional, sem cartão.</p>
+
           </div>
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl mx-auto">
             {plans.map((p, i) => (
@@ -432,7 +449,7 @@ export default function LandingPage() {
           <div className="border-t pt-5 flex flex-col items-center gap-2 text-center" style={{ borderColor: "hsl(var(--gold) / 0.1)" }}>
             <p className="text-xs text-white/30">© {new Date().getFullYear()} Honorífico. Todos os direitos reservados.</p>
             <p className="text-xs text-white/30 max-w-2xl leading-relaxed">
-              <strong className="font-medium text-white/50">Honorífico</strong> — Ferramentas de IA jurídica desenvolvidas especificamente para o direito brasileiro. Pagamentos processados com segurança pela Stripe.
+              <strong className="font-medium text-white/50">Honorífico</strong> — Cálculos e prazos jurídicos com fonte oficial, com memória de cálculo em PDF e Word. Pagamentos processados com segurança pela Stripe.
             </p>
             <div className="flex gap-4 text-xs text-white/30">
               <Link to="/privacidade" className="hover:text-gold transition-colors">LGPD</Link>
