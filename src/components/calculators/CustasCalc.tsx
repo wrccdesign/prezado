@@ -23,6 +23,17 @@ import { exportToPDF, exportToDOCX, slugify, type ExportSection } from "@/lib/ex
 import { readFunctionError } from "@/lib/usageLimit";
 import { notifyUsageConsumed } from "@/hooks/useUsage";
 import { CorrecaoCalc } from "@/components/calculators/CorrecaoCalc";
+import { StepIndicator } from "@/components/calculators/shared/StepIndicator";
+import { CurrencyInput } from "@/components/calculators/shared/CurrencyInput";
+import { ResultCard } from "@/components/calculators/shared/ResultCard";
+import { MemoriaList } from "@/components/calculators/shared/MemoriaList";
+import {
+  fmtBRL as fmt,
+  centsToNumber,
+  numberToCents,
+  todayISO as hoje,
+  formatDateBR as dataBR,
+} from "@/lib/currency";
 
 const ATOS = [
   {
@@ -112,59 +123,15 @@ interface Resultado {
   rodape_legal: string;
 }
 
-const fmt = (v: number) => v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
-const hoje = () => new Date().toISOString().slice(0, 10);
-const dataBR = (iso: string) => {
-  const [y, m, d] = iso.split("-");
-  return `${d}/${m}/${y}`;
-};
-
-/** Máscara de moeda: o estado guarda apenas os dígitos (centavos). */
-const digitos = (s: string) => s.replace(/\D/g, "");
-const centavosParaNumero = (raw: string) => (raw ? parseInt(raw, 10) / 100 : 0);
-const numeroParaCentavos = (v: number) => String(Math.round(v * 100));
-const exibirMoeda = (raw: string) =>
-  raw
-    ? centavosParaNumero(raw).toLocaleString("pt-BR", {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2,
-      })
-    : "";
-
 const RODAPE_PADRAO =
   "O Honorífico calcula e fundamenta o valor. A emissão e o pagamento da guia são feitos exclusivamente no portal oficial do tribunal, e o valor deve ser conferido no ato da emissão.";
 
-function Passos({ etapa }: { etapa: 1 | 2 | 3 }) {
-  const passos = [
-    { n: 1, label: "Ato" },
-    { n: 2, label: "Dados" },
-    { n: 3, label: "Resultado" },
-  ] as const;
-  return (
-    <ol className="flex items-center gap-2 text-xs" aria-label="Etapas do cálculo">
-      {passos.map((p, i) => (
-        <li key={p.n} className="flex items-center gap-2">
-          <span
-            aria-current={etapa === p.n ? "step" : undefined}
-            className={`flex h-6 w-6 items-center justify-center rounded-full border text-[11px] font-medium ${
-              etapa === p.n
-                ? "border-primary bg-primary text-primary-foreground"
-                : etapa > p.n
-                ? "border-primary/40 bg-primary/10 text-primary"
-                : "border-border text-muted-foreground"
-            }`}
-          >
-            {p.n}
-          </span>
-          <span className={etapa === p.n ? "font-medium text-foreground" : "text-muted-foreground"}>
-            {p.label}
-          </span>
-          {i < passos.length - 1 && <span className="h-px w-4 bg-border sm:w-8" aria-hidden />}
-        </li>
-      ))}
-    </ol>
-  );
-}
+const PASSOS = [
+  { n: 1, label: "Ato" },
+  { n: 2, label: "Dados" },
+  { n: 3, label: "Resultado" },
+] as const;
+
 
 export function CustasCalc() {
   const [etapa, setEtapa] = useState<1 | 2 | 3>(1);
