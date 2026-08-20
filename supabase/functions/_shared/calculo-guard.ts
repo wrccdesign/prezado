@@ -61,36 +61,39 @@ export function requireCalculoQuota(req: Request, corsHeaders: Record<string, st
 // ---------------------------------------------------------------------------
 // Modo convidado (visitante sem login)
 //
-// ATENÇÃO — LIMITE APENAS DISSUASIVO, NÃO CONFIÁVEL.
-// A contagem por IP vive num Map em memória do isolate: não é compartilhada
-// entre instâncias da edge function e é zerada em todo cold start. Na prática o
-// visitante pode exceder o limite. Isso é tolerável para `calculo`, que é puro
-// CPU e custo desprezível.
+// A contagem é persistida em `public.anon_usage`, com hash SHA-256 do IP —
+// nunca o IP em claro. Isso vale entre instâncias da edge function e sobrevive
+// a cold start, ao contrário do contador em memória que existia antes.
 //
-// NÃO USE `requireQuotaOrGuest` em nenhuma ação que chame IA, faça scraping ou
-// consuma qualquer API paga — nesses casos exija sessão (`requireQuota`) ou
-// implemente contagem persistente em tabela, com hash do IP.
+// Mesmo teto de rajada dos usuários logados: 30 requisições por hora por IP.
 // ---------------------------------------------------------------------------
 
-const GUEST_WINDOW_MS = 24 * 60 * 60 * 1000;
-const guestHits = new Map<string, { count: number; resetAt: number }>();
+const GUEST_WINDOW_MS = 60 * 60 * 1000;
+const GUEST_LIMIT_PER_HOUR = BURST_LIMIT_PER_HOUR;
 
-
-function guestKey(req: Request): string {
+function guestIp(req: Request): string {
   const fwd = req.headers.get("x-forwarded-for") ?? "";
   return fwd.split(",")[0].trim() || req.headers.get("cf-connecting-ip") || "unknown";
 }
 
+async function hashIp(ip: string): Promise<string> {
+  const data = new TextEncoder().encode(`honorifico:${ip}`);
+  const digest = await crypto.subtle.digest("SHA-256", data);
+  return Array.from(new Uint8Array(digest))
+    .map((b) => b.toString(16).padStart(2, "0"))
+    .join("");
+}
+
 /**
- * Permite uso limitado por visitantes anônimos. Usuários autenticados seguem
- * pelo fluxo normal de cota mensal. Retorna `{ userId, guest }` ou uma
- * `Response` (limite de convidado ou cota do plano estourada).
+ * Permite uso por visitantes anônimos com limite por IP persistido no banco.
+ * Usuários autenticados seguem pelo fluxo normal de cota/rajada. Retorna
+ * `{ userId, guest }` ou uma `Response` 429/limite estourado.
  */
 export async function requireQuotaOrGuest(
   req: Request,
   action: string,
   corsHeaders: Record<string, string>,
-  guestLimit = 3,
+  guestLimit = GUEST_LIMIT_PER_HOUR,
 ): Promise<{ userId: string | null; guest: boolean } | Response> {
   const auth = await requireUser(req);
 
@@ -100,28 +103,35 @@ export async function requireQuotaOrGuest(
     return { userId: quota.userId, guest: false };
   }
 
-  const key = guestKey(req);
-  const now = Date.now();
-  const entry = guestHits.get(key);
+  const supabase = createClient(
+    Deno.env.get("SUPABASE_URL")!,
+    Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
+  );
 
-  if (!entry || entry.resetAt <= now) {
-    guestHits.set(key, { count: 1, resetAt: now + GUEST_WINDOW_MS });
-    return { userId: null, guest: true };
-  }
+  const ipHash = await hashIp(guestIp(req));
+  const since = new Date(Date.now() - GUEST_WINDOW_MS).toISOString();
 
-  if (entry.count >= guestLimit) {
+  const { count } = await supabase
+    .from("anon_usage")
+    .select("*", { count: "exact", head: true })
+    .eq("ip_hash", ipHash)
+    .gte("created_at", since);
+
+  if ((count ?? 0) >= guestLimit) {
     return new Response(
       JSON.stringify({
         error:
-          "Você usou suas consultas gratuitas de demonstração. Crie sua conta grátis para continuar — são 7 dias com todos os recursos do plano Profissional.",
+          `Muitas requisições em pouco tempo (limite de ${guestLimit} por hora). Aguarde alguns minutos ou crie sua conta grátis.`,
         guest_limit: true,
         upgrade_url: "/auth",
       }),
-      { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+      { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } },
     );
   }
 
-  entry.count += 1;
+  await supabase.from("anon_usage").insert({ ip_hash: ipHash, action });
+
   return { userId: null, guest: true };
 }
+
 
