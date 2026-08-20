@@ -147,6 +147,11 @@ export async function checkRateLimit(
     return { allowed: false, used: 0, limit, plan, renewsAt, burstLimited: true };
   }
 
+  // Ação ilimitada: registra o uso (alimenta a trava de rajada) e libera.
+  if (unmetered) {
+    await supabase.from("usage_tracking").insert({ user_id: userId, action });
+    return { allowed: true, used: 0, limit: UNLIMITED, plan, renewsAt };
+  }
 
   const { count } = await supabase
     .from("usage_tracking")
@@ -161,6 +166,7 @@ export async function checkRateLimit(
   if (used >= limit) {
     return { allowed: false, used, limit, plan, renewsAt };
   }
+
 
   await supabase.from("usage_tracking").insert({ user_id: userId, action });
 
