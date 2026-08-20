@@ -486,7 +486,7 @@ export default function LandingPage() {
                   <li key={b} className="flex items-start gap-3 text-sm text-white/70"><Check className="h-4 w-4 text-gold mt-0.5 shrink-0" />{b}</li>
                 ))}
               </ul>
-              <Button variant="outline" className="w-full border-white/20 text-white hover:bg-white/10 font-semibold" asChild>
+              <Button className="w-full bg-transparent border-white/20 text-white hover:bg-white/10 font-semibold" asChild>
                 <Link to="/auth">Entrar como Cidadão <ChevronRight className="ml-1 h-4 w-4" /></Link>
               </Button>
             </div>
