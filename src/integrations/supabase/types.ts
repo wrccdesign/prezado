@@ -167,6 +167,69 @@ export type Database = {
         }
         Relationships: []
       }
+      custas_regras: {
+        Row: {
+          aliquota: number | null
+          base_calculo: string
+          codigo_receita: string | null
+          created_at: string
+          fonte_normativa: string | null
+          id: string
+          observacoes: string | null
+          piso_qtd: number | null
+          teto_qtd: number | null
+          tipo_ato: string
+          tipo_guia: string
+          tribunal: string
+          uf: string
+          unidade_fiscal: string
+          url_emissao: string | null
+          valor_fixo_qtd: number | null
+          vigencia_fim: string | null
+          vigencia_inicio: string
+        }
+        Insert: {
+          aliquota?: number | null
+          base_calculo: string
+          codigo_receita?: string | null
+          created_at?: string
+          fonte_normativa?: string | null
+          id?: string
+          observacoes?: string | null
+          piso_qtd?: number | null
+          teto_qtd?: number | null
+          tipo_ato: string
+          tipo_guia: string
+          tribunal: string
+          uf: string
+          unidade_fiscal: string
+          url_emissao?: string | null
+          valor_fixo_qtd?: number | null
+          vigencia_fim?: string | null
+          vigencia_inicio: string
+        }
+        Update: {
+          aliquota?: number | null
+          base_calculo?: string
+          codigo_receita?: string | null
+          created_at?: string
+          fonte_normativa?: string | null
+          id?: string
+          observacoes?: string | null
+          piso_qtd?: number | null
+          teto_qtd?: number | null
+          tipo_ato?: string
+          tipo_guia?: string
+          tribunal?: string
+          uf?: string
+          unidade_fiscal?: string
+          url_emissao?: string | null
+          valor_fixo_qtd?: number | null
+          vigencia_fim?: string | null
+          vigencia_inicio?: string
+        }
+        Relationships: []
+      }
       decisions: {
         Row: {
           argumentos_principais: string[] | null
@@ -592,6 +655,36 @@ export type Database = {
           sistema?: string
           status?: string | null
           tribunal?: string
+        }
+        Relationships: []
+      }
+      unidades_fiscais: {
+        Row: {
+          ano: number
+          codigo: string
+          created_at: string
+          fonte_normativa: string | null
+          id: string
+          valor: number
+          vigencia_inicio: string
+        }
+        Insert: {
+          ano: number
+          codigo: string
+          created_at?: string
+          fonte_normativa?: string | null
+          id?: string
+          valor: number
+          vigencia_inicio: string
+        }
+        Update: {
+          ano?: number
+          codigo?: string
+          created_at?: string
+          fonte_normativa?: string | null
+          id?: string
+          valor?: number
+          vigencia_inicio?: string
         }
         Relationships: []
       }
