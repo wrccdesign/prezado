@@ -328,6 +328,63 @@ export default function History() {
               </div>
             )}
           </TabsContent>
+
+          <TabsContent value="calculos">
+            {loading ? (
+              <div className="space-y-4">
+                {[1, 2, 3].map((i) => (
+                  <Skeleton key={i} className="h-24 w-full rounded-lg" />
+                ))}
+              </div>
+            ) : calculos.length === 0 ? (
+              <Card>
+                <CardContent className="flex flex-col items-center py-12 text-center">
+                  <Calculator className="mb-4 h-12 w-12 text-muted-foreground/50" />
+                  <p className="text-lg font-medium text-foreground">Nenhum cálculo salvo</p>
+                  <p className="text-sm text-muted-foreground">
+                    Os cálculos que você salvar nas calculadoras aparecerão aqui.
+                  </p>
+                </CardContent>
+              </Card>
+            ) : (
+              <div className="space-y-3">
+                {calculos.map((c) => {
+                  const valor = c.resultado && typeof c.resultado.valor_devido === "number"
+                    ? (c.resultado.valor_devido as number)
+                    : null;
+                  return (
+                    <Card key={c.id}>
+                      <CardContent className="flex items-center justify-between p-4">
+                        <div className="min-w-0 flex-1">
+                          <div className="mb-1 flex items-center gap-2">
+                            <Badge className="bg-primary text-primary-foreground text-xs">{c.tipo}</Badge>
+                            {valor !== null && (
+                              <span className="text-sm font-semibold text-foreground">
+                                {valor.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
+                              </span>
+                            )}
+                          </div>
+                          <p className="truncate text-sm text-foreground">{c.titulo}</p>
+                          <div className="mt-1 flex items-center gap-2 text-xs text-muted-foreground">
+                            <Clock className="h-3 w-3" />
+                            {format(new Date(c.created_at), "dd/MM/yyyy HH:mm")}
+                          </div>
+                        </div>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => deleteCalculo(c.id)}
+                          className="shrink-0 text-muted-foreground hover:text-destructive"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </CardContent>
+                    </Card>
+                  );
+                })}
+              </div>
+            )}
+          </TabsContent>
         </Tabs>
       </main>
       <AppFooter />
