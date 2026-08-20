@@ -31,9 +31,42 @@ function useScrollReveal() {
 
 const navSections = [
   { id: "calcular", label: "Calcular" },
-  { id: "fonte", label: "Fonte dos dados" },
+  { id: "recursos", label: "Recursos" },
   { id: "memoria", label: "Memória de cálculo" },
   { id: "planos", label: "Planos" },
+];
+
+const memoriaSample = [
+  { mes: "08/2024", indice: "IPCA", variacao: "-0,02%", fator: "1,012340", saldo: "R$ 10.123,40" },
+  { mes: "09/2024", indice: "Taxa Legal", variacao: "0,10%", fator: "1,013452", saldo: "R$ 10.134,52" },
+  { mes: "10/2024", indice: "Taxa Legal", variacao: "0,25%", fator: "1,015986", saldo: "R$ 10.159,86" },
+];
+
+const etapas = [
+  {
+    title: "Diagnóstico",
+    body: "Descreva o caso em linguagem comum e receba o enquadramento jurídico, em texto sem jargão.",
+    cta: "Fazer um diagnóstico",
+    href: "/diagnostico",
+  },
+  {
+    title: "Análise de documentos",
+    body: "Cole a petição ou a decisão e veja pontos fracos, riscos processuais e a fundamentação que faltou.",
+    cta: "Analisar um documento",
+    href: "/auth",
+  },
+  {
+    title: "Consulta processual",
+    body: "Consulte andamentos e decisões por tribunal, com o número CNJ.",
+    cta: "Consultar processos",
+    href: "/jurisprudencia",
+  },
+  {
+    title: "Petição",
+    body: "Informe fatos e pedidos; a peça sai montada, com a fundamentação inferida a partir do que você descreveu.",
+    cta: "Gerar uma petição",
+    href: "/peticao",
+  },
 ];
 
 const plans: { name: string; price: string; period: string; desc: string; features: string[]; cta: string; highlight: boolean; annualNote?: string }[] = [
