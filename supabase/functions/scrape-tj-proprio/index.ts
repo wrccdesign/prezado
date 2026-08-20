@@ -2,6 +2,7 @@ import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { requireServiceRole } from "../_shared/auth.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { generateEmbedding } from "../_shared/embeddings.ts";
+import { aiChat, toOpenAITool } from "../_shared/ai.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -203,42 +204,39 @@ serve(async (req) => {
       });
     }
 
-    // Step 2: Extract decisions with Anthropic Claude
-    const ANTHROPIC_API_KEY = Deno.env.get("ANTHROPIC_API_KEY");
-    if (!ANTHROPIC_API_KEY) throw new Error("ANTHROPIC_API_KEY not configured");
-
-    const aiResponse = await fetch("https://api.anthropic.com/v1/messages", {
-      method: "POST",
-      headers: {
-        "x-api-key": ANTHROPIC_API_KEY,
-        "anthropic-version": "2023-06-01",
-        "content-type": "application/json",
-      },
-      body: JSON.stringify({
-        model: "claude-sonnet-4-20250514",
-        max_tokens: 8192,
-        system: EXTRACTION_SYSTEM_PROMPT,
-        tools: [EXTRACTION_TOOL],
-        tool_choice: { type: "tool", name: "extract_decisions" },
+    // Step 2: Extract decisions via IA (API direta do Google, ver _shared/ai.ts)
+    let aiResult: any;
+    try {
+      aiResult = await aiChat({
+        model: "main",
+        functionName: "scrape-tj-proprio",
         messages: [
+          { role: "system", content: EXTRACTION_SYSTEM_PROMPT },
           {
             role: "user",
             content: `Extraia todas as decisões judiciais destes resultados de jurisprudência do ${tribunalUpper}. Retorne no máximo ${size} decisões.\n\n${combinedMarkdown.substring(0, 25000)}`,
           },
         ],
-      }),
-    });
-
-    if (!aiResponse.ok) {
-      const errText = await aiResponse.text();
-      console.error("[scrape-tj-proprio] Anthropic error:", aiResponse.status, errText);
-      throw new Error(`Anthropic retornou ${aiResponse.status}`);
+        tools: [toOpenAITool(EXTRACTION_TOOL)],
+        tool_choice: { type: "function", function: { name: "extract_decisions" } },
+      });
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : "erro desconhecido";
+      console.error("[scrape-tj-proprio] AI error:", msg);
+      return new Response(JSON.stringify({
+        ingested: 0, skipped: 0,
+        errors: [`Falha na extração por IA: ${msg}`],
+        total_found: 0,
+      }), { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
 
-    const aiResult = await aiResponse.json();
-    const toolUseBlock = aiResult.content?.find((b: any) => b.type === "tool_use");
-    if (!toolUseBlock?.input) {
-      console.error("[scrape-tj-proprio] Anthropic did not return tool_use:", JSON.stringify(aiResult.content));
+    const toolCall = aiResult?.choices?.[0]?.message?.tool_calls?.[0];
+    let toolArgs: any = null;
+    if (toolCall?.function?.arguments) {
+      try { toolArgs = JSON.parse(toolCall.function.arguments); } catch { toolArgs = null; }
+    }
+    if (!toolArgs) {
+      console.error("[scrape-tj-proprio] IA não retornou tool call estruturada");
       return new Response(JSON.stringify({
         ingested: 0, skipped: 0,
         errors: ["AI não retornou decisões estruturadas"],
@@ -248,7 +246,7 @@ serve(async (req) => {
       });
     }
 
-    const decisions = (toolUseBlock.input.decisions || []) as any[];
+    const decisions = (toolArgs.decisions || []) as any[];
     console.log(`[scrape-tj-proprio] AI extracted ${decisions.length} decisions`);
 
     // Step 3: Upsert decisions into database
