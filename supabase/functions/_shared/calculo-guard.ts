@@ -1,5 +1,13 @@
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { requireUser } from "./auth.ts";
-import { burstLimitMessage, checkRateLimit, extractEnv, monthlyLimitMessage } from "./rate-limit.ts";
+import {
+  BURST_LIMIT_PER_HOUR,
+  burstLimitMessage,
+  checkRateLimit,
+  extractEnv,
+  monthlyLimitMessage,
+} from "./rate-limit.ts";
+
 
 const MENSAGEM_SEM_PLANO: Record<string, string> = {
   calculo: "As calculadoras não estão disponíveis no seu plano.",
