@@ -905,6 +905,7 @@ export type Database = {
           view_count: number
         }[]
       }
+      unschedule_backfill_embeddings: { Args: never; Returns: boolean }
     }
     Enums: {
       app_role: "admin" | "user"
