@@ -514,6 +514,12 @@ export function CustasCalc() {
                   Piso legal aplicado: o percentual resultaria em {fmt(result.valor_bruto)}.
                 </p>
               )}
+              {!isAuthenticated && (
+                <p className="pt-2 text-sm text-muted-foreground">
+                  O cálculo e a memória são livres, sem conta. Para exportar em PDF/Word ou
+                  salvar no histórico, crie sua conta grátis.
+                </p>
+              )}
               {result.teto_aplicado && (
                 <p className="pt-2 text-sm text-foreground">
                   Teto legal aplicado: o percentual resultaria em {fmt(result.valor_bruto)}.
