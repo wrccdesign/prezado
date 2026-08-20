@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { useEffect, useMemo, useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -68,6 +69,8 @@ interface Resultado {
   dias_excluidos: DiaExcluido[];
   base_legal: string[];
 }
+
+const RECURSOS_COM_PREPARO = ["apelacao", "agravo", "recurso_ordinario", "apelacao_penal"];
 
 function gerarICS(dataVencimento: string, dataPublicacao: string, tipoPrazo: string, uf: string): string {
   const pad = (n: number) => n.toString().padStart(2, "0");
@@ -396,6 +399,15 @@ export function PrazoCalc() {
               <Button variant="outline" size="sm" onClick={baixarICS} className="mt-2">
                 <Download className="mr-1.5 h-4 w-4" /> Adicionar ao calendário (.ics)
               </Button>
+
+              {RECURSOS_COM_PREPARO.includes(tipoPrazo) && (
+                <p className="pt-2 text-xs text-muted-foreground">
+                  Recurso sujeito a preparo: o comprovante deve acompanhar a petição.{" "}
+                  <Link to="/calculadoras/custas-tjsp" className="text-primary underline underline-offset-2">
+                    Calcular as custas do TJSP
+                  </Link>
+                </p>
+              )}
             </CardContent>
           </Card>
 

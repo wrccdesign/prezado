@@ -15,6 +15,7 @@ import CorrecaoMonetariaLanding from "./pages/calculators/CorrecaoMonetariaLandi
 import PrazoProcessualLanding from "./pages/calculators/PrazoProcessualLanding";
 import CpfCnpjLanding from "./pages/calculators/CpfCnpjLanding";
 import OperacoesDatasLanding from "./pages/calculators/OperacoesDatasLanding";
+import CustasTjspLanding from "./pages/calculators/CustasTjspLanding";
 import LawyerDashboard from "./pages/LawyerDashboard";
 import Diagnostico from "./pages/Diagnostico";
 import Jurisprudencia from "./pages/Jurisprudencia";
@@ -70,6 +71,7 @@ const App = () => (
               <Route path="/calculadoras/prazo-processual" element={<PrazoProcessualLanding />} />
               <Route path="/calculadoras/validador-cpf-cnpj" element={<CpfCnpjLanding />} />
               <Route path="/calculadoras/operacoes-datas" element={<OperacoesDatasLanding />} />
+              <Route path="/calculadoras/custas-tjsp" element={<CustasTjspLanding />} />
               <Route path="/diagnostico" element={<ProtectedRoute><Diagnostico /></ProtectedRoute>} />
               <Route path="/jurisprudencia" element={<Jurisprudencia />} />
               <Route path="/decisao/:id" element={<DecisaoDetalhe />} />
