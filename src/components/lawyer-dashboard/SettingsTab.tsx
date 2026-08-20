@@ -70,29 +70,10 @@ export function SettingsTab() {
     await refreshProfile();
   };
 
-  const handleLogoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file || !user) return;
-    if (file.size > 2 * 1024 * 1024) {
-      toast({ title: "Arquivo muito grande (máx 2MB)", variant: "destructive" });
-      return;
-    }
-    setUploading(true);
-    const path = `${user.id}/logo.${file.name.split(".").pop()}`;
+  // A interface de logo foi removida: o logo não era aplicado na exportação da
+  // petição. O bucket `office-logos` e a coluna `office_logo_url` permanecem
+  // intactos — nenhum arquivo enviado por usuário é apagado.
 
-    const { error } = await supabase.storage.from("office-logos").upload(path, file, { upsert: true });
-    if (error) {
-      toast({ title: "Erro no upload", variant: "destructive" });
-      setUploading(false);
-      return;
-    }
-    const { data: urlData } = supabase.storage.from("office-logos").getPublicUrl(path);
-    setLogoUrl(urlData.publicUrl);
-    setUploading(false);
-    toast({ title: "Logo enviado" });
-  };
-
-  const removeLogo = () => setLogoUrl(null);
 
   const UF_OPTIONS = ["AC","AL","AM","AP","BA","CE","DF","ES","GO","MA","MG","MS","MT","PA","PB","PE","PI","PR","RJ","RN","RO","RR","RS","SC","SE","SP","TO"];
 
@@ -100,7 +81,7 @@ export function SettingsTab() {
     <PlanGate
       requiredPlan="escritorio"
       title="Configurações de escritório são exclusivas do plano Escritório"
-      description="Logo personalizado nas petições, dados do escritório e OAB completa. Faça upgrade para o plano Escritório."
+      description="Dados do escritório e OAB no perfil, além do maior volume mensal de consultas, análises e petições. Faça upgrade para o plano Escritório."
     >
     <div className="space-y-6 max-w-2xl">
       <Card>
@@ -127,27 +108,11 @@ export function SettingsTab() {
         </CardContent>
       </Card>
 
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-base">Logo do Escritório</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          {logoUrl ? (
-            <div className="flex items-center gap-4">
-              <img src={logoUrl} alt="Logo" className="h-16 w-16 object-contain rounded border" />
-              <Button variant="ghost" size="sm" onClick={removeLogo}><X className="mr-1 h-4 w-4" /> Remover</Button>
-            </div>
-          ) : (
-            <p className="text-sm text-muted-foreground">Nenhum logo enviado.</p>
-          )}
-          <div>
-            <Label htmlFor="logo-upload" className="cursor-pointer inline-flex items-center gap-2 text-sm text-primary hover:underline">
-              <Upload className="h-4 w-4" /> {uploading ? "Enviando..." : "Enviar logo (máx 2MB)"}
-            </Label>
-            <input id="logo-upload" type="file" accept="image/*" className="hidden" onChange={handleLogoUpload} disabled={uploading} />
-          </div>
-        </CardContent>
-      </Card>
+      <p className="text-xs text-muted-foreground">
+        Estes dados ficam salvos no seu perfil. Hoje eles ainda não são impressos no cabeçalho da petição
+        exportada — essa etapa está em avaliação.
+      </p>
+
 
       <Button onClick={handleSave} disabled={saving} className="w-full sm:w-auto">
         <Save className="mr-2 h-4 w-4" /> {saving ? "Salvando..." : "Salvar Configurações"}
