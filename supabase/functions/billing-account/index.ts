@@ -66,7 +66,9 @@ async function buildSummary(userId: string, email: string | undefined, env: Stri
     r.plan_id && r.plan_id !== "free" && (r.access_type ?? "recurring") === "recurring"
   ) ?? null;
 
-  // Annual access paid upfront (Pix/card), still valid.
+  // Annual access paid upfront (Pix/card), still valid. O Pix não é oferecido
+  // no checkout hoje, mas o reconhecimento de pagamentos Pix é mantido.
+
   const oneTime = rows.find((r) =>
     (r.access_type ?? "recurring") === "one_time" &&
     r.plan_id && r.plan_id !== "free" &&

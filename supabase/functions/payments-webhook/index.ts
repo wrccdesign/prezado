@@ -160,7 +160,13 @@ async function grantOneTimeAccess(session: any, env: StripeEnv) {
   await consumeCreditCoupon(env, replaces);
 }
 
-/** Record a Pix payment awaiting settlement — no access granted yet. */
+/**
+ * Record a Pix payment awaiting settlement — no access granted yet.
+ * O Pix não é oferecido no checkout hoje (conta Stripe irlandesa), mas o
+ * processamento de entrada continua ativo de propósito: se um pagamento em Pix
+ * chegar (sessão antiga, teste ou conta BR habilitada), o acesso é concedido.
+ */
+
 async function recordPendingOneTime(session: any, env: StripeEnv) {
   const meta = session.metadata ?? {};
   if (!meta.userId || !meta.duration_days) return;
