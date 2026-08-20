@@ -13,6 +13,7 @@ import { toast } from "@/hooks/use-toast";
 import { exportToPDF, exportToDOCX, slugify, type ExportSection } from "@/lib/exportDocument";
 import { readFunctionError } from "@/lib/usageLimit";
 import { notifyUsageConsumed } from "@/hooks/useUsage";
+import { useGuestExportGate } from "@/components/calculators/shared/GuestExportGate";
 
 
 interface LinhaMemoria {
@@ -95,6 +96,7 @@ export function CorrecaoCalc({ onUsarValor, usarValorLabel = "Usar este valor" }
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<Resultado | null>(null);
   const [memoriaAberta, setMemoriaAberta] = useState(false);
+  const { isAuthenticated, requireAccount } = useGuestExportGate();
 
 
   const calcular = async () => {
@@ -179,6 +181,10 @@ export function CorrecaoCalc({ onUsarValor, usarValorLabel = "Usar este valor" }
 
   const exportar = (tipo: "pdf" | "docx") => {
     if (!result) return;
+    if (!isAuthenticated) {
+      requireAccount(() => {}, "exportar a memória de cálculo");
+      return;
+    }
     const title = "Memória de Cálculo — Atualização Monetária";
     const filename = slugify(`memoria-calculo-${dataInicial}-${dataFinal}`);
     const sections = buildSections(result);

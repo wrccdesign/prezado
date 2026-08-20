@@ -1,21 +1,27 @@
 # Honorífico
 
-> Plataforma brasileira de inteligência artificial jurídica para cidadãos e advogados: análise de documentos, diagnóstico jurídico, geração de petições, busca de jurisprudência e calculadoras.
+> Cálculos e prazos jurídicos com fonte oficial, prontos para anexar à petição: correção monetária pelas séries do Banco Central, prazos com feriados forenses e custas do TJSP, com memória de cálculo em PDF ou Word.
 
-Honorífico oferece ferramentas de IA especializadas em direito brasileiro. Cidadãos recebem orientação em linguagem simples; advogados acessam petições fundamentadas, busca semântica de jurisprudência em 33 tribunais e um painel profissional.
+As calculadoras são livres, ilimitadas e funcionam sem cadastro. Os índices vêm das séries do SGS/Banco Central — IPCA (433), INPC (188), IGP-M (189), Selic (4390) e Taxa Legal (29543) — sincronizadas diariamente, e a Lei 14.905/2024 está aplicada, inclusive o mês de transição. Como apoio, a plataforma também oferece consulta processual e de andamentos, petições e análise de documentos com IA.
 
 ## Pages
 
-- [Início](/): Visão geral da plataforma e principais ferramentas de IA jurídica.
-- [Diagnóstico Jurídico](/diagnostico): Descreva sua situação e receba análise estruturada com direitos, riscos e próximos passos.
-- [Geração de Petições](/peticao): IA elabora petições fundamentadas prontas para download em PDF e DOCX.
-- [Busca de Jurisprudência](/jurisprudencia): Pesquisa semântica em decisões dos tribunais brasileiros.
-- [Chat Jurídico](/chat): Converse com a IA sobre qualquer tema jurídico brasileiro.
-- [Calculadoras Jurídicas](/calculadoras): Rescisão trabalhista, pensão alimentícia, prazos processuais e correção monetária.
+- [Início](/): Calculadora de correção monetária em funcionamento, origem dos dados e base legal.
+- [Calculadoras Jurídicas](/calculadoras): Correção monetária, prazo processual, custas do TJSP, rescisão, pensão, datas e validador de CPF/CNPJ.
+- [Correção Monetária e Juros](/calculadoras/correcao-monetaria-juros-lei-14905): Atualização com índices do Banco Central e juros da Lei 14.905/2024.
+- [Prazo Processual](/calculadoras/prazo-processual): Dias úteis ou corridos com feriados forenses e art. 220 do CPC.
+- [Custas do TJSP](/calculadoras/custas-tjsp): Taxa judiciária com a UFESP vigente, piso, teto e isenções.
+- [Operações com Datas](/calculadoras/operacoes-datas): Soma de dias, diferenças e informações sobre datas.
+- [Validador CPF/CNPJ](/calculadoras/validador-cpf-cnpj): Verificação dos dígitos verificadores.
+- [Consulta Processual](/jurisprudencia): Consulta de processos e andamentos com dados oficiais do CNJ.
+- [Modelos de Minutas](/modelos-de-minutas): Modelos de petições e minutas.
 - [Planos](/planos): Assinaturas Gratuito, Profissional e Escritório.
 
 ## Optional
 
+- [Diagnóstico Jurídico](/diagnostico): Análise estruturada de um caso (requer conta).
+- [Geração de Petições](/peticao): Petições em PDF e DOCX (requer conta).
+- [Chat Jurídico](/chat): Dúvidas sobre direito brasileiro (requer conta).
 - [Painel do Advogado](/painel-advogado): Gestão de clientes, petições e modelos (requer conta).
-- [Histórico](/historico): Suas análises anteriores (requer conta).
+- [Histórico](/historico): Cálculos e análises salvos (requer conta).
 - [Entrar](/auth): Cadastro e login.

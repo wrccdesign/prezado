@@ -28,15 +28,8 @@ const features: PlanFeature[] = [
   { label: "Diagnósticos jurídicos / mês", free: 1, profissional: 60, escritorio: 200 },
   { label: "Análises de documentos / mês", free: 3, profissional: 40, escritorio: 150 },
   { label: "Leituras/OCR de documentos / mês", free: 5, profissional: 80, escritorio: 300 },
-  { label: "Cálculos jurídicos (todas as calculadoras)", free: "Ilimitado", profissional: "Ilimitado", escritorio: "Ilimitado" },
-
+  { label: "Calculadoras (correção, prazo, custas TJSP, rescisão, pensão, datas, CPF/CNPJ)", free: "Ilimitado", profissional: "Ilimitado", escritorio: "Ilimitado" },
   { label: "Petições geradas / mês", free: 0, profissional: 60, escritorio: 200 },
-  {
-    label: "Calculadoras (prazo, correção, rescisão, pensão, datas, CPF/CNPJ)",
-    free: "✓",
-    profissional: "✓",
-    escritorio: "✓",
-  },
   { label: "Busca pública de decisões", free: "✓", profissional: "✓", escritorio: "✓" },
   { label: "Modelos de minutas e petições", free: "✓", profissional: "✓", escritorio: "✓" },
   { label: "Exportação em PDF e Word", free: "✓", profissional: "✓", escritorio: "✓" },
@@ -199,7 +192,7 @@ export default function Planos() {
             "@type": "Product",
             name: "Honorífico — IA jurídica",
             description:
-              "Plataforma de IA jurídica brasileira: análise de documentos, petições, consulta processual e calculadoras.",
+              "Cálculos e prazos jurídicos com fonte oficial, mais petições, análise de documentos e consulta processual com IA.",
             brand: { "@type": "Brand", name: "Honorífico" },
             offers: [
               {
@@ -243,7 +236,8 @@ export default function Planos() {
             Escolha seu plano
           </h1>
           <p className="text-muted-foreground max-w-2xl mx-auto">
-            Comece gratuitamente e evolua conforme sua necessidade. Todos os planos incluem acesso às calculadoras e busca pública.
+            As calculadoras são livres e ilimitadas em todos os planos — inclusive sem conta. A assinatura libera IA
+            (petições, análise de documentos, diagnóstico e chat), histórico salvo e volume de consulta processual.
             As cotas são mensais e renovam no primeiro dia de cada mês.
           </p>
           <p className="mt-3 text-sm font-medium text-accent">
