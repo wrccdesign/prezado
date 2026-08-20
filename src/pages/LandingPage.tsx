@@ -173,7 +173,7 @@ export default function LandingPage() {
                 <Link to="/planos">Ver planos</Link>
               </Button>
             </div>
-            <p className="mt-4 text-sm text-white/50">Sem cadastro para calcular.</p>
+            <p className="mt-4 text-sm text-white/50">Sem cadastro para calcular. Petições, análise e diagnóstico na conta.</p>
           </div>
         </div>
       </section>
