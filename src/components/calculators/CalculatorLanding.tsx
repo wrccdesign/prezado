@@ -12,10 +12,12 @@ interface CalculatorLandingProps {
   path: string;
   keywords: string[];
   features: string[];
+  /** Conteúdo editorial adicional, exibido abaixo de "Como funciona". */
+  content?: React.ReactNode;
   children: React.ReactNode;
 }
 
-export function CalculatorLanding({ title, description, path, keywords, features, children }: CalculatorLandingProps) {
+export function CalculatorLanding({ title, description, path, keywords, features, content, children }: CalculatorLandingProps) {
   return (
     <div className="min-h-screen bg-background">
       <AppHeader />
