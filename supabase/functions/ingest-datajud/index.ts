@@ -142,14 +142,44 @@ serve(async (req) => {
   const _auth = await requireUser(req);
   if (_auth instanceof Response) return _auth;
 
+  // Somente admin: ingestão escreve na tabela compartilhada `decisions` e é a
+  // operação mais cara do sistema (IA + API do CNJ).
+  {
+    const admin = createClient(
+      Deno.env.get("SUPABASE_URL")!,
+      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
+    );
+    const { data: roleRow } = await admin
+      .from("user_roles")
+      .select("role")
+      .eq("user_id", _auth.userId)
+      .eq("role", "admin")
+      .maybeSingle();
+    if (!roleRow) {
+      return new Response(JSON.stringify({ error: "Acesso restrito a administradores" }), {
+        status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+  }
+
   try {
-    const { tribunal, query, size = 10 } = await req.json();
+    const { tribunal, query, size: rawSize = 10 } = await req.json();
 
     if (!tribunal || !query) {
       return new Response(JSON.stringify({ error: "tribunal e query são obrigatórios" }), {
         status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
+
+    // Teto de custo: no máximo 50 itens por chamada.
+    const size = Number(rawSize);
+    if (!Number.isFinite(size) || size < 1 || size > 50) {
+      return new Response(JSON.stringify({ error: "size deve ser um número entre 1 e 50" }), {
+        status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+
 
 
 
