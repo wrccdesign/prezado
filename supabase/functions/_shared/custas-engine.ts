@@ -161,9 +161,12 @@ export function selecionarUnidadeFiscal(
     .sort((a, b) => (a.vigencia_inicio < b.vigencia_inicio ? 1 : -1));
   if (candidatas.length === 0) {
     throw new CustasError(
-      `Valor da ${codigo} não cadastrado para a competência ${referencia}. Atualize a tabela de unidades fiscais.`,
+      `Valor da ${codigo} não cadastrado para a competência ${referencia} (exercício de ${
+        referencia.slice(0, 4)
+      }). Cadastre a ${codigo} desse exercício na tabela de unidades fiscais para calcular atos dessa data.`,
     );
   }
+
   return { unidade: candidatas[0], referencia };
 }
 
