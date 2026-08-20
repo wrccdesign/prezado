@@ -435,7 +435,7 @@ export default function Planos() {
 
         <div className="text-center text-sm text-muted-foreground space-y-1">
           <p>Pagamentos processados de forma segura. Cancele a qualquer momento.</p>
-          <p>Limites são renovados diariamente à meia-noite (horário de Brasília).</p>
+          <p>Limites são renovados mensalmente, no primeiro dia de cada mês (horário de Brasília).</p>
         </div>
       </main>
 
