@@ -9,8 +9,6 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-payment-env, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
-// CNJ public API key - users can override via DATAJUD_API_KEY secret
-const DEFAULT_DATAJUD_KEY = "cDZHYzlZa0JadVREZDR4N3ZSaTdlQV9ZYVFxdkFvOXlmVkR3LTFpbFJRZkl1alhNd2Fia1REVW5KN0VkUVFMWE1jZ0trQ2dEMHlhcWRCRjVpR3RDOGliSHlsTXBoanExY19kUzZiZlFZMEhSZURMcGNJLUZiQ2RIYl9ORWtGOElQYnN4S2N6YVR6bEdMZWxSUmVfU2lB";
 
 const EXTRACTION_SYSTEM_PROMPT = `Você é um especialista em direito brasileiro. Analise o texto judicial fornecido e extraia metadados estruturados usando a função extract_metadata.
 
@@ -144,8 +142,28 @@ serve(async (req) => {
   const _auth = await requireUser(req);
   if (_auth instanceof Response) return _auth;
 
+  // Somente admin: ingestão escreve na tabela compartilhada `decisions` e é a
+  // operação mais cara do sistema (IA + API do CNJ).
+  {
+    const admin = createClient(
+      Deno.env.get("SUPABASE_URL")!,
+      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
+    );
+    const { data: roleRow } = await admin
+      .from("user_roles")
+      .select("role")
+      .eq("user_id", _auth.userId)
+      .eq("role", "admin")
+      .maybeSingle();
+    if (!roleRow) {
+      return new Response(JSON.stringify({ error: "Acesso restrito a administradores" }), {
+        status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+  }
+
   try {
-    const { tribunal, query, size = 10 } = await req.json();
+    const { tribunal, query, size: rawSize = 10 } = await req.json();
 
     if (!tribunal || !query) {
       return new Response(JSON.stringify({ error: "tribunal e query são obrigatórios" }), {
@@ -153,12 +171,23 @@ serve(async (req) => {
       });
     }
 
+    // Teto de custo: no máximo 50 itens por chamada.
+    const size = Number(rawSize);
+    if (!Number.isFinite(size) || size < 1 || size > 50) {
+      return new Response(JSON.stringify({ error: "size deve ser um número entre 1 e 50" }), {
+        status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+
+
 
 
 
     const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
     const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-    const DATAJUD_API_KEY = Deno.env.get("DATAJUD_API_KEY") || DEFAULT_DATAJUD_KEY;
+    const DATAJUD_API_KEY = Deno.env.get("DATAJUD_API_KEY");
+    if (!DATAJUD_API_KEY) throw new Error("DATAJUD_API_KEY não configurada");
     const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
     // Step 1: Query DataJud API
@@ -200,7 +229,6 @@ serve(async (req) => {
 
     let ingested = 0;
     let skipped = 0;
-    let updated = 0;
     const errors: string[] = [];
 
     // Step 2: Process each hit
@@ -243,6 +271,7 @@ serve(async (req) => {
           metadata = await aiChatTool<any>({
             model: "light",
             functionName: "ingest-datajud",
+            userId: _auth.userId,
             messages: [
               { role: "system", content: EXTRACTION_SYSTEM_PROMPT },
               { role: "user", content: `Extraia os metadados desta decisão judicial:\n\n${rawText}` },
@@ -285,12 +314,8 @@ serve(async (req) => {
             errors.push(`Erro ao upsert ${numeroProcesso}: ${upsertError.message}`);
             continue;
           }
-          // We count as ingested for new, updated for existing
-          if (existing) {
-            updated++;
-          } else {
-            ingested++;
-          }
+          // Só chega aqui quando o registro é novo (existentes dão `continue` acima).
+          ingested++;
         }
 
         // Generate embedding (non-blocking)
@@ -315,7 +340,6 @@ serve(async (req) => {
     return new Response(JSON.stringify({
       ingested,
       skipped,
-      updated,
       errors,
       total_hits: datajudData.hits?.total?.value || hits.length,
     }), {

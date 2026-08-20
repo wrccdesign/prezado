@@ -44,16 +44,33 @@ serve(async (req) => {
   const _svcErr = requireServiceRole(req);
   if (_svcErr) return _svcErr;
 
+  const body = await req.json().catch(() => ({}));
+  const phase = body.phase ?? 1;
+
+  const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
+  const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+  const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
+
+  const results: Record<string, unknown> = {};
+  let totalIngested = 0;
+  let fatalError: string | null = null;
+
+  // O log é gravado SEMPRE (inclusive em falha total) — um pipeline que falha
+  // em silêncio é pior que um pipeline desligado.
+  const writeLog = async () => {
+    try {
+      await supabase.from("cron_ingest_log").insert({
+        phase,
+        total_ingested: totalIngested,
+        results: fatalError ? { ...results, _fatal_error: fatalError } : results,
+        executed_at: new Date().toISOString(),
+      });
+    } catch (e) {
+      console.error("[cron-ingest] falha ao gravar cron_ingest_log:", e);
+    }
+  };
+
   try {
-    const body = await req.json().catch(() => ({}));
-    const phase = body.phase ?? 1;
-
-    const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
-    const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-    const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
-
-    const results: Record<string, { ingested: number; skipped: number; errors: number }> = {};
-    let totalIngested = 0;
 
     if (phase === 1) {
       // DataJud — 19 TJs, 1 query aleatória, size 10
@@ -136,17 +153,7 @@ serve(async (req) => {
       }
     }
 
-    // Log na tabela de auditoria (opcional — não falha se não existir)
-    try {
-      await supabase.from("cron_ingest_log").insert({
-        phase,
-        total_ingested: totalIngested,
-        results,
-        executed_at: new Date().toISOString(),
-      });
-    } catch (_) {
-      // Silently ignore if table doesn't exist
-    }
+    await writeLog();
 
     console.log(`[cron-ingest] Phase ${phase} done. Total: ${totalIngested}`);
 
@@ -159,8 +166,10 @@ serve(async (req) => {
     });
   } catch (e) {
     console.error("[cron-ingest] error:", e);
+    fatalError = e instanceof Error ? e.message : "Erro desconhecido";
+    await writeLog();
     return new Response(
-      JSON.stringify({ error: e instanceof Error ? e.message : "Erro desconhecido" }),
+      JSON.stringify({ error: fatalError }),
       { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   }

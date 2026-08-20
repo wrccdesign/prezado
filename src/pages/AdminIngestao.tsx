@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
+import { useIsAdmin } from "@/hooks/useIsAdmin";
 import { Navigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { AppHeader } from "@/components/AppHeader";
@@ -57,15 +58,48 @@ const QUERIES_SUGERIDAS = [
 
 export default function AdminIngestao() {
   const { user, loading: authLoading } = useAuth();
+  const { isAdmin, loading: roleLoading } = useIsAdmin();
   const { toast } = useToast();
   const [selectedTribunais, setSelectedTribunais] = useState<string[]>([]);
   const [query, setQuery] = useState("");
   const [size, setSize] = useState("10");
   const [results, setResults] = useState<IngestResult[]>([]);
   const [running, setRunning] = useState(false);
+  const [lastSuccess, setLastSuccess] = useState<string | null>(null);
+  const allowed = !!user && isAdmin;
 
-  if (authLoading) return null;
+  useEffect(() => {
+    if (!allowed) return;
+    supabase
+      .from("cron_ingest_log")
+      .select("executed_at")
+      .gt("total_ingested", 0)
+      .order("executed_at", { ascending: false })
+      .limit(1)
+      .maybeSingle()
+      .then(async ({ data }) => {
+        if (data?.executed_at) {
+          setLastSuccess(data.executed_at as string);
+          return;
+        }
+        const { data: dec } = await supabase
+          .from("decisions")
+          .select("created_at")
+          .order("created_at", { ascending: false })
+          .limit(1)
+          .maybeSingle();
+        setLastSuccess((dec?.created_at as string) ?? null);
+      });
+  }, [allowed]);
+
+  if (authLoading || roleLoading) return null;
   if (!user) return <Navigate to="/auth" replace />;
+  if (!isAdmin) return <Navigate to="/" replace />;
+
+  const daysSinceSuccess = lastSuccess
+    ? Math.floor((Date.now() - new Date(lastSuccess).getTime()) / 86400000)
+    : null;
+  const ingestStale = daysSinceSuccess === null || daysSinceSuccess > 7;
 
   const toggleTribunal = (t: string) => {
     setSelectedTribunais((prev) =>
@@ -156,6 +190,31 @@ export default function AdminIngestao() {
           <div>
             <h1 className="text-2xl font-bold text-foreground">Ingestão DataJud</h1>
             <p className="text-sm text-muted-foreground">Importe decisões judiciais da API pública do CNJ</p>
+          </div>
+        </div>
+
+        {/* Alerta de pipeline parado */}
+        <div
+          className={`flex items-start gap-3 rounded-lg border p-4 text-sm ${
+            ingestStale
+              ? "border-destructive/40 bg-destructive/10 text-destructive"
+              : "border-border bg-muted/40 text-muted-foreground"
+          }`}
+        >
+          <AlertTriangle className="h-4 w-4 mt-0.5 shrink-0" />
+          <div>
+            <p className="font-medium">
+              {lastSuccess
+                ? `Última ingestão bem-sucedida: ${new Date(lastSuccess).toLocaleDateString("pt-BR")}`
+                : "Nenhuma ingestão bem-sucedida registrada"}
+            </p>
+            {ingestStale && (
+              <p className="mt-0.5">
+                {daysSinceSuccess !== null
+                  ? `Há ${daysSinceSuccess} dias sem ingestão — verifique os logs do cron.`
+                  : "Verifique os logs do cron de ingestão."}
+              </p>
+            )}
           </div>
         </div>
 

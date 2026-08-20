@@ -2,13 +2,13 @@ import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { requireServiceRole } from "../_shared/auth.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { generateEmbedding } from "../_shared/embeddings.ts";
+import { aiChatTool, toOpenAITool } from "../_shared/ai.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-payment-env, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
-const DEFAULT_DATAJUD_KEY = "cDZHYzlZa0JadVREZDR4N3ZSaTdlQV9ZYVFxdkFvOXlmVkR3LTFpbFJRZkl1alhNd2Fia1REVW5KN0VkUVFMWE1jZ0trQ2dEMHlhcWRCRjVpR3RDOGliSHlsTXBoanExY19kUzZiZlFZMEhSZURMcGNJLUZiQ2RIYl9ORWtGOElQYnN4S2N6YVR6bEdMZWxSUmVfU2lB";
 
 const FALLBACK_TRIBUNAIS = [
   "TJRJ", "TJRS", "TJBA", "TJPE", "TJMA", "TJPA", "TJAL", "TJSE",
@@ -137,12 +137,10 @@ serve(async (req) => {
       });
     }
 
-    const ANTHROPIC_API_KEY = Deno.env.get("ANTHROPIC_API_KEY");
-    if (!ANTHROPIC_API_KEY) throw new Error("ANTHROPIC_API_KEY not configured");
-
     const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
     const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-    const DATAJUD_API_KEY = Deno.env.get("DATAJUD_API_KEY") || DEFAULT_DATAJUD_KEY;
+    const DATAJUD_API_KEY = Deno.env.get("DATAJUD_API_KEY");
+    if (!DATAJUD_API_KEY) throw new Error("DATAJUD_API_KEY não configurada");
     const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
     const endpoint = getDatajudEndpoint(tribunalUpper);
@@ -220,44 +218,32 @@ serve(async (req) => {
 
         const rawText = rawParts.join("\n");
 
-        // Extração via Claude
-        const aiResponse = await fetch("https://api.anthropic.com/v1/messages", {
-          method: "POST",
-          headers: {
-            "x-api-key": ANTHROPIC_API_KEY,
-            "anthropic-version": "2023-06-01",
-            "content-type": "application/json",
-          },
-          body: JSON.stringify({
-            model: "claude-sonnet-4-20250514",
-            max_tokens: 1500,
-            system: EXTRACTION_SYSTEM_PROMPT,
-            tools: [EXTRACTION_TOOL],
-            tool_choice: { type: "tool", name: "extract_metadata" },
+        // Extração via IA (API direta do Google, ver _shared/ai.ts)
+        let metadata: any = null;
+        try {
+          metadata = await aiChatTool<any>({
+            model: "light",
+            functionName: "scrape-tj-fallback",
             messages: [
+              { role: "system", content: EXTRACTION_SYSTEM_PROMPT },
               {
                 role: "user",
                 content: `Extraia os metadados desta decisão judicial. Lembre-se: retorne null para qualquer campo que não esteja explicitamente no texto.\n\n${rawText}`,
               },
             ],
-          }),
-        });
-
-        if (!aiResponse.ok) {
-          const status = aiResponse.status;
-          errors.push(`AI error ${status} para ${numeroProcesso || externalId}`);
+            tools: [toOpenAITool(EXTRACTION_TOOL)],
+            tool_choice: { type: "function", function: { name: "extract_metadata" } },
+          });
+        } catch (e) {
+          errors.push(`AI error para ${numeroProcesso || externalId}: ${e instanceof Error ? e.message : e}`);
           continue;
         }
 
-        const aiResult = await aiResponse.json();
-        const toolUseBlock = aiResult.content?.find((b: any) => b.type === "tool_use");
-
-        if (!toolUseBlock?.input) {
-          errors.push(`Claude não retornou tool_use para ${numeroProcesso || externalId}`);
+        if (!metadata) {
+          errors.push(`IA não retornou metadados para ${numeroProcesso || externalId}`);
           continue;
         }
 
-        const metadata = toolUseBlock.input as any;
 
         // VALIDAÇÃO — rejeitar dados suspeitos
         const finalNumero = metadata.numero_processo || source.numeroProcesso || null;

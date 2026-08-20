@@ -245,3 +245,34 @@ export async function aiChatStream(opts: AIRequestOptions): Promise<ReadableStre
 
   return upstream.pipeThrough(transform);
 }
+
+/**
+ * Converte uma tool no formato Anthropic (`{ name, description, input_schema }`)
+ * para o formato OpenAI usado pela camada compatível do Google.
+ * Também normaliza `type: ["string", "null"]` para `type: "string"`, que a API
+ * do Google não aceita em uniões.
+ */
+function normalizeSchema(node: any): any {
+  if (Array.isArray(node)) return node.map(normalizeSchema);
+  if (!node || typeof node !== "object") return node;
+  const out: Record<string, unknown> = {};
+  for (const [k, v] of Object.entries(node)) {
+    if (k === "type" && Array.isArray(v)) {
+      out[k] = (v as string[]).find((t) => t !== "null") ?? "string";
+    } else {
+      out[k] = normalizeSchema(v);
+    }
+  }
+  return out;
+}
+
+export function toOpenAITool(tool: { name: string; description?: string; input_schema: unknown }) {
+  return {
+    type: "function",
+    function: {
+      name: tool.name,
+      description: tool.description ?? "",
+      parameters: normalizeSchema(tool.input_schema),
+    },
+  };
+}
