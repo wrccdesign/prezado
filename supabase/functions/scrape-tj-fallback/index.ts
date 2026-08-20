@@ -220,44 +220,32 @@ serve(async (req) => {
 
         const rawText = rawParts.join("\n");
 
-        // Extração via Claude
-        const aiResponse = await fetch("https://api.anthropic.com/v1/messages", {
-          method: "POST",
-          headers: {
-            "x-api-key": ANTHROPIC_API_KEY,
-            "anthropic-version": "2023-06-01",
-            "content-type": "application/json",
-          },
-          body: JSON.stringify({
-            model: "claude-sonnet-4-20250514",
-            max_tokens: 1500,
-            system: EXTRACTION_SYSTEM_PROMPT,
-            tools: [EXTRACTION_TOOL],
-            tool_choice: { type: "tool", name: "extract_metadata" },
+        // Extração via IA (API direta do Google, ver _shared/ai.ts)
+        let metadata: any = null;
+        try {
+          metadata = await aiChatTool<any>({
+            model: "light",
+            functionName: "scrape-tj-fallback",
             messages: [
+              { role: "system", content: EXTRACTION_SYSTEM_PROMPT },
               {
                 role: "user",
                 content: `Extraia os metadados desta decisão judicial. Lembre-se: retorne null para qualquer campo que não esteja explicitamente no texto.\n\n${rawText}`,
               },
             ],
-          }),
-        });
-
-        if (!aiResponse.ok) {
-          const status = aiResponse.status;
-          errors.push(`AI error ${status} para ${numeroProcesso || externalId}`);
+            tools: [toOpenAITool(EXTRACTION_TOOL)],
+            tool_choice: { type: "function", function: { name: "extract_metadata" } },
+          });
+        } catch (e) {
+          errors.push(`AI error para ${numeroProcesso || externalId}: ${e instanceof Error ? e.message : e}`);
           continue;
         }
 
-        const aiResult = await aiResponse.json();
-        const toolUseBlock = aiResult.content?.find((b: any) => b.type === "tool_use");
-
-        if (!toolUseBlock?.input) {
-          errors.push(`Claude não retornou tool_use para ${numeroProcesso || externalId}`);
+        if (!metadata) {
+          errors.push(`IA não retornou metadados para ${numeroProcesso || externalId}`);
           continue;
         }
 
-        const metadata = toolUseBlock.input as any;
 
         // VALIDAÇÃO — rejeitar dados suspeitos
         const finalNumero = metadata.numero_processo || source.numeroProcesso || null;
