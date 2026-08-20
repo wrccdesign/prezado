@@ -1,10 +1,25 @@
-import { useState, useRef } from "react";
+import { useEffect, useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { Copy, Plus, FileText, FileDown } from "lucide-react";
 import jsPDF from "jspdf";
-import { Document, Packer, Paragraph, TextRun, AlignmentType, Header, Footer } from "docx";
+import { Document, Packer, Paragraph, TextRun, AlignmentType, Header, Footer, ImageRun } from "docx";
+import { useAuth } from "@/contexts/AuthContext";
+import { useSubscription } from "@/hooks/useSubscription";
+import {
+  loadPetitionBranding,
+  contactLine,
+  signatureLines,
+  hasLetterhead,
+  type PetitionBranding,
+} from "@/lib/petitionBranding";
+
+const EMPTY_BRANDING: PetitionBranding = {
+  fullName: null, oabNumber: null, oabState: null, officeName: null,
+  officeAddress: null, officePhone: null, officeEmail: null, logo: null,
+};
+
 
 interface PetitionResultProps {
   text: string;
@@ -68,10 +83,28 @@ function getFormattedDate() {
 
 export function PetitionResult({ text, petitionType, onNewPetition }: PetitionResultProps) {
   const { toast } = useToast();
+  const { user } = useAuth();
+  const { isPro, isEscritorio } = useSubscription();
   const [editedText, setEditedText] = useState(text);
+  const [branding, setBranding] = useState<PetitionBranding>(EMPTY_BRANDING);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
+  // Assinatura com nome/OAB a partir do Profissional; timbre completo (logo e
+  // dados do escritório) apenas no Escritório.
+  useEffect(() => {
+    let cancelled = false;
+    if (!user || !isPro) {
+      setBranding(EMPTY_BRANDING);
+      return;
+    }
+    loadPetitionBranding(user.id, isEscritorio).then((b) => {
+      if (!cancelled) setBranding(b);
+    });
+    return () => { cancelled = true; };
+  }, [user, isPro, isEscritorio]);
+
   const baseFilename = `Peticao_${sanitizeFilename(petitionType)}_${getDateString()}`;
+
 
   const handleCopy = async () => {
     try {
@@ -87,21 +120,62 @@ export function PetitionResult({ text, petitionType, onNewPetition }: PetitionRe
     const doc = new jsPDF({ unit: "mm", format: "a4" });
     const pageWidth = doc.internal.pageSize.getWidth();
     const pageHeight = doc.internal.pageSize.getHeight();
-    const mLeft = 30, mRight = 20, mTop = 30, mBottom = 20;
+    const mLeft = 30, mRight = 20, mBottom = 20;
     const usableWidth = pageWidth - mLeft - mRight;
     const bodyIndent = 12.5;
     const dateStr = getFormattedDate();
-    const warningText = "Gerado por Honorífico — Documento deve ser revisado por advogado habilitado";
+    // A marca da plataforma não entra no documento: ele é do advogado e vai a
+    // protocolo. O aviso de revisão permanece.
+    const warningText = "Documento deve ser revisado por advogado habilitado";
+
+    // Timbre: logo redimensionado pela proporção natural, nunca achatado.
+    const logo = branding.logo;
+    const LOGO_MAX_W = 28, LOGO_MAX_H = 16;
+    let logoW = 0, logoH = 0;
+    if (logo) {
+      const scale = Math.min(LOGO_MAX_W / logo.width, LOGO_MAX_H / logo.height);
+      logoW = logo.width * scale;
+      logoH = logo.height * scale;
+    }
+    const contact = contactLine(branding);
+    const letterhead = hasLetterhead(branding);
+    const headerTop = 12;
+    const textX = mLeft + (logoW ? logoW + 4 : 0);
+    let textBottom = headerTop;
+    if (branding.officeName) textBottom += 4.5;
+    if (contact) textBottom += 3.5;
+    const ruleY = Math.max(headerTop + logoH, textBottom, 18) + 2;
+    const mTop = Math.max(30, ruleY + 8);
 
     const addPageHeaderFooter = (d: jsPDF) => {
-      d.setFont("times", "bold"); d.setFontSize(10);
-      d.text("Honorífico", mLeft, 15);
+      if (letterhead) {
+        if (logo) {
+          try {
+            d.addImage(logo.dataUrl, logo.format, mLeft, headerTop, logoW, logoH);
+          } catch (err) {
+            // C2: falha de imagem nunca derruba o download.
+            console.warn("Não foi possível desenhar o logo no PDF.", err);
+          }
+        }
+        let ty = headerTop + 4;
+        if (branding.officeName) {
+          d.setFont("times", "bold"); d.setFontSize(11);
+          d.text(branding.officeName, textX, ty);
+          ty += 4;
+        }
+        if (contact) {
+          d.setFont("times", "normal"); d.setFontSize(8);
+          d.text(contact, textX, ty, { maxWidth: pageWidth - mRight - textX - 22 });
+        }
+      }
       d.setFont("times", "normal"); d.setFontSize(9);
-      d.text(dateStr, pageWidth - mRight, 15, { align: "right" });
-      d.setDrawColor(150); d.line(mLeft, 18, pageWidth - mRight, 18);
+      d.text(dateStr, pageWidth - mRight, headerTop + 3, { align: "right" });
+      d.setDrawColor(150); d.line(mLeft, ruleY, pageWidth - mRight, ruleY);
       d.setFontSize(7); d.setFont("times", "italic");
       d.text(warningText, pageWidth / 2, pageHeight - 8, { align: "center" });
     };
+
+
 
     addPageHeaderFooter(doc);
     let y = mTop;
@@ -147,7 +221,11 @@ export function PetitionResult({ text, petitionType, onNewPetition }: PetitionRe
     y += 10; checkPage(30);
     doc.setFont("times", "normal"); doc.setFontSize(12);
     doc.text("___________________________________________", pageWidth / 2, y, { align: "center" }); y += 6;
-    doc.text("Advogado(a) / OAB", pageWidth / 2, y, { align: "center" });
+    for (const sig of signatureLines(branding)) {
+      checkPage(6);
+      doc.text(sig, pageWidth / 2, y, { align: "center" }); y += 5.5;
+    }
+
 
     doc.save(`${baseFilename}.pdf`);
     toast({ title: "Documento baixado com sucesso!" });
@@ -181,27 +259,62 @@ export function PetitionResult({ text, petitionType, onNewPetition }: PetitionRe
 
     docParagraphs.push(new Paragraph({ children: [], spacing: { before: 400 } }));
     docParagraphs.push(new Paragraph({ children: [new TextRun({ text: "___________________________________________", font: "Times New Roman", size: 24 })], alignment: AlignmentType.CENTER }));
-    docParagraphs.push(new Paragraph({ children: [new TextRun({ text: "Advogado(a) / OAB", font: "Times New Roman", size: 24 })], alignment: AlignmentType.CENTER, spacing: { after: 200 } }));
+    for (const sig of signatureLines(branding)) {
+      docParagraphs.push(new Paragraph({
+        children: [new TextRun({ text: sig, font: "Times New Roman", size: 24 })],
+        alignment: AlignmentType.CENTER, spacing: { after: 80 },
+      }));
+    }
+
+    // Cabeçalho do DOCX: o `Header` do docx já se repete em todas as páginas.
+    const headerChildren: Paragraph[] = [];
+    const contact = contactLine(branding);
+    if (hasLetterhead(branding)) {
+      const logo = branding.logo;
+      if (logo) {
+        try {
+          const MAX_W = 110, MAX_H = 62;
+          const scale = Math.min(MAX_W / logo.width, MAX_H / logo.height);
+          headerChildren.push(new Paragraph({
+            children: [new ImageRun({
+              type: logo.format === "PNG" ? "png" : "jpg",
+              data: logo.dataUrl.split(",")[1],
+              transformation: { width: Math.round(logo.width * scale), height: Math.round(logo.height * scale) },
+            })],
+            alignment: AlignmentType.LEFT,
+          }));
+        } catch (err) {
+          // C2: sem logo, o cabeçalho segue em texto e o download continua.
+          console.warn("Não foi possível inserir o logo no DOCX.", err);
+        }
+      }
+      if (branding.officeName) {
+        headerChildren.push(new Paragraph({
+          children: [new TextRun({ text: branding.officeName, font: "Times New Roman", size: 22, bold: true })],
+          alignment: AlignmentType.LEFT,
+        }));
+      }
+      if (contact) {
+        headerChildren.push(new Paragraph({
+          children: [new TextRun({ text: contact, font: "Times New Roman", size: 16 })],
+          alignment: AlignmentType.LEFT,
+        }));
+      }
+    }
+    headerChildren.push(new Paragraph({
+      children: [new TextRun({ text: getFormattedDate(), font: "Times New Roman", size: 18 })],
+      alignment: AlignmentType.RIGHT,
+    }));
 
     const docFile = new Document({
       sections: [{
         properties: { page: { margin: { top: 1701, left: 1701, bottom: 1134, right: 1134 } } },
-        headers: {
-          default: new Header({
-            children: [new Paragraph({
-              children: [
-                new TextRun({ text: "Honorífico", font: "Times New Roman", size: 20, bold: true }),
-                new TextRun({ text: `    ${getFormattedDate()}`, font: "Times New Roman", size: 18 }),
-              ],
-              alignment: AlignmentType.LEFT,
-            })],
-          }),
-        },
+        headers: { default: new Header({ children: headerChildren }) },
         footers: {
           default: new Footer({
             children: [new Paragraph({
               children: [new TextRun({
-                text: "Gerado por Honorífico — Documento deve ser revisado por advogado habilitado",
+                text: "Documento deve ser revisado por advogado habilitado",
                 font: "Times New Roman", size: 16, italics: true,
               })],
               alignment: AlignmentType.CENTER,
@@ -211,6 +324,7 @@ export function PetitionResult({ text, petitionType, onNewPetition }: PetitionRe
         children: docParagraphs,
       }],
     });
+
 
     const blob = await Packer.toBlob(docFile);
     const url = URL.createObjectURL(blob);

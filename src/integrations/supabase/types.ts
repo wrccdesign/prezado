@@ -575,6 +575,7 @@ export type Database = {
         Row: {
           created_at: string | null
           formatting_preferences: Json | null
+          full_name: string | null
           id: string
           oab_number: string | null
           oab_state: string | null
@@ -591,6 +592,7 @@ export type Database = {
         Insert: {
           created_at?: string | null
           formatting_preferences?: Json | null
+          full_name?: string | null
           id?: string
           oab_number?: string | null
           oab_state?: string | null
@@ -607,6 +609,7 @@ export type Database = {
         Update: {
           created_at?: string | null
           formatting_preferences?: Json | null
+          full_name?: string | null
           id?: string
           oab_number?: string | null
           oab_state?: string | null
