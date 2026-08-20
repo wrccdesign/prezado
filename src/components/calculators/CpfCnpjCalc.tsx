@@ -100,7 +100,7 @@ export function CpfCnpjCalc() {
         </div>
         <div className="space-y-2">
           <Label>Número</Label>
-          <Input
+          <Input className="h-11"
             inputMode="numeric"
             placeholder={exemplo}
             value={tipo === "cpf" ? formatarCpf(valor) : formatarCnpj(valor)}

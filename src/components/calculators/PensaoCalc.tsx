@@ -134,11 +134,11 @@ export function PensaoCalc() {
       <div className="grid gap-4 sm:grid-cols-2">
         <div className="space-y-2">
           <Label>Renda Líquida do Alimentante (R$)</Label>
-          <Input type="number" placeholder="5000" value={renda} onChange={e => setRenda(e.target.value)} />
+          <Input className="h-11" type="number" inputMode="decimal" placeholder="5000" value={renda} onChange={e => setRenda(e.target.value)} />
         </div>
         <div className="space-y-2">
           <Label>Número de Filhos</Label>
-          <Input type="number" min={1} placeholder="1" value={filhos} onChange={e => setFilhos(e.target.value)} />
+          <Input className="h-11" type="number" inputMode="numeric" min={1} placeholder="1" value={filhos} onChange={e => setFilhos(e.target.value)} />
         </div>
         <div className="space-y-2">
           <Label>Os filhos moram com o alimentante?</Label>
