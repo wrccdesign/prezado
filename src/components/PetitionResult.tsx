@@ -83,10 +83,28 @@ function getFormattedDate() {
 
 export function PetitionResult({ text, petitionType, onNewPetition }: PetitionResultProps) {
   const { toast } = useToast();
+  const { user } = useAuth();
+  const { isPro, isEscritorio } = useSubscription();
   const [editedText, setEditedText] = useState(text);
+  const [branding, setBranding] = useState<PetitionBranding>(EMPTY_BRANDING);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
+  // Assinatura com nome/OAB a partir do Profissional; timbre completo (logo e
+  // dados do escritório) apenas no Escritório.
+  useEffect(() => {
+    let cancelled = false;
+    if (!user || !isPro) {
+      setBranding(EMPTY_BRANDING);
+      return;
+    }
+    loadPetitionBranding(user.id, isEscritorio).then((b) => {
+      if (!cancelled) setBranding(b);
+    });
+    return () => { cancelled = true; };
+  }, [user, isPro, isEscritorio]);
+
   const baseFilename = `Peticao_${sanitizeFilename(petitionType)}_${getDateString()}`;
+
 
   const handleCopy = async () => {
     try {
