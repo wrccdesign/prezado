@@ -9,8 +9,6 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-payment-env, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
-// Fallback para a chave pública documentada pelo CNJ, usado apenas se a secret DATAJUD_API_KEY não existir.
-const DEFAULT_DATAJUD_KEY = "cDZHYzlZa0JadVREZDR4N3ZSaTdlQV9ZYVFxdkFvOXlmVkR3LTFpbFJRZkl1alhNd2Fia1REVW5KN0VkUVFMWE1jZ0trQ2dEMHlhcWRCRjVpR3RDOGliSHlsTXBoanExY19kUzZiZlFZMEhSZURMcGNJLUZiQ2RIYl9ORWtGOElQYnN4S2N6YVR6bEdMZWxSUmVfU2lB";
 
 const FALLBACK_TRIBUNAIS = [
   "TJRJ", "TJRS", "TJBA", "TJPE", "TJMA", "TJPA", "TJAL", "TJSE",
@@ -141,7 +139,8 @@ serve(async (req) => {
 
     const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
     const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-    const DATAJUD_API_KEY = Deno.env.get("DATAJUD_API_KEY") || DEFAULT_DATAJUD_KEY;
+    const DATAJUD_API_KEY = Deno.env.get("DATAJUD_API_KEY");
+    if (!DATAJUD_API_KEY) throw new Error("DATAJUD_API_KEY não configurada");
     const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
     const endpoint = getDatajudEndpoint(tribunalUpper);
