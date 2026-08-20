@@ -74,6 +74,27 @@ export type Database = {
         }
         Relationships: []
       }
+      anon_usage: {
+        Row: {
+          action: string
+          created_at: string
+          id: string
+          ip_hash: string
+        }
+        Insert: {
+          action: string
+          created_at?: string
+          id?: string
+          ip_hash: string
+        }
+        Update: {
+          action?: string
+          created_at?: string
+          id?: string
+          ip_hash?: string
+        }
+        Relationships: []
+      }
       calculos: {
         Row: {
           created_at: string
