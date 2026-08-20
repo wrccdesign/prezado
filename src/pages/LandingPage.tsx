@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Check, ChevronRight, Menu, X } from "lucide-react";
+import { ArrowRight, Check, ChevronRight, FileDown, Menu, X } from "lucide-react";
 import Logo from "@/components/Logo";
 import { SEO } from "@/components/SEO";
 import { CorrecaoCalc } from "@/components/calculators/CorrecaoCalc";
@@ -31,9 +31,42 @@ function useScrollReveal() {
 
 const navSections = [
   { id: "calcular", label: "Calcular" },
-  { id: "fonte", label: "Fonte dos dados" },
+  { id: "recursos", label: "Recursos" },
   { id: "memoria", label: "Memória de cálculo" },
   { id: "planos", label: "Planos" },
+];
+
+const memoriaSample = [
+  { mes: "08/2024", indice: "IPCA", variacao: "-0,02%", fator: "1,012340", saldo: "R$ 10.123,40" },
+  { mes: "09/2024", indice: "Taxa Legal", variacao: "0,10%", fator: "1,013452", saldo: "R$ 10.134,52" },
+  { mes: "10/2024", indice: "Taxa Legal", variacao: "0,25%", fator: "1,015986", saldo: "R$ 10.159,86" },
+];
+
+const etapas = [
+  {
+    title: "Diagnóstico",
+    body: "Descreva o caso em linguagem comum e receba o enquadramento jurídico, em texto sem jargão.",
+    cta: "Fazer um diagnóstico",
+    href: "/diagnostico",
+  },
+  {
+    title: "Análise de documentos",
+    body: "Cole a petição ou a decisão e veja pontos fracos, riscos processuais e a fundamentação que faltou.",
+    cta: "Analisar um documento",
+    href: "/auth",
+  },
+  {
+    title: "Consulta processual",
+    body: "Consulte andamentos e decisões por tribunal, com o número CNJ.",
+    cta: "Consultar processos",
+    href: "/jurisprudencia",
+  },
+  {
+    title: "Petição",
+    body: "Informe fatos e pedidos; a peça sai montada, com a fundamentação inferida a partir do que você descreveu.",
+    cta: "Gerar uma petição",
+    href: "/peticao",
+  },
 ];
 
 const plans: { name: string; price: string; period: string; desc: string; features: string[]; cta: string; highlight: boolean; annualNote?: string }[] = [
@@ -42,12 +75,6 @@ const plans: { name: string; price: string; period: string; desc: string; featur
   { name: "Escritório", price: "R$ 149", period: "/mês", desc: "Para escritórios de advocacia", annualNote: "ou R$ 1.249/ano à vista no Pix (R$ 104,08/mês, -30%)", features: ["Calculadoras ilimitadas", "1500 consultas e 800 mensagens/mês", "200 petições e 150 análises/mês", "Gestão de clientes e modelos", "Logo personalizado"], cta: "Falar com Vendas", highlight: false },
 ];
 
-const tambem = [
-  "Prazos processuais com feriados forenses e a contagem do art. 220 do CPC.",
-  "Custas do TJSP com a UFESP vigente na data do recolhimento.",
-  "Consulta processual e de andamentos.",
-  "Petições e análise de documentos com IA.",
-];
 
 export default function LandingPage() {
   const [scrolled, setScrolled] = useState(false);
@@ -146,7 +173,7 @@ export default function LandingPage() {
                 <Link to="/planos">Ver planos</Link>
               </Button>
             </div>
-            <p className="mt-4 text-sm text-white/50">Sem cadastro para calcular.</p>
+            <p className="mt-4 text-sm text-white/50">Sem cadastro para calcular. Petições, análise e diagnóstico na conta.</p>
           </div>
         </div>
       </section>
@@ -167,69 +194,130 @@ export default function LandingPage() {
               <Link to="/calculadoras/custas-tjsp" className="text-navy underline underline-offset-2 hover:text-gold">custas do TJSP</Link> e{" "}
               <Link to="/calculadoras" className="text-navy underline underline-offset-2 hover:text-gold">todas as demais</Link>.
             </p>
-          </div>
-        </div>
-      </section>
 
-      {/* BLOCO 1 — DE ONDE VEM O NÚMERO */}
-      <section id="fonte" className="py-20 md:py-24" style={{ backgroundColor: "hsl(var(--navy))" }}>
-        <div className="container mx-auto px-4 sm:px-6">
-          <div data-reveal className="opacity-0 translate-y-6 transition-all duration-700 max-w-3xl">
-            <span className="text-sm text-gold font-semibold uppercase tracking-wider">De onde vem o número</span>
-            <p className="text-lg text-white/70 mt-4 leading-relaxed">
-              Todo cálculo é rastreável. Os índices vêm das séries oficiais do SGS/Banco Central — IPCA (433), INPC (188), IGP-M (189), Selic (4390) e Taxa Legal (29543) — sincronizadas diariamente. O resultado exibe a data da última sincronização, então você sabe exatamente qual dado foi usado.
-            </p>
-          </div>
-        </div>
-      </section>
-
-      {/* BLOCO 2 — LEI 14.905/2024 */}
-      <section className="py-20 md:py-24" style={{ backgroundColor: "hsl(var(--cream))" }}>
-        <div className="container mx-auto px-4 sm:px-6">
-          <div data-reveal className="opacity-0 translate-y-6 transition-all duration-700 max-w-3xl">
-            <span className="text-sm text-gold font-semibold uppercase tracking-wider">Lei 14.905/2024</span>
-            <h2 className="font-serif text-3xl md:text-4xl font-bold text-navy mt-3 mb-4">A Lei 14.905/2024 já está aplicada</h2>
-            <p className="text-base text-muted-foreground leading-relaxed">
-              O corte de 30/08/2024 está implementado, inclusive o mês de transição: regime anterior até 29/08 e Taxa Legal nos dias 30 e 31, pro rata die (Res. CMN 5.171/2024). Resultado negativo é desconsiderado (art. 406, §3º, do CC) e o índice contratual pode ser mantido quando for o caso (art. 389, parágrafo único, do CC).
-            </p>
-          </div>
-        </div>
-      </section>
-
-      {/* BLOCO 3 — MEMÓRIA DE CÁLCULO */}
-      <section id="memoria" className="py-20 md:py-24" style={{ backgroundColor: "hsl(var(--navy))" }}>
-        <div className="container mx-auto px-4 sm:px-6">
-          <div data-reveal className="opacity-0 translate-y-6 transition-all duration-700 max-w-3xl">
-            <span className="text-sm text-gold font-semibold uppercase tracking-wider">Memória de cálculo</span>
-            <h2 className="font-serif text-3xl md:text-4xl font-bold text-white mt-3 mb-4">A memória de cálculo é o produto</h2>
-            <p className="text-lg text-white/70 leading-relaxed">
-              Mês a mês: índice aplicado, variação, fator acumulado, saldo corrigido, juros do mês e acumulados, e o regime legal de cada período. Exporta em PDF ou Word, com fonte e base legal. É o documento que vai anexado à petição — não é só um número na tela.
-            </p>
-            <div className="pt-6">
-              <Button size="lg" className="bg-gold text-navy hover:bg-gold-light font-semibold" asChild>
-                <a href="#calcular">Calcular agora <ArrowRight className="ml-2 h-5 w-5" /></a>
-              </Button>
+            {/* FAIXA DE PROVA */}
+            <div className="mt-6 flex flex-col gap-2 border-t border-navy/10 pt-4 text-xs text-muted-foreground sm:flex-row sm:items-center sm:gap-x-3 sm:text-sm">
+              <span>Séries oficiais do SGS/Banco Central</span>
+              <span aria-hidden className="hidden sm:inline text-navy/20">·</span>
+              <span>Sincronizadas diariamente</span>
+              <span aria-hidden className="hidden sm:inline text-navy/20">·</span>
+              <span>Lei 14.905/2024 aplicada, inclusive o mês de transição</span>
+              <Link
+                to="/calculadoras/correcao-monetaria-juros-lei-14905"
+                className="text-navy underline underline-offset-2 hover:text-gold sm:ml-auto"
+              >
+                Como calculamos
+              </Link>
             </div>
           </div>
         </div>
       </section>
 
-      {/* BLOCO 4 — E TAMBÉM */}
-      <section className="py-16" style={{ backgroundColor: "hsl(var(--navy-medium))", borderTop: "1px solid hsl(var(--gold) / 0.1)", borderBottom: "1px solid hsl(var(--gold) / 0.1)" }}>
+      {/* MEMÓRIA DE CÁLCULO */}
+      <section id="memoria" className="py-16" style={{ backgroundColor: "hsl(var(--navy))" }}>
         <div className="container mx-auto px-4 sm:px-6">
-          <div data-reveal className="opacity-0 translate-y-6 transition-all duration-700 max-w-3xl">
-            <span className="text-sm text-white/40 uppercase tracking-wider font-semibold">E também</span>
-            <ul className="mt-4 space-y-2">
-              {tambem.map((t) => (
-                <li key={t} className="flex items-start gap-3 text-sm text-white/60">
-                  <Check className="h-4 w-4 text-gold mt-0.5 shrink-0" />
-                  {t}
-                </li>
-              ))}
-            </ul>
+          <div data-reveal className="opacity-0 translate-y-6 transition-all duration-700 max-w-4xl">
+            <span className="text-sm text-gold font-semibold uppercase tracking-wider">Memória de cálculo</span>
+            <h2 className="font-serif text-3xl md:text-4xl font-bold text-white mt-3 mb-4">A memória de cálculo é o produto</h2>
+            <p className="text-base text-white/70 leading-relaxed max-w-2xl">
+              Mês a mês, com o regime legal de cada período — é o documento que vai anexado à petição.
+            </p>
+
+            <div className="mt-7 overflow-hidden rounded-xl border" style={{ borderColor: "hsl(var(--gold) / 0.25)", backgroundColor: "hsl(var(--navy-medium))" }}>
+              <div className="overflow-x-auto">
+                <table className="w-full text-left text-sm">
+                  <thead>
+                    <tr className="text-xs uppercase tracking-wider text-white/40">
+                      {["Mês", "Índice", "Variação", "Fator acum.", "Saldo corrigido"].map((h) => (
+                        <th key={h} className="whitespace-nowrap px-4 py-3 font-semibold">{h}</th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody className="text-white/75">
+                    {memoriaSample.map((l) => (
+                      <tr key={l.mes} className="border-t" style={{ borderColor: "hsl(var(--gold) / 0.12)" }}>
+                        <td className="whitespace-nowrap px-4 py-3">{l.mes}</td>
+                        <td className="whitespace-nowrap px-4 py-3">{l.indice}</td>
+                        <td className="whitespace-nowrap px-4 py-3">{l.variacao}</td>
+                        <td className="whitespace-nowrap px-4 py-3">{l.fator}</td>
+                        <td className="whitespace-nowrap px-4 py-3 text-white">{l.saldo}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+              <div
+                aria-hidden
+                className="flex flex-wrap items-center gap-3 border-t px-4 py-3 text-xs text-white/50"
+                style={{ borderColor: "hsl(var(--gold) / 0.12)" }}
+              >
+                <span className="inline-flex items-center gap-2 rounded-md border border-white/15 px-3 py-1.5 text-white/70">
+                  <FileDown className="h-3.5 w-3.5" /> Exportar PDF
+                </span>
+                <span className="inline-flex items-center gap-2 rounded-md border border-white/15 px-3 py-1.5 text-white/70">
+                  <FileDown className="h-3.5 w-3.5" /> Exportar Word
+                </span>
+                <span>Fonte e base legal impressas no rodapé do arquivo.</span>
+              </div>
+            </div>
           </div>
         </div>
       </section>
+
+      {/* DO FATO AO FUNDAMENTO */}
+      <section id="recursos" className="py-20" style={{ backgroundColor: "hsl(var(--navy-medium))", borderTop: "1px solid hsl(var(--gold) / 0.12)", borderBottom: "1px solid hsl(var(--gold) / 0.12)" }}>
+        <div className="container mx-auto px-4 sm:px-6">
+          <div data-reveal className="opacity-0 translate-y-6 transition-all duration-700 max-w-2xl">
+            <span className="text-sm text-gold font-semibold uppercase tracking-wider">Recursos</span>
+            <h2 className="font-serif text-3xl md:text-4xl font-bold text-white mt-3">Do fato ao fundamento</h2>
+            <p className="text-base text-white/60 mt-3 leading-relaxed">
+              A sequência do trabalho, na conta: o caso chega, você entende o que é, lê o que há nos autos e monta a peça.
+            </p>
+          </div>
+
+          <div data-reveal className="opacity-0 translate-y-6 transition-all duration-700 mt-10 relative">
+            <div aria-hidden className="hidden lg:block absolute left-0 right-0 top-[26px] h-px" style={{ backgroundColor: "hsl(var(--gold) / 0.25)" }} />
+            <ol className="relative grid gap-8 lg:grid-cols-4 lg:gap-6">
+              {etapas.map((e, i) => (
+                <li key={e.title} className="relative pl-14 lg:flex lg:h-full lg:flex-col lg:pl-0">
+                  <span
+                    aria-hidden
+                    className="absolute left-0 top-0 lg:relative lg:mb-5 flex h-[52px] w-[52px] items-center justify-center rounded-full font-serif text-lg font-bold text-gold"
+                    style={{ backgroundColor: "hsl(var(--navy))", border: "1px solid hsl(var(--gold) / 0.4)" }}
+                  >
+                    {i + 1}
+                  </span>
+                  <Link to={e.href} className="group block lg:flex lg:h-full lg:flex-col">
+                    <h3 className="font-serif text-xl font-bold text-white group-hover:text-gold transition-colors">{e.title}</h3>
+                    <p className="mt-2 text-sm text-white/60 leading-relaxed">{e.body}</p>
+                    <span className="mt-3 inline-flex items-center gap-1 text-sm text-gold/80 group-hover:text-gold transition-colors lg:mt-auto lg:pt-3">
+                      {e.cta} <ArrowRight className="h-3.5 w-3.5" />
+                    </span>
+                  </Link>
+
+                </li>
+              ))}
+            </ol>
+          </div>
+
+          {/* TRILHO DO CHAT — atravessa as quatro etapas */}
+          <div data-reveal className="opacity-0 translate-y-6 transition-all duration-700 mt-10 rounded-xl border px-5 py-4 sm:px-6" style={{ borderColor: "hsl(var(--gold) / 0.3)", backgroundColor: "hsl(var(--gold) / 0.06)" }}>
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+              <div className="flex items-start gap-3">
+                <span aria-hidden className="mt-0.5 h-6 w-px shrink-0 bg-gold/60 sm:h-10" />
+                <div>
+                  <p className="font-serif text-lg font-bold text-white">Chat jurídico, ao longo de todas as etapas</p>
+                  <p className="text-sm text-white/60 mt-1">Tire dúvidas de legislação e jurisprudência em qualquer ponto do caminho.</p>
+                </div>
+              </div>
+              <Link to="/chat" className="inline-flex items-center gap-1 text-sm font-semibold text-gold hover:text-gold-light transition-colors shrink-0">
+                Abrir o chat <ArrowRight className="h-4 w-4" />
+              </Link>
+            </div>
+          </div>
+        </div>
+      </section>
+
 
       {/* PLANOS */}
       <section id="planos" className="py-20 md:py-28" style={{ backgroundColor: "hsl(var(--cream))" }}>
