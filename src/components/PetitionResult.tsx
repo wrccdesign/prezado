@@ -1,10 +1,25 @@
-import { useState, useRef } from "react";
+import { useEffect, useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { Copy, Plus, FileText, FileDown } from "lucide-react";
 import jsPDF from "jspdf";
-import { Document, Packer, Paragraph, TextRun, AlignmentType, Header, Footer } from "docx";
+import { Document, Packer, Paragraph, TextRun, AlignmentType, Header, Footer, ImageRun } from "docx";
+import { useAuth } from "@/contexts/AuthContext";
+import { useSubscription } from "@/hooks/useSubscription";
+import {
+  loadPetitionBranding,
+  contactLine,
+  signatureLines,
+  hasLetterhead,
+  type PetitionBranding,
+} from "@/lib/petitionBranding";
+
+const EMPTY_BRANDING: PetitionBranding = {
+  fullName: null, oabNumber: null, oabState: null, officeName: null,
+  officeAddress: null, officePhone: null, officeEmail: null, logo: null,
+};
+
 
 interface PetitionResultProps {
   text: string;
