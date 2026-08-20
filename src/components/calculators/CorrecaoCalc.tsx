@@ -96,6 +96,7 @@ export function CorrecaoCalc({ onUsarValor, usarValorLabel = "Usar este valor" }
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<Resultado | null>(null);
   const [memoriaAberta, setMemoriaAberta] = useState(false);
+  const { isAuthenticated, requireAccount } = useGuestExportGate();
 
 
   const calcular = async () => {
