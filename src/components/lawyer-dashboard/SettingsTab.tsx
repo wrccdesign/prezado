@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Save, Upload, X } from "lucide-react";
+import { Save } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { PlanGate } from "@/components/PlanGate";
 
@@ -21,8 +21,10 @@ export function SettingsTab() {
   const [officeEmail, setOfficeEmail] = useState("");
   const [oabNumber, setOabNumber] = useState("");
   const [oabState, setOabState] = useState("");
+  // Preservado apenas para não sobrescrever com null o logo já enviado antes
+  // de a interface de upload ser removida.
   const [logoUrl, setLogoUrl] = useState<string | null>(null);
-  const [uploading, setUploading] = useState(false);
+
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
