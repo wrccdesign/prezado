@@ -270,6 +270,7 @@ export type Database = {
         Row: {
           argumentos_principais: string[] | null
           autor_recorrente: string | null
+          cached_at: string | null
           comarca: string | null
           comarca_pequena: boolean | null
           created_at: string | null
@@ -306,6 +307,7 @@ export type Database = {
         Insert: {
           argumentos_principais?: string[] | null
           autor_recorrente?: string | null
+          cached_at?: string | null
           comarca?: string | null
           comarca_pequena?: boolean | null
           created_at?: string | null
@@ -342,6 +344,7 @@ export type Database = {
         Update: {
           argumentos_principais?: string[] | null
           autor_recorrente?: string | null
+          cached_at?: string | null
           comarca?: string | null
           comarca_pequena?: boolean | null
           created_at?: string | null
@@ -595,6 +598,33 @@ export type Database = {
           specialties?: string[] | null
           updated_at?: string | null
           user_id?: string
+        }
+        Relationships: []
+      }
+      search_cache: {
+        Row: {
+          created_at: string
+          fetched_at: string
+          id: string
+          raw_query: string
+          results_found: number
+          term_key: string
+        }
+        Insert: {
+          created_at?: string
+          fetched_at?: string
+          id?: string
+          raw_query: string
+          results_found?: number
+          term_key: string
+        }
+        Update: {
+          created_at?: string
+          fetched_at?: string
+          id?: string
+          raw_query?: string
+          results_found?: number
+          term_key?: string
         }
         Relationships: []
       }

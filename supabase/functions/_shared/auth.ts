@@ -46,3 +46,15 @@ export function requireServiceRole(req: Request): Response | null {
   if (!serviceKey || token !== serviceKey) return unauthorized();
   return null;
 }
+
+/**
+ * Aceita chamada interna por service-role OU pelo segredo compartilhado
+ * `SYNC_INDICES_SECRET` no header `x-sync-secret`. O pg_cron não tem acesso à
+ * service-role key, então os jobs agendados usam o segredo.
+ */
+export function requireInternalCall(req: Request): Response | null {
+  const secret = Deno.env.get("SYNC_INDICES_SECRET");
+  const headerSecret = req.headers.get("x-sync-secret");
+  if (secret && headerSecret && headerSecret === secret) return null;
+  return requireServiceRole(req);
+}

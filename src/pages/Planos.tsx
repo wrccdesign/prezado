@@ -23,7 +23,7 @@ interface PlanFeature {
 }
 
 const features: PlanFeature[] = [
-  { label: "Buscas de jurisprudência / mês", free: 20, profissional: 400, escritorio: 1500 },
+  { label: "Consultas processuais (andamentos) / mês", free: 20, profissional: 400, escritorio: 1500 },
   { label: "Mensagens no Chat / mês", free: 10, profissional: 200, escritorio: 800 },
   { label: "Diagnósticos jurídicos / mês", free: 1, profissional: 60, escritorio: 200 },
   { label: "Análises de documentos / mês", free: 3, profissional: 40, escritorio: 150 },
@@ -199,7 +199,7 @@ export default function Planos() {
             "@type": "Product",
             name: "Honorífico — IA jurídica",
             description:
-              "Plataforma de IA jurídica brasileira: análise de documentos, petições, jurisprudência e calculadoras.",
+              "Plataforma de IA jurídica brasileira: análise de documentos, petições, consulta processual e calculadoras.",
             brand: { "@type": "Brand", name: "Honorífico" },
             offers: [
               {

@@ -1,14 +1,19 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { requireQuotaOrGuest } from "../_shared/calculo-guard.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-import { generateQueryEmbedding } from "../_shared/embeddings.ts";
+import { generateEmbeddings, generateQueryEmbedding, toVectorLiteral } from "../_shared/embeddings.ts";
 import { extractEnv } from "../_shared/rate-limit.ts";
 import { aiChatText } from "../_shared/ai.ts";
+import { normalizeTermKey, searchDatajudLive } from "../_shared/datajud-live.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-payment-env, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
+
+/** Janela em que um termo já buscado ao vivo responde só pelo cache local. */
+const CACHE_WINDOW_HOURS = 24 * 7;
+
 
 const SYSTEM_PROMPT_BUSCA = `Você é um especialista em pesquisa jurídica brasileira.
 Interprete a consulta do advogado e gere uma query expandida para busca semântica.
@@ -55,6 +60,30 @@ serve(async (req) => {
 
     const SUPABASE_ANON_KEY = Deno.env.get("SUPABASE_ANON_KEY")!;
     const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    const admin = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
+
+    // Step 0: decidir se a busca sob demanda no DataJud vale a pena — só para
+    // usuário autenticado e apenas quando o termo não foi consultado ao vivo
+    // recentemente. A chamada em si sai depois da expansão da IA (Step 1),
+    // porque os termos acentuados dela casam melhor com o índice do CNJ.
+    const termKey = normalizeTermKey(query, filters || {});
+    let shouldGoLive = false;
+    let cacheHit = false;
+    if (!isGuest) {
+      const { data: cacheRow } = await admin
+        .from("search_cache")
+        .select("fetched_at")
+        .eq("term_key", termKey)
+        .maybeSingle();
+
+      const fresh = cacheRow?.fetched_at &&
+        Date.now() - new Date(cacheRow.fetched_at).getTime() < CACHE_WINDOW_HOURS * 3600_000;
+
+      if (fresh) cacheHit = true;
+      else shouldGoLive = true;
+    }
+
+
 
     // Step 1: Use AI to expand the query
     let searchQuery = query;
@@ -83,6 +112,15 @@ serve(async (req) => {
     } catch (e) {
       console.error("Query expansion failed, using original query:", e instanceof Error ? e.message : e);
     }
+
+    // Step 1b: dispara a consulta ao vivo no CNJ (em paralelo com o FTS)
+    const liveTerm = (aiData?.keywords?.slice(0, 3) as string[] | undefined)?.join(" ") || query;
+    const livePromise: Promise<any[]> = shouldGoLive
+      ? searchDatajudLive(liveTerm, { tribunal: filters?.tribunal ?? null }).catch((e) => {
+        console.error("[search] DataJud ao vivo falhou:", e instanceof Error ? e.message : e);
+        return [];
+      })
+      : Promise.resolve([]);
 
 
     // Step 2: FTS search
@@ -165,7 +203,81 @@ serve(async (req) => {
     const mergedResults = Array.from(resultMap.values())
       .sort((a, b) => b.combined_score - a.combined_score);
 
-    const limited = isGuest ? mergedResults.slice(0, 3) : mergedResults;
+    // Step 5: incorporar o que veio ao vivo do DataJud (sem IA no caminho).
+    let liveNew: any[] = [];
+    const liveResults = await livePromise;
+    if (liveResults.length > 0) {
+      const numeros = liveResults.map((d) => d.numero_processo);
+      const { data: existentes } = await admin
+        .from("decisions")
+        .select("numero_processo")
+        .in("numero_processo", numeros);
+      const jaTem = new Set((existentes || []).map((r: any) => r.numero_processo));
+
+      const novos = liveResults.filter((d) => !jaTem.has(d.numero_processo));
+      if (novos.length > 0) {
+        const { data: inseridos, error: insErr } = await admin
+          .from("decisions")
+          .insert(novos)
+          .select("id, tribunal, instancia, uf, comarca, numero_processo, data_decisao, orgao_julgador, tipo_decisao, temas_juridicos, ramos_direito, ementa, resumo_ia, source_url, created_at, cached_at");
+        if (insErr) {
+          console.error("[search] erro ao gravar resultados ao vivo:", insErr.message);
+        } else {
+          liveNew = inseridos || [];
+        }
+      }
+
+      await admin.from("search_cache").upsert(
+        {
+          term_key: termKey,
+          raw_query: query,
+          results_found: liveResults.length,
+          fetched_at: new Date().toISOString(),
+        },
+        { onConflict: "term_key" },
+      );
+
+      // C3: enriquecimento (embedding) SEMPRE em segundo plano — o usuário
+      // nunca espera pela IA.
+      if (liveNew.length > 0) {
+        const enrich = async () => {
+          try {
+            const textos = liveNew.map((d: any) =>
+              [d.tipo_decisao, (d.temas_juridicos || []).join(", "), d.orgao_julgador, d.tribunal]
+                .filter(Boolean).join(" — ")
+            );
+            const vetores = await generateEmbeddings(textos, {
+              functionName: "search-jurisprudencia",
+              userId: _userId,
+              environment: extractEnv(req),
+            });
+            for (let i = 0; i < liveNew.length; i++) {
+              await admin.from("decisions")
+                .update({ embedding: toVectorLiteral(vetores[i]) })
+                .eq("id", liveNew[i].id);
+            }
+          } catch (e) {
+            console.error("[search] enriquecimento em background falhou:", e instanceof Error ? e.message : e);
+          }
+        };
+        // @ts-ignore EdgeRuntime existe no runtime das edge functions
+        if (typeof EdgeRuntime !== "undefined" && EdgeRuntime.waitUntil) {
+          // @ts-ignore
+          EdgeRuntime.waitUntil(enrich());
+        } else {
+          enrich();
+        }
+      }
+    }
+
+    const withLive = [
+      ...mergedResults,
+      ...liveNew
+        .filter((d: any) => !resultMap.has(d.id))
+        .map((d: any) => ({ ...d, rank: 0, fts_rank: null, vector_rank: null, combined_score: 0, live: true })),
+    ];
+
+    const limited = isGuest ? withLive.slice(0, 3) : withLive;
 
     return new Response(JSON.stringify({
       results: limited,
@@ -178,8 +290,12 @@ serve(async (req) => {
         fts: (ftsResults || []).length,
         vector: vectorResults.length,
         vector_error: vectorError,
+        live: liveResults.length,
+        live_new: liveNew.length,
+        cache_hit: cacheHit,
       },
     }), {
+
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } catch (e) {

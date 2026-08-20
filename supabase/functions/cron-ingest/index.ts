@@ -1,10 +1,10 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { requireServiceRole } from "../_shared/auth.ts";
+import { requireInternalCall } from "../_shared/auth.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-sync-secret",
 };
 
 const DATAJUD_TRIBUNAIS = [
@@ -41,7 +41,7 @@ const QUERIES_PHASE2 = [
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
-  const _svcErr = requireServiceRole(req);
+  const _svcErr = requireInternalCall(req);
   if (_svcErr) return _svcErr;
 
   const body = await req.json().catch(() => ({}));
