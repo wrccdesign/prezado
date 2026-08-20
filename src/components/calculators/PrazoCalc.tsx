@@ -265,7 +265,7 @@ export function PrazoCalc() {
       <div className="grid gap-4 sm:grid-cols-2">
         <div className="space-y-2">
           <Label>Data de referência</Label>
-          <Input type="date" value={dataReferencia} onChange={e => setDataReferencia(e.target.value)} />
+          <Input className="h-11" type="date" value={dataReferencia} onChange={e => setDataReferencia(e.target.value)} />
         </div>
         <div className="space-y-2">
           <Label>Processo</Label>
@@ -293,7 +293,7 @@ export function PrazoCalc() {
         {tipoPrazo === "personalizado" && (
           <div className="space-y-2">
             <Label>Prazo em dias</Label>
-            <Input type="number" min={1} placeholder="Ex: 10" value={diasPersonalizado} onChange={e => setDiasPersonalizado(e.target.value)} />
+            <Input className="h-11" type="number" inputMode="numeric" min={1} placeholder="Ex: 10" value={diasPersonalizado} onChange={e => setDiasPersonalizado(e.target.value)} />
           </div>
         )}
         <div className="space-y-2">
@@ -363,7 +363,7 @@ export function PrazoCalc() {
 
       </div>
 
-      <Button onClick={calcular} className="w-full sm:w-auto" disabled={loading || !dataReferencia || !diasPrazo}>
+      <Button onClick={calcular} className="h-11 w-full sm:w-auto" disabled={loading || !dataReferencia || !diasPrazo}>
         {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
         Calcular Prazo
       </Button>

@@ -191,7 +191,7 @@ export function CorrecaoCalc({ onUsarValor, usarValorLabel = "Usar este valor" }
       <div className="grid gap-4 sm:grid-cols-2">
         <div className="space-y-2">
           <Label>Valor Original (R$)</Label>
-          <Input type="number" placeholder="10000" value={valor} onChange={e => setValor(e.target.value)} />
+          <Input className="h-11" type="number" inputMode="decimal" placeholder="10000" value={valor} onChange={e => setValor(e.target.value)} />
         </div>
         <div className="space-y-2">
           <Label>Índice de Correção</Label>
@@ -204,11 +204,11 @@ export function CorrecaoCalc({ onUsarValor, usarValorLabel = "Usar este valor" }
         </div>
         <div className="space-y-2">
           <Label>Data Inicial</Label>
-          <Input type="date" value={dataInicial} onChange={e => setDataInicial(e.target.value)} />
+          <Input className="h-11" type="date" value={dataInicial} onChange={e => setDataInicial(e.target.value)} />
         </div>
         <div className="space-y-2">
           <Label>Data Final</Label>
-          <Input type="date" value={dataFinal} onChange={e => setDataFinal(e.target.value)} />
+          <Input className="h-11" type="date" value={dataFinal} onChange={e => setDataFinal(e.target.value)} />
         </div>
         <div className="space-y-2">
           <Label>Regime de Juros de Mora</Label>
@@ -237,7 +237,7 @@ export function CorrecaoCalc({ onUsarValor, usarValorLabel = "Usar este valor" }
 
           <div className="space-y-2">
             <Label>Taxa de juros mensal (%)</Label>
-            <Input type="number" step="0.1" value={taxaFixa} onChange={e => setTaxaFixa(e.target.value)} />
+            <Input className="h-11" type="number" inputMode="decimal" step="0.1" value={taxaFixa} onChange={e => setTaxaFixa(e.target.value)} />
           </div>
         )}
         <div className="space-y-2">
@@ -265,7 +265,7 @@ export function CorrecaoCalc({ onUsarValor, usarValorLabel = "Usar este valor" }
 
         <div className="space-y-2">
           <Label>Multa (%)</Label>
-          <Input type="number" step="0.1" placeholder="2" value={multa} onChange={e => setMulta(e.target.value)} />
+          <Input className="h-11" type="number" inputMode="decimal" step="0.1" placeholder="2" value={multa} onChange={e => setMulta(e.target.value)} />
         </div>
         <div className="space-y-2">
           <Label>A multa incide também sobre os juros?</Label>
@@ -276,7 +276,7 @@ export function CorrecaoCalc({ onUsarValor, usarValorLabel = "Usar este valor" }
         </div>
         <div className="space-y-2">
           <Label>Honorários (%)</Label>
-          <Input type="number" step="0.1" placeholder="10" value={honorarios} onChange={e => setHonorarios(e.target.value)} />
+          <Input className="h-11" type="number" inputMode="decimal" step="0.1" placeholder="10" value={honorarios} onChange={e => setHonorarios(e.target.value)} />
         </div>
       </div>
 
@@ -290,16 +290,16 @@ export function CorrecaoCalc({ onUsarValor, usarValorLabel = "Usar este valor" }
         <CollapsibleContent className="grid gap-4 sm:grid-cols-2 pt-3">
           <div className="space-y-2">
             <Label>Início dos juros</Label>
-            <Input type="date" value={jurosInicio} onChange={e => setJurosInicio(e.target.value)} />
+            <Input className="h-11" type="date" value={jurosInicio} onChange={e => setJurosInicio(e.target.value)} />
           </div>
           <div className="space-y-2">
             <Label>Fim dos juros</Label>
-            <Input type="date" value={jurosFim} onChange={e => setJurosFim(e.target.value)} />
+            <Input className="h-11" type="date" value={jurosFim} onChange={e => setJurosFim(e.target.value)} />
           </div>
         </CollapsibleContent>
       </Collapsible>
 
-      <Button onClick={calcular} disabled={loading} className="w-full sm:w-auto">
+      <Button onClick={calcular} disabled={loading} className="h-11 w-full sm:w-auto">
         {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
         Calcular Atualização
       </Button>

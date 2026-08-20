@@ -72,13 +72,13 @@ export function DateCalc() {
 
         <div className="space-y-2">
           <Label>{modo === "diferenca" ? "Data inicial" : "Data"}</Label>
-          <Input type="date" value={data1} onChange={e => setData1(e.target.value)} />
+          <Input className="h-11" type="date" value={data1} onChange={e => setData1(e.target.value)} />
         </div>
 
         {modo === "diferenca" && (
           <div className="space-y-2">
             <Label>Data final</Label>
-            <Input type="date" value={data2} onChange={e => setData2(e.target.value)} />
+            <Input className="h-11" type="date" value={data2} onChange={e => setData2(e.target.value)} />
           </div>
         )}
 
@@ -86,7 +86,7 @@ export function DateCalc() {
           <>
             <div className="space-y-2">
               <Label>Dias</Label>
-              <Input type="number" placeholder="Ex: 15" value={dias} onChange={e => setDias(e.target.value)} />
+              <Input className="h-11" type="number" inputMode="decimal" placeholder="Ex: 15" value={dias} onChange={e => setDias(e.target.value)} />
             </div>
             <div className="space-y-2">
               <Label>Tipo de dias</Label>
@@ -102,7 +102,7 @@ export function DateCalc() {
         )}
       </div>
 
-      <Button onClick={calcular} className="w-full sm:w-auto">
+      <Button onClick={calcular} className="h-11 w-full sm:w-auto">
         <CalendarDays className="mr-1.5 h-4 w-4" /> Calcular
       </Button>
 

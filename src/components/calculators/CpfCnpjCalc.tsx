@@ -100,7 +100,7 @@ export function CpfCnpjCalc() {
         </div>
         <div className="space-y-2">
           <Label>Número</Label>
-          <Input
+          <Input className="h-11"
             inputMode="numeric"
             placeholder={exemplo}
             value={tipo === "cpf" ? formatarCpf(valor) : formatarCnpj(valor)}
@@ -112,7 +112,7 @@ export function CpfCnpjCalc() {
       <Button
         onClick={() => handleChange(valor)}
         disabled={valor.length !== (tipo === "cpf" ? 11 : 14)}
-        className="w-full sm:w-auto"
+        className="h-11 w-full sm:w-auto"
       >
         Validar
       </Button>

@@ -117,7 +117,7 @@ export function RescisaoCalc() {
   return (
     <div className="space-y-6">
       <div className="grid gap-4 sm:grid-cols-2">
-        <div className="space-y-2"><Label>Salário Bruto Mensal (R$)</Label><Input type="number" placeholder="5000" value={salario} onChange={e => setSalario(e.target.value)} /></div>
+        <div className="space-y-2"><Label>Salário Bruto Mensal (R$)</Label><Input className="h-11" type="number" inputMode="decimal" placeholder="5000" value={salario} onChange={e => setSalario(e.target.value)} /></div>
         <div className="space-y-2">
           <Label>Tipo de Demissão</Label>
           <Select value={tipo} onValueChange={(v) => setTipo(v as TipoDemissao)}>
@@ -133,18 +133,18 @@ export function RescisaoCalc() {
           <Label>Data de Demissão</Label>
           <Popover><PopoverTrigger asChild><Button variant="outline" className={cn("w-full justify-start text-left font-normal", !demissao && "text-muted-foreground")}><CalendarIcon className="mr-2 h-4 w-4" />{demissao ? format(demissao, "dd/MM/yyyy") : "Selecione a data"}</Button></PopoverTrigger><PopoverContent className="w-auto p-0" align="start"><Calendar mode="single" selected={demissao} onSelect={setDemissao} initialFocus className="p-3 pointer-events-auto" locale={ptBR} /></PopoverContent></Popover>
         </div>
-        <div className="space-y-2"><Label>Média de Horas Extras Mensais (R$)</Label><Input type="number" placeholder="0" value={horasExtras} onChange={e => setHorasExtras(e.target.value)} /></div>
+        <div className="space-y-2"><Label>Média de Horas Extras Mensais (R$)</Label><Input className="h-11" type="number" inputMode="decimal" placeholder="0" value={horasExtras} onChange={e => setHorasExtras(e.target.value)} /></div>
         <div className="space-y-4">
           <div className="flex items-center gap-3"><Switch checked={possuiComissoes} onCheckedChange={setPossuiComissoes} /><Label>Possui comissões?</Label></div>
-          {possuiComissoes && (<div className="space-y-2"><Label>Média Mensal de Comissões (R$)</Label><Input type="number" placeholder="0" value={comissoes} onChange={e => setComissoes(e.target.value)} /></div>)}
+          {possuiComissoes && (<div className="space-y-2"><Label>Média Mensal de Comissões (R$)</Label><Input className="h-11" type="number" inputMode="decimal" placeholder="0" value={comissoes} onChange={e => setComissoes(e.target.value)} /></div>)}
         </div>
         <div className="space-y-4 sm:col-span-2">
           <div className="flex items-center gap-3"><Switch checked={possuiFgts} onCheckedChange={setPossuiFgts} /><Label>Possui saldo de FGTS?</Label></div>
-          {possuiFgts && (<div className="space-y-2 max-w-xs"><Label>Saldo Estimado do FGTS (R$)</Label><Input type="number" placeholder="15000" value={saldoFgts} onChange={e => setSaldoFgts(e.target.value)} /></div>)}
+          {possuiFgts && (<div className="space-y-2 max-w-xs"><Label>Saldo Estimado do FGTS (R$)</Label><Input className="h-11" type="number" inputMode="decimal" placeholder="15000" value={saldoFgts} onChange={e => setSaldoFgts(e.target.value)} /></div>)}
         </div>
       </div>
 
-      <Button onClick={calcular} className="w-full sm:w-auto">Calcular Rescisão</Button>
+      <Button onClick={calcular} className="h-11 w-full sm:w-auto">Calcular Rescisão</Button>
 
       {verbas && (
         <div className="space-y-4">

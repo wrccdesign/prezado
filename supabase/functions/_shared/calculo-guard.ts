@@ -60,10 +60,21 @@ export function requireCalculoQuota(req: Request, corsHeaders: Record<string, st
 
 // ---------------------------------------------------------------------------
 // Modo convidado (visitante sem login)
+//
+// ATENÇÃO — LIMITE APENAS DISSUASIVO, NÃO CONFIÁVEL.
+// A contagem por IP vive num Map em memória do isolate: não é compartilhada
+// entre instâncias da edge function e é zerada em todo cold start. Na prática o
+// visitante pode exceder o limite. Isso é tolerável para `calculo`, que é puro
+// CPU e custo desprezível.
+//
+// NÃO USE `requireQuotaOrGuest` em nenhuma ação que chame IA, faça scraping ou
+// consuma qualquer API paga — nesses casos exija sessão (`requireQuota`) ou
+// implemente contagem persistente em tabela, com hash do IP.
 // ---------------------------------------------------------------------------
 
 const GUEST_WINDOW_MS = 24 * 60 * 60 * 1000;
 const guestHits = new Map<string, { count: number; resetAt: number }>();
+
 
 function guestKey(req: Request): string {
   const fwd = req.headers.get("x-forwarded-for") ?? "";

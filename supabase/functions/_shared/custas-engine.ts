@@ -161,9 +161,12 @@ export function selecionarUnidadeFiscal(
     .sort((a, b) => (a.vigencia_inicio < b.vigencia_inicio ? 1 : -1));
   if (candidatas.length === 0) {
     throw new CustasError(
-      `Valor da ${codigo} não cadastrado para a competência ${referencia}. Atualize a tabela de unidades fiscais.`,
+      `Valor da ${codigo} não cadastrado para a competência ${referencia} (exercício de ${
+        referencia.slice(0, 4)
+      }). Cadastre a ${codigo} desse exercício na tabela de unidades fiscais para calcular atos dessa data.`,
     );
   }
+
   return { unidade: candidatas[0], referencia };
 }
 
@@ -339,11 +342,21 @@ export function calcularCustas(
 
   // Litisconsórcio ativo voluntário: +10 unidades por grupo de 10 autores
   // (ou fração) que exceder o primeiro grupo.
+  //
+  // NOTA (pendência de conferência): a leitura literal da norma ("10 UFESPs para
+  // cada grupo de 10 autores, ou fração que a exceder") admite entendimento de que
+  // 15 autores gerariam DUAS parcelas (Math.ceil(qtd / 10)), e não uma. Mantemos a
+  // fórmula conservadora (`Math.ceil(qtd / 10) - 1`, isto é, o primeiro grupo já
+  // coberto pela taxa) porque não foi possível confirmar o comportamento no Portal
+  // de Custas do TJSP: o simulador exige autenticação e não expõe cálculo público.
+  // Só alterar após conferência no portal, registrando a fonte em
+  // `custas_regras.observacoes`.
   let acrescimo = 0;
   if (qtdAutores > 10) {
     const gruposExcedentes = Math.ceil(qtdAutores / 10) - 1;
     acrescimo = r2(gruposExcedentes * 10 * uf);
     memoria.push({
+
       rotulo: "Litisconsórcio ativo voluntário",
       detalhe: `${qtdAutores} autores — ${gruposExcedentes} grupo(s) de 10 (ou fração) excedente(s) × 10 ${unidade.codigo} = ${moeda(acrescimo)}`,
       valor: acrescimo,
