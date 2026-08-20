@@ -27,6 +27,7 @@ import { StepIndicator } from "@/components/calculators/shared/StepIndicator";
 import { CurrencyInput } from "@/components/calculators/shared/CurrencyInput";
 import { ResultCard } from "@/components/calculators/shared/ResultCard";
 import { MemoriaList } from "@/components/calculators/shared/MemoriaList";
+import { useGuestExportGate } from "@/components/calculators/shared/GuestExportGate";
 import {
   fmtBRL as fmt,
   centsToNumber,
@@ -134,7 +135,9 @@ const PASSOS = [
 
 
 export function CustasCalc() {
+  const { isAuthenticated, requireAccount } = useGuestExportGate();
   const [etapa, setEtapa] = useState<1 | 2 | 3>(1);
+
   const [ato, setAto] = useState<AtoId | null>(null);
   const [valorBase, setValorBase] = useState("");
   const [dataAto, setDataAto] = useState(hoje());
@@ -237,6 +240,10 @@ export function CustasCalc() {
 
   const exportar = (tipo: "pdf" | "docx") => {
     if (!result) return;
+    if (!isAuthenticated) {
+      requireAccount(() => {}, "exportar a memória de cálculo");
+      return;
+    }
     const title = `Cálculo de Custas — ${result.tribunal}`;
     const filename = slugify(`custas-${result.tribunal}-${result.tipo_ato}-${dataAto}`);
     const sections = buildSections(result);
@@ -251,7 +258,7 @@ export function CustasCalc() {
       const { data: userData } = await supabase.auth.getUser();
       const userId = userData.user?.id;
       if (!userId) {
-        toast({ title: "Entre na sua conta para salvar", variant: "destructive" });
+        requireAccount(() => {}, "salvar no seu histórico");
         return;
       }
       const { error } = await supabase.from("calculos").insert([
@@ -505,6 +512,12 @@ export function CustasCalc() {
               {result.piso_aplicado && (
                 <p className="pt-2 text-sm text-foreground">
                   Piso legal aplicado: o percentual resultaria em {fmt(result.valor_bruto)}.
+                </p>
+              )}
+              {!isAuthenticated && (
+                <p className="pt-2 text-sm text-muted-foreground">
+                  O cálculo e a memória são livres, sem conta. Para exportar em PDF/Word ou
+                  salvar no histórico, crie sua conta grátis.
                 </p>
               )}
               {result.teto_aplicado && (

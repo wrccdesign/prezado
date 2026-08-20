@@ -4,6 +4,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { useUsage, type UsageAction } from "@/hooks/useUsage";
 
+const isUnlimited = (a: UsageAction) => a.limit < 0;
+
 function remaining(a: UsageAction) {
   return Math.max(a.limit - a.used, 0);
 }
@@ -43,7 +45,9 @@ export function UsageSummaryCompact({ onNavigate }: { onNavigate?: () => void })
         {data.actions.map((a) => (
           <li key={a.action} className="flex items-center justify-between gap-3 text-xs">
             <span className="truncate text-white/60">{a.label}</span>
-            {a.limit === 0 ? (
+            {isUnlimited(a) ? (
+              <span className="shrink-0 font-medium text-white/80">Ilimitado</span>
+            ) : a.limit === 0 ? (
               <span className="flex shrink-0 items-center gap-1 text-white/40">
                 <Lock className="h-3 w-3" /> Indisponível
               </span>
@@ -92,12 +96,14 @@ export function UsageSummary() {
         ) : (
           <div className="space-y-4">
             {data.actions.map((a) => {
-              const pct = a.limit > 0 ? Math.min((a.used / a.limit) * 100, 100) : 100;
+              const pct = isUnlimited(a) ? 100 : a.limit > 0 ? Math.min((a.used / a.limit) * 100, 100) : 100;
               return (
                 <div key={a.action}>
                   <div className="flex items-center justify-between text-sm">
                     <span className="font-medium text-foreground">{a.label}</span>
-                    {a.limit === 0 ? (
+                    {isUnlimited(a) ? (
+                      <span className="text-muted-foreground">Ilimitado</span>
+                    ) : a.limit === 0 ? (
                       <span className="flex items-center gap-1 text-xs text-muted-foreground">
                         <Lock className="h-3 w-3" /> Não incluído no seu plano
                       </span>
@@ -110,7 +116,7 @@ export function UsageSummary() {
                   </div>
                   <div className="mt-1.5 h-2 w-full overflow-hidden rounded-full bg-muted">
                     <div
-                      className={`h-full rounded-full transition-all ${a.limit === 0 ? "bg-muted-foreground/30" : barColor(a)}`}
+                      className={`h-full rounded-full transition-all ${isUnlimited(a) ? "bg-primary/40" : a.limit === 0 ? "bg-muted-foreground/30" : barColor(a)}`}
                       style={{ width: `${pct}%` }}
                     />
                   </div>

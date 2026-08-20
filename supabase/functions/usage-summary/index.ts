@@ -1,6 +1,8 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import {
   PLAN_LIMITS,
+  UNLIMITED,
+  UNMETERED_ACTIONS,
   extractEnv,
   saoPauloMonthEnd,
   saoPauloMonthStart,
@@ -80,14 +82,23 @@ Deno.serve(async (req) => {
       resets_at: renews.toISOString(),
       // `diagnostico_completo_free` é o teaser interno do paywall, não é um
       // benefício anunciado — fica fora do painel de uso.
-      actions: Object.keys(limits)
-        .filter((action) => action !== "diagnostico_completo_free")
-        .map((action) => ({
+      actions: [
+        ...Object.keys(limits)
+          .filter((action) => action !== "diagnostico_completo_free")
+          .map((action) => ({
+            action,
+            label: ACTION_LABELS[action] ?? action,
+            used: Math.min(counts[action] ?? 0, limits[action]),
+            limit: limits[action],
+          })),
+        // Ações sem cota mensal aparecem como ilimitadas (limit = -1).
+        ...[...UNMETERED_ACTIONS].map((action) => ({
           action,
           label: ACTION_LABELS[action] ?? action,
-          used: Math.min(counts[action] ?? 0, limits[action]),
-          limit: limits[action],
+          used: counts[action] ?? 0,
+          limit: UNLIMITED,
         })),
+      ],
 
     });
   } catch (e) {

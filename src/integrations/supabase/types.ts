@@ -74,6 +74,27 @@ export type Database = {
         }
         Relationships: []
       }
+      anon_usage: {
+        Row: {
+          action: string
+          created_at: string
+          id: string
+          ip_hash: string
+        }
+        Insert: {
+          action: string
+          created_at?: string
+          id?: string
+          ip_hash: string
+        }
+        Update: {
+          action?: string
+          created_at?: string
+          id?: string
+          ip_hash?: string
+        }
+        Relationships: []
+      }
       calculos: {
         Row: {
           created_at: string
@@ -884,6 +905,7 @@ export type Database = {
           view_count: number
         }[]
       }
+      unschedule_backfill_embeddings: { Args: never; Returns: boolean }
     }
     Enums: {
       app_role: "admin" | "user"

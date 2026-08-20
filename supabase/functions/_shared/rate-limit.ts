@@ -19,7 +19,6 @@ export const PLAN_LIMITS: Record<string, Record<string, number>> = {
     peticao: 0,
     analise: 3,
     documento: 5,
-    calculo: 5,
   },
   profissional: {
     search: 400,
@@ -29,7 +28,6 @@ export const PLAN_LIMITS: Record<string, Record<string, number>> = {
     peticao: 60,
     analise: 40,
     documento: 80,
-    calculo: 150,
   },
   escritorio: {
     search: 1500,
@@ -39,9 +37,19 @@ export const PLAN_LIMITS: Record<string, Record<string, number>> = {
     peticao: 200,
     analise: 150,
     documento: 300,
-    calculo: 500,
   },
 };
+
+/**
+ * Ações sem cota mensal (canal de aquisição): rodam sem IA e com dado que já
+ * está no nosso banco, então não são racionadas por plano. Continuam sujeitas
+ * à trava de rajada por hora — o que sai é o teto mensal, não a proteção
+ * contra abuso/raspagem.
+ */
+export const UNMETERED_ACTIONS = new Set(["calculo"]);
+
+/** Sentinela de limite para ações ilimitadas. */
+export const UNLIMITED = -1;
 
 /**
  * Trava anti-abuso: cota mensal sem teto instantâneo permite drenar o mês em
@@ -49,6 +57,7 @@ export const PLAN_LIMITS: Record<string, Record<string, number>> = {
  * igual para todos os planos.
  */
 export const BURST_LIMIT_PER_HOUR = 30;
+
 
 
 export type { PaymentEnv };
@@ -111,17 +120,20 @@ export async function checkRateLimit(
   const plan = (planData as string) || "free";
   const limits = PLAN_LIMITS[plan] || PLAN_LIMITS.free;
 
-  if (!(action in limits)) {
+  const unmetered = UNMETERED_ACTIONS.has(action);
+
+  if (!unmetered && !(action in limits)) {
     console.error(
       `[rate-limit] Ação "${action}" não está cadastrada em PLAN_LIMITS (plano "${plan}"). Requisição negada.`,
     );
     return { allowed: false, used: 0, limit: 0, plan, renewsAt, unknownAction: true };
   }
 
-  const limit = limits[action];
+  const limit = unmetered ? UNLIMITED : limits[action];
   if (limit === 0) {
     return { allowed: false, used: 0, limit: 0, plan, renewsAt };
   }
+
 
   // Trava de rajada antes da cota mensal: todas as ações da última hora.
   const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000).toISOString();
@@ -135,6 +147,11 @@ export async function checkRateLimit(
     return { allowed: false, used: 0, limit, plan, renewsAt, burstLimited: true };
   }
 
+  // Ação ilimitada: registra o uso (alimenta a trava de rajada) e libera.
+  if (unmetered) {
+    await supabase.from("usage_tracking").insert({ user_id: userId, action });
+    return { allowed: true, used: 0, limit: UNLIMITED, plan, renewsAt };
+  }
 
   const { count } = await supabase
     .from("usage_tracking")
@@ -149,6 +166,7 @@ export async function checkRateLimit(
   if (used >= limit) {
     return { allowed: false, used, limit, plan, renewsAt };
   }
+
 
   await supabase.from("usage_tracking").insert({ user_id: userId, action });
 

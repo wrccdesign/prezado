@@ -51,10 +51,10 @@ const steps = [
 ];
 
 const plans: { name: string; price: string; period: string; desc: string; features: string[]; cta: string; highlight: boolean; annualNote?: string }[] = [
-  { name: "Gratuito", price: "R$ 0", period: "/mês", desc: "Para conhecer a plataforma", features: ["20 consultas processuais/mês", "10 mensagens de chat/mês", "1 diagnóstico jurídico/mês", "Calculadoras (5 cálculos/mês)", "Petições não incluídas"], cta: "Começar Grátis", highlight: false },
-  { name: "Profissional", price: "R$ 49", period: "/mês", desc: "Para advogados autônomos", annualNote: "ou R$ 409/ano à vista no Pix (R$ 34,08/mês, -30%)", features: ["400 buscas e 200 mensagens/mês", "60 petições e 60 diagnósticos/mês", "40 análises e 150 cálculos/mês", "Painel do advogado", "Download PDF/DOCX"], cta: "Assinar Agora", highlight: true },
+  { name: "Gratuito", price: "R$ 0", period: "/mês", desc: "Para conhecer a plataforma", features: ["20 consultas processuais/mês", "10 mensagens de chat/mês", "1 diagnóstico jurídico/mês", "Calculadoras ilimitadas", "Petições não incluídas"], cta: "Começar Grátis", highlight: false },
+  { name: "Profissional", price: "R$ 49", period: "/mês", desc: "Para advogados autônomos", annualNote: "ou R$ 409/ano à vista no Pix (R$ 34,08/mês, -30%)", features: ["400 buscas e 200 mensagens/mês", "60 petições e 60 diagnósticos/mês", "40 análises/mês e cálculos ilimitados", "Painel do advogado", "Download PDF/DOCX"], cta: "Assinar Agora", highlight: true },
 
-  { name: "Escritório", price: "R$ 149", period: "/mês", desc: "Para escritórios de advocacia", annualNote: "ou R$ 1.249/ano à vista no Pix (R$ 104,08/mês, -30%)", features: ["1500 buscas e 800 mensagens/mês", "150 análises e 500 cálculos/mês", "Gestão de clientes", "Modelos de petição", "Logo personalizado", "Suporte prioritário"], cta: "Falar com Vendas", highlight: false },
+  { name: "Escritório", price: "R$ 149", period: "/mês", desc: "Para escritórios de advocacia", annualNote: "ou R$ 1.249/ano à vista no Pix (R$ 104,08/mês, -30%)", features: ["1500 buscas e 800 mensagens/mês", "150 análises/mês e cálculos ilimitados", "Gestão de clientes", "Modelos de petição", "Logo personalizado", "Suporte prioritário"], cta: "Falar com Vendas", highlight: false },
 ];
 
 const tjs = [
