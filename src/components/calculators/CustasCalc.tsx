@@ -239,12 +239,14 @@ export function CustasCalc() {
         toast({ title: "Entre na sua conta para salvar", variant: "destructive" });
         return;
       }
-      const { error } = await supabase.from("analyses").insert({
-        user_id: userId,
-        input_text: `Cálculo de custas — ${atoInfo?.titulo ?? result.tipo_ato} (${result.tribunal}) em ${dataBR(dataAto)}`,
-        file_name: `custas-${result.tribunal.toLowerCase()}-${dataAto}`,
-        result: result as unknown as Record<string, unknown>,
-      });
+      const { error } = await supabase.from("analyses").insert([
+        {
+          user_id: userId,
+          input_text: `Cálculo de custas — ${atoInfo?.titulo ?? result.tipo_ato} (${result.tribunal}) em ${dataBR(dataAto)}`,
+          file_name: `custas-${result.tribunal.toLowerCase()}-${dataAto}`,
+          result: JSON.parse(JSON.stringify(result)),
+        },
+      ]);
       if (error) throw error;
       toast({ title: "Cálculo salvo no seu histórico" });
     } catch (e) {
