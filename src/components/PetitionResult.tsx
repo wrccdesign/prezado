@@ -259,27 +259,62 @@ export function PetitionResult({ text, petitionType, onNewPetition }: PetitionRe
 
     docParagraphs.push(new Paragraph({ children: [], spacing: { before: 400 } }));
     docParagraphs.push(new Paragraph({ children: [new TextRun({ text: "___________________________________________", font: "Times New Roman", size: 24 })], alignment: AlignmentType.CENTER }));
-    docParagraphs.push(new Paragraph({ children: [new TextRun({ text: "Advogado(a) / OAB", font: "Times New Roman", size: 24 })], alignment: AlignmentType.CENTER, spacing: { after: 200 } }));
+    for (const sig of signatureLines(branding)) {
+      docParagraphs.push(new Paragraph({
+        children: [new TextRun({ text: sig, font: "Times New Roman", size: 24 })],
+        alignment: AlignmentType.CENTER, spacing: { after: 80 },
+      }));
+    }
+
+    // Cabeçalho do DOCX: o `Header` do docx já se repete em todas as páginas.
+    const headerChildren: Paragraph[] = [];
+    const contact = contactLine(branding);
+    if (hasLetterhead(branding)) {
+      const logo = branding.logo;
+      if (logo) {
+        try {
+          const MAX_W = 110, MAX_H = 62;
+          const scale = Math.min(MAX_W / logo.width, MAX_H / logo.height);
+          headerChildren.push(new Paragraph({
+            children: [new ImageRun({
+              type: logo.format === "PNG" ? "png" : "jpg",
+              data: logo.dataUrl.split(",")[1],
+              transformation: { width: Math.round(logo.width * scale), height: Math.round(logo.height * scale) },
+            })],
+            alignment: AlignmentType.LEFT,
+          }));
+        } catch (err) {
+          // C2: sem logo, o cabeçalho segue em texto e o download continua.
+          console.warn("Não foi possível inserir o logo no DOCX.", err);
+        }
+      }
+      if (branding.officeName) {
+        headerChildren.push(new Paragraph({
+          children: [new TextRun({ text: branding.officeName, font: "Times New Roman", size: 22, bold: true })],
+          alignment: AlignmentType.LEFT,
+        }));
+      }
+      if (contact) {
+        headerChildren.push(new Paragraph({
+          children: [new TextRun({ text: contact, font: "Times New Roman", size: 16 })],
+          alignment: AlignmentType.LEFT,
+        }));
+      }
+    }
+    headerChildren.push(new Paragraph({
+      children: [new TextRun({ text: getFormattedDate(), font: "Times New Roman", size: 18 })],
+      alignment: AlignmentType.RIGHT,
+    }));
 
     const docFile = new Document({
       sections: [{
         properties: { page: { margin: { top: 1701, left: 1701, bottom: 1134, right: 1134 } } },
-        headers: {
-          default: new Header({
-            children: [new Paragraph({
-              children: [
-                new TextRun({ text: "Honorífico", font: "Times New Roman", size: 20, bold: true }),
-                new TextRun({ text: `    ${getFormattedDate()}`, font: "Times New Roman", size: 18 }),
-              ],
-              alignment: AlignmentType.LEFT,
-            })],
-          }),
-        },
+        headers: { default: new Header({ children: headerChildren }) },
         footers: {
           default: new Footer({
             children: [new Paragraph({
               children: [new TextRun({
-                text: "Gerado por Honorífico — Documento deve ser revisado por advogado habilitado",
+                text: "Documento deve ser revisado por advogado habilitado",
                 font: "Times New Roman", size: 16, italics: true,
               })],
               alignment: AlignmentType.CENTER,
@@ -289,6 +324,7 @@ export function PetitionResult({ text, petitionType, onNewPetition }: PetitionRe
         children: docParagraphs,
       }],
     });
+
 
     const blob = await Packer.toBlob(docFile);
     const url = URL.createObjectURL(blob);
