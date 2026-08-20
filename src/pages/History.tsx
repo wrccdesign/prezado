@@ -17,10 +17,19 @@ import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import type { AnalysisRecord, PetitionRecord, PetitionFormData } from "@/types/analysis";
 
+type CalculoRecord = {
+  id: string;
+  tipo: string;
+  titulo: string;
+  resultado: Record<string, unknown> | null;
+  created_at: string;
+};
+
 export default function History() {
   const { toast } = useToast();
   const [analyses, setAnalyses] = useState<AnalysisRecord[]>([]);
   const [petitions, setPetitions] = useState<PetitionRecord[]>([]);
+  const [calculos, setCalculos] = useState<CalculoRecord[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedAnalysis, setSelectedAnalysis] = useState<AnalysisRecord | null>(null);
   const [selectedPetition, setSelectedPetition] = useState<PetitionRecord | null>(null);
@@ -28,9 +37,10 @@ export default function History() {
   const fetchData = async () => {
     setLoading(true);
     
-    const [analysesRes, petitionsRes] = await Promise.all([
+    const [analysesRes, petitionsRes, calculosRes] = await Promise.all([
       supabase.from("analyses").select("*").order("created_at", { ascending: false }),
       supabase.from("petitions").select("*").order("created_at", { ascending: false }),
+      supabase.from("calculos").select("*").order("created_at", { ascending: false }),
     ]);
 
     if (analysesRes.error) {
@@ -55,7 +65,31 @@ export default function History() {
       );
     }
 
+    if (calculosRes.error) {
+      toast({ title: "Erro", description: "Não foi possível carregar os cálculos.", variant: "destructive" });
+    } else {
+      setCalculos(
+        (calculosRes.data || []).map((d) => ({
+          id: d.id,
+          tipo: d.tipo,
+          titulo: d.titulo,
+          resultado: d.resultado as CalculoRecord["resultado"],
+          created_at: d.created_at,
+        }))
+      );
+    }
+
     setLoading(false);
+  };
+
+  const deleteCalculo = async (id: string) => {
+    const { error } = await supabase.from("calculos").delete().eq("id", id);
+    if (error) {
+      toast({ title: "Erro", description: "Não foi possível excluir.", variant: "destructive" });
+    } else {
+      setCalculos((prev) => prev.filter((c) => c.id !== id));
+      toast({ title: "Cálculo excluído" });
+    }
   };
 
   const deleteAnalysis = async (id: string) => {
