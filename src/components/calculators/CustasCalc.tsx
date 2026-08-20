@@ -150,7 +150,7 @@ export function CustasCalc() {
   const [correcaoAberta, setCorrecaoAberta] = useState(false);
 
   const atoInfo = ATOS.find(a => a.id === ato) ?? null;
-  const valorBaseNum = centavosParaNumero(valorBase);
+  const valorBaseNum = centsToNumber(valorBase);
   const recolhimentoEfetivo = dataRecolhimento || dataAto;
 
   const calcular = async () => {
@@ -295,7 +295,7 @@ export function CustasCalc() {
   if (etapa === 1) {
     return (
       <div className="space-y-5">
-        <Passos etapa={1} />
+        <StepIndicator steps={PASSOS} current={1} ariaLabel="Etapas do cálculo" />
         <p className="text-sm text-muted-foreground">
           Selecione o ato processual. Nesta primeira versão as regras são do <strong>TJSP</strong>.
         </p>
@@ -337,7 +337,7 @@ export function CustasCalc() {
   if (etapa === 2 && atoInfo) {
     return (
       <div className="space-y-5">
-        <Passos etapa={2} />
+        <StepIndicator steps={PASSOS} current={2} ariaLabel="Etapas do cálculo" />
 
         <Button variant="ghost" size="sm" className="h-11 px-0" onClick={() => setEtapa(1)}>
           <ArrowLeft className="mr-1.5 h-4 w-4" /> Trocar o ato
@@ -361,13 +361,11 @@ export function CustasCalc() {
                   atualizar este valor
                 </button>
               </div>
-              <Input
+              <CurrencyInput
                 id="custas-base"
-                inputMode="decimal"
-                className="h-11"
                 placeholder="10.000,00"
-                value={exibirMoeda(valorBase)}
-                onChange={e => setValorBase(digitos(e.target.value))}
+                value={valorBase}
+                onChange={setValorBase}
               />
             </div>
           )}
@@ -467,7 +465,7 @@ export function CustasCalc() {
             <CorrecaoCalc
               usarValorLabel="Usar como base das custas"
               onUsarValor={v => {
-                setValorBase(numeroParaCentavos(v));
+                setValorBase(numberToCents(v));
                 setCorrecaoAberta(false);
                 toast({ title: "Valor atualizado aplicado como base de cálculo" });
               }}
