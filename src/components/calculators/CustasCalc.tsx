@@ -27,6 +27,7 @@ import { StepIndicator } from "@/components/calculators/shared/StepIndicator";
 import { CurrencyInput } from "@/components/calculators/shared/CurrencyInput";
 import { ResultCard } from "@/components/calculators/shared/ResultCard";
 import { MemoriaList } from "@/components/calculators/shared/MemoriaList";
+import { useGuestExportGate } from "@/components/calculators/shared/GuestExportGate";
 import {
   fmtBRL as fmt,
   centsToNumber,
@@ -237,6 +238,10 @@ export function CustasCalc() {
 
   const exportar = (tipo: "pdf" | "docx") => {
     if (!result) return;
+    if (!isAuthenticated) {
+      requireAccount(() => {}, "exportar a memória de cálculo");
+      return;
+    }
     const title = `Cálculo de Custas — ${result.tribunal}`;
     const filename = slugify(`custas-${result.tribunal}-${result.tipo_ato}-${dataAto}`);
     const sections = buildSections(result);
@@ -251,7 +256,7 @@ export function CustasCalc() {
       const { data: userData } = await supabase.auth.getUser();
       const userId = userData.user?.id;
       if (!userId) {
-        toast({ title: "Entre na sua conta para salvar", variant: "destructive" });
+        requireAccount(() => {}, "salvar no seu histórico");
         return;
       }
       const { error } = await supabase.from("calculos").insert([
