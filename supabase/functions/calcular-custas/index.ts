@@ -1,6 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-import { requireCalculoQuota } from "../_shared/calculo-guard.ts";
+import { requireQuotaOrGuest } from "../_shared/calculo-guard.ts";
 import {
   calcularCustas,
   CustasError,
@@ -26,7 +26,7 @@ function bad(msg: string, status = 400) {
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
-  const quota = await requireCalculoQuota(req, corsHeaders);
+  const quota = await requireQuotaOrGuest(req, "calculo", corsHeaders);
   if (quota instanceof Response) return quota;
 
   let body: CustasInput;
