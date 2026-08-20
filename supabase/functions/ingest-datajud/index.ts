@@ -229,7 +229,6 @@ serve(async (req) => {
 
     let ingested = 0;
     let skipped = 0;
-    let updated = 0;
     const errors: string[] = [];
 
     // Step 2: Process each hit
@@ -314,12 +313,8 @@ serve(async (req) => {
             errors.push(`Erro ao upsert ${numeroProcesso}: ${upsertError.message}`);
             continue;
           }
-          // We count as ingested for new, updated for existing
-          if (existing) {
-            updated++;
-          } else {
-            ingested++;
-          }
+          // Só chega aqui quando o registro é novo (existentes dão `continue` acima).
+          ingested++;
         }
 
         // Generate embedding (non-blocking)
@@ -344,7 +339,6 @@ serve(async (req) => {
     return new Response(JSON.stringify({
       ingested,
       skipped,
-      updated,
       errors,
       total_hits: datajudData.hits?.total?.value || hits.length,
     }), {
