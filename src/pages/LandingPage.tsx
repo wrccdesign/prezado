@@ -71,8 +71,9 @@ const etapas = [
 
 const plans: { name: string; price: string; period: string; desc: string; features: string[]; cta: string; highlight: boolean; annualNote?: string }[] = [
   { name: "Gratuito", price: "R$ 0", period: "/mês", desc: "Para conhecer a plataforma", features: ["Calculadoras ilimitadas", "20 consultas processuais/mês", "10 mensagens de chat/mês", "1 diagnóstico jurídico/mês", "Petições não incluídas"], cta: "Começar Grátis", highlight: false },
-  { name: "Profissional", price: "R$ 49", period: "/mês", desc: "Para advogados autônomos", annualNote: "ou R$ 409/ano à vista no Pix (R$ 34,08/mês, -30%)", features: ["Calculadoras ilimitadas", "400 consultas e 200 mensagens/mês", "60 petições e 60 diagnósticos/mês", "40 análises de documentos/mês", "Painel do advogado"], cta: "Assinar Agora", highlight: true },
-  { name: "Escritório", price: "R$ 149", period: "/mês", desc: "Para escritórios de advocacia", annualNote: "ou R$ 1.249/ano à vista no Pix (R$ 104,08/mês, -30%)", features: ["Calculadoras ilimitadas", "1500 consultas e 800 mensagens/mês", "200 petições e 150 análises/mês", "Gestão de clientes e modelos", "Logo personalizado"], cta: "Falar com Vendas", highlight: false },
+  { name: "Profissional", price: "R$ 49", period: "/mês", desc: "Para advogados autônomos", annualNote: "ou R$ 409/ano à vista no cartão (R$ 34,08/mês, -30%)", features: ["Calculadoras ilimitadas", "400 consultas e 200 mensagens/mês", "60 petições e 60 diagnósticos/mês", "40 análises de documentos/mês", "Painel do advogado"], cta: "Assinar Agora", highlight: true },
+  { name: "Escritório", price: "R$ 149", period: "/mês", desc: "Para escritórios de advocacia", annualNote: "ou R$ 1.249/ano à vista no cartão (R$ 104,08/mês, -30%)", features: ["Calculadoras ilimitadas", "1500 consultas e 800 mensagens/mês", "200 petições e 150 análises/mês", "300 leituras/OCR de documentos/mês", "Gestão de clientes e modelos"], cta: "Assinar Escritório", highlight: false },
+
 ];
 
 
@@ -174,6 +175,8 @@ export default function LandingPage() {
               </Button>
             </div>
             <p className="mt-4 text-sm text-white/50">Sem cadastro para calcular. Petições, análise e diagnóstico na conta.</p>
+            <p className="mt-1 text-sm text-white/40">Conta nova começa com 7 dias no plano Profissional, sem cartão.</p>
+
           </div>
         </div>
       </section>
@@ -432,7 +435,7 @@ export default function LandingPage() {
           <div className="border-t pt-5 flex flex-col items-center gap-2 text-center" style={{ borderColor: "hsl(var(--gold) / 0.1)" }}>
             <p className="text-xs text-white/30">© {new Date().getFullYear()} Honorífico. Todos os direitos reservados.</p>
             <p className="text-xs text-white/30 max-w-2xl leading-relaxed">
-              <strong className="font-medium text-white/50">Honorífico</strong> — Ferramentas de IA jurídica desenvolvidas especificamente para o direito brasileiro. Pagamentos processados com segurança pela Stripe.
+              <strong className="font-medium text-white/50">Honorífico</strong> — Cálculos e prazos jurídicos com fonte oficial, com memória de cálculo em PDF e Word. Pagamentos processados com segurança pela Stripe.
             </p>
             <div className="flex gap-4 text-xs text-white/30">
               <Link to="/privacidade" className="hover:text-gold transition-colors">LGPD</Link>
