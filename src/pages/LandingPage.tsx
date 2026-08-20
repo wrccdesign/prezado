@@ -190,7 +190,15 @@ export default function LandingPage() {
               <h2 className="font-serif text-2xl md:text-3xl font-bold text-navy mt-2">Calcule agora, sem cadastro</h2>
             </div>
             <div className="rounded-2xl border border-border bg-white p-5 sm:p-7 shadow-sm">
-              <CorrecaoCalc />
+              <CorrecaoCalc
+                usarValorLabel="Gerar petição com este valor"
+                usarValorVariant="ghost"
+                onUsarValor={(valor, meta) => {
+                  savePeticaoPrefill({ valor, ...(meta ?? {}) });
+                  navigate("/peticao");
+                }}
+              />
+
             </div>
             <p className="mt-4 text-sm text-muted-foreground">
               Outras calculadoras: <Link to="/calculadoras/prazo-processual" className="text-navy underline underline-offset-2 hover:text-gold">prazo processual</Link>,{" "}
