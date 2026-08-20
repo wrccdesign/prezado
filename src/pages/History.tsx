@@ -12,15 +12,24 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { AppFooter } from "@/components/AppFooter";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
-import { Trash2, ChevronLeft, Scale, Clock, FileText, FileSignature, Users } from "lucide-react";
+import { Trash2, ChevronLeft, Scale, Clock, FileText, FileSignature, Users, Calculator } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import type { AnalysisRecord, PetitionRecord, PetitionFormData } from "@/types/analysis";
+
+type CalculoRecord = {
+  id: string;
+  tipo: string;
+  titulo: string;
+  resultado: Record<string, unknown> | null;
+  created_at: string;
+};
 
 export default function History() {
   const { toast } = useToast();
   const [analyses, setAnalyses] = useState<AnalysisRecord[]>([]);
   const [petitions, setPetitions] = useState<PetitionRecord[]>([]);
+  const [calculos, setCalculos] = useState<CalculoRecord[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedAnalysis, setSelectedAnalysis] = useState<AnalysisRecord | null>(null);
   const [selectedPetition, setSelectedPetition] = useState<PetitionRecord | null>(null);
@@ -28,9 +37,10 @@ export default function History() {
   const fetchData = async () => {
     setLoading(true);
     
-    const [analysesRes, petitionsRes] = await Promise.all([
+    const [analysesRes, petitionsRes, calculosRes] = await Promise.all([
       supabase.from("analyses").select("*").order("created_at", { ascending: false }),
       supabase.from("petitions").select("*").order("created_at", { ascending: false }),
+      supabase.from("calculos").select("*").order("created_at", { ascending: false }),
     ]);
 
     if (analysesRes.error) {
@@ -55,7 +65,31 @@ export default function History() {
       );
     }
 
+    if (calculosRes.error) {
+      toast({ title: "Erro", description: "Não foi possível carregar os cálculos.", variant: "destructive" });
+    } else {
+      setCalculos(
+        (calculosRes.data || []).map((d) => ({
+          id: d.id,
+          tipo: d.tipo,
+          titulo: d.titulo,
+          resultado: d.resultado as CalculoRecord["resultado"],
+          created_at: d.created_at,
+        }))
+      );
+    }
+
     setLoading(false);
+  };
+
+  const deleteCalculo = async (id: string) => {
+    const { error } = await supabase.from("calculos").delete().eq("id", id);
+    if (error) {
+      toast({ title: "Erro", description: "Não foi possível excluir.", variant: "destructive" });
+    } else {
+      setCalculos((prev) => prev.filter((c) => c.id !== id));
+      toast({ title: "Cálculo excluído" });
+    }
   };
 
   const deleteAnalysis = async (id: string) => {
@@ -161,7 +195,7 @@ export default function History() {
         <h2 className="mb-6 text-2xl font-bold text-foreground">Histórico</h2>
 
         <Tabs defaultValue="analyses" className="w-full">
-          <TabsList className="grid w-full grid-cols-2 mb-6">
+          <TabsList className="grid w-full grid-cols-3 mb-6">
             <TabsTrigger value="analyses" className="flex items-center gap-2">
               <Scale className="h-4 w-4" />
               Análises ({analyses.length})
@@ -169,6 +203,10 @@ export default function History() {
             <TabsTrigger value="petitions" className="flex items-center gap-2">
               <FileSignature className="h-4 w-4" />
               Petições ({petitions.length})
+            </TabsTrigger>
+            <TabsTrigger value="calculos" className="flex items-center gap-2">
+              <Calculator className="h-4 w-4" />
+              Cálculos ({calculos.length})
             </TabsTrigger>
           </TabsList>
 
@@ -287,6 +325,63 @@ export default function History() {
                     </CardContent>
                   </Card>
                 ))}
+              </div>
+            )}
+          </TabsContent>
+
+          <TabsContent value="calculos">
+            {loading ? (
+              <div className="space-y-4">
+                {[1, 2, 3].map((i) => (
+                  <Skeleton key={i} className="h-24 w-full rounded-lg" />
+                ))}
+              </div>
+            ) : calculos.length === 0 ? (
+              <Card>
+                <CardContent className="flex flex-col items-center py-12 text-center">
+                  <Calculator className="mb-4 h-12 w-12 text-muted-foreground/50" />
+                  <p className="text-lg font-medium text-foreground">Nenhum cálculo salvo</p>
+                  <p className="text-sm text-muted-foreground">
+                    Os cálculos que você salvar nas calculadoras aparecerão aqui.
+                  </p>
+                </CardContent>
+              </Card>
+            ) : (
+              <div className="space-y-3">
+                {calculos.map((c) => {
+                  const valor = c.resultado && typeof c.resultado.valor_devido === "number"
+                    ? (c.resultado.valor_devido as number)
+                    : null;
+                  return (
+                    <Card key={c.id}>
+                      <CardContent className="flex items-center justify-between p-4">
+                        <div className="min-w-0 flex-1">
+                          <div className="mb-1 flex items-center gap-2">
+                            <Badge className="bg-primary text-primary-foreground text-xs">{c.tipo}</Badge>
+                            {valor !== null && (
+                              <span className="text-sm font-semibold text-foreground">
+                                {valor.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
+                              </span>
+                            )}
+                          </div>
+                          <p className="truncate text-sm text-foreground">{c.titulo}</p>
+                          <div className="mt-1 flex items-center gap-2 text-xs text-muted-foreground">
+                            <Clock className="h-3 w-3" />
+                            {format(new Date(c.created_at), "dd/MM/yyyy HH:mm")}
+                          </div>
+                        </div>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => deleteCalculo(c.id)}
+                          className="shrink-0 text-muted-foreground hover:text-destructive"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </CardContent>
+                    </Card>
+                  );
+                })}
               </div>
             )}
           </TabsContent>
