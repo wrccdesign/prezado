@@ -144,7 +144,7 @@ export function RescisaoCalc() {
         </div>
       </div>
 
-      <Button onClick={calcular} className="w-full sm:w-auto">Calcular Rescisão</Button>
+      <Button onClick={calcular} className="h-11 w-full sm:w-auto">Calcular Rescisão</Button>
 
       {verbas && (
         <div className="space-y-4">

@@ -102,7 +102,7 @@ export function DateCalc() {
         )}
       </div>
 
-      <Button onClick={calcular} className="w-full sm:w-auto">
+      <Button onClick={calcular} className="h-11 w-full sm:w-auto">
         <CalendarDays className="mr-1.5 h-4 w-4" /> Calcular
       </Button>
 

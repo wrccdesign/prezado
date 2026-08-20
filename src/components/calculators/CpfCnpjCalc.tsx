@@ -112,7 +112,7 @@ export function CpfCnpjCalc() {
       <Button
         onClick={() => handleChange(valor)}
         disabled={valor.length !== (tipo === "cpf" ? 11 : 14)}
-        className="w-full sm:w-auto"
+        className="h-11 w-full sm:w-auto"
       >
         Validar
       </Button>

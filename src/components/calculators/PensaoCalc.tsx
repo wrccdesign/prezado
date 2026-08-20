@@ -169,7 +169,7 @@ export function PensaoCalc() {
         <Label htmlFor="obrigacoes">Alimentante tem outras obrigações alimentares?</Label>
       </div>
 
-      <Button onClick={calcular} className="w-full sm:w-auto">Calcular Pensão</Button>
+      <Button onClick={calcular} className="h-11 w-full sm:w-auto">Calcular Pensão</Button>
 
       {result && (
         <div className="space-y-4">
@@ -212,7 +212,7 @@ export function PensaoCalc() {
             <p className="text-sm text-yellow-800 dark:text-yellow-200">Este é um valor de referência. O juiz decidirá com base nas necessidades e possibilidades das partes.</p>
           </div>
 
-          <Button variant="outline" onClick={gerarPDF} className="w-full sm:w-auto">
+          <Button variant="outline" onClick={gerarPDF} className="h-11 w-full sm:w-auto">
             <FileText className="mr-2 h-4 w-4" /> Gerar Relatório PDF
           </Button>
         </div>

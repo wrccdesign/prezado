@@ -299,7 +299,7 @@ export function CorrecaoCalc({ onUsarValor, usarValorLabel = "Usar este valor" }
         </CollapsibleContent>
       </Collapsible>
 
-      <Button onClick={calcular} disabled={loading} className="w-full sm:w-auto">
+      <Button onClick={calcular} disabled={loading} className="h-11 w-full sm:w-auto">
         {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
         Calcular Atualização
       </Button>

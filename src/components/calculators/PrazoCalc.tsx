@@ -363,7 +363,7 @@ export function PrazoCalc() {
 
       </div>
 
-      <Button onClick={calcular} className="w-full sm:w-auto" disabled={loading || !dataReferencia || !diasPrazo}>
+      <Button onClick={calcular} className="h-11 w-full sm:w-auto" disabled={loading || !dataReferencia || !diasPrazo}>
         {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
         Calcular Prazo
       </Button>
