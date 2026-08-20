@@ -30,7 +30,7 @@ const features: PlanFeature[] = [
   { label: "Leituras/OCR de documentos / mês", free: 5, profissional: 80, escritorio: 300 },
   { label: "Calculadoras (correção, prazo, custas TJSP, rescisão, pensão, datas, CPF/CNPJ)", free: "Ilimitado", profissional: "Ilimitado", escritorio: "Ilimitado" },
   { label: "Petições geradas / mês", free: 0, profissional: 60, escritorio: 200 },
-  { label: "Busca pública de decisões", free: "✓", profissional: "✓", escritorio: "✓" },
+  { label: "Consulta pública de andamentos e decisões publicadas", free: "✓", profissional: "✓", escritorio: "✓" },
   { label: "Modelos de minutas e petições", free: "✓", profissional: "✓", escritorio: "✓" },
   { label: "Exportação em PDF e Word", free: "✓", profissional: "✓", escritorio: "✓" },
   { label: "Histórico de consultas", free: "✓", profissional: "✓", escritorio: "✓" },
@@ -285,7 +285,7 @@ export default function Planos() {
           </div>
           {cycle === "anual" && (
             <p className="text-xs text-muted-foreground text-center max-w-md">
-              Pagamento único de 12 meses, à vista no Pix ou cartão. Sem renovação automática.
+              Pagamento único de 12 meses, à vista no cartão. Sem renovação automática.
             </p>
           )}
           {cycle === "anual" && creditCents !== null && creditCents > 0 && (

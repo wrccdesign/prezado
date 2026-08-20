@@ -329,6 +329,8 @@ export default function LandingPage() {
             <span className="text-sm text-gold font-semibold uppercase tracking-wider">Planos</span>
             <h2 className="font-serif text-3xl md:text-4xl font-bold text-navy mt-3">Calculadoras livres em todos os planos</h2>
             <p className="text-muted-foreground mt-3 max-w-lg mx-auto">A assinatura libera IA (petições, análise, diagnóstico e chat), histórico salvo e volume de consulta processual.</p>
+            <p className="text-sm text-muted-foreground mt-2">Conta nova começa com 7 dias no plano Profissional, sem cartão.</p>
+
           </div>
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl mx-auto">
             {plans.map((p, i) => (

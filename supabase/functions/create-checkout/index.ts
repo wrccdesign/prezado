@@ -152,7 +152,7 @@ async function createCheckoutSession(options: {
   };
 
   if (!isRecurring) {
-    // Annual, paid upfront (Pix or card).
+    // Annual, paid upfront (card only for now).
     const productId = typeof stripePrice.product === "string"
       ? stripePrice.product
       : stripePrice.product.id;
@@ -183,7 +183,10 @@ async function createCheckoutSession(options: {
       return_url: options.returnUrl,
       customer: customerId,
       ...(oneTime && {
-        payment_method_types: ["pix", "card"] as any,
+        // Pix requires a Brazilian Stripe account; ours is Irish. Re-add
+        // "pix" here as soon as the BR account is active.
+        payment_method_types: ["card"] as any,
+
         tax_id_collection: { enabled: true },
       }),
       ...(couponId && { discounts: [{ coupon: couponId }] }),
