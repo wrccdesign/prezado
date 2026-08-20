@@ -135,7 +135,9 @@ const PASSOS = [
 
 
 export function CustasCalc() {
+  const { isAuthenticated, requireAccount } = useGuestExportGate();
   const [etapa, setEtapa] = useState<1 | 2 | 3>(1);
+
   const [ato, setAto] = useState<AtoId | null>(null);
   const [valorBase, setValorBase] = useState("");
   const [dataAto, setDataAto] = useState(hoje());
