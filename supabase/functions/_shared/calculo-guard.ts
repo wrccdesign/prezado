@@ -102,6 +102,7 @@ export async function requireQuotaOrGuest(
   action: string,
   corsHeaders: Record<string, string>,
   guestLimit = GUEST_LIMIT_PER_HOUR,
+  windowMs = GUEST_WINDOW_MS,
 ): Promise<{ userId: string | null; guest: boolean } | Response> {
   const auth = await requireUser(req);
 
@@ -117,7 +118,7 @@ export async function requireQuotaOrGuest(
   );
 
   const ipHash = await hashIp(guestIp(req));
-  const since = new Date(Date.now() - GUEST_WINDOW_MS).toISOString();
+  const since = new Date(Date.now() - windowMs).toISOString();
 
   const { count } = await supabase
     .from("anon_usage")
@@ -128,8 +129,9 @@ export async function requireQuotaOrGuest(
   if ((count ?? 0) >= guestLimit) {
     return new Response(
       JSON.stringify({
-        error:
-          `Muitas requisições em pouco tempo (limite de ${guestLimit} por hora). Aguarde alguns minutos ou crie sua conta grátis.`,
+        error: windowMs >= 24 * 60 * 60 * 1000
+          ? "Você usou suas consultas gratuitas de demonstração. Crie sua conta grátis para continuar — são 7 dias com todos os recursos do plano Profissional."
+          : `Muitas requisições em pouco tempo (limite de ${guestLimit} por hora). Aguarde alguns minutos ou crie sua conta grátis.`,
         guest_limit: true,
         upgrade_url: "/auth",
       }),

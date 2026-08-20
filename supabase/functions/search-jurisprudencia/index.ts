@@ -44,7 +44,7 @@ Exemplos de enriquecimento:
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
-  const auth = await requireQuotaOrGuest(req, "search", corsHeaders, 3);
+  const auth = await requireQuotaOrGuest(req, "search", corsHeaders, 3, 24 * 60 * 60 * 1000);
   if (auth instanceof Response) return auth;
   const _userId = auth.userId ?? undefined;
   const isGuest = auth.guest;
