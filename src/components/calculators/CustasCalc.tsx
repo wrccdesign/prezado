@@ -480,25 +480,25 @@ export function CustasCalc() {
   if (etapa === 3 && result) {
     return (
       <div className="space-y-5">
-        <Passos etapa={3} />
+        <StepIndicator steps={PASSOS} current={3} ariaLabel="Etapas do cálculo" />
 
         <Button variant="ghost" size="sm" className="h-11 px-0" onClick={() => setEtapa(2)}>
           <ArrowLeft className="mr-1.5 h-4 w-4" /> Ajustar dados
         </Button>
 
         {/* valor + ações */}
-        <Card className="border-primary/30 bg-primary/5">
-          <CardContent className="space-y-4 p-5 sm:p-6">
-            <div className="space-y-1">
-              <p className="text-xs uppercase tracking-wide text-muted-foreground">
-                Taxa judiciária devida — {result.tribunal}
-              </p>
-              <p className="text-3xl font-bold text-primary sm:text-4xl">{fmt(result.valor_devido)}</p>
-              <p className="text-sm text-muted-foreground">
-                {atoInfo?.titulo ?? result.tipo_ato} · ato em {dataBR(dataAto)} · recolhimento previsto
-                em {dataBR(recolhimentoEfetivo)} · {result.unidade_fiscal.codigo}{" "}
-                {result.unidade_fiscal.ano} = {fmt(result.unidade_fiscal.valor)}
-              </p>
+        <ResultCard
+          label={`Taxa judiciária devida — ${result.tribunal}`}
+          value={fmt(result.valor_devido)}
+          meta={
+            <>
+              {atoInfo?.titulo ?? result.tipo_ato} · ato em {dataBR(dataAto)} · recolhimento previsto
+              em {dataBR(recolhimentoEfetivo)} · {result.unidade_fiscal.codigo}{" "}
+              {result.unidade_fiscal.ano} = {fmt(result.unidade_fiscal.valor)}
+            </>
+          }
+          notes={
+            <>
               {result.isento && result.motivo_isencao && (
                 <p className="pt-2 text-sm text-foreground">{result.motivo_isencao}</p>
               )}
@@ -512,9 +512,10 @@ export function CustasCalc() {
                   Teto legal aplicado: o percentual resultaria em {fmt(result.valor_bruto)}.
                 </p>
               )}
-            </div>
-
-            <div className="grid gap-2 sm:flex sm:flex-wrap">
+            </>
+          }
+          actions={
+            <>
               <Button
                 variant="outline"
                 className="h-11 w-full sm:w-auto"
@@ -538,9 +539,10 @@ export function CustasCalc() {
                 {salvando && <Loader2 className="mr-1.5 h-4 w-4 animate-spin" />}
                 Salvar cálculo
               </Button>
-            </div>
-          </CardContent>
-        </Card>
+            </>
+          }
+        />
+
 
         {/* memória colapsada */}
         <Collapsible open={memoriaAberta} onOpenChange={setMemoriaAberta}>
