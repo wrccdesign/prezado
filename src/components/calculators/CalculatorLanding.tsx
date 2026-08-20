@@ -56,6 +56,7 @@ export function CalculatorLanding({ title, description, path, keywords, features
                 executados nos servidores do Honorífico e acompanham a memória de cálculo ou a lista
                 de dias não computados, quando aplicável.
               </p>
+              {content}
             </div>
           </div>
 
