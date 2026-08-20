@@ -471,5 +471,6 @@ function formatarData(iso: string): string {
 }
 
 function moeda(n: number): string {
-  return `R$ ${n.toFixed(2).replace(".", ",").replace(/\B(?=(\d{3})+(?!\d)\,)/g, ".")}`;
+  const [inteiro, frac] = n.toFixed(2).split(".");
+  return `R$ ${inteiro.replace(/\B(?=(\d{3})+(?!\d))/g, ".")},${frac}`;
 }
