@@ -83,6 +83,8 @@ export default function LandingPage() {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const revealRef = useScrollReveal();
+  const navigate = useNavigate();
+
 
   useEffect(() => {
     const handler = () => setScrolled(window.scrollY > 20);
