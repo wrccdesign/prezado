@@ -342,8 +342,6 @@ export function calcularCustas(
 
   // Litisconsórcio ativo voluntário: +10 unidades por grupo de 10 autores
   // (ou fração) que exceder o primeiro grupo.
-  // Litisconsórcio ativo voluntário: +10 unidades por grupo de 10 autores
-  // (ou fração) que exceder o primeiro grupo.
   //
   // NOTA (pendência de conferência): a leitura literal da norma ("10 UFESPs para
   // cada grupo de 10 autores, ou fração que a exceder") admite entendimento de que
