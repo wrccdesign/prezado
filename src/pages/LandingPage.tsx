@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Check, ChevronRight, Menu, X } from "lucide-react";
+import { ArrowRight, Check, ChevronRight, FileDown, Menu, X } from "lucide-react";
 import Logo from "@/components/Logo";
 import { SEO } from "@/components/SEO";
 import { CorrecaoCalc } from "@/components/calculators/CorrecaoCalc";
