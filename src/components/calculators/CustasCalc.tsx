@@ -543,7 +543,6 @@ export function CustasCalc() {
           }
         />
 
-
         {/* memória colapsada */}
         <Collapsible open={memoriaAberta} onOpenChange={setMemoriaAberta}>
           <CollapsibleTrigger asChild>
@@ -555,22 +554,7 @@ export function CustasCalc() {
             </Button>
           </CollapsibleTrigger>
           <CollapsibleContent className="pt-2">
-            <ul className="divide-y rounded-lg border">
-              {result.memoria.map((l, i) => (
-                <li
-                  key={`${l.rotulo}-${i}`}
-                  className="flex flex-col gap-1 p-3 sm:flex-row sm:items-start sm:justify-between sm:gap-4"
-                >
-                  <div className="min-w-0 space-y-0.5">
-                    <p className="text-sm font-medium">{l.rotulo}</p>
-                    <p className="break-words text-xs text-muted-foreground">{l.detalhe}</p>
-                  </div>
-                  <p className="text-sm font-medium sm:whitespace-nowrap sm:text-right">
-                    {l.valor != null ? fmt(l.valor) : "—"}
-                  </p>
-                </li>
-              ))}
-            </ul>
+            <MemoriaList items={result.memoria} />
           </CollapsibleContent>
         </Collapsible>
 
