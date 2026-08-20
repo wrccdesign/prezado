@@ -221,7 +221,11 @@ export function PetitionResult({ text, petitionType, onNewPetition }: PetitionRe
     y += 10; checkPage(30);
     doc.setFont("times", "normal"); doc.setFontSize(12);
     doc.text("___________________________________________", pageWidth / 2, y, { align: "center" }); y += 6;
-    doc.text("Advogado(a) / OAB", pageWidth / 2, y, { align: "center" });
+    for (const sig of signatureLines(branding)) {
+      checkPage(6);
+      doc.text(sig, pageWidth / 2, y, { align: "center" }); y += 5.5;
+    }
+
 
     doc.save(`${baseFilename}.pdf`);
     toast({ title: "Documento baixado com sucesso!" });
