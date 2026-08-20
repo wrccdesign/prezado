@@ -196,7 +196,7 @@ export default function LandingPage() {
             </p>
 
             {/* FAIXA DE PROVA */}
-            <div className="mt-6 flex flex-col gap-2 border-t border-navy/10 pt-4 text-xs text-muted-foreground sm:flex-row sm:flex-wrap sm:items-center sm:gap-x-3 sm:text-sm">
+            <div className="mt-6 flex flex-col gap-2 border-t border-navy/10 pt-4 text-xs text-muted-foreground sm:flex-row sm:items-center sm:gap-x-3 sm:text-sm">
               <span>Séries oficiais do SGS/Banco Central</span>
               <span aria-hidden className="hidden sm:inline text-navy/20">·</span>
               <span>Sincronizadas diariamente</span>
