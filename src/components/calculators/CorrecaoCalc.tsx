@@ -70,7 +70,13 @@ function mesLabel(mesRef: string) {
   return `${m}/${y}`;
 }
 
-export function CorrecaoCalc() {
+interface CorrecaoCalcProps {
+  /** Quando informado, exibe um botão para devolver o total atualizado ao fluxo que abriu a calculadora. */
+  onUsarValor?: (valor: number) => void;
+  usarValorLabel?: string;
+}
+
+export function CorrecaoCalc({ onUsarValor, usarValorLabel = "Usar este valor" }: CorrecaoCalcProps = {}) {
   const [valor, setValor] = useState("");
   const [dataInicial, setDataInicial] = useState("");
   const [dataFinal, setDataFinal] = useState("");
