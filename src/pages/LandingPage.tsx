@@ -82,17 +82,9 @@ const plans: { name: string; price: string; period: string; desc: string; featur
 
 
 export default function LandingPage() {
-  const [scrolled, setScrolled] = useState(false);
-  const [menuOpen, setMenuOpen] = useState(false);
   const revealRef = useScrollReveal();
   const navigate = useNavigate();
 
-
-  useEffect(() => {
-    const handler = () => setScrolled(window.scrollY > 20);
-    window.addEventListener("scroll", handler, { passive: true });
-    return () => window.removeEventListener("scroll", handler);
-  }, []);
 
   return (
     <div ref={revealRef} className="min-h-screen font-sans">
