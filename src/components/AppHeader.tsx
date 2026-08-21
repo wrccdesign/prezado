@@ -296,7 +296,7 @@ export function AppHeader() {
                   </>
                 ) : (
                   <>
-                    {sheetSection([{ path: "/planos", label: "Planos", icon: Crown }], "CONTA")}
+                    {sheetSection([planosItem], "CONTA")}
                     <div className="h-px bg-white/10 my-3" />
                     <button onClick={() => handleNavigate("/auth")} className="flex items-center gap-3 w-full px-3 py-2.5 rounded-md text-sm font-medium text-white/70 hover:text-white hover:bg-white/5 transition-colors">
                       <User className="h-5 w-5" />
