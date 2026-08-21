@@ -77,7 +77,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  const signInWithGoogle = async (redirectTo?: string) => {
+    try {
+      if (redirectTo) setPendingRedirect(redirectTo);
+      const result = await lovable.auth.signInWithOAuth("google", {
+        redirect_uri: window.location.origin,
+      });
+      if (result.error) return { error: toAuthError(result.error) };
+      return { error: null, redirected: Boolean(result.redirected) };
+    } catch (error) {
+      return { error: toAuthError(error) };
+    }
+  };
+
   const resetPassword = async (email: string) => {
+
     try {
       const { error } = await supabase.auth.resetPasswordForEmail(email.trim().toLowerCase(), {
         redirectTo: `${window.location.origin}/reset-password`,
