@@ -53,7 +53,7 @@ const accountNav: NavItem[] = [
 ];
 
 
-function NavButton({ item, active, onClick, compact }: { item: NavItem; active: boolean; onClick: () => void; compact?: boolean }) {
+function NavButton({ item, active, onClick, compact, locked }: { item: NavItem; active: boolean; onClick: () => void; compact?: boolean; locked?: boolean }) {
   return (
     <button
       onClick={onClick}
@@ -64,6 +64,7 @@ function NavButton({ item, active, onClick, compact }: { item: NavItem; active: 
     >
       <item.icon className="h-4 w-4" />
       {!compact && item.label}
+      {!compact && locked && <Lock className="h-3 w-3 opacity-50" />}
     </button>
   );
 }
@@ -76,10 +77,21 @@ export function AppHeader() {
   const location = useLocation();
   const [sheetOpen, setSheetOpen] = useState(false);
 
-  const visible = (items: NavItem[]) => items.filter((i) => !i.lawyerOnly || isLawyer);
-  const tools = visible(toolsNav);
+  const visible = (items: NavItem[]) =>
+    items.filter((i) => !i.lawyerOnly || (isLawyer && !!user));
+  const tools = visible(user ? toolsNav : [analiseItem, ...toolsNav]);
+  const primaryNav = user ? [analiseItem, ...publicNav] : [...publicNav];
   const isActive = (path: string) => location.pathname === path;
   const groupActive = (items: NavItem[]) => items.some((i) => isActive(i.path));
+
+  // Item bloqueado leva ao cadastro guardando o destino, para o usuário voltar
+  // à página que queria depois de criar a conta.
+  const isLocked = (item: NavItem) => !!item.requiresAuth && !user;
+  const go = (item: NavItem) => {
+    if (isLocked(item)) navigate("/auth", { state: { redirectTo: item.path } });
+    else navigate(item.path);
+  };
+
 
   const handleNavigate = (path: string) => {
     navigate(path);
