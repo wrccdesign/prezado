@@ -118,6 +118,7 @@ export default function Auth() {
 
   const handleForgotPassword = async () => {
 
+
     if (!email.trim()) {
       toast({ title: "Informe seu e-mail", description: "Digite o e-mail da conta antes de recuperar a senha.", variant: "destructive" });
       return;
