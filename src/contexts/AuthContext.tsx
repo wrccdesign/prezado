@@ -1,5 +1,7 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { lovable } from "@/integrations/lovable/index";
+import { setPendingRedirect } from "@/lib/authRedirect";
 import type { User, Session } from "@supabase/supabase-js";
 
 interface AuthContextType {
@@ -8,9 +10,11 @@ interface AuthContextType {
   loading: boolean;
   signUp: (email: string, password: string, profileData?: LawyerSignUpData) => Promise<{ error: Error | null }>;
   signIn: (email: string, password: string) => Promise<{ error: Error | null }>;
+  signInWithGoogle: (redirectTo?: string) => Promise<{ error: Error | null; redirected?: boolean }>;
   resetPassword: (email: string) => Promise<{ error: Error | null }>;
   signOut: () => Promise<void>;
 }
+
 
 interface LawyerSignUpData {
   profile_type: "advogado";
@@ -73,7 +77,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  const signInWithGoogle = async (redirectTo?: string) => {
+    try {
+      if (redirectTo) setPendingRedirect(redirectTo);
+      const result = await lovable.auth.signInWithOAuth("google", {
+        redirect_uri: window.location.origin,
+      });
+      if (result.error) return { error: toAuthError(result.error) };
+      return { error: null, redirected: Boolean(result.redirected) };
+    } catch (error) {
+      return { error: toAuthError(error) };
+    }
+  };
+
   const resetPassword = async (email: string) => {
+
+
     try {
       const { error } = await supabase.auth.resetPasswordForEmail(email.trim().toLowerCase(), {
         redirectTo: `${window.location.origin}/reset-password`,
@@ -94,7 +113,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, session, loading, signUp, signIn, resetPassword, signOut }}>
+    <AuthContext.Provider value={{ user, session, loading, signUp, signIn, signInWithGoogle, resetPassword, signOut }}>
       {children}
     </AuthContext.Provider>
   );

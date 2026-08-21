@@ -584,6 +584,7 @@ export type Database = {
           office_logo_url: string | null
           office_name: string | null
           office_phone: string | null
+          onboarding_completed: boolean
           profile_type: string
           specialties: string[] | null
           updated_at: string | null
@@ -601,6 +602,7 @@ export type Database = {
           office_logo_url?: string | null
           office_name?: string | null
           office_phone?: string | null
+          onboarding_completed?: boolean
           profile_type?: string
           specialties?: string[] | null
           updated_at?: string | null
@@ -618,6 +620,7 @@ export type Database = {
           office_logo_url?: string | null
           office_name?: string | null
           office_phone?: string | null
+          onboarding_completed?: boolean
           profile_type?: string
           specialties?: string[] | null
           updated_at?: string | null

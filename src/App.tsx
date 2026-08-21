@@ -32,6 +32,9 @@ import Termos from "./pages/Termos";
 import Reembolso from "./pages/Reembolso";
 import Privacidade from "./pages/Privacidade";
 import ResetPassword from "./pages/ResetPassword";
+import { PostAuthRedirect } from "@/components/PostAuthRedirect";
+import { ProfileOnboardingDialog } from "@/components/ProfileOnboardingDialog";
+
 
 
 const queryClient = new QueryClient();
@@ -59,7 +62,10 @@ const App = () => (
       <BrowserRouter>
         <AuthProvider>
           <UserProfileProvider>
+            <PostAuthRedirect />
+            <ProfileOnboardingDialog />
             <Routes>
+
               <Route path="/auth" element={<Auth />} />
               <Route path="/reset-password" element={<ResetPassword />} />
               <Route path="/" element={<HomeRoute />} />

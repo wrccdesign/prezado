@@ -11,6 +11,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useToast } from "@/hooks/use-toast";
 import { SEO } from "@/components/SEO";
 import Logo from "@/components/Logo";
+import { GoogleIcon } from "@/components/GoogleIcon";
+
 
 const UF_LIST = [
   "AC", "AL", "AP", "AM", "BA", "CE", "DF", "ES", "GO", "MA",
@@ -30,7 +32,7 @@ const SPECIALTIES = [
 ];
 
 export default function Auth() {
-  const { user, loading, signUp, signIn, resetPassword } = useAuth();
+  const { user, loading, signUp, signIn, signInWithGoogle, resetPassword } = useAuth();
   const { toast } = useToast();
   const location = useLocation();
   const navigate = useNavigate();
@@ -38,6 +40,8 @@ export default function Auth() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [googleLoading, setGoogleLoading] = useState(false);
+
 
   const [isLawyer, setIsLawyer] = useState(false);
   const [oabNumber, setOabNumber] = useState("");
@@ -101,7 +105,22 @@ export default function Auth() {
     }
   };
 
+  const handleGoogle = async () => {
+    setGoogleLoading(true);
+    const { error, redirected } = await signInWithGoogle(requestedPath);
+    if (error) {
+      setGoogleLoading(false);
+      toast({ title: "Não foi possível entrar com o Google", description: error.message, variant: "destructive" });
+      return;
+    }
+    if (redirected) return; // o navegador está indo para o Google
+    setGoogleLoading(false);
+    navigate(requestedPath, { replace: true });
+  };
+
   const handleForgotPassword = async () => {
+
+
     if (!email.trim()) {
       toast({ title: "Informe seu e-mail", description: "Digite o e-mail da conta antes de recuperar a senha.", variant: "destructive" });
       return;
@@ -134,6 +153,25 @@ export default function Auth() {
             </CardDescription>
           </CardHeader>
           <CardContent>
+
+            <Button
+              type="button"
+              variant="outline"
+              className="w-full gap-2"
+              onClick={handleGoogle}
+              disabled={googleLoading || submitting}
+            >
+              <GoogleIcon className="h-4 w-4" />
+              {googleLoading ? "Conectando..." : "Continuar com Google"}
+            </Button>
+
+            <div className="my-4 flex items-center gap-3">
+              <span className="h-px flex-1 bg-border" />
+              <span className="text-xs uppercase tracking-wide text-muted-foreground">ou</span>
+              <span className="h-px flex-1 bg-border" />
+            </div>
+
+
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="email">E-mail</Label>

@@ -18,6 +18,8 @@ export interface ProfileData {
   office_email: string | null;
   office_logo_url: string | null;
   formatting_preferences: Json;
+  onboarding_completed: boolean;
+
   created_at: string;
   updated_at: string;
 }
