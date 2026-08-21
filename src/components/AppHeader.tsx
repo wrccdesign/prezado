@@ -236,9 +236,10 @@ export function AppHeader() {
         {/* Desktop (lg+) */}
         <nav className="hidden lg:flex items-center gap-1">
           {primaryNav.map((item) => (
-            <NavButton key={item.path} item={item} active={isActive(item.path)} onClick={() => navigate(item.path)} />
+            <NavButton key={item.path} item={item} active={isActive(item.path)} onClick={() => go(item)} locked={isLocked(item)} />
           ))}
           {toolsMenu}
+          {!user && <NavButton item={planosItem} active={isActive(planosItem.path)} onClick={() => navigate(planosItem.path)} />}
           <div className="w-px h-6 bg-white/10 mx-1" />
           {user ? accountMenu : guestActions}
         </nav>
@@ -246,13 +247,15 @@ export function AppHeader() {
         {/* Tablet (md–lg): ícones sem rótulo */}
         <nav className="hidden md:flex lg:hidden items-center gap-1">
           {primaryNav.map((item) => (
-            <NavButton key={item.path} item={item} active={isActive(item.path)} onClick={() => navigate(item.path)} compact />
+            <NavButton key={item.path} item={item} active={isActive(item.path)} onClick={() => go(item)} locked={isLocked(item)} compact />
           ))}
           {toolsMenu}
+          {!user && <NavButton item={planosItem} active={isActive(planosItem.path)} onClick={() => navigate(planosItem.path)} compact />}
           <div className="w-px h-6 bg-white/10 mx-1" />
           {user ? accountMenu : guestActions}
 
         </nav>
+
 
         {/* Mobile (<768px) */}
         <div className="flex md:hidden items-center gap-2">
