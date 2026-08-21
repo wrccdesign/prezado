@@ -62,7 +62,10 @@ const App = () => (
       <BrowserRouter>
         <AuthProvider>
           <UserProfileProvider>
+            <PostAuthRedirect />
+            <ProfileOnboardingDialog />
             <Routes>
+
               <Route path="/auth" element={<Auth />} />
               <Route path="/reset-password" element={<ResetPassword />} />
               <Route path="/" element={<HomeRoute />} />
