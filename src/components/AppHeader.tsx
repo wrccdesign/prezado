@@ -210,17 +210,19 @@ export function AppHeader() {
       {items.map((item) => (
         <button
           key={item.path}
-          onClick={() => handleNavigate(item.path)}
+          onClick={() => { go(item); setSheetOpen(false); }}
           className={`flex items-center gap-3 w-full px-3 py-2.5 rounded-md text-sm font-medium transition-colors ${
             isActive(item.path) ? "bg-white/10 text-white" : "text-white/60 hover:text-white hover:bg-white/5"
           }`}
         >
           <item.icon className="h-5 w-5" />
-          {item.label}
+          <span className="flex-1 text-left">{item.label}</span>
+          {isLocked(item) && <Lock className="h-3.5 w-3.5 opacity-50" />}
         </button>
       ))}
     </>
   );
+
 
   return (
     <>
