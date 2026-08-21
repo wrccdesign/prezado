@@ -11,6 +11,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useToast } from "@/hooks/use-toast";
 import { SEO } from "@/components/SEO";
 import Logo from "@/components/Logo";
+import { GoogleIcon } from "@/components/GoogleIcon";
+
 
 const UF_LIST = [
   "AC", "AL", "AP", "AM", "BA", "CE", "DF", "ES", "GO", "MA",
