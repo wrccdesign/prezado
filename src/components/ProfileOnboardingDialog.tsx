@@ -75,7 +75,7 @@ export function ProfileOnboardingDialog() {
 
   return (
     <Dialog open>
-      <DialogContent className="sm:max-w-md" onInteractOutside={(e) => e.preventDefault()} hideClose>
+      <DialogContent className="sm:max-w-md [&>button]:hidden" onInteractOutside={(e) => e.preventDefault()}>
         <DialogHeader>
           <DialogTitle>Complete seu perfil</DialogTitle>
           <DialogDescription>
