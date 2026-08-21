@@ -103,7 +103,21 @@ export default function Auth() {
     }
   };
 
+  const handleGoogle = async () => {
+    setGoogleLoading(true);
+    const { error, redirected } = await signInWithGoogle(requestedPath);
+    if (error) {
+      setGoogleLoading(false);
+      toast({ title: "Não foi possível entrar com o Google", description: error.message, variant: "destructive" });
+      return;
+    }
+    if (redirected) return; // o navegador está indo para o Google
+    setGoogleLoading(false);
+    navigate(requestedPath, { replace: true });
+  };
+
   const handleForgotPassword = async () => {
+
     if (!email.trim()) {
       toast({ title: "Informe seu e-mail", description: "Digite o e-mail da conta antes de recuperar a senha.", variant: "destructive" });
       return;
