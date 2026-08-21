@@ -53,8 +53,12 @@ export default function Auth() {
     );
   }
 
-  const requestedPath = typeof location.state === "object" && location.state && "redirectTo" in location.state
-    ? String(location.state.redirectTo)
+  const requestedPath = typeof location.state === "object" && location.state
+    ? ("redirectTo" in location.state
+        ? String(location.state.redirectTo)
+        : "from" in location.state
+          ? String(location.state.from)
+          : "/")
     : "/";
 
   if (user) return <Navigate to={requestedPath} replace />;
