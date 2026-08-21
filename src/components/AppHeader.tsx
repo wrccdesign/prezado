@@ -11,7 +11,7 @@ import {
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import {
   History, LogOut, Plus, FileSignature, MessageCircle, Briefcase, User, Calculator,
-  LayoutDashboard, Menu, Stethoscope, Scale, Crown, FileText, ChevronDown, Wrench,
+  LayoutDashboard, Menu, Stethoscope, Scale, Crown, FileText, ChevronDown, Wrench, Lock,
 } from "lucide-react";
 import Logo from "@/components/Logo";
 import { UsageSummaryCompact } from "@/components/UsageSummary";
@@ -24,27 +24,34 @@ interface NavItem {
   label: string;
   icon: React.ComponentType<{ className?: string }>;
   lawyerOnly?: boolean;
+  requiresAuth?: boolean;
 }
 
-const primaryNav: NavItem[] = [
-  { path: "/", label: "Análise", icon: Plus },
-  { path: "/diagnostico", label: "Diagnóstico", icon: Stethoscope },
-  { path: "/peticao", label: "Petição", icon: FileSignature },
+// Menu único: os mesmos rótulos com e sem login. Itens que exigem conta ficam
+// visíveis com cadeado e levam ao cadastro preservando o destino.
+const analiseItem: NavItem = { path: "/", label: "Análise", icon: Plus, requiresAuth: true };
+
+const publicNav: NavItem[] = [
+  { path: "/calculadoras", label: "Calculadoras", icon: Calculator },
   { path: "/jurisprudencia", label: "Jurisprudência", icon: Scale },
 ];
 
 const toolsNav: NavItem[] = [
-  { path: "/chat", label: "Chat Jurídico", icon: MessageCircle },
-  { path: "/calculadoras", label: "Calculadoras", icon: Calculator },
+  { path: "/diagnostico", label: "Diagnóstico", icon: Stethoscope, requiresAuth: true },
+  { path: "/peticao", label: "Petição", icon: FileSignature, requiresAuth: true },
+  { path: "/chat", label: "Chat Jurídico", icon: MessageCircle, requiresAuth: true },
   { path: "/modelos-de-minutas", label: "Modelos de Minutas", icon: FileText },
-  { path: "/painel-advogado", label: "Painel do Advogado", icon: LayoutDashboard, lawyerOnly: true },
+  { path: "/painel-advogado", label: "Painel do Advogado", icon: LayoutDashboard, lawyerOnly: true, requiresAuth: true },
 ];
+
+const planosItem: NavItem = { path: "/planos", label: "Planos", icon: Crown };
 
 const accountNav: NavItem[] = [
   { path: "/conta", label: "Minha Conta", icon: User },
   { path: "/historico", label: "Histórico", icon: History },
-  { path: "/planos", label: "Planos", icon: Crown },
+  planosItem,
 ];
+
 
 function NavButton({ item, active, onClick, compact }: { item: NavItem; active: boolean; onClick: () => void; compact?: boolean }) {
   return (
