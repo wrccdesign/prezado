@@ -149,7 +149,9 @@ export default function Auth() {
             <CardDescription>
               {isSignUp ? "Crie sua conta para salvar suas análises" : "Acesse sua conta para continuar"}
             </CardDescription>
+          </CardHeader>
           <CardContent>
+
             <Button
               type="button"
               variant="outline"
