@@ -1,5 +1,7 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { lovable } from "@/integrations/lovable/index";
+import { setPendingRedirect } from "@/lib/authRedirect";
 import type { User, Session } from "@supabase/supabase-js";
 
 interface AuthContextType {
@@ -8,9 +10,11 @@ interface AuthContextType {
   loading: boolean;
   signUp: (email: string, password: string, profileData?: LawyerSignUpData) => Promise<{ error: Error | null }>;
   signIn: (email: string, password: string) => Promise<{ error: Error | null }>;
+  signInWithGoogle: (redirectTo?: string) => Promise<{ error: Error | null; redirected?: boolean }>;
   resetPassword: (email: string) => Promise<{ error: Error | null }>;
   signOut: () => Promise<void>;
 }
+
 
 interface LawyerSignUpData {
   profile_type: "advogado";
