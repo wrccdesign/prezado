@@ -135,12 +135,14 @@ export function AppHeader() {
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className={dropdownContent}>
         {tools.map((item) => (
-          <DropdownMenuItem key={item.path} className={dropdownItem} onClick={() => navigate(item.path)}>
+          <DropdownMenuItem key={item.path} className={dropdownItem} onClick={() => go(item)}>
             <item.icon className="h-4 w-4" />
-            {item.label}
+            <span className="flex-1">{item.label}</span>
+            {isLocked(item) && <Lock className="h-3 w-3 opacity-50" />}
           </DropdownMenuItem>
         ))}
       </DropdownMenuContent>
+
     </DropdownMenu>
   );
 
