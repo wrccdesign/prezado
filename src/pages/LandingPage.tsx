@@ -1,11 +1,13 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Check, ChevronRight, FileDown, Menu, X } from "lucide-react";
+import { ArrowRight, Check, ChevronRight, FileDown } from "lucide-react";
 import Logo from "@/components/Logo";
+import { AppHeader } from "@/components/AppHeader";
 import { SEO } from "@/components/SEO";
 import { CorrecaoCalc } from "@/components/calculators/CorrecaoCalc";
 import { savePeticaoPrefill } from "@/lib/peticaoPrefill";
+
 
 
 function useScrollReveal() {
@@ -31,12 +33,7 @@ function useScrollReveal() {
   return ref;
 }
 
-const navSections = [
-  { id: "calcular", label: "Calcular" },
-  { id: "recursos", label: "Recursos" },
-  { id: "memoria", label: "Memória de cálculo" },
-  { id: "planos", label: "Planos" },
-];
+
 
 const memoriaSample = [
   { mes: "08/2024", indice: "IPCA", variacao: "-0,02%", fator: "1,012340", saldo: "R$ 10.123,40" },
@@ -80,17 +77,9 @@ const plans: { name: string; price: string; period: string; desc: string; featur
 
 
 export default function LandingPage() {
-  const [scrolled, setScrolled] = useState(false);
-  const [menuOpen, setMenuOpen] = useState(false);
   const revealRef = useScrollReveal();
   const navigate = useNavigate();
 
-
-  useEffect(() => {
-    const handler = () => setScrolled(window.scrollY > 20);
-    window.addEventListener("scroll", handler, { passive: true });
-    return () => window.removeEventListener("scroll", handler);
-  }, []);
 
   return (
     <div ref={revealRef} className="min-h-screen font-sans">
@@ -111,55 +100,12 @@ export default function LandingPage() {
         }}
       />
 
-      {/* NAVBAR */}
-      <nav
-        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 border-b ${scrolled ? "py-2" : "py-4"}`}
-        style={{ backgroundColor: "hsl(var(--navy) / 0.95)", backdropFilter: "blur(12px)", borderBottomColor: "hsl(var(--gold) / 0.15)" }}
-      >
-        <div className="container mx-auto flex items-center justify-between px-4 sm:px-6">
-          <Link to="/" className="flex items-center">
-            <Logo className="h-8" />
-          </Link>
-          <div className="hidden md:flex items-center gap-6">
-            {navSections.map((s) => (
-              <a key={s.id} href={`#${s.id}`} className="text-sm text-white/60 hover:text-gold transition-colors">
-                {s.label}
-              </a>
-            ))}
-          </div>
-          <div className="hidden md:flex items-center gap-3">
-            <Button variant="ghost" className="text-white/80 hover:text-white hover:bg-white/10" asChild>
-              <Link to="/auth">Entrar</Link>
-            </Button>
-            <Button className="bg-gold text-navy hover:bg-gold-light font-semibold" asChild>
-              <Link to="/auth">Cadastrar</Link>
-            </Button>
-          </div>
-          <button className="md:hidden text-white" aria-label={menuOpen ? "Fechar menu" : "Abrir menu"} aria-expanded={menuOpen} onClick={() => setMenuOpen(!menuOpen)}>
-            {menuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
-          </button>
-        </div>
-        {menuOpen && (
-          <div className="md:hidden px-4 pb-4 pt-2 space-y-3" style={{ backgroundColor: "hsl(var(--navy))" }}>
-            {navSections.map((s) => (
-              <a key={s.id} href={`#${s.id}`} className="block text-white/70 hover:text-gold py-1" onClick={() => setMenuOpen(false)}>
-                {s.label}
-              </a>
-            ))}
-            <div className="flex gap-2 pt-2">
-              <Button className="flex-1 bg-transparent border border-white/20 text-white hover:bg-white/10" asChild>
-                <Link to="/auth">Entrar</Link>
-              </Button>
-              <Button className="flex-1 bg-gold text-navy hover:bg-gold-light" asChild>
-                <Link to="/auth">Cadastrar</Link>
-              </Button>
-            </div>
-          </div>
-        )}
-      </nav>
+      {/* NAVBAR: mesmo cabeçalho do resto do site, logado ou não */}
+      <AppHeader />
 
       {/* HERO */}
-      <section className="relative pt-28 pb-14 md:pt-36 md:pb-16 overflow-hidden" style={{ backgroundColor: "hsl(var(--navy))" }}>
+      <section className="relative pt-12 pb-14 md:pt-16 md:pb-16 overflow-hidden" style={{ backgroundColor: "hsl(var(--navy))" }}>
+
         <div className="absolute inset-0 opacity-[0.04]" style={{ backgroundImage: `linear-gradient(hsl(var(--gold)) 1px, transparent 1px), linear-gradient(90deg, hsl(var(--gold)) 1px, transparent 1px)`, backgroundSize: "60px 60px" }} />
         <div className="container mx-auto px-4 sm:px-6 relative z-10">
           <div data-reveal className="opacity-0 translate-y-6 transition-all duration-700 max-w-3xl">

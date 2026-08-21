@@ -11,7 +11,7 @@ import {
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import {
   History, LogOut, Plus, FileSignature, MessageCircle, Briefcase, User, Calculator,
-  LayoutDashboard, Menu, Stethoscope, Scale, Crown, FileText, ChevronDown, Wrench,
+  LayoutDashboard, Menu, Stethoscope, Scale, Crown, FileText, ChevronDown, Wrench, Lock,
 } from "lucide-react";
 import Logo from "@/components/Logo";
 import { UsageSummaryCompact } from "@/components/UsageSummary";
@@ -24,29 +24,36 @@ interface NavItem {
   label: string;
   icon: React.ComponentType<{ className?: string }>;
   lawyerOnly?: boolean;
+  requiresAuth?: boolean;
 }
 
-const primaryNav: NavItem[] = [
-  { path: "/", label: "Análise", icon: Plus },
-  { path: "/diagnostico", label: "Diagnóstico", icon: Stethoscope },
-  { path: "/peticao", label: "Petição", icon: FileSignature },
+// Menu único: os mesmos rótulos com e sem login. Itens que exigem conta ficam
+// visíveis com cadeado e levam ao cadastro preservando o destino.
+const analiseItem: NavItem = { path: "/", label: "Análise", icon: Plus, requiresAuth: true };
+
+const publicNav: NavItem[] = [
+  { path: "/calculadoras", label: "Calculadoras", icon: Calculator },
   { path: "/jurisprudencia", label: "Jurisprudência", icon: Scale },
 ];
 
 const toolsNav: NavItem[] = [
-  { path: "/chat", label: "Chat Jurídico", icon: MessageCircle },
-  { path: "/calculadoras", label: "Calculadoras", icon: Calculator },
+  { path: "/diagnostico", label: "Diagnóstico", icon: Stethoscope, requiresAuth: true },
+  { path: "/peticao", label: "Petição", icon: FileSignature, requiresAuth: true },
+  { path: "/chat", label: "Chat Jurídico", icon: MessageCircle, requiresAuth: true },
   { path: "/modelos-de-minutas", label: "Modelos de Minutas", icon: FileText },
-  { path: "/painel-advogado", label: "Painel do Advogado", icon: LayoutDashboard, lawyerOnly: true },
+  { path: "/painel-advogado", label: "Painel do Advogado", icon: LayoutDashboard, lawyerOnly: true, requiresAuth: true },
 ];
+
+const planosItem: NavItem = { path: "/planos", label: "Planos", icon: Crown };
 
 const accountNav: NavItem[] = [
   { path: "/conta", label: "Minha Conta", icon: User },
   { path: "/historico", label: "Histórico", icon: History },
-  { path: "/planos", label: "Planos", icon: Crown },
+  planosItem,
 ];
 
-function NavButton({ item, active, onClick, compact }: { item: NavItem; active: boolean; onClick: () => void; compact?: boolean }) {
+
+function NavButton({ item, active, onClick, compact, locked }: { item: NavItem; active: boolean; onClick: () => void; compact?: boolean; locked?: boolean }) {
   return (
     <button
       onClick={onClick}
@@ -57,6 +64,7 @@ function NavButton({ item, active, onClick, compact }: { item: NavItem; active: 
     >
       <item.icon className="h-4 w-4" />
       {!compact && item.label}
+      {!compact && locked && <Lock className="h-3 w-3 opacity-50" />}
     </button>
   );
 }
@@ -69,10 +77,21 @@ export function AppHeader() {
   const location = useLocation();
   const [sheetOpen, setSheetOpen] = useState(false);
 
-  const visible = (items: NavItem[]) => items.filter((i) => !i.lawyerOnly || isLawyer);
-  const tools = visible(toolsNav);
+  const visible = (items: NavItem[]) =>
+    items.filter((i) => !i.lawyerOnly || (isLawyer && !!user));
+  const tools = visible(user ? toolsNav : [analiseItem, ...toolsNav]);
+  const primaryNav = user ? [analiseItem, ...publicNav] : [...publicNav];
   const isActive = (path: string) => location.pathname === path;
   const groupActive = (items: NavItem[]) => items.some((i) => isActive(i.path));
+
+  // Item bloqueado leva ao cadastro guardando o destino, para o usuário voltar
+  // à página que queria depois de criar a conta.
+  const isLocked = (item: NavItem) => !!item.requiresAuth && !user;
+  const go = (item: NavItem) => {
+    if (isLocked(item)) navigate("/auth", { state: { redirectTo: item.path } });
+    else navigate(item.path);
+  };
+
 
   const handleNavigate = (path: string) => {
     navigate(path);
@@ -116,12 +135,14 @@ export function AppHeader() {
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className={dropdownContent}>
         {tools.map((item) => (
-          <DropdownMenuItem key={item.path} className={dropdownItem} onClick={() => navigate(item.path)}>
+          <DropdownMenuItem key={item.path} className={dropdownItem} onClick={() => go(item)}>
             <item.icon className="h-4 w-4" />
-            {item.label}
+            <span className="flex-1">{item.label}</span>
+            {isLocked(item) && <Lock className="h-3 w-3 opacity-50" />}
           </DropdownMenuItem>
         ))}
       </DropdownMenuContent>
+
     </DropdownMenu>
   );
 
@@ -189,17 +210,19 @@ export function AppHeader() {
       {items.map((item) => (
         <button
           key={item.path}
-          onClick={() => handleNavigate(item.path)}
+          onClick={() => { go(item); setSheetOpen(false); }}
           className={`flex items-center gap-3 w-full px-3 py-2.5 rounded-md text-sm font-medium transition-colors ${
             isActive(item.path) ? "bg-white/10 text-white" : "text-white/60 hover:text-white hover:bg-white/5"
           }`}
         >
           <item.icon className="h-5 w-5" />
-          {item.label}
+          <span className="flex-1 text-left">{item.label}</span>
+          {isLocked(item) && <Lock className="h-3.5 w-3.5 opacity-50" />}
         </button>
       ))}
     </>
   );
+
 
   return (
     <>
@@ -213,9 +236,10 @@ export function AppHeader() {
         {/* Desktop (lg+) */}
         <nav className="hidden lg:flex items-center gap-1">
           {primaryNav.map((item) => (
-            <NavButton key={item.path} item={item} active={isActive(item.path)} onClick={() => navigate(item.path)} />
+            <NavButton key={item.path} item={item} active={isActive(item.path)} onClick={() => go(item)} locked={isLocked(item)} />
           ))}
           {toolsMenu}
+          {!user && <NavButton item={planosItem} active={isActive(planosItem.path)} onClick={() => navigate(planosItem.path)} />}
           <div className="w-px h-6 bg-white/10 mx-1" />
           {user ? accountMenu : guestActions}
         </nav>
@@ -223,13 +247,15 @@ export function AppHeader() {
         {/* Tablet (md–lg): ícones sem rótulo */}
         <nav className="hidden md:flex lg:hidden items-center gap-1">
           {primaryNav.map((item) => (
-            <NavButton key={item.path} item={item} active={isActive(item.path)} onClick={() => navigate(item.path)} compact />
+            <NavButton key={item.path} item={item} active={isActive(item.path)} onClick={() => go(item)} locked={isLocked(item)} compact />
           ))}
           {toolsMenu}
+          {!user && <NavButton item={planosItem} active={isActive(planosItem.path)} onClick={() => navigate(planosItem.path)} compact />}
           <div className="w-px h-6 bg-white/10 mx-1" />
           {user ? accountMenu : guestActions}
 
         </nav>
+
 
         {/* Mobile (<768px) */}
         <div className="flex md:hidden items-center gap-2">
@@ -270,7 +296,7 @@ export function AppHeader() {
                   </>
                 ) : (
                   <>
-                    {sheetSection([{ path: "/planos", label: "Planos", icon: Crown }], "CONTA")}
+                    {sheetSection([planosItem], "CONTA")}
                     <div className="h-px bg-white/10 my-3" />
                     <button onClick={() => handleNavigate("/auth")} className="flex items-center gap-3 w-full px-3 py-2.5 rounded-md text-sm font-medium text-white/70 hover:text-white hover:bg-white/5 transition-colors">
                       <User className="h-5 w-5" />
