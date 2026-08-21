@@ -1,11 +1,13 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Check, ChevronRight, FileDown, Menu, X } from "lucide-react";
+import { ArrowRight, Check, ChevronRight, FileDown } from "lucide-react";
 import Logo from "@/components/Logo";
+import { AppHeader } from "@/components/AppHeader";
 import { SEO } from "@/components/SEO";
 import { CorrecaoCalc } from "@/components/calculators/CorrecaoCalc";
 import { savePeticaoPrefill } from "@/lib/peticaoPrefill";
+
 
 
 function useScrollReveal() {
