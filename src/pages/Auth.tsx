@@ -149,8 +149,25 @@ export default function Auth() {
             <CardDescription>
               {isSignUp ? "Crie sua conta para salvar suas análises" : "Acesse sua conta para continuar"}
             </CardDescription>
-          </CardHeader>
           <CardContent>
+            <Button
+              type="button"
+              variant="outline"
+              className="w-full gap-2"
+              onClick={handleGoogle}
+              disabled={googleLoading || submitting}
+            >
+              <GoogleIcon className="h-4 w-4" />
+              {googleLoading ? "Conectando..." : "Continuar com Google"}
+            </Button>
+
+            <div className="my-4 flex items-center gap-3">
+              <span className="h-px flex-1 bg-border" />
+              <span className="text-xs uppercase tracking-wide text-muted-foreground">ou</span>
+              <span className="h-px flex-1 bg-border" />
+            </div>
+
+
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="email">E-mail</Label>
