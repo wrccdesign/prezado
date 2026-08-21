@@ -30,7 +30,7 @@ const SPECIALTIES = [
 ];
 
 export default function Auth() {
-  const { user, loading, signUp, signIn, resetPassword } = useAuth();
+  const { user, loading, signUp, signIn, signInWithGoogle, resetPassword } = useAuth();
   const { toast } = useToast();
   const location = useLocation();
   const navigate = useNavigate();
@@ -38,6 +38,8 @@ export default function Auth() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [googleLoading, setGoogleLoading] = useState(false);
+
 
   const [isLawyer, setIsLawyer] = useState(false);
   const [oabNumber, setOabNumber] = useState("");
