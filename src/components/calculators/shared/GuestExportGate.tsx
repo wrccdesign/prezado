@@ -26,7 +26,7 @@ export function useGuestExportGate() {
           <ToastAction
             altText="Criar conta"
             onClick={() =>
-              navigate("/auth", { state: { from: location.pathname + location.search } })
+              navigate("/auth", { state: { redirectTo: location.pathname + location.search } })
             }
           >
             Criar conta
