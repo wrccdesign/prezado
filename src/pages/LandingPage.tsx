@@ -33,7 +33,7 @@ function useScrollReveal() {
   return ref;
 }
 
-];
+
 
 const memoriaSample = [
   { mes: "08/2024", indice: "IPCA", variacao: "-0,02%", fator: "1,012340", saldo: "R$ 10.123,40" },
