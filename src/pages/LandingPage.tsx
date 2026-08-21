@@ -33,11 +33,6 @@ function useScrollReveal() {
   return ref;
 }
 
-const navSections = [
-  { id: "calcular", label: "Calcular" },
-  { id: "recursos", label: "Recursos" },
-  { id: "memoria", label: "Memória de cálculo" },
-  { id: "planos", label: "Planos" },
 ];
 
 const memoriaSample = [
