@@ -33,6 +33,7 @@ export default function History() {
   const [loading, setLoading] = useState(true);
   const [selectedAnalysis, setSelectedAnalysis] = useState<AnalysisRecord | null>(null);
   const [selectedPetition, setSelectedPetition] = useState<PetitionRecord | null>(null);
+  const [showInputText, setShowInputText] = useState(false);
 
   const fetchData = async () => {
     setLoading(true);
