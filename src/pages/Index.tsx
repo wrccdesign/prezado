@@ -203,7 +203,12 @@ export default function Index() {
         <LegalDisclaimer />
         <main className="container max-w-3xl py-8 sm:py-12 px-4 sm:px-6">
           <h1 className="mb-6 sm:mb-8 text-2xl sm:text-3xl lg:text-4xl font-bold text-foreground">Resultado da Análise</h1>
-          <AnalysisResult result={result} onNewAnalysis={handleNewAnalysis} />
+          <AnalysisResult
+            result={result}
+            onNewAnalysis={handleNewAnalysis}
+            onSave={user ? handleSaveAnalysis : undefined}
+            saveState={saveState}
+          />
         </main>
         <AppFooter />
       </div>
