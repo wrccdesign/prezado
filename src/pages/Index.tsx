@@ -142,6 +142,7 @@ export default function Index() {
 
     setLoading(true);
     setResult(null);
+    setSaveState("idle");
 
     try {
       const { data, error } = await supabase.functions.invoke("analyze-legal-text", {
@@ -151,6 +152,7 @@ export default function Index() {
       if (error) throw error;
       if (data?.error) throw new Error(data.error);
 
+      setAnalyzedText((data.input_text as string) ?? text.trim().slice(0, 15000));
       setResult(data.result as LegalAnalysis);
       notifyUsageConsumed();
       toast({ title: "Análise concluída!" });
