@@ -12,7 +12,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { AppFooter } from "@/components/AppFooter";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
-import { Trash2, ChevronLeft, Scale, Clock, FileText, FileSignature, Users, Calculator } from "lucide-react";
+import { Trash2, ChevronLeft, Scale, Clock, FileText, FileSignature, Users, Calculator, ChevronDown, ChevronUp, Copy } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import type { AnalysisRecord, PetitionRecord, PetitionFormData } from "@/types/analysis";
