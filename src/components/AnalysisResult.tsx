@@ -65,7 +65,17 @@ const FIXED_SOURCES = [
   { nome: "CNJ", url: "https://www.cnj.jus.br" },
 ];
 
-export function AnalysisResult({ result, onNewAnalysis }: { result: LegalAnalysis; onNewAnalysis?: () => void }) {
+export function AnalysisResult({
+  result,
+  onNewAnalysis,
+  onSave,
+  saveState,
+}: {
+  result: LegalAnalysis;
+  onNewAnalysis?: () => void;
+  onSave?: () => void | Promise<void>;
+  saveState?: "idle" | "saving" | "saved";
+}) {
   const { toast } = useToast();
 
   const copyJson = () => {
