@@ -6,7 +6,7 @@ import { Separator } from "@/components/ui/separator";
 import {
   Scale, AlertTriangle, Clock, ExternalLink, Copy, ChevronRight,
   BookOpen, MapPin, ListOrdered, Globe, FileDown, FileText,
-  AlertCircle, Gavel, CheckCircle2, ShieldAlert, BookMarked
+  AlertCircle, Gavel, CheckCircle2, ShieldAlert, BookMarked, Save
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { exportToPDF, exportToDOCX, slugify, type ExportSection } from "@/lib/exportDocument";
@@ -65,7 +65,17 @@ const FIXED_SOURCES = [
   { nome: "CNJ", url: "https://www.cnj.jus.br" },
 ];
 
-export function AnalysisResult({ result, onNewAnalysis }: { result: LegalAnalysis; onNewAnalysis?: () => void }) {
+export function AnalysisResult({
+  result,
+  onNewAnalysis,
+  onSave,
+  saveState,
+}: {
+  result: LegalAnalysis;
+  onNewAnalysis?: () => void;
+  onSave?: () => void | Promise<void>;
+  saveState?: "idle" | "saving" | "saved";
+}) {
   const { toast } = useToast();
 
   const copyJson = () => {
@@ -360,7 +370,26 @@ export function AnalysisResult({ result, onNewAnalysis }: { result: LegalAnalysi
 
       {/* Actions */}
       <Separator />
+      {onSave && saveState !== "saved" && (
+        <p className="text-sm text-muted-foreground">
+          Esta análise não fica salva a menos que você clique em "Salvar no histórico".
+        </p>
+      )}
       <div className="flex flex-wrap gap-3">
+        {onSave && (
+          <Button onClick={() => onSave()} disabled={saveState !== "idle"}>
+            {saveState === "saved" ? (
+              <CheckCircle2 className="mr-2 h-4 w-4" />
+            ) : (
+              <Save className="mr-2 h-4 w-4" />
+            )}
+            {saveState === "saved"
+              ? "Salvo no histórico"
+              : saveState === "saving"
+                ? "Salvando..."
+                : "Salvar no histórico"}
+          </Button>
+        )}
         <Button variant="outline" onClick={handleExportPDF}>
           <FileDown className="mr-2 h-4 w-4" />
           Exportar PDF

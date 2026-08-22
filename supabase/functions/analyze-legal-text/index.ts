@@ -348,16 +348,9 @@ Responda sempre em português brasileiro.${legislationContext}`;
       { nome: "CNJ", url: "https://www.cnj.jus.br" },
     ];
 
-    const { error: insertError } = await supabase.from("analyses").insert({
-      user_id: user.id,
-      input_text: text.trim().slice(0, 50000),
-      file_name: file_name || null,
-      result,
-    });
-
-    if (insertError) console.error("Insert error:", insertError);
-
-    return new Response(JSON.stringify({ result }), {
+    // Não gravamos mais automaticamente: o usuário decide salvar no histórico
+    // a partir do cliente (tabela `analyses`, RLS por auth.uid()).
+    return new Response(JSON.stringify({ result, input_text: text.trim().slice(0, 50000) }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } catch (e) {

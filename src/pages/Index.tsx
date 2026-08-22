@@ -26,6 +26,8 @@ export default function Index() {
   const [parseProgress, setParseProgress] = useState(0);
   const [parseStage, setParseStage] = useState("");
   const [result, setResult] = useState<LegalAnalysis | null>(null);
+  const [analyzedText, setAnalyzedText] = useState("");
+  const [saveState, setSaveState] = useState<"idle" | "saving" | "saved">("idle");
   const [showPreview, setShowPreview] = useState(false);
   const [partialExtraction, setPartialExtraction] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
@@ -140,6 +142,7 @@ export default function Index() {
 
     setLoading(true);
     setResult(null);
+    setSaveState("idle");
 
     try {
       const { data, error } = await supabase.functions.invoke("analyze-legal-text", {
@@ -149,6 +152,7 @@ export default function Index() {
       if (error) throw error;
       if (data?.error) throw new Error(data.error);
 
+      setAnalyzedText((data.input_text as string) ?? text.trim().slice(0, 15000));
       setResult(data.result as LegalAnalysis);
       notifyUsageConsumed();
       toast({ title: "Análise concluída!" });
@@ -168,8 +172,28 @@ export default function Index() {
     setText("");
     setFileName(null);
     setResult(null);
+    setAnalyzedText("");
+    setSaveState("idle");
     setShowPreview(false);
     setPartialExtraction(false);
+  };
+
+  const handleSaveAnalysis = async () => {
+    if (!result || !user) return;
+    setSaveState("saving");
+    const { error } = await supabase.from("analyses").insert({
+      user_id: user.id,
+      input_text: analyzedText,
+      file_name: fileName,
+      result: result as unknown as never,
+    });
+    if (error) {
+      setSaveState("idle");
+      toast({ title: "Erro ao salvar", description: "Tente novamente.", variant: "destructive" });
+      return;
+    }
+    setSaveState("saved");
+    toast({ title: "Salvo no histórico" });
   };
 
   if (result) {
@@ -179,7 +203,12 @@ export default function Index() {
         <LegalDisclaimer />
         <main className="container max-w-3xl py-8 sm:py-12 px-4 sm:px-6">
           <h1 className="mb-6 sm:mb-8 text-2xl sm:text-3xl lg:text-4xl font-bold text-foreground">Resultado da Análise</h1>
-          <AnalysisResult result={result} onNewAnalysis={handleNewAnalysis} />
+          <AnalysisResult
+            result={result}
+            onNewAnalysis={handleNewAnalysis}
+            onSave={user ? handleSaveAnalysis : undefined}
+            saveState={saveState}
+          />
         </main>
         <AppFooter />
       </div>

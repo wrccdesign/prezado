@@ -12,7 +12,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { AppFooter } from "@/components/AppFooter";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
-import { Trash2, ChevronLeft, Scale, Clock, FileText, FileSignature, Users, Calculator } from "lucide-react";
+import { Trash2, ChevronLeft, Scale, Clock, FileText, FileSignature, Users, Calculator, ChevronDown, ChevronUp, Copy } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import type { AnalysisRecord, PetitionRecord, PetitionFormData } from "@/types/analysis";
@@ -33,6 +33,7 @@ export default function History() {
   const [loading, setLoading] = useState(true);
   const [selectedAnalysis, setSelectedAnalysis] = useState<AnalysisRecord | null>(null);
   const [selectedPetition, setSelectedPetition] = useState<PetitionRecord | null>(null);
+  const [showInputText, setShowInputText] = useState(false);
 
   const fetchData = async () => {
     setLoading(true);
@@ -137,6 +138,40 @@ export default function History() {
               </span>
             )}
           </div>
+          {selectedAnalysis.input_text && (
+            <div className="mb-6 rounded-lg border bg-muted/30">
+              <div className="flex items-center gap-2 p-3">
+                <button
+                  onClick={() => setShowInputText((v) => !v)}
+                  className="flex flex-1 items-center gap-2 text-left text-sm font-medium text-foreground"
+                >
+                  <FileText className="h-4 w-4 shrink-0 text-primary" />
+                  Texto analisado
+                  {showInputText ? (
+                    <ChevronUp className="ml-auto h-4 w-4" />
+                  ) : (
+                    <ChevronDown className="ml-auto h-4 w-4" />
+                  )}
+                </button>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => {
+                    navigator.clipboard.writeText(selectedAnalysis.input_text);
+                    toast({ title: "Texto copiado" });
+                  }}
+                  className="shrink-0 text-muted-foreground hover:text-foreground"
+                >
+                  <Copy className="h-4 w-4" />
+                </Button>
+              </div>
+              {showInputText && (
+                <div className="max-h-[320px] overflow-y-auto border-t bg-background p-3 font-mono text-xs leading-relaxed whitespace-pre-wrap break-words text-muted-foreground">
+                  {selectedAnalysis.input_text}
+                </div>
+              )}
+            </div>
+          )}
           <AnalysisResult result={selectedAnalysis.result} />
         </main>
       </div>
