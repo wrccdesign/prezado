@@ -185,7 +185,7 @@ export default function Index() {
       user_id: user.id,
       input_text: analyzedText,
       file_name: fileName,
-      result: result as unknown as Record<string, unknown>,
+      result: result as unknown as never,
     });
     if (error) {
       setSaveState("idle");
