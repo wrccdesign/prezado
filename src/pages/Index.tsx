@@ -26,6 +26,8 @@ export default function Index() {
   const [parseProgress, setParseProgress] = useState(0);
   const [parseStage, setParseStage] = useState("");
   const [result, setResult] = useState<LegalAnalysis | null>(null);
+  const [analyzedText, setAnalyzedText] = useState("");
+  const [saveState, setSaveState] = useState<"idle" | "saving" | "saved">("idle");
   const [showPreview, setShowPreview] = useState(false);
   const [partialExtraction, setPartialExtraction] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
