@@ -370,7 +370,26 @@ export function AnalysisResult({
 
       {/* Actions */}
       <Separator />
+      {onSave && saveState !== "saved" && (
+        <p className="text-sm text-muted-foreground">
+          Esta análise não fica salva a menos que você clique em "Salvar no histórico".
+        </p>
+      )}
       <div className="flex flex-wrap gap-3">
+        {onSave && (
+          <Button onClick={() => onSave()} disabled={saveState !== "idle"}>
+            {saveState === "saved" ? (
+              <CheckCircle2 className="mr-2 h-4 w-4" />
+            ) : (
+              <Save className="mr-2 h-4 w-4" />
+            )}
+            {saveState === "saved"
+              ? "Salvo no histórico"
+              : saveState === "saving"
+                ? "Salvando..."
+                : "Salvar no histórico"}
+          </Button>
+        )}
         <Button variant="outline" onClick={handleExportPDF}>
           <FileDown className="mr-2 h-4 w-4" />
           Exportar PDF
