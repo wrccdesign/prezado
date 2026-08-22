@@ -172,8 +172,28 @@ export default function Index() {
     setText("");
     setFileName(null);
     setResult(null);
+    setAnalyzedText("");
+    setSaveState("idle");
     setShowPreview(false);
     setPartialExtraction(false);
+  };
+
+  const handleSaveAnalysis = async () => {
+    if (!result || !user) return;
+    setSaveState("saving");
+    const { error } = await supabase.from("analyses").insert({
+      user_id: user.id,
+      input_text: analyzedText,
+      file_name: fileName,
+      result: result as unknown as Record<string, unknown>,
+    });
+    if (error) {
+      setSaveState("idle");
+      toast({ title: "Erro ao salvar", description: "Tente novamente.", variant: "destructive" });
+      return;
+    }
+    setSaveState("saved");
+    toast({ title: "Salvo no histórico" });
   };
 
   if (result) {
