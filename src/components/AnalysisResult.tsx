@@ -6,7 +6,7 @@ import { Separator } from "@/components/ui/separator";
 import {
   Scale, AlertTriangle, Clock, ExternalLink, Copy, ChevronRight,
   BookOpen, MapPin, ListOrdered, Globe, FileDown, FileText,
-  AlertCircle, Gavel, CheckCircle2, ShieldAlert, BookMarked
+  AlertCircle, Gavel, CheckCircle2, ShieldAlert, BookMarked, Save
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { exportToPDF, exportToDOCX, slugify, type ExportSection } from "@/lib/exportDocument";
