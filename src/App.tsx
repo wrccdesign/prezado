@@ -29,6 +29,7 @@ import MinutaDetalhe from "./pages/MinutaDetalhe";
 import Conta from "./pages/Conta";
 import NotFound from "./pages/NotFound";
 import Termos from "./pages/Termos";
+import MapaDoSite from "./pages/MapaDoSite";
 import Reembolso from "./pages/Reembolso";
 import Privacidade from "./pages/Privacidade";
 import ResetPassword from "./pages/ResetPassword";
@@ -88,6 +89,7 @@ const App = () => (
               <Route path="/planos" element={<Planos />} />
               <Route path="/conta" element={<ProtectedRoute><Conta /></ProtectedRoute>} />
               <Route path="/admin/ingestao" element={<ProtectedRoute><AdminIngestao /></ProtectedRoute>} />
+              <Route path="/mapa-do-site" element={<MapaDoSite />} />
               <Route path="/termos" element={<Termos />} />
               <Route path="/reembolso" element={<Reembolso />} />
               <Route path="/privacidade" element={<Privacidade />} />
