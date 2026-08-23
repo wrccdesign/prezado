@@ -26,6 +26,7 @@ type TipoDemissao = "sem_justa_causa" | "com_justa_causa" | "pedido_demissao" | 
 interface Verba { label: string; valor: number; }
 
 export function RescisaoCalc() {
+  const { requireAccount } = useGuestExportGate();
   const [salario, setSalario] = useState("");
   const [admissao, setAdmissao] = useState<Date>();
   const [demissao, setDemissao] = useState<Date>();

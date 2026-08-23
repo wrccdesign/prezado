@@ -31,6 +31,7 @@ interface Resultado {
 }
 
 export function PensaoCalc() {
+  const { requireAccount } = useGuestExportGate();
   const [renda, setRenda] = useState("");
   const [filhos, setFilhos] = useState("1");
   const [moradia, setMoradia] = useState<Moradia>("nao");
