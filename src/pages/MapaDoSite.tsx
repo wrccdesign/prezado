@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import { AppHeader } from "@/components/AppHeader";
 import { AppFooter } from "@/components/AppFooter";
 import { SEO } from "@/components/SEO";
-import { minutas } from "@/data/minutas";
+import { MINUTAS } from "@/data/minutas";
 
 const SITE_URL = "https://honorifico.com.br";
 
@@ -133,13 +133,13 @@ export default function MapaDoSite() {
         <section className="space-y-4">
           <h2 className="text-xl font-semibold font-serif text-foreground">Modelos de minutas</h2>
           <ul className="grid gap-2 sm:grid-cols-2">
-            {minutas.map(m => (
+            {MINUTAS.map(m => (
               <li key={m.slug}>
                 <Link
                   to={`/modelos-de-minutas/${m.slug}`}
                   className="text-sm text-muted-foreground hover:text-primary underline-offset-4 hover:underline"
                 >
-                  {m.titulo}
+                  {m.title}
                 </Link>
               </li>
             ))}

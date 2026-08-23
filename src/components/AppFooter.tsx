@@ -52,6 +52,7 @@ export function AppFooter() {
                 { label: "Termos e Condições", to: "/termos" },
                 { label: "Política de Reembolso", to: "/reembolso" },
                 { label: "Aviso de Privacidade", to: "/privacidade" },
+                { label: "Mapa do Site", to: "/mapa-do-site" },
               ].map((l) => (
                 <li key={l.label}>
                   <Link to={l.to} className="text-sm text-white/40 hover:text-[hsl(var(--gold))] transition-colors">
