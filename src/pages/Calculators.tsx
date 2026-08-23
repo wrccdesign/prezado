@@ -45,7 +45,7 @@ export default function Calculators() {
   return (
     <div className="min-h-screen bg-background">
       <AppHeader />
-      <SEO title="Calculadoras Jurídicas — Honorífico" description="Rescisão trabalhista, pensão alimentícia, correção monetária, prazos processuais, validador de CPF/CNPJ e operações com datas. Ferramentas grátis do Honorífico." path="/calculadoras" />
+      <SEO title="Calculadoras Jurídicas — Honorífico" description="Sete ferramentas grátis do Honorífico: custas processuais do TJSP, correção monetária e juros (Lei 14.905/2024), prazos processuais, rescisão trabalhista, pensão alimentícia, validador de CPF/CNPJ e operações com datas." path="/calculadoras" />
       <main className="container py-6 sm:py-8 px-4 sm:px-6 space-y-6 sm:space-y-8">
         <div>
           <h1 className="text-2xl sm:text-3xl font-bold font-serif text-foreground">Calculadoras Jurídicas</h1>

@@ -90,7 +90,7 @@ export default function MapaDoSite() {
       <AppHeader />
       <SEO
         title="Mapa do Site — Honorífico"
-        description="Navegue por todas as páginas do Honorífico: as cinco calculadoras jurídicas, jurisprudência, petições, modelos de minutas, planos e páginas legais."
+        description="Navegue por todas as páginas do Honorífico: as sete calculadoras jurídicas, jurisprudência, petições, modelos de minutas, planos e páginas legais."
         path="/mapa-do-site"
         jsonLd={{
           "@context": "https://schema.org",
@@ -106,7 +106,7 @@ export default function MapaDoSite() {
         <header className="max-w-3xl space-y-3">
           <h1 className="text-2xl sm:text-4xl font-bold font-serif text-foreground">Mapa do site</h1>
           <p className="text-base sm:text-lg text-muted-foreground">
-            Todas as páginas públicas do Honorífico em um só lugar, começando pelas calculadoras jurídicas.
+            Todas as páginas públicas do Honorífico em um só lugar, começando pelas sete calculadoras jurídicas.
           </p>
         </header>
 
@@ -114,7 +114,7 @@ export default function MapaDoSite() {
           <h2 className="text-xl font-semibold font-serif text-foreground">Calculadoras jurídicas</h2>
           <ul className="grid gap-3 sm:grid-cols-2">
             {calculadoras.map(c => (
-              <li key={c.to} className="rounded-lg border border-border p-4">
+              <li key={c.label} className="rounded-lg border border-border p-4">
                 <Link to={c.to} className="font-medium text-foreground hover:text-primary underline-offset-4 hover:underline">
                   {c.label}
                 </Link>
