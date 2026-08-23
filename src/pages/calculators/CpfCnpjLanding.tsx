@@ -59,7 +59,7 @@ export default function CpfCnpjLanding() {
         },
       ]}
     >
-
+      <CpfCnpjCalc />
     </CalculatorLanding>
   );
 }

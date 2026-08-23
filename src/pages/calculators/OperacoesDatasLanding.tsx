@@ -60,7 +60,7 @@ export default function OperacoesDatasLanding() {
         },
       ]}
     >
-
+      <DateCalc />
     </CalculatorLanding>
   );
 }
