@@ -372,6 +372,7 @@ export default function LandingPage() {
               <ul className="space-y-2">
                 {[
                   { label: "Planos e Preços", href: "/planos" },
+                  { label: "Por que o Honorífico", href: "/comparativo" },
                   { label: "Contato", href: "mailto:wrccdesign@gmail.com" },
                   { label: "Termos de Uso", href: "/termos" },
                   { label: "Política de Privacidade", href: "/privacidade" },

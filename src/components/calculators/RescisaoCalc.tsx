@@ -15,6 +15,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Card, CardContent } from "@/components/ui/card";
+import { useGuestExportGate } from "@/components/calculators/shared/GuestExportGate";
 
 function fmt(v: number) {
   return v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
@@ -25,6 +26,7 @@ type TipoDemissao = "sem_justa_causa" | "com_justa_causa" | "pedido_demissao" | 
 interface Verba { label: string; valor: number; }
 
 export function RescisaoCalc() {
+  const { requireAccount } = useGuestExportGate();
   const [salario, setSalario] = useState("");
   const [admissao, setAdmissao] = useState<Date>();
   const [demissao, setDemissao] = useState<Date>();
@@ -160,7 +162,7 @@ export function RescisaoCalc() {
             </CardContent>
           </Card>
           <div className="flex flex-col sm:flex-row gap-3 items-start">
-            <Button onClick={gerarPDF} variant="outline" className="gap-2"><FileDown className="h-4 w-4" /> Gerar Relatório PDF</Button>
+            <Button onClick={() => requireAccount(gerarPDF, "baixar o relatório em PDF")} variant="outline" className="gap-2"><FileDown className="h-4 w-4" /> Gerar Relatório PDF</Button>
           </div>
           <div className="flex items-start gap-2 rounded-md border border-yellow-500/30 bg-yellow-50 dark:bg-yellow-950/20 p-3 text-sm text-yellow-800 dark:text-yellow-200">
             <AlertTriangle className="h-4 w-4 mt-0.5 shrink-0" /><span>Cálculo estimado. Consulte um advogado trabalhista para valores exatos.</span>
