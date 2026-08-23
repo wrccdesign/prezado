@@ -6,25 +6,85 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowRight, CheckCircle } from "lucide-react";
 import { Link } from "react-router-dom";
 
+export interface CalculatorFaq {
+  question: string;
+  answer: string;
+}
+
 interface CalculatorLandingProps {
   title: string;
   description: string;
   path: string;
   keywords: string[];
   features: string[];
+  /** Título usado em <title>/og:title. Se omitido, usa `${title} — Honorífico`. */
+  seoTitle?: string;
+  /** Meta description. Se omitida, usa `description`. */
+  seoDescription?: string;
   /** Conteúdo editorial adicional, exibido abaixo de "Como funciona". */
   content?: React.ReactNode;
+  /** Perguntas frequentes: renderizadas na página e marcadas como FAQPage. */
+  faq?: CalculatorFaq[];
   children: React.ReactNode;
 }
 
-export function CalculatorLanding({ title, description, path, keywords, features, content, children }: CalculatorLandingProps) {
+const SITE_URL = "https://honorifico.com.br";
+
+export function CalculatorLanding({
+  title,
+  description,
+  path,
+  keywords,
+  features,
+  seoTitle,
+  seoDescription,
+  content,
+  faq,
+  children,
+}: CalculatorLandingProps) {
+  const jsonLd: Record<string, unknown>[] = [
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      itemListElement: [
+        { "@type": "ListItem", position: 1, name: "Início", item: `${SITE_URL}/` },
+        { "@type": "ListItem", position: 2, name: "Calculadoras", item: `${SITE_URL}/calculadoras` },
+        { "@type": "ListItem", position: 3, name: title, item: `${SITE_URL}${path}` },
+      ],
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      name: title,
+      applicationCategory: "BusinessApplication",
+      operatingSystem: "Web",
+      url: `${SITE_URL}${path}`,
+      description,
+      inLanguage: "pt-BR",
+      offers: { "@type": "Offer", price: "0", priceCurrency: "BRL" },
+    },
+  ];
+
+  if (faq?.length) {
+    jsonLd.push({
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      mainEntity: faq.map(f => ({
+        "@type": "Question",
+        name: f.question,
+        acceptedAnswer: { "@type": "Answer", text: f.answer },
+      })),
+    });
+  }
+
   return (
     <div className="min-h-screen bg-background">
       <AppHeader />
       <SEO
-        title={`${title} — Honorífico`}
-        description={description}
+        title={seoTitle || `${title} — Honorífico`}
+        description={seoDescription || description}
         path={path}
+        jsonLd={jsonLd}
       />
       <main className="container py-8 sm:py-12 px-4 sm:px-6 space-y-8">
         <div className="max-w-3xl space-y-4">
@@ -58,6 +118,20 @@ export function CalculatorLanding({ title, description, path, keywords, features
               </p>
               {content}
             </div>
+
+            {faq?.length ? (
+              <section className="prose dark:prose-invert max-w-none">
+                <h2 className="text-xl font-semibold">Perguntas frequentes</h2>
+                <dl className="space-y-4 not-prose">
+                  {faq.map(f => (
+                    <div key={f.question} className="rounded-lg border border-border p-4">
+                      <dt className="font-medium text-foreground">{f.question}</dt>
+                      <dd className="mt-2 text-sm text-muted-foreground">{f.answer}</dd>
+                    </div>
+                  ))}
+                </dl>
+              </section>
+            ) : null}
           </div>
 
           <div className="space-y-6">
