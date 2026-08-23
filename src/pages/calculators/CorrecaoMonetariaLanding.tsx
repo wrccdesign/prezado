@@ -42,7 +42,30 @@ export default function CorrecaoMonetariaLanding() {
           </p>
         </>
       }
+      faq={[
+        {
+          question: "O que mudou com a Lei 14.905/2024?",
+          answer:
+            "Desde 30/08/2024, na ausência de índice convencionado, a correção monetária é feita pelo IPCA e os juros de mora correspondem à Selic menos o IPCA (Taxa Legal). Se o resultado dessa conta for negativo, considera-se juros zero (art. 406, §3º, do Código Civil).",
+        },
+        {
+          question: "Qual índice usar para atualizar uma condenação?",
+          answer:
+            "Prevalece o índice fixado na sentença ou no contrato. Sem previsão, aplica-se o IPCA a partir de 30/08/2024 e, no período anterior, o índice usual do juízo (em geral a Tabela Prática ou o INPC). A calculadora aplica os dois regimes no mesmo cálculo.",
+        },
+        {
+          question: "De onde vêm os índices?",
+          answer:
+            "Das séries oficiais do Sistema Gerenciador de Séries Temporais do Banco Central — IPCA, INPC, IGP-M, Selic e Taxa Legal — sincronizadas diariamente. O resultado informa a data da última sincronização.",
+        },
+        {
+          question: "A calculadora é gratuita?",
+          answer:
+            "Sim, o cálculo e a memória mês a mês são gratuitos e não exigem login. A conta gratuita é necessária apenas para exportar em PDF ou Word e salvar o histórico.",
+        },
+      ]}
     >
+
       <CorrecaoCalc />
     </CalculatorLanding>
   );

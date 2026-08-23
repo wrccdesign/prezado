@@ -7,6 +7,9 @@ export default function CustasTjspLanding() {
       title="Calculadora de Custas Processuais do TJSP"
       description="Calcule a taxa judiciária do TJSP com a regra vigente na data do ato, a UFESP correta, piso de 5 e teto de 3.000 UFESPs, isenções e litisconsórcio — com memória de cálculo e base legal."
       path="/calculadoras/custas-tjsp"
+      seoTitle="Calcular Custas Processuais TJSP — Taxa Judiciária e UFESP"
+      seoDescription="Calcule a taxa judiciária do TJSP pela Lei 11.608/2003: 1,5% sobre o valor da causa, UFESP vigente, piso de 5 e teto de 3.000 UFESPs, isenções e memória de cálculo."
+
       keywords={[
         "custas processuais TJSP",
         "taxa judiciária",
