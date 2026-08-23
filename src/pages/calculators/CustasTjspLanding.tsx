@@ -71,7 +71,35 @@ export default function CustasTjspLanding() {
           </p>
         </>
       }
+      faq={[
+        {
+          question: "Qual o percentual das custas iniciais no TJSP?",
+          answer:
+            "A taxa judiciária é de 1,5% sobre o valor da causa para atos praticados a partir de 03/01/2024; antes dessa data o percentual era de 1%. A calculadora aplica a regra vigente na data do ato informado.",
+        },
+        {
+          question: "Existe valor mínimo e máximo?",
+          answer:
+            "Sim. O recolhimento nunca é inferior a 5 UFESPs nem superior a 3.000 UFESPs, considerando a UFESP vigente no primeiro dia do mês do recolhimento.",
+        },
+        {
+          question: "Como se calcula o preparo da apelação?",
+          answer:
+            "Incide sobre o valor da condenação líquida; não havendo pedido condenatório, sobre o valor da causa atualizado. Os mesmos piso e teto em UFESPs se aplicam.",
+        },
+        {
+          question: "Quem é isento das custas do TJSP?",
+          answer:
+            "Beneficiários da justiça gratuita (art. 98 do CPC), União, Estados, Municípios, suas autarquias e fundações e o Ministério Público, além de feitos isentos pela natureza, como acidentes do trabalho, alimentos até dois salários mínimos e Juizados Especiais em primeiro grau.",
+        },
+        {
+          question: "A calculadora emite a guia DARE-SP?",
+          answer:
+            "Não. Ela apresenta o valor, a memória de cálculo e a base legal; a emissão e o pagamento da guia são feitos exclusivamente no Portal de Custas do TJSP, onde o valor deve ser conferido.",
+        },
+      ]}
     >
+
       <CustasCalc />
     </CalculatorLanding>
   );
