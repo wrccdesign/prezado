@@ -7,6 +7,9 @@ export default function CorrecaoMonetariaLanding() {
       title="Calculadora de Correção Monetária e Juros"
       description="Atualize valores de condenação, dívidas e verbas com índices oficiais do Banco Central (IPCA, INPC, IGP-M, Selic e Taxa Legal) e juros conforme a Lei 14.905/2024."
       path="/calculadoras/correcao-monetaria-juros-lei-14905"
+      seoTitle="Correção Monetária e Juros — Lei 14.905/2024 | Calculadora"
+      seoDescription="Atualize valores com IPCA, INPC, IGP-M, Selic e Taxa Legal direto do Banco Central e juros pela Lei 14.905/2024. Memória de cálculo mês a mês, grátis."
+
       keywords={[
         "correção monetária",
         "juros de mora",
