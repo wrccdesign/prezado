@@ -9,6 +9,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { AlertTriangle, FileText } from "lucide-react";
 import { toast } from "sonner";
 import jsPDF from "jspdf";
+import { useGuestExportGate } from "@/components/calculators/shared/GuestExportGate";
 
 function fmt(v: number) {
   return v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
@@ -212,7 +213,7 @@ export function PensaoCalc() {
             <p className="text-sm text-yellow-800 dark:text-yellow-200">Este é um valor de referência. O juiz decidirá com base nas necessidades e possibilidades das partes.</p>
           </div>
 
-          <Button variant="outline" onClick={gerarPDF} className="h-11 w-full sm:w-auto">
+          <Button variant="outline" onClick={() => requireAccount(gerarPDF, "baixar o relatório em PDF")} className="h-11 w-full sm:w-auto">
             <FileText className="mr-2 h-4 w-4" /> Gerar Relatório PDF
           </Button>
         </div>
