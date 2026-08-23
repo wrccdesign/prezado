@@ -17,6 +17,7 @@ import {
   ExternalLink, BookOpen, FileText, Lightbulb, Copy, Check, Gavel,
 } from "lucide-react";
 import { formatCitation } from "@/lib/citation";
+import { SEO } from "@/components/SEO";
 
 type Msg = { role: "user" | "assistant"; content: string };
 
@@ -298,6 +299,15 @@ export default function DecisaoDetalhe() {
   return (
     <div className="min-h-screen flex flex-col bg-background">
       <AppHeader />
+      <SEO
+        title={`${decision.numero_processo || "Decisão"}${decision.tribunal ? ` — ${decision.tribunal}` : ""} | Honorífico`}
+        description={
+          (decision.ementa || decision.resumo_ia || "Decisão judicial com ementa, metadados e análise por IA no Honorífico.")
+            .replace(/\s+/g, " ")
+            .slice(0, 155)
+        }
+        path={`/jurisprudencia/${decision.id}`}
+      />
       <main className="flex-1 flex flex-col lg:flex-row">
         {/* Decision content */}
         <div className="flex-1 overflow-y-auto">

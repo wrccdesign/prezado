@@ -53,6 +53,8 @@ export default function Calculators() {
         </div>
 
         {!active && (
+          <>
+          <h2 className="text-lg sm:text-xl font-semibold font-serif text-foreground">Escolha uma calculadora</h2>
           <div className="grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
 
             {mainCalculators.map(c => (
@@ -73,6 +75,7 @@ export default function Calculators() {
               </Card>
             ))}
           </div>
+          </>
         )}
 
         {active && activeInfo && (
@@ -82,9 +85,9 @@ export default function Calculators() {
             </Button>
             <Card>
               <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-xl">
+                <h2 className="flex items-center gap-2 text-xl font-semibold leading-none tracking-tight">
                   {activeInfo.title}
-                </CardTitle>
+                </h2>
               </CardHeader>
               <CardContent>
                 {ActiveCalc && <ActiveCalc />}

@@ -2,7 +2,7 @@ import { AppHeader } from "@/components/AppHeader";
 import { AppFooter } from "@/components/AppFooter";
 import { SEO } from "@/components/SEO";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { ArrowRight, CheckCircle } from "lucide-react";
 import { Link } from "react-router-dom";
 
@@ -103,7 +103,7 @@ export function CalculatorLanding({
           <div className="lg:col-span-2 space-y-6">
             <Card>
               <CardHeader>
-                <CardTitle className="text-xl">Calcule agora</CardTitle>
+                <h2 className="text-xl font-semibold leading-none tracking-tight">Calcule agora</h2>
               </CardHeader>
               <CardContent>{children}</CardContent>
             </Card>
@@ -137,7 +137,7 @@ export function CalculatorLanding({
           <div className="space-y-6">
             <Card>
               <CardHeader>
-                <CardTitle className="text-lg">Por que usar?</CardTitle>
+                <h2 className="text-lg font-semibold leading-none tracking-tight">Por que usar?</h2>
               </CardHeader>
               <CardContent className="space-y-3">
                 {features.map(f => (

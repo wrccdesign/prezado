@@ -115,6 +115,7 @@ export default function MinutaDetalhe() {
 
         <div className="grid gap-6 lg:grid-cols-3">
           <div className="lg:col-span-2 space-y-4">
+            <h2 className="text-xl font-semibold font-serif text-foreground">Conteúdo do modelo</h2>
             {minuta.sections.map((s) => (
               <Card key={s.heading}>
                 <CardHeader>
@@ -132,7 +133,7 @@ export default function MinutaDetalhe() {
           <aside className="space-y-6">
             <Card>
               <CardHeader>
-                <CardTitle className="text-lg">Base legal</CardTitle>
+                <h2 className="text-lg font-semibold leading-none tracking-tight">Base legal</h2>
               </CardHeader>
               <CardContent className="space-y-2">
                 {minuta.baseLegal.map((b) => (
