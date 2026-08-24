@@ -10,7 +10,7 @@ const features = [
   { name: "Geração de petições estruturadas", prezado: "full", jusbrasil: "none", advbox: "partial", chatgpt: "partial" },
   { name: "Chat com legislação brasileira", prezado: "full", jusbrasil: "none", advbox: "none", chatgpt: "partial" },
   { name: "Jurisprudência real (DataJud/CNJ)", prezado: "full", jusbrasil: "full", advbox: "none", chatgpt: "none" },
-  { name: "Calculadoras trabalhistas", prezado: "full", jusbrasil: "none", advbox: "partial", chatgpt: "none" },
+  { name: "Sete calculadoras jurídicas", prezado: "full", jusbrasil: "none", advbox: "partial", chatgpt: "none" },
   { name: "Painel do advogado", prezado: "full", jusbrasil: "none", advbox: "full", chatgpt: "none" },
   { name: "Linguagem acessível ao cidadão", prezado: "full", jusbrasil: "partial", advbox: "none", chatgpt: "partial" },
   { name: "Fontes oficiais verificadas", prezado: "full", jusbrasil: "full", advbox: "none", chatgpt: "none" },
@@ -29,14 +29,14 @@ function StatusIcon({ status }: { status: Support }) {
 const differentials = [
   { icon: Briefcase, title: "Plataforma Integrada", desc: "Diagnóstico, petições, jurisprudência, calculadoras e chat — tudo em um só lugar." },
   { icon: Users, title: "Público Híbrido", desc: "Feito tanto para advogados quanto para cidadãos, com linguagem clara e acessível." },
-  { icon: Shield, title: "IA Anti-Alucinação", desc: "Fontes oficiais do STF, STJ e Planalto. Cada citação é rastreável e verificável." },
+  { icon: Shield, title: "Fontes Verificáveis", desc: "Cada cálculo e cada citação trazem a fonte oficial e a base legal, para conferência." },
   { icon: Globe, title: "100% Brasileiro", desc: "Desenvolvido para o direito brasileiro, com base na legislação e jurisprudência nacional." },
 ];
 
 export default function Comparativo() {
   const handleShare = async () => {
     const url = window.location.href;
-    const text = "Conheça o Honorífico — a plataforma jurídica mais completa do Brasil.";
+    const text = "Veja como o Honorífico se compara a outras ferramentas jurídicas.";
     if (navigator.share) {
       try { await navigator.share({ title: "Honorífico", text, url }); } catch {}
     } else {
@@ -58,7 +58,7 @@ export default function Comparativo() {
             Por que o <span style={{ color: "hsl(var(--gold))" }}>Honorífico</span>?
           </h1>
           <p className="text-base sm:text-lg leading-relaxed mb-8" style={{ color: "hsl(var(--cream) / 0.65)" }}>
-            A única plataforma jurídica brasileira que une diagnóstico, peticionamento, jurisprudência verificada e calculadoras — com inteligência artificial de verdade.
+            Cálculos com fonte oficial, consulta processual e petições em PDF/DOCX, tudo no mesmo lugar. Veja como o Honorífico se compara a outras ferramentas.
           </p>
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <Button asChild size="lg" className="rounded-full font-sans font-semibold text-sm px-8" style={{ background: "hsl(var(--gold))", color: "hsl(var(--navy))" }}>
