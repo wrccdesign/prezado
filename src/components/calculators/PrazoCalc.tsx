@@ -119,12 +119,10 @@ export function PrazoCalc() {
       // Junta os tribunais conhecidos com aqueles que já possuem suspensões
       // forenses cadastradas na tabela `feriados` (inclui a Justiça Federal).
       const [{ data: config }, { data: forenses }] = await Promise.all([
-        supabase
-          .from("tj_scraping_config")
-          .select("tribunal, nome_completo")
-          .order("priority", { ascending: false }),
+        supabase.rpc("list_tribunais"),
         supabase.from("feriados").select("tribunal").eq("tipo", "forense"),
       ]);
+
 
       const nomes = new Map<string, string>();
       for (const t of config ?? []) nomes.set(t.tribunal, t.nome_completo);
