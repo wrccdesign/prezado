@@ -18,8 +18,8 @@ export function AppFooter() {
                 { label: "Custas do TJSP", to: "/calculadoras/custas-tjsp" },
                 { label: "Operações com datas", to: "/calculadoras/operacoes-datas" },
                 { label: "Validador CPF/CNPJ", to: "/calculadoras/validador-cpf-cnpj" },
-                { label: "Rescisão trabalhista", to: "/calculadoras" },
-                { label: "Pensão alimentícia", to: "/calculadoras" },
+                { label: "Rescisão trabalhista", to: "/calculadoras/rescisao-trabalhista" },
+                { label: "Pensão alimentícia", to: "/calculadoras/pensao-alimenticia" },
               ].map((l) => (
                 <li key={l.label}>
                   <Link to={l.to} className="text-sm text-white/40 hover:text-[hsl(var(--gold))] transition-colors">
