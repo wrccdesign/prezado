@@ -85,10 +85,6 @@ export default function PensaoAlimenticiaLanding() {
       ]}
     >
       <PensaoCalc />
-      <p className="mt-4 text-sm text-muted-foreground">
-        Este é um valor de referência. O juiz decidirá com base nas necessidades e possibilidades das
-        partes.
-      </p>
     </CalculatorLanding>
   );
 }
