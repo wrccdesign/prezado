@@ -90,10 +90,6 @@ export default function RescisaoTrabalhistaLanding() {
       ]}
     >
       <RescisaoCalc />
-      <p className="mt-4 text-sm text-muted-foreground">
-        Cálculo estimado para fins de referência. Consulte um advogado trabalhista para conferência
-        dos valores.
-      </p>
     </CalculatorLanding>
   );
 }
