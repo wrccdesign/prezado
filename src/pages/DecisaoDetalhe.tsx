@@ -306,7 +306,7 @@ export default function DecisaoDetalhe() {
             .replace(/\s+/g, " ")
             .slice(0, 155)
         }
-        path={`/jurisprudencia/${decision.id}`}
+        path={`/decisao/${decision.id}`}
       />
       <main className="flex-1 flex flex-col lg:flex-row">
         {/* Decision content */}

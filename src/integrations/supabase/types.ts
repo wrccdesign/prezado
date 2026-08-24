@@ -843,6 +843,13 @@ export type Database = {
         }
         Returns: boolean
       }
+      list_tribunais: {
+        Args: never
+        Returns: {
+          nome_completo: string
+          tribunal: string
+        }[]
+      }
       search_decisions: {
         Args: {
           filter_comarca_pequena?: boolean
