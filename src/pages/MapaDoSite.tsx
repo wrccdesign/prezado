@@ -33,12 +33,12 @@ const calculadoras = [
     hint: "Conferência dos dígitos verificadores, sem enviar o número a órgãos públicos.",
   },
   {
-    to: "/calculadoras",
+    to: "/calculadoras/rescisao-trabalhista",
     label: "Rescisão trabalhista",
     hint: "Verbas rescisórias, aviso prévio, 13º, férias e multa do FGTS.",
   },
   {
-    to: "/calculadoras",
+    to: "/calculadoras/pensao-alimenticia",
     label: "Pensão alimentícia",
     hint: "Faixa de referência pelo binômio necessidade × possibilidade, art. 1.694 do CC.",
   },

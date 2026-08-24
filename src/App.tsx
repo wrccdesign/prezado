@@ -16,6 +16,8 @@ import PrazoProcessualLanding from "./pages/calculators/PrazoProcessualLanding";
 import CpfCnpjLanding from "./pages/calculators/CpfCnpjLanding";
 import OperacoesDatasLanding from "./pages/calculators/OperacoesDatasLanding";
 import CustasTjspLanding from "./pages/calculators/CustasTjspLanding";
+import RescisaoTrabalhistaLanding from "./pages/calculators/RescisaoTrabalhistaLanding";
+import PensaoAlimenticiaLanding from "./pages/calculators/PensaoAlimenticiaLanding";
 import LawyerDashboard from "./pages/LawyerDashboard";
 import Diagnostico from "./pages/Diagnostico";
 import Jurisprudencia from "./pages/Jurisprudencia";
@@ -79,6 +81,8 @@ const App = () => (
               <Route path="/calculadoras/validador-cpf-cnpj" element={<CpfCnpjLanding />} />
               <Route path="/calculadoras/operacoes-datas" element={<OperacoesDatasLanding />} />
               <Route path="/calculadoras/custas-tjsp" element={<CustasTjspLanding />} />
+              <Route path="/calculadoras/rescisao-trabalhista" element={<RescisaoTrabalhistaLanding />} />
+              <Route path="/calculadoras/pensao-alimenticia" element={<PensaoAlimenticiaLanding />} />
               <Route path="/diagnostico" element={<ProtectedRoute><Diagnostico /></ProtectedRoute>} />
               <Route path="/jurisprudencia" element={<Jurisprudencia />} />
               <Route path="/decisao/:id" element={<DecisaoDetalhe />} />
