@@ -2,8 +2,8 @@ import { useEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Check, ChevronRight, FileDown } from "lucide-react";
-import Logo from "@/components/Logo";
 import { AppHeader } from "@/components/AppHeader";
+import { AppFooter } from "@/components/AppFooter";
 import { SEO } from "@/components/SEO";
 import { CorrecaoCalc } from "@/components/calculators/CorrecaoCalc";
 import { savePeticaoPrefill } from "@/lib/peticaoPrefill";
@@ -329,88 +329,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* FOOTER */}
-      <footer className="py-14 border-t" style={{ backgroundColor: "hsl(218 60% 5%)", borderColor: "hsl(var(--gold) / 0.1)" }}>
-        <div className="container mx-auto px-4 sm:px-6">
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-10 mb-12">
-            <div>
-              <Link to="/" className="flex items-center mb-4">
-                <Logo className="h-7" />
-              </Link>
-              <p className="text-sm text-white/40 leading-relaxed">Cálculos e prazos jurídicos com fonte oficial, com memória de cálculo em PDF e Word.</p>
-            </div>
-            <div>
-              <h4 className="font-sans font-semibold text-white text-sm mb-4">Calculadoras</h4>
-              <ul className="space-y-2">
-                {[
-                  { label: "Correção monetária e juros", href: "/calculadoras/correcao-monetaria-juros-lei-14905" },
-                  { label: "Prazo processual", href: "/calculadoras/prazo-processual" },
-                  { label: "Custas do TJSP", href: "/calculadoras/custas-tjsp" },
-                  { label: "Operações com datas", href: "/calculadoras/operacoes-datas" },
-                  { label: "Validador CPF/CNPJ", href: "/calculadoras/validador-cpf-cnpj" },
-                ].map((l) => (
-                  <li key={l.label}><Link to={l.href} className="text-sm text-white/40 hover:text-gold transition-colors">{l.label}</Link></li>
-                ))}
-              </ul>
-            </div>
-            <div>
-              <h4 className="font-sans font-semibold text-white text-sm mb-4">Plataforma</h4>
-              <ul className="space-y-2">
-                {[
-                  { label: "Consulta processual", href: "/jurisprudencia" },
-                  { label: "Modelos de minutas", href: "/modelos-de-minutas" },
-                  { label: "Petições", href: "/auth" },
-                  { label: "Análise de documentos", href: "/auth" },
-                  { label: "Chat jurídico", href: "/auth" },
-                ].map((l) => (
-                  <li key={l.label}><Link to={l.href} className="text-sm text-white/40 hover:text-gold transition-colors">{l.label}</Link></li>
-                ))}
-              </ul>
-            </div>
-            <div>
-              <h4 className="font-sans font-semibold text-white text-sm mb-4">Empresa</h4>
-              <ul className="space-y-2">
-                {[
-                  { label: "Planos e Preços", href: "/planos" },
-                  { label: "Por que o Honorífico", href: "/comparativo" },
-                  { label: "Contato", href: "mailto:wrccdesign@gmail.com" },
-                  { label: "Termos de Uso", href: "/termos" },
-                  { label: "Política de Privacidade", href: "/privacidade" },
-                  { label: "Política de Reembolso", href: "/reembolso" },
-                ].map((l) => (
-                  <li key={l.label}>
-                    {l.href.startsWith("mailto:") ? (
-                      <a href={l.href} className="text-sm text-white/40 hover:text-gold transition-colors">
-                        {l.label}
-                      </a>
-                    ) : (
-                      <Link to={l.href} className="text-sm text-white/40 hover:text-gold transition-colors">
-                        {l.label}
-                      </Link>
-                    )}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div>
-          <div className="border-t pt-5 flex flex-col items-center gap-2 text-center" style={{ borderColor: "hsl(var(--gold) / 0.1)" }}>
-            <p className="text-xs text-white/30">© {new Date().getFullYear()} Honorífico. Todos os direitos reservados.</p>
-            <p className="text-xs text-white/30 max-w-2xl leading-relaxed">
-              <strong className="font-medium text-white/50">Honorífico</strong> — Cálculos e prazos jurídicos com fonte oficial, com memória de cálculo em PDF e Word. Pagamentos processados com segurança pela Stripe.
-            </p>
-            <div className="flex gap-4 text-xs text-white/30">
-              <Link to="/privacidade" className="hover:text-gold transition-colors">LGPD</Link>
-              <Link to="/privacidade" className="hover:text-gold transition-colors">Privacidade</Link>
-              <Link to="/termos" className="hover:text-gold transition-colors">Termos</Link>
-              <Link to="/reembolso" className="hover:text-gold transition-colors">Reembolso</Link>
-            </div>
-            <p className="text-xs text-white/25">
-              Desenvolvido por{" "}
-              <a href="https://www.wrcc.design" target="_blank" rel="noopener noreferrer" className="hover:text-gold transition-colors underline underline-offset-2">WRCC Design</a>
-            </p>
-          </div>
-        </div>
-      </footer>
+      <AppFooter />
     </div>
   );
 }
