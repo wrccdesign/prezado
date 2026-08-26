@@ -41,18 +41,28 @@ serve(async (req) => {
 
     // Rate limit check
     const env = extractEnv(req);
+    const body = await req.json();
+
+    const stage: string = body.stage || "final";
+    const approvedKeywords: string[] | undefined = Array.isArray(body.approved_keywords) ? body.approved_keywords : undefined;
+    const approvedNormas: NormaResumo[] | undefined = Array.isArray(body.approved_normas) ? body.approved_normas : undefined;
+    const approvedPrecedentIds: string[] | undefined = Array.isArray(body.approved_precedent_ids) ? body.approved_precedent_ids : undefined;
+    const hasApproved = approvedKeywords !== undefined || approvedNormas !== undefined || approvedPrecedentIds !== undefined;
+
+    // Etapas de preparação não consomem a cota mensal de petições — só a trava
+    // de rajada. A geração final continua debitando `peticao`.
+    const isPreview = stage === "enquadramento" || stage === "fundamentacao" || stage === "precedentes";
+    const rateAction = isPreview ? "peticao_preview" : "peticao";
     {
-      const { allowed, used, limit, plan, renewsAt, burstLimited } = await checkRateLimit(user.id, "peticao", supabaseUrl, supabaseKey, env);
+      const { allowed, used, limit, plan, renewsAt, burstLimited } = await checkRateLimit(user.id, rateAction, supabaseUrl, supabaseKey, env);
       if (!allowed) {
         return new Response(JSON.stringify({
-          error: burstLimited ? burstLimitMessage() : monthlyLimitMessage("peticao", limit, plan),
+          error: burstLimited ? burstLimitMessage() : monthlyLimitMessage(rateAction, limit, plan),
           limit_reached: !burstLimited, burst_limit: burstLimited === true, used, limit, plan, renews_at: renewsAt, upgrade_url: "/planos",
         }), { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } });
       }
     }
 
-    const body = await req.json();
-    
     // Support both new simplified form and legacy form
     const tipo_acao = body.tipo_acao || body.petition_type || "";
     const vara_juizo = body.vara_juizo || body.vara || "";
@@ -64,38 +74,81 @@ serve(async (req) => {
     const fundamentos = body.fundamentos || "";
     const comarca = body.comarca || "";
 
+    const extractKeywords = async (text: string): Promise<string[]> => {
+      try {
+        const kwText = await aiChatText({
+          model: "light",
+          functionName: "generate-petition",
+          userId: user.id,
+          environment: env,
+          messages: [
+            { role: "system", content: "Extraia de 2 a 5 termos jurídicos principais do texto para identificar a área do direito. Retorne APENAS os termos separados por vírgula." },
+            { role: "user", content: text.slice(0, 3000) },
+          ],
+        });
+        return kwText.split(",").map((k: string) => k.trim()).filter(Boolean);
+      } catch (e) {
+        console.error("Keyword extraction failed:", e);
+        return [];
+      }
+    };
+
+    // ---- Etapa 1: enquadramento (keywords) ----
+    if (stage === "enquadramento") {
+      const keywords = await extractKeywords(`${tipo_acao} ${fatos} ${pedidos}`);
+      return new Response(JSON.stringify({ keywords }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    // ---- Etapa 2: fundamentação (legislação) ----
+    if (stage === "fundamentacao") {
+      const kws: string[] = Array.isArray(body.keywords) ? body.keywords.filter(Boolean) : [];
+      const termo = kws.join(" ").trim();
+      const normas = termo.length >= 2 ? await searchLegislation(termo) : [];
+      return new Response(JSON.stringify({ normas }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    // ---- Etapa 3: precedentes ----
+    if (stage === "precedentes") {
+      const precedents = await fetchGroundingContext(`${tipo_acao} ${fatos}`.slice(0, 800), supabaseUrl, supabaseKey, 5);
+      return new Response(JSON.stringify({ precedents }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
     if (!fatos || !pedidos) {
       throw new Error("Campos obrigatórios não preenchidos (fatos e pedidos)");
     }
 
-    // Extract keywords
-    const combinedText = `${tipo_acao} ${fatos} ${pedidos}`;
-    let keywords: string[] = [];
-    try {
-      const kwText = await aiChatText({
-        model: "light",
-        functionName: "generate-petition",
-        userId: user.id,
-        environment: env,
-        messages: [
-          { role: "system", content: "Extraia de 2 a 5 termos jurídicos principais do texto para identificar a área do direito. Retorne APENAS os termos separados por vírgula." },
-          { role: "user", content: combinedText.slice(0, 3000) },
-        ],
-      });
-      keywords = kwText.split(",").map((k: string) => k.trim()).filter(Boolean);
-    } catch (e) { console.error("Keyword extraction failed:", e); }
+    let normas: NormaResumo[];
+    let precedents: GroundingDecision[];
 
+    if (hasApproved) {
+      // Fluxo em etapas: usa exatamente o que o usuário aprovou.
+      normas = approvedNormas ?? [];
+      if (approvedPrecedentIds && approvedPrecedentIds.length > 0) {
+        const { data } = await supabase
+          .from("decisions")
+          .select("id, tribunal, numero_processo, comarca, data_decisao, ementa")
+          .in("id", approvedPrecedentIds);
+        precedents = (data ?? []) as GroundingDecision[];
+      } else {
+        precedents = [];
+      }
+    } else {
+      // Modo rápido (comportamento histórico).
+      const keywords = await extractKeywords(`${tipo_acao} ${fatos} ${pedidos}`);
+      const termo = keywords.join(" ").trim();
+      normas = termo.length >= 2 ? await searchLegislation(termo) : [];
+      precedents = await fetchGroundingContext(`${tipo_acao} ${fatos}`.slice(0, 800), supabaseUrl, supabaseKey, 3);
+    }
 
-    const normas = getLegislationByKeywords(keywords);
     const legislationContext = buildLegislationContext(normas);
+    const precedentsBlock = buildPrecedentsBlock(precedents);
 
-    // Grounding: fetch top 3 precedents from our indexed base
-    const groundingQuery = `${tipo_acao} ${fatos}`.slice(0, 800);
-    const precedents = await fetchGroundingContext(groundingQuery, supabaseUrl, supabaseKey, 3);
-    const precedentsBlock = precedents.length > 0
-      ? `\n\nPRECEDENTES DISPONÍVEIS NO NOSSO BANCO (você SÓ pode citar estes; caso nenhum sirva, omita a seção "Precedentes"):
-${precedents.map((p, i) => `[P${i + 1}] ${[p.tribunal, p.numero_processo, p.comarca, p.data_decisao].filter(Boolean).join(" · ")}\n"${(p.ementa || "").slice(0, 400)}"`).join("\n\n")}`
-      : `\n\nATENÇÃO: Não foram encontrados precedentes específicos no nosso banco para este caso. NÃO invente números de processo, ementas ou súmulas. Baseie a fundamentação apenas na legislação.`;
 
     const systemPrompt = `Você é Honorífico, especialista em redação de peças processuais e documentos jurídicos brasileiros.
 
