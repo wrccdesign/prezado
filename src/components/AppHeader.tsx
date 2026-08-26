@@ -300,6 +300,21 @@ export function AppHeader() {
               )}
 
               <nav className="mt-6 flex flex-col gap-1">
+                {isHome && (
+                  <>
+                    <div className="text-xs font-semibold text-white/40 px-2 mb-2 tracking-wider">SEÇÕES</div>
+                    {homeNavSections.map((s) => (
+                      <button
+                        key={s.href}
+                        onClick={() => { goHomeSection(s.href); setSheetOpen(false); }}
+                        className="flex items-center gap-3 w-full px-3 py-2.5 rounded-md text-sm font-medium text-white/60 hover:text-white hover:bg-white/5 transition-colors"
+                      >
+                        <span className="flex-1 text-left">{s.label}</span>
+                      </button>
+                    ))}
+                    <div className="mt-4" />
+                  </>
+                )}
                 {sheetSection(primaryNav, "PRINCIPAIS")}
                 <div className="mt-4" />
                 {sheetSection(tools, "FERRAMENTAS")}
