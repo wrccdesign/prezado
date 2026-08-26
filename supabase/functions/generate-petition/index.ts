@@ -139,12 +139,12 @@ serve(async (req) => {
         precedents = [];
       }
     } else {
-      // Modo rápido (comportamento histórico).
+      // Modo rápido (comportamento histórico): dicionário estático + grounding.
       const keywords = await extractKeywords(`${tipo_acao} ${fatos} ${pedidos}`);
-      const termo = keywords.join(" ").trim();
-      normas = termo.length >= 2 ? await searchLegislation(termo) : [];
+      normas = getLegislationByKeywords(keywords);
       precedents = await fetchGroundingContext(`${tipo_acao} ${fatos}`.slice(0, 800), supabaseUrl, supabaseKey, 3);
     }
+
 
     const legislationContext = buildLegislationContext(normas);
     const precedentsBlock = buildPrecedentsBlock(precedents);
