@@ -31,6 +31,13 @@ interface NavItem {
 // visíveis com cadeado e levam ao cadastro preservando o destino.
 const analiseItem: NavItem = { path: "/", label: "Análise", icon: Plus, requiresAuth: true };
 
+const homeNavSections = [
+  { label: "Recursos", href: "#recursos" },
+  { label: "Memória de cálculo", href: "#memoria" },
+  { label: "Calcular", href: "#calcular" },
+  { label: "Planos", href: "/planos" },
+];
+
 const publicNav: NavItem[] = [
   { path: "/calculadoras", label: "Calculadoras", icon: Calculator },
   { path: "/jurisprudencia", label: "Jurisprudência", icon: Scale },
