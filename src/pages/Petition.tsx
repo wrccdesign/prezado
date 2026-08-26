@@ -8,6 +8,8 @@ import { PaymentTestModeBanner } from "@/components/PaymentTestModeBanner";
 import { SEO } from "@/components/SEO";
 import { LegalDisclaimer } from "@/components/LegalDisclaimer";
 import { PetitionResult } from "@/components/PetitionResult";
+import { PeticaoStepperFlow } from "@/components/petition/PeticaoStepperFlow";
+
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
