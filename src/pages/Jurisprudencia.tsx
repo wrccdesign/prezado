@@ -511,8 +511,21 @@ if (!res.ok) {
                        </button>
                      )}
 
-                     
+                     {d.source_url && (
+                       <a
+                         href={d.source_url}
+                         target="_blank"
+                         rel="noopener noreferrer"
+                         onClick={(e) => e.stopPropagation()}
+                         className="text-xs text-muted-foreground hover:text-accent flex items-center gap-1 transition-colors"
+                         title="Abrir a decisão na fonte oficial"
+                       >
+                         <ExternalLink className="h-3 w-3" />
+                         Ver no tribunal
+                       </a>
+                     )}
                     </div>
+
                   </div>
                 </CardContent>
               </Card>
