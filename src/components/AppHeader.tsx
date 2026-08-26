@@ -31,6 +31,13 @@ interface NavItem {
 // visíveis com cadeado e levam ao cadastro preservando o destino.
 const analiseItem: NavItem = { path: "/", label: "Análise", icon: Plus, requiresAuth: true };
 
+const homeNavSections = [
+  { label: "Recursos", href: "#recursos" },
+  { label: "Memória de cálculo", href: "#memoria" },
+  { label: "Calcular", href: "#calcular" },
+  { label: "Planos", href: "/planos" },
+];
+
 const publicNav: NavItem[] = [
   { path: "/calculadoras", label: "Calculadoras", icon: Calculator },
   { path: "/jurisprudencia", label: "Jurisprudência", icon: Scale },
@@ -90,6 +97,18 @@ export function AppHeader() {
   const go = (item: NavItem) => {
     if (isLocked(item)) navigate("/auth", { state: { redirectTo: item.path } });
     else navigate(item.path);
+  };
+
+  const isHome = location.pathname === "/";
+  const goHomeSection = (href: string) => {
+    if (href.startsWith("#")) {
+      const id = href.slice(1);
+      const el = document.getElementById(id);
+      if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+      else window.location.hash = href;
+    } else {
+      navigate(href);
+    }
   };
 
 
@@ -281,6 +300,21 @@ export function AppHeader() {
               )}
 
               <nav className="mt-6 flex flex-col gap-1">
+                {isHome && (
+                  <>
+                    <div className="text-xs font-semibold text-white/40 px-2 mb-2 tracking-wider">SEÇÕES</div>
+                    {homeNavSections.map((s) => (
+                      <button
+                        key={s.href}
+                        onClick={() => { goHomeSection(s.href); setSheetOpen(false); }}
+                        className="flex items-center gap-3 w-full px-3 py-2.5 rounded-md text-sm font-medium text-white/60 hover:text-white hover:bg-white/5 transition-colors"
+                      >
+                        <span className="flex-1 text-left">{s.label}</span>
+                      </button>
+                    ))}
+                    <div className="mt-4" />
+                  </>
+                )}
                 {sheetSection(primaryNav, "PRINCIPAIS")}
                 <div className="mt-4" />
                 {sheetSection(tools, "FERRAMENTAS")}
@@ -314,6 +348,25 @@ export function AppHeader() {
         </div>
       </div>
     </header>
+
+    {isHome && (
+      <div className="hidden md:block bg-navy border-b border-gold/10">
+        <div className="container mx-auto px-4 py-2">
+          <nav className="flex items-center gap-1 overflow-x-auto no-scrollbar" aria-label="Seções da home">
+            {homeNavSections.map((s) => (
+              <button
+                key={s.href}
+                onClick={() => goHomeSection(s.href)}
+                className="text-sm text-white/60 hover:text-white hover:bg-white/5 px-3 py-1.5 rounded-md transition-colors whitespace-nowrap"
+              >
+                {s.label}
+              </button>
+            ))}
+          </nav>
+        </div>
+      </div>
+    )}
+
     <TrialBanner />
     </>
   );

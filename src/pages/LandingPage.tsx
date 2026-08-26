@@ -8,8 +8,6 @@ import { SEO } from "@/components/SEO";
 import { CorrecaoCalc } from "@/components/calculators/CorrecaoCalc";
 import { savePeticaoPrefill } from "@/lib/peticaoPrefill";
 
-
-
 function useScrollReveal() {
   const ref = useRef<HTMLDivElement>(null);
   useEffect(() => {
@@ -32,8 +30,6 @@ function useScrollReveal() {
   }, []);
   return ref;
 }
-
-
 
 const memoriaSample = [
   { mes: "08/2024", indice: "IPCA", variacao: "-0,02%", fator: "1,012340", saldo: "R$ 10.123,40" },
@@ -72,20 +68,17 @@ const plans: { name: string; price: string; period: string; desc: string; featur
   { name: "Gratuito", price: "R$ 0", period: "/mês", desc: "Para conhecer a plataforma", features: ["Calculadoras ilimitadas", "20 consultas processuais/mês", "10 mensagens de chat/mês", "1 diagnóstico jurídico/mês", "Petições não incluídas"], cta: "Começar Grátis", highlight: false },
   { name: "Profissional", price: "R$ 49", period: "/mês", desc: "Para advogados autônomos", annualNote: "ou R$ 409/ano à vista no cartão (R$ 34,08/mês, -30%)", features: ["Calculadoras ilimitadas", "400 consultas e 200 mensagens/mês", "60 petições e 60 diagnósticos/mês", "40 análises de documentos/mês", "Painel do advogado"], cta: "Assinar Agora", highlight: true },
   { name: "Escritório", price: "R$ 149", period: "/mês", desc: "Para escritórios de advocacia", annualNote: "ou R$ 1.249/ano à vista no cartão (R$ 104,08/mês, -30%)", features: ["Calculadoras ilimitadas", "1500 consultas e 800 mensagens/mês", "200 petições e 150 análises/mês", "300 leituras/OCR de documentos/mês", "Gestão de clientes e modelos"], cta: "Assinar Escritório", highlight: false },
-
 ];
-
 
 export default function LandingPage() {
   const revealRef = useScrollReveal();
   const navigate = useNavigate();
 
-
   return (
     <div ref={revealRef} className="min-h-screen font-sans">
       <SEO
-        title="Cálculos e prazos jurídicos com fonte oficial — Honorífico"
-        description="Correção monetária pelas séries do Banco Central, prazos com feriados forenses e custas do TJSP. Memória de cálculo em PDF ou Word, com base legal citada."
+        title="Honorífico — do caso à petição, com fonte rastreável"
+        description="Plataforma jurídica para o advogado autônomo: diagnóstico, consulta processual no acervo do CNJ, análise de peças e petições. Cálculos pelas séries do Banco Central, com memória de cálculo em PDF ou Word."
         path="/"
         image="/og/home.jpg"
         imageAlt="Honorífico — cálculos e prazos jurídicos com fonte oficial"
@@ -100,74 +93,80 @@ export default function LandingPage() {
         }}
       />
 
-      {/* NAVBAR: mesmo cabeçalho do resto do site, logado ou não */}
       <AppHeader />
 
       {/* HERO */}
       <section className="relative pt-12 pb-14 md:pt-16 md:pb-16 overflow-hidden" style={{ backgroundColor: "hsl(var(--navy))" }}>
-
         <div className="absolute inset-0 opacity-[0.04]" style={{ backgroundImage: `linear-gradient(hsl(var(--gold)) 1px, transparent 1px), linear-gradient(90deg, hsl(var(--gold)) 1px, transparent 1px)`, backgroundSize: "60px 60px" }} />
         <div className="container mx-auto px-4 sm:px-6 relative z-10">
           <div data-reveal className="opacity-0 translate-y-6 transition-all duration-700 max-w-3xl">
             <h1 className="font-serif text-4xl sm:text-5xl lg:text-[56px] font-bold text-white leading-[1.1] mb-5">
-              Cálculos e prazos com fonte oficial, prontos para{" "}
-              <em className="text-gold" style={{ fontStyle: "italic" }}>anexar</em>.
+              Do caso à petição, sem sair da{" "}
+              <em className="text-gold" style={{ fontStyle: "italic" }}>fonte</em>.
             </h1>
-            <p className="text-lg text-white/60 max-w-[620px] mb-8 font-sans leading-relaxed">
-              Correção monetária pelas séries do Banco Central, prazos com feriados forenses e custas do TJSP. Cada resultado sai com memória de cálculo em PDF ou Word, com a base legal citada.
+            <p className="text-lg text-white/60 max-w-[680px] mb-8 font-sans leading-relaxed">
+              Diagnóstico, consulta processual, análise de peças e petições. Todo precedente citado sai do acervo indexado do CNJ — quando não há decisão no banco, a resposta diz isso. Cálculos pelas séries do Banco Central, com memória de cálculo pronta para anexar.
             </p>
             <div className="flex flex-wrap gap-3">
               <Button size="lg" className="bg-gold text-navy hover:bg-gold-light font-semibold text-base px-8" asChild>
-                <a href="#calcular">Calcular agora <ArrowRight className="ml-2 h-5 w-5" /></a>
+                <Link to="/auth">Criar conta grátis <ArrowRight className="ml-2 h-5 w-5" /></Link>
               </Button>
               <Button size="lg" className="bg-transparent border border-white/20 text-white hover:bg-white/10 text-base" asChild>
-                <Link to="/planos">Ver planos</Link>
+                <a href="#calcular">Calcular sem cadastro</a>
               </Button>
             </div>
-            <p className="mt-4 text-sm text-white/50">Sem cadastro para calcular. Petições, análise e diagnóstico na conta.</p>
-            <p className="mt-1 text-sm text-white/40">Conta nova começa com 7 dias no plano Profissional, sem cartão.</p>
-
+            <p className="mt-4 text-sm text-white/50">Conta nova começa com 7 dias no plano Profissional, sem cartão.</p>
+            <p className="mt-1 text-sm text-white/40">As calculadoras são livres, ilimitadas e não exigem conta.</p>
           </div>
         </div>
       </section>
 
-      {/* CALCULADORA */}
-      <section id="calcular" className="py-12 md:py-16" style={{ backgroundColor: "hsl(var(--cream))" }}>
+      {/* DO FATO AO FUNDAMENTO */}
+      <section id="recursos" className="py-20" style={{ backgroundColor: "hsl(var(--navy-medium))", borderBottom: "1px solid hsl(var(--gold) / 0.12)" }}>
         <div className="container mx-auto px-4 sm:px-6">
-          <div className="max-w-4xl mx-auto">
-            <div className="mb-6">
-              <span className="text-sm text-gold font-semibold uppercase tracking-wider">Correção monetária e juros</span>
-              <h2 className="font-serif text-2xl md:text-3xl font-bold text-navy mt-2">Calcule agora, sem cadastro</h2>
-            </div>
-            <div className="rounded-2xl border border-border bg-white p-5 sm:p-7 shadow-sm">
-              <CorrecaoCalc
-                usarValorLabel="Gerar petição com este valor"
-                usarValorVariant="ghost"
-                onUsarValor={(valor, meta) => {
-                  savePeticaoPrefill({ valor, ...(meta ?? {}) });
-                  navigate("/peticao");
-                }}
-              />
-
-            </div>
-            <p className="mt-4 text-sm text-muted-foreground">
-              Outras calculadoras: <Link to="/calculadoras/prazo-processual" className="text-navy underline underline-offset-2 hover:text-gold">prazo processual</Link>,{" "}
-              <Link to="/calculadoras/custas-tjsp" className="text-navy underline underline-offset-2 hover:text-gold">custas do TJSP</Link> e{" "}
-              <Link to="/calculadoras" className="text-navy underline underline-offset-2 hover:text-gold">todas as demais</Link>.
+          <div data-reveal className="opacity-0 translate-y-6 transition-all duration-700 max-w-2xl">
+            <span className="text-sm text-gold font-semibold uppercase tracking-wider">Recursos</span>
+            <h2 className="font-serif text-3xl md:text-4xl font-bold text-white mt-3">Do fato ao fundamento</h2>
+            <p className="text-base text-white/60 mt-3 leading-relaxed">
+              Quatro etapas, na ordem em que o trabalho acontece. Cada uma entrega um artefato que você aproveita na seguinte.
             </p>
+          </div>
 
-            {/* FAIXA DE PROVA */}
-            <div className="mt-6 flex flex-col gap-2 border-t border-navy/10 pt-4 text-xs text-muted-foreground sm:flex-row sm:items-center sm:gap-x-3 sm:text-sm">
-              <span>Séries oficiais do SGS/Banco Central</span>
-              <span aria-hidden className="hidden sm:inline text-navy/20">·</span>
-              <span>Sincronizadas diariamente</span>
-              <span aria-hidden className="hidden sm:inline text-navy/20">·</span>
-              <span>Lei 14.905/2024 aplicada, inclusive o mês de transição</span>
-              <Link
-                to="/calculadoras/correcao-monetaria-juros-lei-14905"
-                className="text-navy underline underline-offset-2 hover:text-gold sm:ml-auto"
-              >
-                Como calculamos
+          <div data-reveal className="opacity-0 translate-y-6 transition-all duration-700 mt-10 relative">
+            <div aria-hidden className="hidden lg:block absolute left-0 right-0 top-[26px] h-px" style={{ backgroundColor: "hsl(var(--gold) / 0.25)" }} />
+            <ol className="relative grid gap-8 lg:grid-cols-4 lg:gap-6">
+              {etapas.map((e, i) => (
+                <li key={e.title} className="relative pl-14 lg:flex lg:h-full lg:flex-col lg:pl-0">
+                  <span
+                    aria-hidden
+                    className="absolute left-0 top-0 lg:relative lg:mb-5 flex h-[52px] w-[52px] items-center justify-center rounded-full font-serif text-lg font-bold text-gold"
+                    style={{ backgroundColor: "hsl(var(--navy))", border: "1px solid hsl(var(--gold) / 0.4)" }}
+                  >
+                    {i + 1}
+                  </span>
+                  <Link to={e.href} className="group block lg:flex lg:h-full lg:flex-col">
+                    <h3 className="font-serif text-xl font-bold text-white group-hover:text-gold transition-colors">{e.title}</h3>
+                    <p className="mt-2 text-sm text-white/60 leading-relaxed">{e.body}</p>
+                    <span className="mt-3 inline-flex items-center gap-1 text-sm text-gold/80 group-hover:text-gold transition-colors lg:mt-auto lg:pt-3">
+                      {e.cta} <ArrowRight className="h-3.5 w-3.5" />
+                    </span>
+                  </Link>
+                </li>
+              ))}
+            </ol>
+          </div>
+
+          <div data-reveal className="opacity-0 translate-y-6 transition-all duration-700 mt-10 rounded-xl border px-5 py-4 sm:px-6" style={{ borderColor: "hsl(var(--gold) / 0.3)", backgroundColor: "hsl(var(--gold) / 0.06)" }}>
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+              <div className="flex items-start gap-3">
+                <span aria-hidden className="mt-0.5 h-6 w-px shrink-0 bg-gold/60 sm:h-10" />
+                <div>
+                  <p className="font-serif text-lg font-bold text-white">Chat jurídico, ao longo de todas as etapas</p>
+                  <p className="text-sm text-white/60 mt-1">Tire dúvidas de legislação e jurisprudência em qualquer ponto do caminho.</p>
+                </div>
+              </div>
+              <Link to="/chat" className="inline-flex items-center gap-1 text-sm font-semibold text-gold hover:text-gold-light transition-colors shrink-0">
+                Abrir o chat <ArrowRight className="h-4 w-4" />
               </Link>
             </div>
           </div>
@@ -225,70 +224,58 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* DO FATO AO FUNDAMENTO */}
-      <section id="recursos" className="py-20" style={{ backgroundColor: "hsl(var(--navy-medium))", borderTop: "1px solid hsl(var(--gold) / 0.12)", borderBottom: "1px solid hsl(var(--gold) / 0.12)" }}>
+      {/* CALCULADORA */}
+      <section id="calcular" className="py-12 md:py-16" style={{ backgroundColor: "hsl(var(--cream))" }}>
         <div className="container mx-auto px-4 sm:px-6">
-          <div data-reveal className="opacity-0 translate-y-6 transition-all duration-700 max-w-2xl">
-            <span className="text-sm text-gold font-semibold uppercase tracking-wider">Recursos</span>
-            <h2 className="font-serif text-3xl md:text-4xl font-bold text-white mt-3">Do fato ao fundamento</h2>
-            <p className="text-base text-white/60 mt-3 leading-relaxed">
-              A sequência do trabalho, na conta: o caso chega, você entende o que é, lê o que há nos autos e monta a peça.
+          <div className="max-w-4xl mx-auto">
+            <div className="mb-6">
+              <span className="text-sm text-gold font-semibold uppercase tracking-wider">Correção monetária e juros</span>
+              <h2 className="font-serif text-2xl md:text-3xl font-bold text-navy mt-2">Calcule agora, sem cadastro</h2>
+              <p className="mt-2 text-sm text-muted-foreground">
+                O cálculo e a memória de cálculo são livres, sem conta. Baixar em PDF ou Word exige conta grátis.
+              </p>
+            </div>
+            <div className="rounded-2xl border border-border bg-white p-5 sm:p-7 shadow-sm">
+              <CorrecaoCalc
+                usarValorLabel="Gerar petição com este valor"
+                usarValorVariant="ghost"
+                onUsarValor={(valor, meta) => {
+                  savePeticaoPrefill({ valor, ...(meta ?? {}) });
+                  navigate("/peticao");
+                }}
+              />
+            </div>
+            <p className="mt-4 text-sm text-muted-foreground">
+              Outras calculadoras: <Link to="/calculadoras/prazo-processual" className="text-navy underline underline-offset-2 hover:text-gold">prazo processual</Link>,{" "}
+              <Link to="/calculadoras/custas-tjsp" className="text-navy underline underline-offset-2 hover:text-gold">custas do TJSP</Link> e{" "}
+              <Link to="/calculadoras" className="text-navy underline underline-offset-2 hover:text-gold">todas as demais</Link>.
             </p>
-          </div>
 
-          <div data-reveal className="opacity-0 translate-y-6 transition-all duration-700 mt-10 relative">
-            <div aria-hidden className="hidden lg:block absolute left-0 right-0 top-[26px] h-px" style={{ backgroundColor: "hsl(var(--gold) / 0.25)" }} />
-            <ol className="relative grid gap-8 lg:grid-cols-4 lg:gap-6">
-              {etapas.map((e, i) => (
-                <li key={e.title} className="relative pl-14 lg:flex lg:h-full lg:flex-col lg:pl-0">
-                  <span
-                    aria-hidden
-                    className="absolute left-0 top-0 lg:relative lg:mb-5 flex h-[52px] w-[52px] items-center justify-center rounded-full font-serif text-lg font-bold text-gold"
-                    style={{ backgroundColor: "hsl(var(--navy))", border: "1px solid hsl(var(--gold) / 0.4)" }}
-                  >
-                    {i + 1}
-                  </span>
-                  <Link to={e.href} className="group block lg:flex lg:h-full lg:flex-col">
-                    <h3 className="font-serif text-xl font-bold text-white group-hover:text-gold transition-colors">{e.title}</h3>
-                    <p className="mt-2 text-sm text-white/60 leading-relaxed">{e.body}</p>
-                    <span className="mt-3 inline-flex items-center gap-1 text-sm text-gold/80 group-hover:text-gold transition-colors lg:mt-auto lg:pt-3">
-                      {e.cta} <ArrowRight className="h-3.5 w-3.5" />
-                    </span>
-                  </Link>
-
-                </li>
-              ))}
-            </ol>
-          </div>
-
-          {/* TRILHO DO CHAT — atravessa as quatro etapas */}
-          <div data-reveal className="opacity-0 translate-y-6 transition-all duration-700 mt-10 rounded-xl border px-5 py-4 sm:px-6" style={{ borderColor: "hsl(var(--gold) / 0.3)", backgroundColor: "hsl(var(--gold) / 0.06)" }}>
-            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-              <div className="flex items-start gap-3">
-                <span aria-hidden className="mt-0.5 h-6 w-px shrink-0 bg-gold/60 sm:h-10" />
-                <div>
-                  <p className="font-serif text-lg font-bold text-white">Chat jurídico, ao longo de todas as etapas</p>
-                  <p className="text-sm text-white/60 mt-1">Tire dúvidas de legislação e jurisprudência em qualquer ponto do caminho.</p>
-                </div>
-              </div>
-              <Link to="/chat" className="inline-flex items-center gap-1 text-sm font-semibold text-gold hover:text-gold-light transition-colors shrink-0">
-                Abrir o chat <ArrowRight className="h-4 w-4" />
+            <div className="mt-6 flex flex-col gap-2 border-t border-navy/10 pt-4 text-xs text-muted-foreground sm:flex-row sm:items-center sm:gap-x-3 sm:text-sm">
+              <span>Séries oficiais do SGS/Banco Central</span>
+              <span aria-hidden className="hidden sm:inline text-navy/20">·</span>
+              <span>Sincronizadas diariamente</span>
+              <span aria-hidden className="hidden sm:inline text-navy/20">·</span>
+              <span>Lei 14.905/2024 aplicada, inclusive o mês de transição</span>
+              <Link
+                to="/calculadoras/correcao-monetaria-juros-lei-14905"
+                className="text-navy underline underline-offset-2 hover:text-gold sm:ml-auto"
+              >
+                Como calculamos
               </Link>
             </div>
           </div>
         </div>
       </section>
 
-
       {/* PLANOS */}
-      <section id="planos" className="py-20 md:py-28" style={{ backgroundColor: "hsl(var(--cream))" }}>
+      <section id="planos" className="py-20 md:py-28 border-t border-navy/10" style={{ backgroundColor: "hsl(var(--cream))" }}>
         <div className="container mx-auto px-4 sm:px-6">
           <div data-reveal className="opacity-0 translate-y-6 transition-all duration-700 text-center mb-14">
             <span className="text-sm text-gold font-semibold uppercase tracking-wider">Planos</span>
             <h2 className="font-serif text-3xl md:text-4xl font-bold text-navy mt-3">Calculadoras livres em todos os planos</h2>
             <p className="text-muted-foreground mt-3 max-w-lg mx-auto">A assinatura libera IA (petições, análise, diagnóstico e chat), histórico salvo e volume de consulta processual.</p>
             <p className="text-sm text-muted-foreground mt-2">Conta nova começa com 7 dias no plano Profissional, sem cartão.</p>
-
           </div>
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl mx-auto">
             {plans.map((p, i) => (
@@ -315,11 +302,11 @@ export default function LandingPage() {
         <div className="container mx-auto px-4 sm:px-6 text-center">
           <div data-reveal className="opacity-0 translate-y-6 transition-all duration-700">
             <h2 className="font-serif text-3xl md:text-4xl font-bold text-white mb-6">
-              Cálculos e prazos com fonte oficial, prontos para anexar.
+              Comece pelo caso que está na sua mesa agora.
             </h2>
             <div className="flex flex-wrap gap-3 justify-center">
               <Button size="lg" className="bg-gold text-navy hover:bg-gold-light font-semibold text-base px-8" asChild>
-                <a href="#calcular">Calcular agora <ArrowRight className="ml-2 h-5 w-5" /></a>
+                <Link to="/auth">Criar conta grátis <ArrowRight className="ml-2 h-5 w-5" /></Link>
               </Button>
               <Button size="lg" className="bg-transparent border border-white/20 text-white hover:bg-white/10 text-base" asChild>
                 <Link to="/planos">Ver planos</Link>
