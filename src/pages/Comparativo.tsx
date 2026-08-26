@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { Check, X, Minus, Share2, Shield, Users, Briefcase, Globe } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { AppFooter } from "@/components/AppFooter";
+import { SEO } from "@/components/SEO";
 import Logo from "@/components/Logo";
 import { toast } from "@/hooks/use-toast";
 
@@ -47,6 +48,11 @@ export default function Comparativo() {
 
   return (
     <div className="min-h-screen flex flex-col" style={{ backgroundColor: "hsl(var(--navy))" }}>
+      <SEO
+        title="Honorífico x JusBrasil, Advbox e IAs generalistas"
+        description="Comparativo entre o Honorífico e outras ferramentas jurídicas: cálculos com fonte oficial, jurisprudência do CNJ/DataJud, petições em PDF/DOCX e painel do advogado."
+        path="/comparativo"
+      />
       {/* Hero */}
       <section className="relative py-20 sm:py-28 overflow-hidden">
         <div className="absolute inset-0 opacity-20" style={{ background: "radial-gradient(ellipse at 30% 20%, hsl(var(--gold) / 0.25), transparent 60%)" }} />
