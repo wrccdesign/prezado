@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Check, ChevronRight, FileDown } from "lucide-react";
+import { ArrowRight, Check, ChevronRight, FileDown, AlertTriangle, ShieldCheck, ExternalLink } from "lucide-react";
 import { AppHeader } from "@/components/AppHeader";
 import { AppFooter } from "@/components/AppFooter";
 import { SEO } from "@/components/SEO";
@@ -267,6 +267,87 @@ export default function LandingPage() {
           </div>
         </div>
       </section>
+
+      {/* POR QUE A FONTE IMPORTA */}
+      <section id="fonte" className="py-16 md:py-20" style={{ backgroundColor: "hsl(var(--navy))" }}>
+        <div className="container mx-auto px-4 sm:px-6">
+          <div className="max-w-3xl">
+            <span className="text-sm font-semibold uppercase tracking-wider" style={{ color: "hsl(var(--gold))" }}>Verificabilidade</span>
+            <h2 className="font-serif text-3xl md:text-4xl font-bold mt-3" style={{ color: "hsl(var(--cream))" }}>Por que a fonte importa</h2>
+            <p className="mt-3 text-base leading-relaxed" style={{ color: "hsl(var(--cream) / 0.65)" }}>
+              Uma resposta jurídica sem fonte é uma aposta. Veja a diferença.
+            </p>
+          </div>
+
+          <div className="mt-10 grid gap-6 md:grid-cols-2">
+            {/* Sem fonte */}
+            <div className="rounded-2xl p-6 sm:p-7" style={{ backgroundColor: "hsl(218 30% 14%)", border: "1px solid hsl(0 60% 55% / 0.28)" }}>
+              <div className="flex items-center gap-3">
+                <span className="flex h-10 w-10 items-center justify-center rounded-lg" style={{ backgroundColor: "hsl(0 60% 55% / 0.12)" }}>
+                  <AlertTriangle className="h-5 w-5" style={{ color: "hsl(0 65% 62%)" }} />
+                </span>
+                <h3 className="font-serif text-xl font-bold" style={{ color: "hsl(var(--cream) / 0.75)" }}>Sem fonte verificável</h3>
+              </div>
+              <p className="mt-4 text-sm leading-relaxed" style={{ color: "hsl(var(--cream) / 0.5)" }}>
+                Uma IA sem acesso aos dados oficiais do Judiciário pode responder com tribunal, número de processo e trecho de ementa que parecem plausíveis — mas não existem, ou não dizem o que a resposta afirma. Não há como conferir antes de usar em uma petição.
+              </p>
+              <div className="mt-5 rounded-xl px-4 py-3.5" style={{ backgroundColor: "hsl(218 30% 11%)", border: "1px dashed hsl(0 60% 55% / 0.3)" }}>
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className="rounded-md px-2 py-0.5 text-[11px] font-semibold" style={{ backgroundColor: "hsl(var(--cream) / 0.08)", color: "hsl(var(--cream) / 0.45)" }}>
+                    Tribunal não informado
+                  </span>
+                  <span className="inline-flex items-center gap-1 rounded-md px-2 py-0.5 text-[11px] font-semibold" style={{ backgroundColor: "hsl(0 60% 55% / 0.14)", color: "hsl(0 65% 68%)" }}>
+                    <AlertTriangle className="h-3 w-3" /> Não verificável
+                  </span>
+                </div>
+                <p className="mt-2.5 font-mono text-xs" style={{ color: "hsl(var(--cream) / 0.4)" }}>
+                  0000000-00.0000.0.00.0000 — não verificável
+                </p>
+                <p className="mt-2 text-[11px]" style={{ color: "hsl(var(--cream) / 0.32)" }}>
+                  Exemplo genérico e ilustrativo, sem referência a nenhuma ferramenta específica. O número acima é um placeholder e não corresponde a processo real.
+                </p>
+              </div>
+            </div>
+
+            {/* Com fonte */}
+            <div className="rounded-2xl p-6 sm:p-7" style={{ backgroundColor: "hsl(218 50% 12%)", border: "1px solid hsl(var(--gold) / 0.35)" }}>
+              <div className="flex items-center gap-3">
+                <span className="flex h-10 w-10 items-center justify-center rounded-lg" style={{ backgroundColor: "hsl(var(--gold) / 0.14)" }}>
+                  <ShieldCheck className="h-5 w-5" style={{ color: "hsl(var(--gold))" }} />
+                </span>
+                <h3 className="font-serif text-xl font-bold" style={{ color: "hsl(var(--cream))" }}>Com fonte verificável</h3>
+              </div>
+              <p className="mt-4 text-sm leading-relaxed" style={{ color: "hsl(var(--cream) / 0.65)" }}>
+                Toda decisão retornada pela busca do Honorífico traz tribunal, número do processo e link para conferência na fonte oficial do CNJ/DataJud, além do aviso quando o registro é apenas andamento processual, sem ementa disponível.
+              </p>
+              <div className="mt-5 rounded-xl px-4 py-3.5" style={{ backgroundColor: "hsl(218 55% 9%)", border: "1px solid hsl(var(--gold) / 0.18)" }}>
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className="rounded-md px-2 py-0.5 text-[11px] font-semibold" style={{ backgroundColor: "hsl(var(--gold) / 0.16)", color: "hsl(var(--gold))" }}>
+                    Tribunal de origem
+                  </span>
+                  <span className="rounded-md px-2 py-0.5 text-[11px] font-semibold" style={{ backgroundColor: "hsl(var(--cream) / 0.08)", color: "hsl(var(--cream) / 0.6)" }}>
+                    Andamento processual
+                  </span>
+                </div>
+                <p className="mt-2.5 text-xs" style={{ color: "hsl(var(--cream) / 0.55)" }}>
+                  Nº CNJ do processo, com botão de copiar e link direto para a fonte oficial.
+                </p>
+                <span className="mt-3 inline-flex items-center gap-1.5 rounded-md px-2.5 py-1 text-[11px] font-semibold" style={{ border: "1px solid hsl(var(--gold) / 0.35)", color: "hsl(var(--gold))" }}>
+                  Ver fonte <ExternalLink className="h-3 w-3" />
+                </span>
+                <p className="mt-2.5 text-[11px]" style={{ color: "hsl(var(--cream) / 0.35)" }}>
+                  Estrutura ilustrativa da busca; os dados exibidos vêm sempre do registro oficial consultado.
+                </p>
+              </div>
+              <Link to="/jurisprudencia" className="mt-5 inline-flex items-center gap-1 text-sm font-semibold transition-colors" style={{ color: "hsl(var(--gold))" }}>
+                Consultar processos <ArrowRight className="h-4 w-4" />
+              </Link>
+            </div>
+          </div>
+        </div>
+      </section>
+
+
 
       {/* PLANOS */}
       <section id="planos" className="py-20 md:py-28 border-t border-navy/10" style={{ backgroundColor: "hsl(var(--cream))" }}>

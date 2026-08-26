@@ -6,16 +6,16 @@ import Logo from "@/components/Logo";
 import { toast } from "@/hooks/use-toast";
 
 const features = [
-  { name: "Diagnóstico jurídico com IA", prezado: "full", jusbrasil: "none", advbox: "none", chatgpt: "partial" },
-  { name: "Geração de petições estruturadas", prezado: "full", jusbrasil: "none", advbox: "partial", chatgpt: "partial" },
-  { name: "Chat com legislação brasileira", prezado: "full", jusbrasil: "none", advbox: "none", chatgpt: "partial" },
-  { name: "Jurisprudência real (DataJud/CNJ)", prezado: "full", jusbrasil: "full", advbox: "none", chatgpt: "none" },
-  { name: "Sete calculadoras jurídicas", prezado: "full", jusbrasil: "none", advbox: "partial", chatgpt: "none" },
-  { name: "Painel do advogado", prezado: "full", jusbrasil: "none", advbox: "full", chatgpt: "none" },
-  { name: "Linguagem acessível ao cidadão", prezado: "full", jusbrasil: "partial", advbox: "none", chatgpt: "partial" },
-  { name: "Fontes oficiais verificadas", prezado: "full", jusbrasil: "full", advbox: "none", chatgpt: "none" },
-  { name: "Exportação PDF/DOCX ABNT", prezado: "full", jusbrasil: "none", advbox: "partial", chatgpt: "none" },
-  { name: "Preço acessível", prezado: "full", jusbrasil: "partial", advbox: "none", chatgpt: "partial" },
+  { name: "Diagnóstico jurídico com IA", prezado: "full", jusbrasil: "none", advbox: "none", chatgpt: "partial", claude: "partial", gemini: "partial" },
+  { name: "Geração de petições estruturadas", prezado: "full", jusbrasil: "none", advbox: "partial", chatgpt: "partial", claude: "partial", gemini: "partial" },
+  { name: "Chat com legislação brasileira", prezado: "full", jusbrasil: "none", advbox: "none", chatgpt: "partial", claude: "partial", gemini: "partial" },
+  { name: "Jurisprudência real (DataJud/CNJ)", prezado: "full", jusbrasil: "full", advbox: "none", chatgpt: "none", claude: "none", gemini: "none" },
+  { name: "Sete calculadoras jurídicas", prezado: "full", jusbrasil: "none", advbox: "partial", chatgpt: "none", claude: "none", gemini: "none" },
+  { name: "Painel do advogado", prezado: "full", jusbrasil: "none", advbox: "full", chatgpt: "none", claude: "none", gemini: "none" },
+  { name: "Linguagem acessível ao cidadão", prezado: "full", jusbrasil: "partial", advbox: "none", chatgpt: "partial", claude: "partial", gemini: "partial" },
+  { name: "Fontes oficiais verificadas", prezado: "full", jusbrasil: "full", advbox: "none", chatgpt: "none", claude: "none", gemini: "none" },
+  { name: "Exportação PDF/DOCX ABNT", prezado: "full", jusbrasil: "none", advbox: "partial", chatgpt: "none", claude: "none", gemini: "none" },
+  { name: "Preço acessível", prezado: "full", jusbrasil: "partial", advbox: "none", chatgpt: "partial", claude: "partial", gemini: "partial" },
 ];
 
 type Support = "full" | "partial" | "none";
@@ -90,6 +90,8 @@ export default function Comparativo() {
                   <th className="text-center py-4 px-3 font-sans font-semibold" style={{ color: "hsl(var(--cream) / 0.5)" }}>JusBrasil</th>
                   <th className="text-center py-4 px-3 font-sans font-semibold hidden sm:table-cell" style={{ color: "hsl(var(--cream) / 0.5)" }}>Advbox</th>
                   <th className="text-center py-4 px-3 font-sans font-semibold hidden sm:table-cell" style={{ color: "hsl(var(--cream) / 0.5)" }}>ChatGPT</th>
+                  <th className="text-center py-4 px-3 font-sans font-semibold hidden sm:table-cell" style={{ color: "hsl(var(--cream) / 0.5)" }}>Claude</th>
+                  <th className="text-center py-4 px-3 font-sans font-semibold hidden sm:table-cell" style={{ color: "hsl(var(--cream) / 0.5)" }}>Gemini</th>
                 </tr>
               </thead>
               <tbody>
@@ -100,6 +102,8 @@ export default function Comparativo() {
                     <td className="py-3.5 px-3 text-center"><div className="flex justify-center"><StatusIcon status={f.jusbrasil as Support} /></div></td>
                     <td className="py-3.5 px-3 text-center hidden sm:table-cell"><div className="flex justify-center"><StatusIcon status={f.advbox as Support} /></div></td>
                     <td className="py-3.5 px-3 text-center hidden sm:table-cell"><div className="flex justify-center"><StatusIcon status={f.chatgpt as Support} /></div></td>
+                    <td className="py-3.5 px-3 text-center hidden sm:table-cell"><div className="flex justify-center"><StatusIcon status={f.claude as Support} /></div></td>
+                    <td className="py-3.5 px-3 text-center hidden sm:table-cell"><div className="flex justify-center"><StatusIcon status={f.gemini as Support} /></div></td>
                   </tr>
                 ))}
               </tbody>

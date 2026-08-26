@@ -328,7 +328,7 @@ export default function DecisaoDetalhe() {
               )}
             </div>
 
-            <div className="flex items-center gap-2 mb-1">
+            <div className="flex flex-wrap items-center gap-2 mb-1">
               {decision.numero_processo && (
                 <h1 className="font-serif text-xl font-bold">{decision.numero_processo}</h1>
               )}
@@ -341,7 +341,16 @@ export default function DecisaoDetalhe() {
                 {copied ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
                 {copied ? "Copiado!" : "Copiar Citação"}
               </Button>
+              {decision.source_url && (
+                <Button asChild variant="outline" size="sm" className="h-8 gap-1.5 text-xs flex-shrink-0">
+                  <a href={decision.source_url} target="_blank" rel="noopener noreferrer" title="Abrir a decisão na fonte oficial">
+                    <ExternalLink className="h-3.5 w-3.5" />
+                    Ver no tribunal
+                  </a>
+                </Button>
+              )}
             </div>
+
 
             <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-muted-foreground mb-4">
               {decision.relator && <span>Rel. {decision.relator}</span>}
