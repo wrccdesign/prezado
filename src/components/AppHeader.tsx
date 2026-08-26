@@ -333,6 +333,25 @@ export function AppHeader() {
         </div>
       </div>
     </header>
+
+    {isHome && (
+      <div className="hidden md:block bg-navy border-b border-gold/10">
+        <div className="container mx-auto px-4 py-2">
+          <nav className="flex items-center gap-1 overflow-x-auto no-scrollbar" aria-label="Seções da home">
+            {homeNavSections.map((s) => (
+              <button
+                key={s.href}
+                onClick={() => goHomeSection(s.href)}
+                className="text-sm text-white/60 hover:text-white hover:bg-white/5 px-3 py-1.5 rounded-md transition-colors whitespace-nowrap"
+              >
+                {s.label}
+              </button>
+            ))}
+          </nav>
+        </div>
+      </div>
+    )}
+
     <TrialBanner />
     </>
   );
