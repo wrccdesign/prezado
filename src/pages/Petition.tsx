@@ -8,6 +8,8 @@ import { PaymentTestModeBanner } from "@/components/PaymentTestModeBanner";
 import { SEO } from "@/components/SEO";
 import { LegalDisclaimer } from "@/components/LegalDisclaimer";
 import { PetitionResult } from "@/components/PetitionResult";
+import { PeticaoStepperFlow } from "@/components/petition/PeticaoStepperFlow";
+
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
@@ -43,8 +45,10 @@ const VARA_JUIZO = [
 export default function Petition() {
   const { toast } = useToast();
   const navigate = useNavigate();
+  const [modo, setModo] = useState<"direto" | "etapas">("direto");
   const [loading, setLoading] = useState(false);
   const [generatedText, setGeneratedText] = useState<string | null>(null);
+
   const [tipoAcao, setTipoAcao] = useState("");
   const [varaJuizo, setVaraJuizo] = useState("");
   const [fatos, setFatos] = useState("");
@@ -141,18 +145,51 @@ export default function Petition() {
       <AppHeader /><PaymentTestModeBanner />
       <LegalDisclaimer />
       <main className="container max-w-3xl py-8">
-        <div className="mb-8 animate-fade-in">
+        <div className="mb-6 animate-fade-in">
           <h2 className="text-2xl font-bold text-foreground">Nova Petição</h2>
           <p className="mt-1 text-muted-foreground">
             Descreva os fatos do caso e a IA vai gerar a petição com fundamentação jurídica completa.
           </p>
         </div>
 
+        <div className="mb-6 inline-flex rounded-lg border p-1" role="tablist" aria-label="Modo de geração">
+          <button
+            type="button"
+            role="tab"
+            aria-selected={modo === "direto"}
+            onClick={() => setModo("direto")}
+            className={`rounded-md px-4 py-2 text-sm font-medium transition-colors ${
+              modo === "direto" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            Gerar direto
+          </button>
+          <button
+            type="button"
+            role="tab"
+            aria-selected={modo === "etapas"}
+            onClick={() => setModo("etapas")}
+            className={`rounded-md px-4 py-2 text-sm font-medium transition-colors ${
+              modo === "etapas" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            Revisar antes de gerar
+          </button>
+        </div>
+
+        {modo === "etapas" ? (
+          <PeticaoStepperFlow
+            tipoAcaoOptions={TIPO_ACAO}
+            varaJuizoOptions={VARA_JUIZO}
+            initial={{ tipoAcao, varaJuizo, fatos, pedidos }}
+          />
+        ) : (
         <Card className="animate-fade-in">
           <CardHeader>
             <CardTitle className="text-lg">Dados do Caso</CardTitle>
             <CardDescription>Todos os campos marcados com * são obrigatórios. A IA irá inferir e sugerir os fundamentos jurídicos.</CardDescription>
           </CardHeader>
+
           <CardContent className="space-y-5">
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="space-y-2">
@@ -220,7 +257,9 @@ export default function Petition() {
             </Button>
           </CardContent>
         </Card>
+        )}
       </main>
+
       <AppFooter />
     </div>
   );

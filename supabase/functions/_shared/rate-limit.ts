@@ -45,8 +45,14 @@ export const PLAN_LIMITS: Record<string, Record<string, number>> = {
  * está no nosso banco, então não são racionadas por plano. Continuam sujeitas
  * à trava de rajada por hora — o que sai é o teto mensal, não a proteção
  * contra abuso/raspagem.
+ *
+ * `peticao_preview` são as etapas de preparação (enquadramento, fundamentação,
+ * precedentes) de UMA petição que ainda vai ser gerada: revisar o material
+ * antes de gerar não pode custar petições adicionais. A cota `peticao` é
+ * debitada só na geração final.
  */
-export const UNMETERED_ACTIONS = new Set(["calculo"]);
+export const UNMETERED_ACTIONS = new Set(["calculo", "peticao_preview"]);
+
 
 /** Sentinela de limite para ações ilimitadas. */
 export const UNLIMITED = -1;
