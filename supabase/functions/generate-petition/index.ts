@@ -1,7 +1,8 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { burstLimitMessage, checkRateLimit, extractEnv, monthlyLimitMessage } from "../_shared/rate-limit.ts";
-import { fetchGroundingContext } from "../_shared/grounding.ts";
+import { fetchGroundingContext, type GroundingDecision } from "../_shared/grounding.ts";
+import { searchLegislation, type NormaResumo } from "../_shared/legislation-search.ts";
 import { aiChatText, AIError } from "../_shared/ai.ts";
 
 const corsHeaders = {
@@ -9,57 +10,19 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-payment-env, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
-interface NormaResumo {
-  tipoNorma: string;
-  numero: string;
-  ano: string;
-  ementa: string;
-  url: string;
-}
-
-function getLegislationByKeywords(keywords: string[]): NormaResumo[] {
-  const staticLaws: Record<string, NormaResumo[]> = {
-    trabalho: [
-      { tipoNorma: "Decreto-Lei", numero: "5.452", ano: "1943", ementa: "Consolidação das Leis do Trabalho - CLT", url: "https://www.planalto.gov.br/ccivil_03/decreto-lei/del5452.htm" },
-      { tipoNorma: "Lei", numero: "13.467", ano: "2017", ementa: "Reforma Trabalhista", url: "https://www.planalto.gov.br/ccivil_03/_ato2015-2018/2017/lei/l13467.htm" },
-    ],
-    clt: [{ tipoNorma: "Decreto-Lei", numero: "5.452", ano: "1943", ementa: "CLT", url: "https://www.planalto.gov.br/ccivil_03/decreto-lei/del5452.htm" }],
-    consumidor: [{ tipoNorma: "Lei", numero: "8.078", ano: "1990", ementa: "Código de Defesa do Consumidor", url: "https://www.planalto.gov.br/ccivil_03/leis/l8078compilado.htm" }],
-    cdc: [{ tipoNorma: "Lei", numero: "8.078", ano: "1990", ementa: "CDC", url: "https://www.planalto.gov.br/ccivil_03/leis/l8078compilado.htm" }],
-    civil: [{ tipoNorma: "Lei", numero: "10.406", ano: "2002", ementa: "Código Civil", url: "https://www.planalto.gov.br/ccivil_03/leis/2002/l10406compilada.htm" }],
-    contrato: [{ tipoNorma: "Lei", numero: "10.406", ano: "2002", ementa: "Código Civil - Contratos", url: "https://www.planalto.gov.br/ccivil_03/leis/2002/l10406compilada.htm" }],
-    processo: [{ tipoNorma: "Lei", numero: "13.105", ano: "2015", ementa: "Código de Processo Civil", url: "https://www.planalto.gov.br/ccivil_03/_ato2015-2018/2015/lei/l13105.htm" }],
-    indenizacao: [{ tipoNorma: "Lei", numero: "10.406", ano: "2002", ementa: "Código Civil - Responsabilidade Civil", url: "https://www.planalto.gov.br/ccivil_03/leis/2002/l10406compilada.htm" }],
-    dano: [{ tipoNorma: "Lei", numero: "10.406", ano: "2002", ementa: "Código Civil - Responsabilidade Civil", url: "https://www.planalto.gov.br/ccivil_03/leis/2002/l10406compilada.htm" }],
-    locacao: [{ tipoNorma: "Lei", numero: "8.245", ano: "1991", ementa: "Lei do Inquilinato", url: "https://www.planalto.gov.br/ccivil_03/leis/l8245.htm" }],
-    familia: [{ tipoNorma: "Lei", numero: "10.406", ano: "2002", ementa: "Código Civil - Família", url: "https://www.planalto.gov.br/ccivil_03/leis/2002/l10406compilada.htm" }],
-    alimentos: [{ tipoNorma: "Lei", numero: "5.478", ano: "1968", ementa: "Lei de Alimentos", url: "https://www.planalto.gov.br/ccivil_03/leis/l5478.htm" }],
-    despejo: [{ tipoNorma: "Lei", numero: "8.245", ano: "1991", ementa: "Lei do Inquilinato", url: "https://www.planalto.gov.br/ccivil_03/leis/l8245.htm" }],
-    cobranca: [{ tipoNorma: "Lei", numero: "13.105", ano: "2015", ementa: "CPC - Ação de Cobrança", url: "https://www.planalto.gov.br/ccivil_03/_ato2015-2018/2015/lei/l13105.htm" }],
-    rescisao: [{ tipoNorma: "Decreto-Lei", numero: "5.452", ano: "1943", ementa: "CLT - Rescisão", url: "https://www.planalto.gov.br/ccivil_03/decreto-lei/del5452.htm" }],
-  };
-
-  const results: NormaResumo[] = [];
-  const seen = new Set<string>();
-  for (const keyword of keywords) {
-    const kw = keyword.toLowerCase().trim();
-    for (const [key, laws] of Object.entries(staticLaws)) {
-      if (kw.includes(key) || key.includes(kw)) {
-        for (const law of laws) {
-          const lawKey = `${law.tipoNorma}-${law.numero}-${law.ano}`;
-          if (!seen.has(lawKey)) { seen.add(lawKey); results.push(law); }
-        }
-      }
-    }
-  }
-  return results.slice(0, 5);
-}
-
 function buildLegislationContext(normas: NormaResumo[]): string {
   if (normas.length === 0) return "";
   const items = normas.map((n) => `- ${n.tipoNorma} nº ${n.numero}/${n.ano}: ${n.ementa} (${n.url})`).join("\n");
   return `\n\nLEGISLAÇÃO RELACIONADA:\n${items}\n\nCite estas normas adequadamente na petição quando pertinente.`;
 }
+
+function buildPrecedentsBlock(precedents: GroundingDecision[]): string {
+  return precedents.length > 0
+    ? `\n\nPRECEDENTES DISPONÍVEIS NO NOSSO BANCO (você SÓ pode citar estes; caso nenhum sirva, omita a seção "Precedentes"):
+${precedents.map((p, i) => `[P${i + 1}] ${[p.tribunal, p.numero_processo, p.comarca, p.data_decisao].filter(Boolean).join(" · ")}\n"${(p.ementa || "").slice(0, 400)}"`).join("\n\n")}`
+    : `\n\nATENÇÃO: Não foram encontrados precedentes específicos no nosso banco para este caso. NÃO invente números de processo, ementas ou súmulas. Baseie a fundamentação apenas na legislação.`;
+}
+
 
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
