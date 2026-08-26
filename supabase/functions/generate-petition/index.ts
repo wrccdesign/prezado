@@ -10,7 +10,49 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-payment-env, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
+/** Dicionário estático usado pelo modo rápido (comportamento histórico). */
+function getLegislationByKeywords(keywords: string[]): NormaResumo[] {
+  const L = (tipoNorma: string, numero: string, ano: string, ementa: string, url: string): NormaResumo =>
+    ({ codigo: "", tipoNorma, numero, ano, ementa, dataPublicacao: "", url });
+  const staticLaws: Record<string, NormaResumo[]> = {
+    trabalho: [
+      L("Decreto-Lei", "5.452", "1943", "Consolidação das Leis do Trabalho - CLT", "https://www.planalto.gov.br/ccivil_03/decreto-lei/del5452.htm"),
+      L("Lei", "13.467", "2017", "Reforma Trabalhista", "https://www.planalto.gov.br/ccivil_03/_ato2015-2018/2017/lei/l13467.htm"),
+    ],
+    clt: [L("Decreto-Lei", "5.452", "1943", "CLT", "https://www.planalto.gov.br/ccivil_03/decreto-lei/del5452.htm")],
+    consumidor: [L("Lei", "8.078", "1990", "Código de Defesa do Consumidor", "https://www.planalto.gov.br/ccivil_03/leis/l8078compilado.htm")],
+    cdc: [L("Lei", "8.078", "1990", "CDC", "https://www.planalto.gov.br/ccivil_03/leis/l8078compilado.htm")],
+    civil: [L("Lei", "10.406", "2002", "Código Civil", "https://www.planalto.gov.br/ccivil_03/leis/2002/l10406compilada.htm")],
+    contrato: [L("Lei", "10.406", "2002", "Código Civil - Contratos", "https://www.planalto.gov.br/ccivil_03/leis/2002/l10406compilada.htm")],
+    processo: [L("Lei", "13.105", "2015", "Código de Processo Civil", "https://www.planalto.gov.br/ccivil_03/_ato2015-2018/2015/lei/l13105.htm")],
+    indenizacao: [L("Lei", "10.406", "2002", "Código Civil - Responsabilidade Civil", "https://www.planalto.gov.br/ccivil_03/leis/2002/l10406compilada.htm")],
+    dano: [L("Lei", "10.406", "2002", "Código Civil - Responsabilidade Civil", "https://www.planalto.gov.br/ccivil_03/leis/2002/l10406compilada.htm")],
+    locacao: [L("Lei", "8.245", "1991", "Lei do Inquilinato", "https://www.planalto.gov.br/ccivil_03/leis/l8245.htm")],
+    familia: [L("Lei", "10.406", "2002", "Código Civil - Família", "https://www.planalto.gov.br/ccivil_03/leis/2002/l10406compilada.htm")],
+    alimentos: [L("Lei", "5.478", "1968", "Lei de Alimentos", "https://www.planalto.gov.br/ccivil_03/leis/l5478.htm")],
+    despejo: [L("Lei", "8.245", "1991", "Lei do Inquilinato", "https://www.planalto.gov.br/ccivil_03/leis/l8245.htm")],
+    cobranca: [L("Lei", "13.105", "2015", "CPC - Ação de Cobrança", "https://www.planalto.gov.br/ccivil_03/_ato2015-2018/2015/lei/l13105.htm")],
+    rescisao: [L("Decreto-Lei", "5.452", "1943", "CLT - Rescisão", "https://www.planalto.gov.br/ccivil_03/decreto-lei/del5452.htm")],
+  };
+
+  const results: NormaResumo[] = [];
+  const seen = new Set<string>();
+  for (const keyword of keywords) {
+    const kw = keyword.toLowerCase().trim();
+    for (const [key, laws] of Object.entries(staticLaws)) {
+      if (kw.includes(key) || key.includes(kw)) {
+        for (const law of laws) {
+          const lawKey = `${law.tipoNorma}-${law.numero}-${law.ano}`;
+          if (!seen.has(lawKey)) { seen.add(lawKey); results.push(law); }
+        }
+      }
+    }
+  }
+  return results.slice(0, 5);
+}
+
 function buildLegislationContext(normas: NormaResumo[]): string {
+
   if (normas.length === 0) return "";
   const items = normas.map((n) => `- ${n.tipoNorma} nº ${n.numero}/${n.ano}: ${n.ementa} (${n.url})`).join("\n");
   return `\n\nLEGISLAÇÃO RELACIONADA:\n${items}\n\nCite estas normas adequadamente na petição quando pertinente.`;
