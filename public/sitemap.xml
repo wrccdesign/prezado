@@ -1,10 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- Este sitemap deve espelhar exatamente ROUTE_META em src/seo/routeMeta.ts. -->
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url><loc>https://honorifico.com.br/</loc><changefreq>weekly</changefreq><priority>1.0</priority></url>
-  <url><loc>https://honorifico.com.br/diagnostico</loc><changefreq>weekly</changefreq><priority>0.9</priority></url>
-  <url><loc>https://honorifico.com.br/peticao</loc><changefreq>weekly</changefreq><priority>0.9</priority></url>
-  <url><loc>https://honorifico.com.br/chat</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://honorifico.com.br/jurisprudencia</loc><changefreq>daily</changefreq><priority>0.9</priority></url>
   <url><loc>https://honorifico.com.br/calculadoras</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
   <url><loc>https://honorifico.com.br/calculadoras/correcao-monetaria-juros-lei-14905</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
   <url><loc>https://honorifico.com.br/calculadoras/prazo-processual</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
@@ -13,10 +10,7 @@
   <url><loc>https://honorifico.com.br/calculadoras/custas-tjsp</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
   <url><loc>https://honorifico.com.br/calculadoras/rescisao-trabalhista</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
   <url><loc>https://honorifico.com.br/calculadoras/pensao-alimenticia</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://honorifico.com.br/planos</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://honorifico.com.br/termos</loc><changefreq>monthly</changefreq><priority>0.3</priority></url>
-  <url><loc>https://honorifico.com.br/reembolso</loc><changefreq>monthly</changefreq><priority>0.3</priority></url>
-  <url><loc>https://honorifico.com.br/privacidade</loc><changefreq>monthly</changefreq><priority>0.3</priority></url>
+  <url><loc>https://honorifico.com.br/jurisprudencia</loc><changefreq>daily</changefreq><priority>0.9</priority></url>
   <url><loc>https://honorifico.com.br/modelos-de-minutas</loc><changefreq>weekly</changefreq><priority>0.9</priority></url>
   <url><loc>https://honorifico.com.br/modelos-de-minutas/peticao-inicial-cobranca</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
   <url><loc>https://honorifico.com.br/modelos-de-minutas/contestacao-civel</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
@@ -26,6 +20,10 @@
   <url><loc>https://honorifico.com.br/modelos-de-minutas/recurso-apelacao</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
   <url><loc>https://honorifico.com.br/modelos-de-minutas/contrato-prestacao-servicos-advocaticios</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
   <url><loc>https://honorifico.com.br/modelos-de-minutas/acordo-extrajudicial-homologacao</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://honorifico.com.br/comparativo</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://honorifico.com.br/planos</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
   <url><loc>https://honorifico.com.br/mapa-do-site</loc><changefreq>monthly</changefreq><priority>0.4</priority></url>
+  <url><loc>https://honorifico.com.br/termos</loc><changefreq>monthly</changefreq><priority>0.3</priority></url>
+  <url><loc>https://honorifico.com.br/reembolso</loc><changefreq>monthly</changefreq><priority>0.3</priority></url>
+  <url><loc>https://honorifico.com.br/privacidade</loc><changefreq>monthly</changefreq><priority>0.3</priority></url>
 </urlset>
-
