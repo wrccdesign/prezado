@@ -25,12 +25,12 @@ export function SEO({ title, description, path, image, imageAlt, jsonLd }: SEOPr
 
   return (
     <Helmet>
-      <title>{title}</title>
-      <meta name="description" content={description} />
+      <title>{finalTitle}</title>
+      <meta name="description" content={finalDescription} />
       <link rel="canonical" href={url} />
 
-      <meta property="og:title" content={title} />
-      <meta property="og:description" content={description} />
+      <meta property="og:title" content={finalTitle} />
+      <meta property="og:description" content={finalDescription} />
       <meta property="og:url" content={url} />
       <meta property="og:type" content="website" />
       <meta property="og:site_name" content="Honorífico" />
@@ -38,13 +38,14 @@ export function SEO({ title, description, path, image, imageAlt, jsonLd }: SEOPr
       <meta property="og:image" content={imageUrl} />
       <meta property="og:image:width" content="1200" />
       <meta property="og:image:height" content="630" />
-      <meta property="og:image:alt" content={imageAlt || title} />
+      <meta property="og:image:alt" content={imageAlt || finalTitle} />
 
       <meta name="twitter:card" content="summary_large_image" />
-      <meta name="twitter:title" content={title} />
-      <meta name="twitter:description" content={description} />
+      <meta name="twitter:title" content={finalTitle} />
+      <meta name="twitter:description" content={finalDescription} />
       <meta name="twitter:image" content={imageUrl} />
-      <meta name="twitter:image:alt" content={imageAlt || title} />
+      <meta name="twitter:image:alt" content={imageAlt || finalTitle} />
+
 
       {ldArray.map((ld, i) => (
         <script key={i} type="application/ld+json">{JSON.stringify(ld)}</script>
