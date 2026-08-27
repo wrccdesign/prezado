@@ -1,6 +1,6 @@
 import { Helmet } from "react-helmet-async";
+import { getRouteMeta, SITE_URL } from "@/seo/routeMeta";
 
-const SITE_URL = "https://honorifico.com.br";
 const DEFAULT_IMAGE = "/og/home.jpg";
 
 interface SEOProps {
@@ -14,9 +14,15 @@ interface SEOProps {
 }
 
 export function SEO({ title, description, path, image, imageAlt, jsonLd }: SEOProps) {
+  // Rotas públicas mapeadas usam sempre a mesma meta do HTML estático
+  // gerado no build (src/seo/routeMeta.ts), para não divergirem.
+  const routeMeta = getRouteMeta(path);
+  const finalTitle = routeMeta?.title ?? title;
+  const finalDescription = routeMeta?.description ?? description;
   const url = `${SITE_URL}${path}`;
-  const imageUrl = `${SITE_URL}${image || DEFAULT_IMAGE}`;
+  const imageUrl = `${SITE_URL}${routeMeta?.ogImage || image || DEFAULT_IMAGE}`;
   const ldArray = jsonLd ? (Array.isArray(jsonLd) ? jsonLd : [jsonLd]) : [];
+
   return (
     <Helmet>
       <title>{title}</title>
