@@ -99,7 +99,9 @@ export function AppHeader() {
     else navigate(item.path);
   };
 
-  const isHome = location.pathname === "/";
+  // As âncoras (#recursos, #memoria, #calcular) só existem na LandingPage,
+  // que é renderizada apenas para visitantes deslogados.
+  const isHome = location.pathname === "/" && !user;
   const goHomeSection = (href: string) => {
     if (href.startsWith("#")) {
       const id = href.slice(1);
