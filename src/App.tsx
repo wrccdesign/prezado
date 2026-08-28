@@ -20,6 +20,8 @@ import RescisaoTrabalhistaLanding from "./pages/calculators/RescisaoTrabalhistaL
 import PensaoAlimenticiaLanding from "./pages/calculators/PensaoAlimenticiaLanding";
 import LawyerDashboard from "./pages/LawyerDashboard";
 import Diagnostico from "./pages/Diagnostico";
+import DiagnosticoLanding from "./pages/DiagnosticoLanding";
+
 import Jurisprudencia from "./pages/Jurisprudencia";
 import DecisaoDetalhe from "./pages/DecisaoDetalhe";
 import LandingPage from "./pages/LandingPage";
@@ -57,6 +59,14 @@ function HomeRoute() {
   return <Index />;
 }
 
+function DiagnosticoRoute() {
+  const { user, loading } = useAuth();
+  if (loading) return <div className="flex min-h-screen items-center justify-center"><div className="animate-pulse text-muted-foreground">Carregando...</div></div>;
+  if (!user) return <DiagnosticoLanding />;
+  return <Diagnostico />;
+}
+
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
@@ -83,7 +93,7 @@ const App = () => (
               <Route path="/calculadoras/custas-tjsp" element={<CustasTjspLanding />} />
               <Route path="/calculadoras/rescisao-trabalhista" element={<RescisaoTrabalhistaLanding />} />
               <Route path="/calculadoras/pensao-alimenticia" element={<PensaoAlimenticiaLanding />} />
-              <Route path="/diagnostico" element={<ProtectedRoute><Diagnostico /></ProtectedRoute>} />
+              <Route path="/diagnostico" element={<DiagnosticoRoute />} />
               <Route path="/jurisprudencia" element={<Jurisprudencia />} />
               <Route path="/decisao/:id" element={<DecisaoDetalhe />} />
               <Route path="/painel-advogado" element={<ProtectedRoute><LawyerDashboard /></ProtectedRoute>} />
