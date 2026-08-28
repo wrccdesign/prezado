@@ -3,7 +3,9 @@ import { useEffect, useState } from "react";
 import { AppHeader } from "@/components/AppHeader";
 import { SEO } from "@/components/SEO";
 import { AppFooter } from "@/components/AppFooter";
+import { FaqSection, buildFaqJsonLd, type FaqItem } from "@/components/FaqSection";
 import { PaymentTestModeBanner } from "@/components/PaymentTestModeBanner";
+
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
