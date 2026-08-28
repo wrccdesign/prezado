@@ -217,6 +217,19 @@ export default function Diagnostico() {
     { heading: "Quanto pode custar / ganhar", body: r.estimativa_custos_ganhos },
     { heading: "Onde buscar ajuda", body: r.onde_entrar },
     {
+      heading: "Fontes consultadas",
+      body:
+        citations.length > 0
+          ? citations
+              .map((c, i) => {
+                const linha = formatCitationLine(c) || "Decisão do acervo";
+                const ementa = c.ementa ? `\n${c.ementa.slice(0, 300)}` : "";
+                return `${i + 1}. ${linha}${ementa}`;
+              })
+              .join("\n\n")
+          : SEM_FONTES_TEXTO,
+    },
+    {
       heading: "Aviso",
       body:
         "Este diagnóstico é uma orientação inicial gerada por inteligência artificial. Não substitui a consulta com um advogado. Para casos urgentes, procure assistência jurídica presencial.",
