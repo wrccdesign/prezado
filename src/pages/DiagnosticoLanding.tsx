@@ -91,7 +91,7 @@ export default function DiagnosticoLanding() {
               <Stethoscope className="h-6 w-6 text-primary" />
             </div>
             <h1 className="text-3xl sm:text-4xl font-bold font-serif text-foreground leading-tight">
-              De uma situação descrita em linguagem comum a uma leitura jurídica organizada
+              Do relato à leitura jurídica do caso
             </h1>
             <p className="text-base sm:text-lg text-muted-foreground leading-relaxed">
               O diagnóstico transforma a descrição de uma situação em linguagem comum, sem termos técnicos, em uma

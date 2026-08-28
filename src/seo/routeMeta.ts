@@ -90,7 +90,7 @@ export const ROUTE_META: RouteMeta[] = [
     path: "/jurisprudencia",
     title: "Consulta processual e jurisprudência — Honorífico",
     description:
-      "Consulte processos de 33 tribunais com dados oficiais do CNJ e link para a fonte. Acervo de jurisprudência com ementa em expansão e resumo por IA.",
+      "Consulte processos nos dados oficiais do CNJ, com link para a fonte no tribunal. Acervo de jurisprudência com ementa em expansão e resumo por IA.",
     ogImage: "/og/jurisprudencia.jpg",
   },
 
