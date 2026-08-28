@@ -74,9 +74,15 @@ function applyMeta(template: string, meta: RouteMeta) {
     pending.push(canonical);
   }
 
+  for (const ld of meta.jsonLd ?? []) {
+    const json = JSON.stringify(ld).replace(/</g, "\\u003c");
+    pending.push(`<script type="application/ld+json" data-static-ld>${json}</script>`);
+  }
+
   if (pending.length) {
     html = html.replace(/<\/head>/i, `    ${pending.join("\n    ")}\n  </head>`);
   }
+
 
   return html;
 }

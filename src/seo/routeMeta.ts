@@ -4,11 +4,20 @@
 // APIs de browser — este arquivo roda também em Node.
 // Ao alterar as rotas aqui, atualize também public/sitemap.xml.
 
+import {
+  buildFaqJsonLd,
+  FAQ_CORRECAO_MONETARIA,
+  FAQ_PLANOS,
+  FAQ_PRAZO_PROCESSUAL,
+} from "./faqData";
+
 export type RouteMeta = {
   path: string;
   title: string;
   description: string;
   ogImage: string;
+  /** JSON-LD injetado no HTML estático da rota (plugin static-route-meta). */
+  jsonLd?: Record<string, unknown>[];
 };
 
 export const SITE_URL = "https://honorifico.com.br";
@@ -36,6 +45,30 @@ export const ROUTE_META: RouteMeta[] = [
     description:
       "Atualize valores por IPCA, INPC, IGP-M, Selic e Taxa Legal com séries do Banco Central e juros da Lei 14.905/2024. Memória de cálculo mês a mês, grátis.",
     ogImage: OG_DEFAULT, // TODO: OG própria
+    jsonLd: [
+      {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        itemListElement: [
+          { "@type": "ListItem", position: 1, name: "Início", item: `${SITE_URL}/` },
+          { "@type": "ListItem", position: 2, name: "Calculadoras", item: `${SITE_URL}/calculadoras` },
+          { "@type": "ListItem", position: 3, name: "Calculadora de Correção Monetária e Juros", item: `${SITE_URL}/calculadoras/correcao-monetaria-juros-lei-14905` },
+        ],
+      },
+      {
+        "@context": "https://schema.org",
+        "@type": "SoftwareApplication",
+        name: "Calculadora de Correção Monetária e Juros",
+        applicationCategory: "BusinessApplication",
+        operatingSystem: "Web",
+        url: `${SITE_URL}/calculadoras/correcao-monetaria-juros-lei-14905`,
+        description:
+          "Atualize valores de condenação, dívidas e verbas com índices oficiais do Banco Central (IPCA, INPC, IGP-M, Selic e Taxa Legal) e juros conforme a Lei 14.905/2024.",
+        inLanguage: "pt-BR",
+        offers: { "@type": "Offer", price: "0", priceCurrency: "BRL" },
+      },
+      buildFaqJsonLd(FAQ_CORRECAO_MONETARIA),
+    ],
   },
   {
     path: "/calculadoras/prazo-processual",
@@ -43,6 +76,30 @@ export const ROUTE_META: RouteMeta[] = [
     description:
       "Conte prazos em dias úteis do CPC com feriados forenses, suspensões e recesso, a partir da disponibilização no DJe e da publicação. Grátis, sem login.",
     ogImage: OG_DEFAULT, // TODO: OG própria
+    jsonLd: [
+      {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        itemListElement: [
+          { "@type": "ListItem", position: 1, name: "Início", item: `${SITE_URL}/` },
+          { "@type": "ListItem", position: 2, name: "Calculadoras", item: `${SITE_URL}/calculadoras` },
+          { "@type": "ListItem", position: 3, name: "Calculadora de Prazo Processual", item: `${SITE_URL}/calculadoras/prazo-processual` },
+        ],
+      },
+      {
+        "@context": "https://schema.org",
+        "@type": "SoftwareApplication",
+        name: "Calculadora de Prazo Processual",
+        applicationCategory: "BusinessApplication",
+        operatingSystem: "Web",
+        url: `${SITE_URL}/calculadoras/prazo-processual`,
+        description:
+          "Calcule prazos processuais em dias úteis ou corridos considerando feriados nacionais, estaduais e municipais, suspensões forenses, recesso de final de ano e a distinção entre disponibilização no DJe e publicação.",
+        inLanguage: "pt-BR",
+        offers: { "@type": "Offer", price: "0", priceCurrency: "BRL" },
+      },
+      buildFaqJsonLd(FAQ_PRAZO_PROCESSUAL),
+    ],
   },
   {
     path: "/calculadoras/validador-cpf-cnpj",
@@ -85,6 +142,27 @@ export const ROUTE_META: RouteMeta[] = [
     description:
       "Descreva o caso em linguagem comum e receba uma análise estruturada: direito envolvido, próximos passos, custos estimados, onde entrar e nível de urgência.",
     ogImage: OG_DEFAULT, // TODO: OG própria
+    jsonLd: [
+      {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        itemListElement: [
+          { "@type": "ListItem", position: 1, name: "Início", item: `${SITE_URL}/` },
+          { "@type": "ListItem", position: 2, name: "Diagnóstico jurídico", item: `${SITE_URL}/diagnostico` },
+        ],
+      },
+      {
+        "@context": "https://schema.org",
+        "@type": "SoftwareApplication",
+        name: "Diagnóstico jurídico — Honorífico",
+        applicationCategory: "BusinessApplication",
+        operatingSystem: "Web",
+        url: `${SITE_URL}/diagnostico`,
+        inLanguage: "pt-BR",
+        description:
+          "Descreva um caso em linguagem comum e receba uma análise estruturada: direito envolvido, próximos passos, custos estimados, foro e urgência.",
+      },
+    ],
   },
   {
     path: "/jurisprudencia",
@@ -170,6 +248,30 @@ export const ROUTE_META: RouteMeta[] = [
     description:
       "Gratuito, Profissional a R$ 49/mês e Escritório. Sete dias de teste no Profissional, sem cartão, cobrança em reais e cancelamento a qualquer momento.",
     ogImage: "/og/planos.jpg",
+    jsonLd: [
+      {
+        "@context": "https://schema.org",
+        "@type": "Product",
+        name: "Honorífico — IA jurídica",
+        description:
+          "Cálculos e prazos jurídicos com fonte oficial, mais petições, análise de documentos e consulta processual com IA.",
+        brand: { "@type": "Brand", name: "Honorífico" },
+        offers: [
+          { "@type": "Offer", name: "Gratuito", price: "0", priceCurrency: "BRL", url: `${SITE_URL}/planos` },
+          { "@type": "Offer", name: "Profissional", price: "49", priceCurrency: "BRL", url: `${SITE_URL}/planos` },
+          { "@type": "Offer", name: "Escritório", price: "149", priceCurrency: "BRL", url: `${SITE_URL}/planos` },
+        ],
+      },
+      {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        itemListElement: [
+          { "@type": "ListItem", position: 1, name: "Início", item: `${SITE_URL}/` },
+          { "@type": "ListItem", position: 2, name: "Planos", item: `${SITE_URL}/planos` },
+        ],
+      },
+      buildFaqJsonLd(FAQ_PLANOS),
+    ],
   },
   {
     path: "/mapa-do-site",

@@ -1,3 +1,4 @@
+import { FAQ_PRAZO_PROCESSUAL } from "@/seo/faqData";
 import { CalculatorLanding } from "@/components/calculators/CalculatorLanding";
 import { PrazoCalc } from "@/components/calculators/PrazoCalc";
 
@@ -44,43 +45,7 @@ export default function PrazoProcessualLanding() {
           </p>
         </>
       }
-      faq={[
-        {
-          question: "Prazo processual conta sábado e domingo?",
-          answer:
-            "Não. Nos prazos em dias úteis do processo civil, sábados, domingos e feriados não são computados (art. 219 do CPC). Em prazos contados em dias corridos eles entram, mas o vencimento é prorrogado para o próximo dia útil.",
-        },
-        {
-          question: "Qual a diferença entre disponibilização e publicação no DJe?",
-          answer:
-            "A disponibilização é o dia em que o ato aparece no Diário eletrônico. A publicação é o primeiro dia útil seguinte a ela (art. 224, §2º, do CPC), e o prazo começa a correr no dia útil posterior à publicação.",
-        },
-        {
-          question: "O recesso forense suspende o prazo?",
-          answer:
-            "Sim. Entre 20 de dezembro e 20 de janeiro os prazos ficam suspensos (art. 220 do CPC). A calculadora desconta esse período e ainda considera suspensões específicas do tribunal escolhido.",
-        },
-        {
-          question: "A calculadora considera feriados municipais?",
-          answer:
-            "Sim. Além dos feriados nacionais, você pode informar o estado e o município para que os feriados locais sejam descontados da contagem. Cada dia não computado aparece no resultado com o motivo correspondente.",
-        },
-        {
-          question: "E as suspensões próprias de cada tribunal?",
-          answer:
-            "É possível selecionar o tribunal para aplicar as suspensões forenses cadastradas para aquele órgão, incluindo a Justiça Federal. Sem tribunal selecionado, entram apenas feriados e o recesso do art. 220 do CPC.",
-        },
-        {
-          question: "Posso lançar o vencimento na minha agenda?",
-          answer:
-            "Sim. O resultado permite baixar um arquivo .ics com a data de vencimento, que pode ser importado no Google Agenda, Outlook ou Apple Calendário. Esse download exige uma conta gratuita.",
-        },
-        {
-          question: "Preciso de conta para calcular?",
-          answer:
-            "Não. O cálculo é gratuito e sem login. A conta gratuita só é necessária para exportar o resultado em PDF/Word, gerar o arquivo .ics e salvar o histórico.",
-        },
-      ]}
+      faq={FAQ_PRAZO_PROCESSUAL}
 
     >
 

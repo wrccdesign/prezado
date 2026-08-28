@@ -56,7 +56,39 @@ interface SearchResponse {
 
 }
 
-const TRIBUNAIS = ["STJ", "TST", "TJSP", "TJMG", "TJRS", "TJPR", "TJSC", "TJRJ", "TRF1", "TRF3"];
+const TRIBUNAIS = [
+  "STJ",
+  "TST",
+  "TRF1",
+  "TRF3",
+  "TJAC",
+  "TJAL",
+  "TJAM",
+  "TJAP",
+  "TJBA",
+  "TJCE",
+  "TJDF",
+  "TJES",
+  "TJGO",
+  "TJMA",
+  "TJMG",
+  "TJMS",
+  "TJMT",
+  "TJPA",
+  "TJPB",
+  "TJPE",
+  "TJPI",
+  "TJPR",
+  "TJRJ",
+  "TJRN",
+  "TJRO",
+  "TJRR",
+  "TJRS",
+  "TJSC",
+  "TJSE",
+  "TJSP",
+  "TJTO",
+];
 const UFS = ["AC","AL","AP","AM","BA","CE","DF","ES","GO","MA","MT","MS","MG","PA","PB","PR","PE","PI","RJ","RN","RS","RO","RR","SC","SP","SE","TO"];
 const INSTANCIAS = [
   { value: "1grau", label: "1º Grau" },

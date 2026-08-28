@@ -4,33 +4,17 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import { buildFaqJsonLd, type FaqItem } from "@/seo/faqData";
 
-export interface FaqItem {
-  question: string;
-  answer: string;
-}
+// Reexportados para não quebrar imports existentes; a fonte de verdade
+// (tipo, helper de JSON-LD e conteúdo) vive em src/seo/faqData.ts.
+export { buildFaqJsonLd };
+export type { FaqItem };
 
 interface FaqSectionProps {
   items: FaqItem[];
   title?: string;
   className?: string;
-}
-
-/**
- * JSON-LD de FAQPage correspondente aos mesmos itens exibidos.
- * Passe o retorno dentro do array `jsonLd` do componente <SEO> da página —
- * o FaqSection renderiza apenas o HTML visível, sem Helmet próprio.
- */
-export function buildFaqJsonLd(items: FaqItem[]): Record<string, unknown> {
-  return {
-    "@context": "https://schema.org",
-    "@type": "FAQPage",
-    mainEntity: items.map((item) => ({
-      "@type": "Question",
-      name: item.question,
-      acceptedAnswer: { "@type": "Answer", text: item.answer },
-    })),
-  };
 }
 
 export function FaqSection({ items, title = "Perguntas frequentes", className }: FaqSectionProps) {
