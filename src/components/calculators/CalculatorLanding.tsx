@@ -66,16 +66,9 @@ export function CalculatorLanding({
   ];
 
   if (faq?.length) {
-    jsonLd.push({
-      "@context": "https://schema.org",
-      "@type": "FAQPage",
-      mainEntity: faq.map(f => ({
-        "@type": "Question",
-        name: f.question,
-        acceptedAnswer: { "@type": "Answer", text: f.answer },
-      })),
-    });
+    jsonLd.push(buildFaqJsonLd(faq));
   }
+
 
   return (
     <div className="min-h-screen bg-background">
