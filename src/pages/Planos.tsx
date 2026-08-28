@@ -269,7 +269,9 @@ export default function Planos() {
               { "@type": "ListItem", position: 2, name: "Planos", item: "https://honorifico.com.br/planos" },
             ],
           },
+          faqJsonLd,
         ]}
+
       />
       <PaymentTestModeBanner />
 
@@ -474,7 +476,10 @@ export default function Planos() {
           <p>Pagamentos processados de forma segura. Cancele a qualquer momento.</p>
           <p>Limites são renovados mensalmente, no primeiro dia de cada mês (horário de Brasília).</p>
         </div>
+
+        <FaqSection items={faqItems} className="mt-14 max-w-3xl mx-auto" />
       </main>
+
 
       <Dialog open={isOpen} onOpenChange={(open) => !open && closeCheckout()}>
         <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
