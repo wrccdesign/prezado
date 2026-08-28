@@ -105,6 +105,7 @@ export default function Diagnostico() {
 
     setLoading(true);
     setResult(null);
+    setCitations([]);
 
     try {
       const { data: { session } } = await supabase.auth.getSession();
@@ -148,6 +149,7 @@ export default function Diagnostico() {
       }
 
       setResult(data.diagnostico);
+      setCitations(Array.isArray(data.citations) ? data.citations : []);
       notifyUsageConsumed();
 
       // Consumir teaser diário se aplicável
