@@ -20,7 +20,7 @@ export function buildFaqJsonLd(items: FaqItem[]): Record<string, unknown> {
   };
 }
 
-export const FAQ_PLANOS: FaqItem[] = [];
+
 
 export const FAQ_CORRECAO_MONETARIA: FaqItem[] = [
         {
