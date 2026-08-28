@@ -14,7 +14,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useSubscription } from "@/hooks/useSubscription";
 
 import { AppFooter } from "@/components/AppFooter";
-import { Search, Scale, ClipboardList, DollarSign, Building2, Zap, ArrowRight, MessageCircle, Loader2, Stethoscope, Sparkles, Lock, FileDown, FileText } from "lucide-react";
+import { Search, Scale, ClipboardList, DollarSign, Building2, Zap, ArrowRight, MessageCircle, Loader2, Stethoscope, Sparkles, Lock, FileDown, FileText, BookOpen } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { exportToPDF, exportToDOCX, type ExportSection } from "@/lib/exportDocument";
 import { format } from "date-fns";
