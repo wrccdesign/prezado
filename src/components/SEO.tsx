@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { Helmet } from "react-helmet-async";
 import { getRouteMeta, SITE_URL } from "@/seo/routeMeta";
 
@@ -21,6 +22,12 @@ export function SEO({ title, description, path, image, imageAlt, jsonLd }: SEOPr
   const finalDescription = routeMeta?.description ?? description;
   const url = `${SITE_URL}${path}`;
   const imageUrl = `${SITE_URL}${routeMeta?.ogImage || image || DEFAULT_IMAGE}`;
+  // O HTML estático já traz o JSON-LD da rota; ao hidratar, o Helmet assume
+  // a emissão para que a navegação client-side continue correta.
+  useEffect(() => {
+    document.querySelectorAll("script[data-static-ld]").forEach((el) => el.remove());
+  }, []);
+
   const ldArray = jsonLd ? (Array.isArray(jsonLd) ? jsonLd : [jsonLd]) : [];
 
   return (
