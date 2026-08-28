@@ -32,6 +32,28 @@ interface Diagnostico {
   tipo_peticao_sugerida: string;
 }
 
+interface Citation {
+  id: string;
+  tribunal: string | null;
+  numero_processo: string | null;
+  comarca: string | null;
+  data_decisao: string | null;
+  ementa: string | null;
+}
+
+const SEM_FONTES_TEXTO =
+  "Nenhuma decisão do nosso acervo foi usada nesta análise. O diagnóstico se apoiou apenas na legislação.";
+
+const formatCitationLine = (c: Citation) =>
+  [
+    c.tribunal,
+    c.numero_processo ? `Processo ${c.numero_processo}` : null,
+    c.comarca,
+    c.data_decisao ? new Date(c.data_decisao).toLocaleDateString("pt-BR") : null,
+  ]
+    .filter(Boolean)
+    .join(" · ");
+
 const URGENCIA_CONFIG = {
   baixa: { label: "Baixa", color: "bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-300" },
   media: { label: "Média", color: "bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300" },
@@ -47,6 +69,7 @@ export default function Diagnostico() {
   const [situacao, setSituacao] = useState("");
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<Diagnostico | null>(null);
+  const [citations, setCitations] = useState<Citation[]>([]);
   const [teaserAvailable, setTeaserAvailable] = useState(false);
   const [teaserUsedThisSession, setTeaserUsedThisSession] = useState(false);
 
@@ -82,6 +105,7 @@ export default function Diagnostico() {
 
     setLoading(true);
     setResult(null);
+    setCitations([]);
 
     try {
       const { data: { session } } = await supabase.auth.getSession();
@@ -125,6 +149,7 @@ export default function Diagnostico() {
       }
 
       setResult(data.diagnostico);
+      setCitations(Array.isArray(data.citations) ? data.citations : []);
       notifyUsageConsumed();
 
       // Consumir teaser diário se aplicável
@@ -191,6 +216,19 @@ export default function Diagnostico() {
     },
     { heading: "Quanto pode custar / ganhar", body: r.estimativa_custos_ganhos },
     { heading: "Onde buscar ajuda", body: r.onde_entrar },
+    {
+      heading: "Fontes consultadas",
+      body:
+        citations.length > 0
+          ? citations
+              .map((c, i) => {
+                const linha = formatCitationLine(c) || "Decisão do acervo";
+                const ementa = c.ementa ? `\n${c.ementa.slice(0, 300)}` : "";
+                return `${i + 1}. ${linha}${ementa}`;
+              })
+              .join("\n\n")
+          : SEM_FONTES_TEXTO,
+    },
     {
       heading: "Aviso",
       body:
@@ -460,6 +498,49 @@ export default function Diagnostico() {
                 </Button>
               </div>
             )}
+
+            {/* Fontes consultadas — sempre visíveis, fora do paywall */}
+            <Card>
+              <CardHeader className="pb-3">
+                <CardTitle className="text-base flex items-center gap-2">
+                  <BookOpen className="h-4 w-4 text-primary" />
+                  Fontes consultadas
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                {citations.length === 0 ? (
+                  <p className="text-sm text-muted-foreground leading-relaxed">
+                    {SEM_FONTES_TEXTO}
+                  </p>
+                ) : (
+                  <ul className="space-y-4">
+                    {citations.map((c) => (
+                      <li key={c.id} className="space-y-1">
+                        <p className="text-sm font-medium text-foreground">
+                          {formatCitationLine(c) || "Decisão do acervo"}
+                        </p>
+                        {c.ementa && (
+                          <p className="text-xs text-muted-foreground leading-relaxed line-clamp-3">
+                            {c.ementa}
+                          </p>
+                        )}
+                        {c.id && (
+                          <Button
+                            variant="link"
+                            size="sm"
+                            className="h-auto p-0 text-xs"
+                            onClick={() => navigate(`/decisao/${c.id}`)}
+                          >
+                            Ver decisão completa
+                          </Button>
+                        )}
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </CardContent>
+            </Card>
+
 
             <p className="text-xs text-muted-foreground text-center leading-relaxed">
               ⚠️ Este diagnóstico é uma orientação inicial gerada por inteligência artificial.

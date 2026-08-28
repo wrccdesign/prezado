@@ -56,7 +56,7 @@ interface SearchResponse {
 
 }
 
-const TRIBUNAIS = ["STF", "STJ", "TST", "TJSP", "TJMG", "TJRS", "TJPR", "TJSC", "TJRJ", "TRF1", "TRF3"];
+const TRIBUNAIS = ["STJ", "TST", "TJSP", "TJMG", "TJRS", "TJPR", "TJSC", "TJRJ", "TRF1", "TRF3"];
 const UFS = ["AC","AL","AP","AM","BA","CE","DF","ES","GO","MA","MT","MS","MG","PA","PB","PR","PE","PI","RJ","RN","RS","RO","RR","SC","SP","SE","TO"];
 const INSTANCIAS = [
   { value: "1grau", label: "1º Grau" },
@@ -184,11 +184,11 @@ if (!res.ok) {
     <div className="min-h-screen flex flex-col bg-background">
       <AppHeader />
       <SEO
-        title="Consulta Processual e Jurisprudência — 33 Tribunais"
-        description="Consulte processos de 33 tribunais brasileiros com dados oficiais do CNJ e resumo por IA. Acervo de jurisprudência com ementa em expansão. Grátis."
+        title="Consulta processual e jurisprudência — Honorífico"
+        description="Consulte processos nos dados oficiais do CNJ, com link para a fonte no tribunal. Acervo de jurisprudência com ementa em expansão e resumo por IA."
         path="/jurisprudencia"
         image="/og/jurisprudencia.jpg"
-        imageAlt="Consulta processual em 33 tribunais brasileiros — Honorífico"
+        imageAlt="Consulta processual com dados oficiais do CNJ — Honorífico"
 
         jsonLd={[
           {
