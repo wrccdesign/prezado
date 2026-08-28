@@ -91,13 +91,13 @@ export default function DiagnosticoLanding() {
               <Stethoscope className="h-6 w-6 text-primary" />
             </div>
             <h1 className="text-3xl sm:text-4xl font-bold font-serif text-foreground leading-tight">
-              Do relato do cliente à leitura jurídica do caso
+              De uma situação descrita em linguagem comum a uma leitura jurídica organizada
             </h1>
             <p className="text-base sm:text-lg text-muted-foreground leading-relaxed">
-              O diagnóstico transforma a descrição de uma situação — escrita como o cliente fala — em uma
+              O diagnóstico transforma a descrição de uma situação em linguagem comum, sem termos técnicos, em uma
               análise organizada: qual é o direito envolvido, quais passos cabem agora, onde o caso deve
-              ser levado e com que urgência. Serve ao advogado na triagem inicial e ao cidadão que ainda
-              não sabe se tem um caso.
+              ser levado e com que urgência. Serve tanto para quem precisa organizar uma primeira análise quanto para quem ainda
+              está entendendo se existe um caso ali.
             </p>
             <div className="flex flex-wrap items-center gap-3 pt-1">
               <Button asChild size="lg">
@@ -199,7 +199,7 @@ export default function DiagnosticoLanding() {
             <ul className="space-y-2 text-sm text-muted-foreground leading-relaxed list-disc pl-5">
               <li>
                 Não é parecer nem substitui o juízo do advogado. É um ponto de partida para a análise, que
-                precisa ser conferido antes de virar orientação ao cliente ou peça processual.
+                precisa ser conferido antes de virar orientação a outra pessoa ou peça processual.
               </li>
               <li>
                 Trabalha apenas com o que você escreveu. Sem documentos e sem os autos, a leitura do caso é
@@ -220,7 +220,7 @@ export default function DiagnosticoLanding() {
         <section className="border-t border-border">
           <div className="container max-w-3xl px-4 sm:px-6 py-14 text-center space-y-4">
             <h2 className="text-2xl font-semibold font-serif text-foreground">
-              Comece pelo caso que está na sua mesa
+              Comece por um caso concreto
             </h2>
             <p className="text-sm text-muted-foreground max-w-xl mx-auto leading-relaxed">
               Crie uma conta para descrever a situação e receber o diagnóstico estruturado. As calculadoras
