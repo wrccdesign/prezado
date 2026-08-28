@@ -499,6 +499,49 @@ export default function Diagnostico() {
               </div>
             )}
 
+            {/* Fontes consultadas — sempre visíveis, fora do paywall */}
+            <Card>
+              <CardHeader className="pb-3">
+                <CardTitle className="text-base flex items-center gap-2">
+                  <BookOpen className="h-4 w-4 text-primary" />
+                  Fontes consultadas
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                {citations.length === 0 ? (
+                  <p className="text-sm text-muted-foreground leading-relaxed">
+                    {SEM_FONTES_TEXTO}
+                  </p>
+                ) : (
+                  <ul className="space-y-4">
+                    {citations.map((c) => (
+                      <li key={c.id} className="space-y-1">
+                        <p className="text-sm font-medium text-foreground">
+                          {formatCitationLine(c) || "Decisão do acervo"}
+                        </p>
+                        {c.ementa && (
+                          <p className="text-xs text-muted-foreground leading-relaxed line-clamp-3">
+                            {c.ementa}
+                          </p>
+                        )}
+                        {c.id && (
+                          <Button
+                            variant="link"
+                            size="sm"
+                            className="h-auto p-0 text-xs"
+                            onClick={() => navigate(`/decisao/${c.id}`)}
+                          >
+                            Ver decisão completa
+                          </Button>
+                        )}
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </CardContent>
+            </Card>
+
+
             <p className="text-xs text-muted-foreground text-center leading-relaxed">
               ⚠️ Este diagnóstico é uma orientação inicial gerada por inteligência artificial.
               Não substitui a consulta com um advogado. Para casos urgentes, procure assistência jurídica presencial.
