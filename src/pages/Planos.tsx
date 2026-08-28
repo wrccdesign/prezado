@@ -91,6 +91,47 @@ const plans: {
   },
 ];
 
+const faqItems: FaqItem[] = [
+  {
+    question: "Preciso de cartão para testar o plano Profissional?",
+    answer:
+      "Não. Toda conta nova começa com 7 dias no plano Profissional, sem cartão. Terminado o período, a conta passa ao plano Gratuito automaticamente, sem cobrança.",
+  },
+  {
+    question: "As calculadoras estão incluídas em todos os planos?",
+    answer:
+      "Sim. Correção monetária, prazo processual, custas do TJSP, rescisão, pensão alimentícia, operações com datas e validador de CPF/CNPJ são ilimitadas em todos os planos — inclusive sem conta. A assinatura libera os recursos de IA, o histórico salvo e o volume de consulta processual.",
+  },
+  {
+    question: "Como funcionam as cotas mensais?",
+    answer:
+      "Cada plano tem limites por mês para consultas processuais, chat, diagnósticos, análises de documentos, OCR e petições. Os limites são renovados no primeiro dia de cada mês, no horário de Brasília, e não acumulam de um mês para o outro.",
+  },
+  {
+    question: "O que o plano Gratuito inclui?",
+    answer:
+      "Por mês: 20 consultas processuais, 10 mensagens no chat, 1 diagnóstico jurídico, 3 análises de documentos e 5 leituras com OCR. Não inclui geração de petições nem o painel do advogado, mas dá acesso às calculadoras, aos modelos de minutas, à exportação em PDF e Word e ao histórico.",
+  },
+  {
+    question: "Quanto custa o plano Profissional?",
+    answer:
+      "R$ 49 por mês, cobrados em reais. Há também a opção anual por R$ 409 à vista no cartão, equivalente a R$ 34,08 por mês. Como o processamento é internacional, o seu banco pode aplicar IOF sobre a compra.",
+  },
+  {
+    question: "O plano anual renova sozinho?",
+    answer:
+      "Não. O anual é um pagamento único referente a 12 meses, sem renovação automática: ao fim do período a conta volta ao plano Gratuito, sem nova cobrança. Quem migra de um plano mensal ativo recebe crédito proporcional pelo período não utilizado, aplicado no checkout.",
+  },
+  {
+    question: "Posso pedir reembolso?",
+    answer:
+      "Sim. Há garantia de 30 dias a partir da compra ou renovação, com devolução integral e sem necessidade de justificar, além do direito de arrependimento de 7 dias previsto no art. 49 do CDC. O pedido é feito por e-mail e o valor volta pelo mesmo meio de pagamento.",
+  },
+];
+
+const faqJsonLd = buildFaqJsonLd(faqItems);
+
+
 
 export default function Planos() {
   const { user } = useAuth();
