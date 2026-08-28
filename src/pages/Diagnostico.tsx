@@ -32,6 +32,28 @@ interface Diagnostico {
   tipo_peticao_sugerida: string;
 }
 
+interface Citation {
+  id: string;
+  tribunal: string | null;
+  numero_processo: string | null;
+  comarca: string | null;
+  data_decisao: string | null;
+  ementa: string | null;
+}
+
+const SEM_FONTES_TEXTO =
+  "Nenhuma decisão do nosso acervo foi usada nesta análise. O diagnóstico se apoiou apenas na legislação.";
+
+const formatCitationLine = (c: Citation) =>
+  [
+    c.tribunal,
+    c.numero_processo ? `Processo ${c.numero_processo}` : null,
+    c.comarca,
+    c.data_decisao ? new Date(c.data_decisao).toLocaleDateString("pt-BR") : null,
+  ]
+    .filter(Boolean)
+    .join(" · ");
+
 const URGENCIA_CONFIG = {
   baixa: { label: "Baixa", color: "bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-300" },
   media: { label: "Média", color: "bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300" },
@@ -47,6 +69,7 @@ export default function Diagnostico() {
   const [situacao, setSituacao] = useState("");
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<Diagnostico | null>(null);
+  const [citations, setCitations] = useState<Citation[]>([]);
   const [teaserAvailable, setTeaserAvailable] = useState(false);
   const [teaserUsedThisSession, setTeaserUsedThisSession] = useState(false);
 
