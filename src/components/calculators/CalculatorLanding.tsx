@@ -1,10 +1,12 @@
 import { AppHeader } from "@/components/AppHeader";
 import { AppFooter } from "@/components/AppFooter";
 import { SEO } from "@/components/SEO";
+import { FaqSection, buildFaqJsonLd } from "@/components/FaqSection";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { ArrowRight, CheckCircle } from "lucide-react";
 import { Link } from "react-router-dom";
+
 
 export interface CalculatorFaq {
   question: string;
@@ -66,16 +68,9 @@ export function CalculatorLanding({
   ];
 
   if (faq?.length) {
-    jsonLd.push({
-      "@context": "https://schema.org",
-      "@type": "FAQPage",
-      mainEntity: faq.map(f => ({
-        "@type": "Question",
-        name: f.question,
-        acceptedAnswer: { "@type": "Answer", text: f.answer },
-      })),
-    });
+    jsonLd.push(buildFaqJsonLd(faq));
   }
+
 
   return (
     <div className="min-h-screen bg-background">
@@ -119,19 +114,8 @@ export function CalculatorLanding({
               {content}
             </div>
 
-            {faq?.length ? (
-              <section className="prose dark:prose-invert max-w-none">
-                <h2 className="text-xl font-semibold">Perguntas frequentes</h2>
-                <dl className="space-y-4 not-prose">
-                  {faq.map(f => (
-                    <div key={f.question} className="rounded-lg border border-border p-4">
-                      <dt className="font-medium text-foreground">{f.question}</dt>
-                      <dd className="mt-2 text-sm text-muted-foreground">{f.answer}</dd>
-                    </div>
-                  ))}
-                </dl>
-              </section>
-            ) : null}
+            {faq?.length ? <FaqSection items={faq} /> : null}
+
           </div>
 
           <div className="space-y-6">

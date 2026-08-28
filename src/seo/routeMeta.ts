@@ -80,12 +80,20 @@ export const ROUTE_META: RouteMeta[] = [
     ogImage: OG_DEFAULT, // TODO: OG própria
   },
   {
+    path: "/diagnostico",
+    title: "Diagnóstico jurídico do caso — Honorífico",
+    description:
+      "Descreva o caso em linguagem comum e receba uma análise estruturada: direito envolvido, próximos passos, custos estimados, onde entrar e nível de urgência.",
+    ogImage: OG_DEFAULT, // TODO: OG própria
+  },
+  {
     path: "/jurisprudencia",
     title: "Consulta processual e jurisprudência — Honorífico",
     description:
       "Consulte processos de 33 tribunais com dados oficiais do CNJ e link para a fonte. Acervo de jurisprudência com ementa em expansão e resumo por IA.",
     ogImage: "/og/jurisprudencia.jpg",
   },
+
   {
     path: "/modelos-de-minutas",
     title: "Modelos de minutas jurídicas — Honorífico",

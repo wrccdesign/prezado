@@ -61,11 +61,27 @@ export default function PrazoProcessualLanding() {
             "Sim. Entre 20 de dezembro e 20 de janeiro os prazos ficam suspensos (art. 220 do CPC). A calculadora desconta esse período e ainda considera suspensões específicas do tribunal escolhido.",
         },
         {
+          question: "A calculadora considera feriados municipais?",
+          answer:
+            "Sim. Além dos feriados nacionais, você pode informar o estado e o município para que os feriados locais sejam descontados da contagem. Cada dia não computado aparece no resultado com o motivo correspondente.",
+        },
+        {
+          question: "E as suspensões próprias de cada tribunal?",
+          answer:
+            "É possível selecionar o tribunal para aplicar as suspensões forenses cadastradas para aquele órgão, incluindo a Justiça Federal. Sem tribunal selecionado, entram apenas feriados e o recesso do art. 220 do CPC.",
+        },
+        {
+          question: "Posso lançar o vencimento na minha agenda?",
+          answer:
+            "Sim. O resultado permite baixar um arquivo .ics com a data de vencimento, que pode ser importado no Google Agenda, Outlook ou Apple Calendário. Esse download exige uma conta gratuita.",
+        },
+        {
           question: "Preciso de conta para calcular?",
           answer:
             "Não. O cálculo é gratuito e sem login. A conta gratuita só é necessária para exportar o resultado em PDF/Word, gerar o arquivo .ics e salvar o histórico.",
         },
       ]}
+
     >
 
       <PrazoCalc />
