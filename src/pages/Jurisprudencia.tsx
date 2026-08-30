@@ -368,15 +368,19 @@ if (!res.ok) {
                   ))}
                 </div>
               )}
-            </div>
+            </section>
           )}
 
           {/* Results count */}
           {hasSearched && !loading && (
-            <p className="text-sm text-muted-foreground mb-4">
-              {results.length === 0 ? "Nenhuma decisão encontrada." : `${results.length} decisão(ões) encontrada(s)`}
-            </p>
+            <>
+              <h2 className="sr-only">Resultados da busca</h2>
+              <p className="text-sm text-muted-foreground mb-4">
+                {results.length === 0 ? "Nenhuma decisão encontrada." : `${results.length} decisão(ões) encontrada(s)`}
+              </p>
+            </>
           )}
+
 
           {guestPreview && !loading && (
             <Card className="mb-4 border-accent/30 bg-accent/5">
