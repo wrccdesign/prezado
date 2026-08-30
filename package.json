@@ -10,6 +10,7 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "test": "vitest run",
+    "check:seo": "bun scripts/check-jsonld.mjs",
     "test:watch": "vitest"
   },
   "dependencies": {
