@@ -65,14 +65,16 @@ function NavButton({ item, active, onClick, compact, locked }: { item: NavItem; 
     <button
       onClick={onClick}
       title={compact ? item.label : undefined}
+      aria-label={compact ? item.label : undefined}
       className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
         active ? "bg-white/10 text-white" : "text-white/60 hover:text-white hover:bg-white/5"
       }`}
     >
-      <item.icon className="h-4 w-4" />
-      {!compact && item.label}
+      <item.icon className="h-4 w-4" aria-hidden="true" />
+      {compact ? <span className="sr-only">{item.label}</span> : item.label}
       {!compact && locked && <Lock className="h-3 w-3 opacity-50" />}
     </button>
+
   );
 }
 

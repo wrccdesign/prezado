@@ -346,11 +346,12 @@ if (!res.ok) {
         <div className="container px-4 max-w-3xl mx-auto py-6">
           {/* AI Expansion Info */}
           {aiExpansion && (
-            <div className="mb-4 p-3 rounded-lg bg-accent/10 border border-accent/20">
-              <div className="flex items-center gap-2 text-sm font-medium text-accent mb-1">
+            <section className="mb-4 p-3 rounded-lg bg-accent/10 border border-accent/20" aria-labelledby="secao-ia">
+              <h2 id="secao-ia" className="flex items-center gap-2 text-sm font-medium text-accent mb-1">
                 <Sparkles className="h-4 w-4" />
                 Busca expandida por IA
-              </div>
+              </h2>
+
               <p className="text-xs text-muted-foreground mb-2">
                 {aiExpansion.intencao_detectada}
               </p>
@@ -367,15 +368,19 @@ if (!res.ok) {
                   ))}
                 </div>
               )}
-            </div>
+            </section>
           )}
 
           {/* Results count */}
           {hasSearched && !loading && (
-            <p className="text-sm text-muted-foreground mb-4">
-              {results.length === 0 ? "Nenhuma decisão encontrada." : `${results.length} decisão(ões) encontrada(s)`}
-            </p>
+            <>
+              <h2 className="sr-only">Resultados da busca</h2>
+              <p className="text-sm text-muted-foreground mb-4">
+                {results.length === 0 ? "Nenhuma decisão encontrada." : `${results.length} decisão(ões) encontrada(s)`}
+              </p>
+            </>
           )}
+
 
           {guestPreview && !loading && (
             <Card className="mb-4 border-accent/30 bg-accent/5">
