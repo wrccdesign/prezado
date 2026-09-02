@@ -3,19 +3,14 @@ import { useParams, Link } from "react-router-dom";
 import ReactMarkdown from "react-markdown";
 import { AppHeader } from "@/components/AppHeader";
 import { AppFooter } from "@/components/AppFooter";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent } from "@/components/ui/card";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import {
-  ArrowLeft, Calendar, MapPin, Scale, Send, Loader2, Sparkles, MessageCircle,
-  ExternalLink, BookOpen, FileText, Lightbulb, Copy, Check, Gavel,
-} from "lucide-react";
+import { Send, Loader2, Check } from "lucide-react";
 import { formatCitation } from "@/lib/citation";
 import { SEO } from "@/components/SEO";
 
@@ -45,9 +40,9 @@ interface Decision {
 }
 
 const SUGGESTIONS = [
-  { label: "Explique esta decisão", icon: BookOpen },
-  { label: "Redija parágrafo para petição", icon: FileText },
-  { label: "Quais teses foram acolhidas?", icon: Lightbulb },
+  "Explique esta decisão",
+  "Redija parágrafo para petição",
+  "Quais teses foram acolhidas?",
 ];
 
 const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/chat-decisao`;
@@ -106,13 +101,8 @@ async function streamChat({
   onDone();
 }
 
-function resultadoColor(r: string | null) {
-  if (!r) return "bg-muted text-muted-foreground";
-  if (r.includes("procedente") && !r.includes("improcedente")) return "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300";
-  if (r === "improcedente") return "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300";
-  if (r === "provido") return "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300";
-  return "bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300";
-}
+
+
 
 function ChatPanel({ decisionId }: { decisionId: string }) {
   const [messages, setMessages] = useState<Msg[]>([]);
@@ -161,24 +151,22 @@ function ChatPanel({ decisionId }: { decisionId: string }) {
   };
 
   return (
-    <div className="flex flex-col h-full">
-      <div className="px-4 py-3 border-b border-border flex items-center gap-2">
-        <Sparkles className="h-4 w-4 text-accent" />
-        <span className="text-sm font-semibold">Assistente Jurídico</span>
+    <div className="flex flex-col h-full bg-white text-navy">
+      <div className="px-4 py-3 border-b border-cream-dark">
+        <span className="text-sm font-medium">Assistente jurídico</span>
       </div>
 
       <ScrollArea ref={scrollRef} className="flex-1 px-4 py-3">
         {messages.length === 0 && (
           <div className="space-y-2 mb-4">
-            <p className="text-xs text-muted-foreground mb-3">Pergunte sobre esta decisão:</p>
+            <p className="text-note text-navy/60 mb-3">Pergunte sobre esta decisão:</p>
             {SUGGESTIONS.map((s) => (
               <button
-                key={s.label}
-                onClick={() => send(s.label)}
-                className="flex items-center gap-2 w-full text-left text-sm px-3 py-2 rounded-lg bg-accent/5 hover:bg-accent/10 text-accent transition-colors"
+                key={s}
+                onClick={() => send(s)}
+                className="block w-full text-left text-sm text-navy underline underline-offset-4 hover:text-gold py-1"
               >
-                <s.icon className="h-4 w-4 flex-shrink-0" />
-                {s.label}
+                {s}
               </button>
             ))}
           </div>
@@ -190,12 +178,12 @@ function ChatPanel({ decisionId }: { decisionId: string }) {
               <div
                 className={`max-w-[85%] rounded-lg px-3 py-2 text-sm ${
                   m.role === "user"
-                    ? "bg-primary text-primary-foreground"
-                    : "bg-muted"
+                    ? "bg-navy text-cream"
+                    : "bg-cream text-navy"
                 }`}
               >
                 {m.role === "assistant" ? (
-                  <div className="prose prose-sm dark:prose-invert max-w-none">
+                  <div className="prose prose-sm max-w-none">
                     <ReactMarkdown>{m.content}</ReactMarkdown>
                   </div>
                 ) : (
@@ -206,30 +194,31 @@ function ChatPanel({ decisionId }: { decisionId: string }) {
           ))}
           {loading && messages[messages.length - 1]?.role !== "assistant" && (
             <div className="flex justify-start">
-              <div className="bg-muted rounded-lg px-3 py-2">
-                <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
+              <div className="bg-cream rounded-lg px-3 py-2">
+                <Loader2 className="h-4 w-4 animate-spin text-navy/60" />
               </div>
             </div>
           )}
         </div>
       </ScrollArea>
 
-      <div className="p-3 border-t border-border">
+      <div className="p-3 border-t border-cream-dark">
         <div className="flex gap-2">
           <Input
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && send(input)}
-            placeholder="Pergunte sobre a decisão..."
-            className="text-sm h-9"
+            placeholder="Pergunte sobre a decisão"
+            className="text-sm h-10 bg-white text-navy border border-cream-dark focus-visible:ring-gold"
             disabled={loading}
           />
-          <Button size="sm" aria-label="Enviar pergunta" onClick={() => send(input)} disabled={loading || !input.trim()} className="h-9 px-3">
+          <Button size="sm" aria-label="Enviar pergunta" onClick={() => send(input)} disabled={loading || !input.trim()} className="h-10 px-3 bg-gold text-navy hover:bg-gold-light">
             {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
           </Button>
         </div>
       </div>
     </div>
+
   );
 }
 
@@ -255,7 +244,7 @@ export default function DecisaoDetalhe() {
 
   if (loadingDec) {
     return (
-      <div className="min-h-screen flex flex-col bg-background">
+      <div className="min-h-screen flex flex-col bg-cream text-navy font-sans">
         <AppHeader />
         <main className="flex-1 container px-4 py-8 max-w-5xl mx-auto space-y-4">
           <Skeleton className="h-8 w-64" />
@@ -270,13 +259,12 @@ export default function DecisaoDetalhe() {
 
   if (!decision || !id) {
     return (
-      <div className="min-h-screen flex flex-col bg-background">
+      <div className="min-h-screen flex flex-col bg-cream text-navy font-sans">
         <AppHeader />
         <main className="flex-1 flex items-center justify-center">
           <div className="text-center">
-            <Scale className="h-12 w-12 mx-auto text-muted-foreground/30 mb-4" />
-            <p className="text-muted-foreground">Decisão não encontrada</p>
-            <Link to="/jurisprudencia" className="text-accent hover:underline text-sm mt-2 inline-block">
+            <p className="text-navy/70">Decisão não encontrada</p>
+            <Link to="/jurisprudencia" className="text-navy underline underline-offset-4 hover:text-gold text-sm mt-2 inline-block">
               Voltar à busca
             </Link>
           </div>
@@ -296,8 +284,16 @@ export default function DecisaoDetalhe() {
     setTimeout(() => setCopied(false), 2000);
   };
 
+  const linhaMeta = [
+    decision.tribunal,
+    instanciaLabel,
+    decision.resultado,
+    decision.data_decisao ? new Date(decision.data_decisao).toLocaleDateString("pt-BR") : null,
+    decision.comarca_pequena ? "interior" : null,
+  ].filter(Boolean).join(", ");
+
   return (
-    <div className="min-h-screen flex flex-col bg-background">
+    <div className="min-h-screen flex flex-col bg-cream text-navy font-sans">
       <AppHeader />
       <SEO
         title={`${decision.numero_processo || "Decisão"}${decision.tribunal ? ` — ${decision.tribunal}` : ""} | Honorífico`}
@@ -309,154 +305,109 @@ export default function DecisaoDetalhe() {
         path={`/decisao/${decision.id}`}
       />
       <main className="flex-1 flex flex-col lg:flex-row">
-        {/* Decision content */}
         <div className="flex-1 overflow-y-auto">
-          <div className="container px-4 py-6 max-w-3xl mx-auto">
-            <Link to="/jurisprudencia" className="inline-flex items-center gap-1 text-sm text-accent hover:underline mb-4">
-              <ArrowLeft className="h-4 w-4" /> Voltar à busca
+          <div className="container px-4 py-8 max-w-3xl mx-auto">
+            <Link to="/jurisprudencia" className="text-note text-navy underline underline-offset-4 hover:text-gold">
+              Voltar à busca
             </Link>
 
-            {/* Metadata */}
-            <div className="flex flex-wrap items-center gap-2 mb-3">
-              {decision.tribunal && <Badge variant="secondary" className="font-semibold">{decision.tribunal}</Badge>}
-              {decision.resultado && <Badge className={resultadoColor(decision.resultado)}>{decision.resultado}</Badge>}
-              {instanciaLabel && <Badge variant="outline">{instanciaLabel}</Badge>}
-              {decision.comarca_pequena && (
-                <Badge className="bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300">
-                  <MapPin className="h-3 w-3 mr-0.5" /> Interior
-                </Badge>
-              )}
-            </div>
+            <p className="text-sm font-medium text-navy mt-6">{linhaMeta}</p>
 
-            <div className="flex flex-wrap items-center gap-2 mb-1">
-              {decision.numero_processo && (
-                <h1 className="font-serif text-xl font-bold">{decision.numero_processo}</h1>
-              )}
-              <Button
-                variant="outline"
-                size="sm"
+            {decision.numero_processo && (
+              <h1 className="font-mono text-xl text-navy mt-2">{decision.numero_processo}</h1>
+            )}
+
+            <div className="flex flex-wrap items-center gap-x-5 gap-y-2 mt-3 text-note">
+              <button
                 onClick={handleCopyCitation}
-                className="h-8 gap-1.5 text-xs flex-shrink-0"
+                className="text-navy underline underline-offset-4 hover:text-gold inline-flex items-center gap-1"
               >
-                {copied ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
-                {copied ? "Copiado!" : "Copiar Citação"}
-              </Button>
+                {copied ? <Check className="h-3.5 w-3.5" /> : null}
+                {copied ? "Copiado" : "Copiar citação"}
+              </button>
               {decision.source_url && (
-                <Button asChild variant="outline" size="sm" className="h-8 gap-1.5 text-xs flex-shrink-0">
-                  <a href={decision.source_url} target="_blank" rel="noopener noreferrer" title="Abrir a decisão na fonte oficial">
-                    <ExternalLink className="h-3.5 w-3.5" />
-                    Ver no tribunal
-                  </a>
-                </Button>
+                <a
+                  href={decision.source_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  title="Abrir a decisão na fonte oficial"
+                  className="text-navy underline underline-offset-4 hover:text-gold"
+                >
+                  Ver no tribunal
+                </a>
               )}
             </div>
 
+            <p className="text-note text-navy/60 mt-3">
+              {[
+                decision.relator ? `Rel. ${decision.relator}` : null,
+                decision.orgao_julgador,
+                decision.comarca && decision.uf ? `${decision.comarca}/${decision.uf}` : null,
+                decision.numero_processo ? "Consulte pelo nº CNJ no portal do tribunal de origem" : null,
+              ].filter(Boolean).join(", ")}
+            </p>
 
-            <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-muted-foreground mb-4">
-              {decision.relator && <span>Rel. {decision.relator}</span>}
-              {decision.orgao_julgador && (
-                <span className="flex items-center gap-1">
-                  <Gavel className="h-3.5 w-3.5" />
-                  {decision.orgao_julgador}
-                </span>
-              )}
-              {decision.data_decisao && (
-                <span className="flex items-center gap-1">
-                  <Calendar className="h-3.5 w-3.5" />
-                  {new Date(decision.data_decisao).toLocaleDateString("pt-BR")}
-                </span>
-              )}
-              {decision.comarca && decision.uf && (
-                <span className="flex items-center gap-1">
-                  <MapPin className="h-3.5 w-3.5" />
-                  {decision.comarca}/{decision.uf}
-                </span>
-              )}
-              {decision.numero_processo && (
-                <span className="flex items-center gap-1">
-                  <ExternalLink className="h-3.5 w-3.5" />
-                  Consulte pelo nº CNJ no portal do tribunal de origem
-                </span>
-              )}
-
-            </div>
-
-            {/* Ementa */}
             {decision.ementa && (
-              <Card className="mb-4">
-                <CardContent className="pt-4">
-                  <h2 className="font-serif text-sm font-semibold mb-2 text-muted-foreground uppercase tracking-wide">Ementa</h2>
-                  <p className="text-sm leading-relaxed">{decision.ementa}</p>
-                </CardContent>
-              </Card>
+              <section className="mt-8 border-t border-cream-dark pt-6">
+                <h2 className="text-h3 text-navy">Ementa</h2>
+                <p className="text-body-serif text-navy/85 max-w-[68ch] mt-3">{decision.ementa}</p>
+              </section>
             )}
 
-            {/* AI Summary */}
             {decision.resumo_ia && (
-              <Card className="mb-4 border-accent/20 bg-accent/5">
-                <CardContent className="pt-4">
-                  <h2 className="text-sm font-semibold mb-2 flex items-center gap-1.5 text-accent">
-                    <Sparkles className="h-4 w-4" /> Resumo IA
-                  </h2>
-                  <p className="text-sm leading-relaxed text-muted-foreground">{decision.resumo_ia}</p>
-                </CardContent>
-              </Card>
+              <section className="mt-8 border-t border-cream-dark pt-6">
+                <h2 className="text-h3 text-navy">Resumo por IA</h2>
+                <p className="text-body-serif text-navy/80 max-w-[68ch] mt-3">{decision.resumo_ia}</p>
+              </section>
             )}
 
-            {/* Temas & Legislação */}
-            <div className="grid gap-4 sm:grid-cols-2 mb-4">
-              {decision.temas_juridicos && decision.temas_juridicos.length > 0 && (
-                <div>
-                  <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">Temas Jurídicos</h3>
-                  <div className="flex flex-wrap gap-1.5">
-                    {decision.temas_juridicos.map((t, i) => <Badge key={i} variant="outline" className="text-xs">{t}</Badge>)}
+            {((decision.temas_juridicos?.length ?? 0) > 0 || (decision.legislacao_citada?.length ?? 0) > 0) && (
+              <section className="mt-8 border-t border-cream-dark pt-6 grid gap-6 sm:grid-cols-2">
+                {decision.temas_juridicos && decision.temas_juridicos.length > 0 && (
+                  <div>
+                    <h3 className="text-sm font-medium text-navy">Temas jurídicos</h3>
+                    <p className="text-note text-navy/70 mt-2">{decision.temas_juridicos.join(", ")}</p>
                   </div>
-                </div>
-              )}
-              {decision.legislacao_citada && decision.legislacao_citada.length > 0 && (
-                <div>
-                  <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">Legislação Citada</h3>
-                  <div className="flex flex-wrap gap-1.5">
-                    {decision.legislacao_citada.map((l, i) => <Badge key={i} variant="outline" className="text-xs">{l}</Badge>)}
+                )}
+                {decision.legislacao_citada && decision.legislacao_citada.length > 0 && (
+                  <div>
+                    <h3 className="text-sm font-medium text-navy">Legislação citada</h3>
+                    <p className="text-note text-navy/70 mt-2">{decision.legislacao_citada.join(", ")}</p>
                   </div>
-                </div>
-              )}
-            </div>
+                )}
+              </section>
+            )}
 
-            {/* Full text */}
             {decision.full_text && (
-              <Card className="mb-6">
-                <CardContent className="pt-4">
-                  <h2 className="font-serif text-sm font-semibold mb-2 text-muted-foreground uppercase tracking-wide">Texto Completo</h2>
-                  <p className="text-sm leading-relaxed whitespace-pre-wrap">{decision.full_text}</p>
-                </CardContent>
-              </Card>
+              <section className="mt-8 border-t border-cream-dark pt-6">
+                <h2 className="text-h3 text-navy">Texto completo</h2>
+                <p className="text-body-serif text-navy/85 max-w-[68ch] mt-3 whitespace-pre-wrap">{decision.full_text}</p>
+              </section>
             )}
           </div>
         </div>
 
-        {/* Chat sidebar - desktop */}
-        <aside className="hidden lg:flex w-[380px] border-l border-border flex-col bg-background">
+        <aside className="hidden lg:flex w-[380px] border-l border-cream-dark flex-col bg-white">
           <ChatPanel decisionId={id} />
         </aside>
 
-        {/* Chat FAB - mobile */}
         <div className="lg:hidden fixed bottom-4 right-4 z-50">
           <Sheet>
             <SheetTrigger asChild>
-              <Button size="lg" className="rounded-full shadow-lg h-14 w-14">
-                <MessageCircle className="h-6 w-6" />
+              <Button className="h-12 px-5 rounded-md bg-gold text-navy hover:bg-gold-light">
+                Assistente
               </Button>
             </SheetTrigger>
-            <SheetContent side="bottom" className="h-[75vh] p-0 rounded-t-xl">
+            <SheetContent side="bottom" className="h-[75vh] p-0">
               <SheetHeader className="sr-only">
-                <SheetTitle>Chat Assistente</SheetTitle>
+                <SheetTitle>Assistente jurídico</SheetTitle>
               </SheetHeader>
               <ChatPanel decisionId={id} />
             </SheetContent>
           </Sheet>
         </div>
       </main>
+
       <AppFooter />
     </div>
   );

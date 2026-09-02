@@ -5,11 +5,9 @@ import { SEO } from "@/components/SEO";
 import { AppFooter } from "@/components/AppFooter";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Search, Filter, MapPin, Calendar, Scale, ChevronDown, ChevronUp, ExternalLink, Loader2, Sparkles, Copy, Check, Gavel } from "lucide-react";
+import { Loader2, Check } from "lucide-react";
 import { formatCitation } from "@/lib/citation";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
@@ -215,16 +213,10 @@ if (!res.ok) {
     }
   }, [searchParams, handleSearch]);
 
-  const resultadoColor = (resultado: string | null) => {
-    if (!resultado) return "bg-muted text-muted-foreground";
-    if (resultado.includes("procedente") && !resultado.includes("improcedente")) return "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300";
-    if (resultado === "improcedente") return "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300";
-    if (resultado === "provido") return "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300";
-    return "bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300";
-  };
+
 
   return (
-    <div className="min-h-screen flex flex-col bg-background">
+    <div className="min-h-screen flex flex-col bg-cream text-navy font-sans">
       <AppHeader />
       <SEO
         title="Consulta processual e jurisprudência — Honorífico"
@@ -265,50 +257,42 @@ if (!res.ok) {
         ]}
       />
       <main className="flex-1">
-        {/* Hero Search */}
-        <div className="bg-primary text-primary-foreground py-8 sm:py-12">
+        {/* Busca */}
+        <div className="bg-cream text-navy py-12 md:py-16">
           <div className="container px-4 max-w-3xl mx-auto">
-            <h1 className="font-serif text-2xl sm:text-3xl font-bold text-center mb-2">
-              Busca de Jurisprudência
-            </h1>
-            <p className="text-center text-primary-foreground/70 text-sm sm:text-base mb-6">
-              Descreva seu caso em linguagem natural — a IA encontra os precedentes
+            <h1 className="text-h1 max-w-[18ch]">Consulta processual e jurisprudência</h1>
+            <p className="text-body-serif text-navy/80 max-w-[60ch] mt-5">
+              Descreva a situação ou cole o número CNJ. A busca cobre o acervo indexado; com conta, também a consulta ao vivo no DataJud.
             </p>
 
-            <div className="flex gap-2">
-              <div className="relative flex-1">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input
-                  value={query}
-                  onChange={(e) => setQuery(e.target.value)}
-                  onKeyDown={(e) => e.key === "Enter" && handleSearch()}
-                  placeholder="Ex: plano de saúde negou cirurgia de urgência..."
-                  className="pl-10 bg-white text-foreground border-0 h-11"
-                />
-              </div>
+            <div className="flex flex-col sm:flex-row gap-3 mt-8">
+              <Input
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+                placeholder="Descreva a situação ou cole o número CNJ"
+                className="h-12 flex-1 bg-white text-navy border border-cream-dark rounded-md placeholder:text-navy/50 font-sans focus-visible:ring-gold"
+              />
               <Button
                 onClick={() => handleSearch()}
                 disabled={loading || !query.trim()}
-                className="bg-accent text-accent-foreground hover:bg-accent/90 h-11 px-6"
+                className="h-12 px-8 bg-gold text-navy hover:bg-gold-light"
               >
                 {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Buscar"}
               </Button>
             </div>
 
-            {/* Filter toggle */}
             <button
               onClick={() => setShowFilters(!showFilters)}
-              className="flex items-center gap-1.5 mx-auto mt-3 text-xs text-primary-foreground/60 hover:text-primary-foreground/80 transition-colors"
+              className="mt-4 text-note text-navy/70 underline underline-offset-4 hover:text-navy"
             >
-              <Filter className="h-3.5 w-3.5" />
-              Filtros avançados
-              {showFilters ? <ChevronUp className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />}
+              {showFilters ? "Ocultar filtros avançados" : "Filtros avançados"}
             </button>
 
             {showFilters && (
               <div className="mt-4 grid grid-cols-2 sm:grid-cols-4 gap-3">
                 <Select value={tribunal} onValueChange={setTribunal}>
-                  <SelectTrigger className="bg-white/10 border-white/20 text-primary-foreground text-sm h-9">
+                  <SelectTrigger className="bg-white border-cream-dark text-navy text-sm h-10">
                     <SelectValue placeholder="Tribunal" />
                   </SelectTrigger>
                   <SelectContent>
@@ -318,7 +302,7 @@ if (!res.ok) {
                 </Select>
 
                 <Select value={uf} onValueChange={setUf}>
-                  <SelectTrigger className="bg-white/10 border-white/20 text-primary-foreground text-sm h-9">
+                  <SelectTrigger className="bg-white border-cream-dark text-navy text-sm h-10">
                     <SelectValue placeholder="UF" />
                   </SelectTrigger>
                   <SelectContent>
@@ -328,7 +312,7 @@ if (!res.ok) {
                 </Select>
 
                 <Select value={instancia} onValueChange={setInstancia}>
-                  <SelectTrigger className="bg-white/10 border-white/20 text-primary-foreground text-sm h-9">
+                  <SelectTrigger className="bg-white border-cream-dark text-navy text-sm h-10">
                     <SelectValue placeholder="Instância" />
                   </SelectTrigger>
                   <SelectContent>
@@ -337,14 +321,14 @@ if (!res.ok) {
                   </SelectContent>
                 </Select>
 
-                <div className="flex items-center gap-2 bg-white/10 rounded-md px-3 h-9">
+                <div className="flex items-center gap-2 bg-white border border-cream-dark rounded-md px-3 h-10">
                   <Checkbox
                     id="comarca-pequena"
                     checked={comarcaPequena}
                     onCheckedChange={(v) => setComarcaPequena(!!v)}
-                    className="border-white/40"
+                    className="border-navy/30"
                   />
-                  <label htmlFor="comarca-pequena" className="text-xs text-primary-foreground/80 cursor-pointer">
+                  <label htmlFor="comarca-pequena" className="text-note text-navy/80 cursor-pointer">
                     Interior
                   </label>
                 </div>
@@ -353,248 +337,175 @@ if (!res.ok) {
           </div>
         </div>
 
-        {/* Results */}
-        <div className="container px-4 max-w-3xl mx-auto py-6">
-          {/* AI Expansion Info */}
+
+        {/* Resultados */}
+        <div className="container px-4 max-w-3xl mx-auto py-10 border-t border-cream-dark">
           {aiExpansion && (
-            <section className="mb-4 p-3 rounded-lg bg-accent/10 border border-accent/20" aria-labelledby="secao-ia">
-              <h2 id="secao-ia" className="flex items-center gap-2 text-sm font-medium text-accent mb-1">
-                <Sparkles className="h-4 w-4" />
+            <section className="mb-8" aria-labelledby="secao-ia">
+              <h2 id="secao-ia" className="text-sm font-medium text-navy">
                 Busca expandida por IA
               </h2>
 
-              <p className="text-xs text-muted-foreground mb-2">
+              <p className="text-note text-navy/70 mt-1">
                 {aiExpansion.intencao_detectada}
               </p>
               {aiExpansion.consultas_alternativas?.length > 0 && (
-                <div className="flex flex-wrap gap-1.5">
+                <p className="text-note text-navy/70 mt-2">
                   {aiExpansion.consultas_alternativas.map((alt, i) => (
-                    <button
-                      key={i}
-                      onClick={() => { setQuery(alt); handleSearch(alt); }}
-                      className="text-xs px-2 py-1 rounded-full bg-accent/10 text-accent hover:bg-accent/20 transition-colors"
-                    >
-                      {alt}
-                    </button>
+                    <span key={i}>
+                      {i > 0 ? ", " : ""}
+                      <button
+                        onClick={() => { setQuery(alt); handleSearch(alt); }}
+                        className="text-navy underline underline-offset-4 hover:text-gold"
+                      >
+                        {alt}
+                      </button>
+                    </span>
                   ))}
-                </div>
+                </p>
               )}
             </section>
           )}
 
-          {/* Results count */}
           {hasSearched && !loading && (
             <>
               <h2 className="sr-only">Resultados da busca</h2>
-              <p className="text-sm text-muted-foreground mb-4">
+              <p className="text-note text-navy/70 mb-6">
                 {results.length === 0 ? "Nenhuma decisão encontrada." : `${results.length} decisão(ões) encontrada(s)`}
               </p>
             </>
           )}
 
-
           {guestPreview && !loading && (
-            <Card className="mb-4 border-accent/30 bg-accent/5">
-              <CardContent className="flex flex-col gap-3 py-4 sm:flex-row sm:items-center sm:justify-between">
-                <div>
-                  <p className="text-sm font-medium text-foreground">Você está vendo uma prévia limitada</p>
-                  <p className="text-sm text-muted-foreground">
-                    Crie sua conta grátis para ver todos os resultados, usar a expansão de busca com IA e filtros avançados.
-                  </p>
-                </div>
-                <Button className="shrink-0" onClick={() => navigate("/auth")}>
-                  Criar conta grátis
-                </Button>
-              </CardContent>
-            </Card>
-          )}
-
-
-
-          {/* Loading */}
-          {loading && (
-            <div className="flex flex-col items-center justify-center py-16 gap-3">
-              <Loader2 className="h-8 w-8 animate-spin text-accent" />
-              <p className="text-sm text-muted-foreground">Buscando jurisprudência com IA...</p>
+            <div className="mb-8 border border-cream-dark bg-white rounded-lg p-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+              <div>
+                <p className="text-sm font-medium text-navy">Você está vendo uma prévia limitada</p>
+                <p className="text-sm text-navy/70">
+                  Crie sua conta grátis para ver todos os resultados, usar a expansão de busca com IA e filtros avançados.
+                </p>
+              </div>
+              <Button className="shrink-0 bg-gold text-navy hover:bg-gold-light" onClick={() => navigate("/auth")}>
+                Criar conta grátis
+              </Button>
             </div>
           )}
 
-          {/* Decision Cards */}
-          <div className="space-y-3">
+          {loading && (
+            <div className="flex flex-col items-center justify-center py-16 gap-3">
+              <Loader2 className="h-8 w-8 animate-spin text-gold" />
+              <p className="text-note text-navy/70">Buscando jurisprudência</p>
+            </div>
+          )}
+
+          <div>
             {results.map((d) => (
-              <Link key={d.id} to={`/decisao/${d.id}`} className="block">
-              <Card className="overflow-hidden hover:shadow-md transition-shadow">
-                <CardHeader className="pb-2 px-4 pt-4">
-                  <div className="flex items-start justify-between gap-2">
-                    <div className="flex flex-wrap items-center gap-1.5">
-                      {d.tribunal && (
-                        <Badge variant="secondary" className="text-xs font-semibold">
-                          {d.tribunal}
-                        </Badge>
-                      )}
-                      {!d.ementa && (
-                        <Badge variant="outline" className="text-xs text-muted-foreground">
-                          Andamento processual
-                        </Badge>
-                      )}
-                      {d.resultado && (
-                        <Badge className={`text-xs ${resultadoColor(d.resultado)}`}>
-                          {d.resultado}
-                        </Badge>
-                      )}
-                      {d.comarca_pequena && (
-                        <Badge className="text-xs bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300">
-                          <MapPin className="h-3 w-3 mr-0.5" />
-                          Interior
-                        </Badge>
-                      )}
+              <article key={d.id} className="border-t border-cream-dark pt-5 pb-6">
+                <p className="text-sm font-medium text-navy">
+                  {[
+                    d.tribunal,
+                    d.instancia ? (d.instancia === "1grau" ? "1º Grau" : d.instancia === "2grau" ? "2º Grau" : "Superior") : null,
+                    d.data_decisao ? new Date(d.data_decisao).toLocaleDateString("pt-BR") : null,
+                  ].filter(Boolean).join(", ")}
+                  {!d.ementa ? " (andamento processual)" : ""}
+                  {d.comarca_pequena ? " (interior)" : ""}
+                </p>
 
-                      {d.instancia && (
-                        <span className="text-xs text-muted-foreground">
-                          {d.instancia === "1grau" ? "1º Grau" : d.instancia === "2grau" ? "2º Grau" : "Superior"}
-                        </span>
-                      )}
-                    </div>
-                    {d.data_decisao && (
-                      <span className="flex items-center gap-1 text-xs text-muted-foreground flex-shrink-0">
-                        <Calendar className="h-3 w-3" />
-                        {new Date(d.data_decisao).toLocaleDateString("pt-BR")}
-                      </span>
-                    )}
-                  </div>
-                </CardHeader>
-
-                <CardContent className="px-4 pb-4">
-
-                  {/* Ementa — hero element */}
-{(d.ementa || d.resumo_ia) ? (
-  <p className={`text-sm font-medium leading-relaxed text-foreground ${expandedId === d.id ? "" : "line-clamp-3"}`}>
-    {d.ementa || d.resumo_ia}
-  </p>
-) : (
-  <p className="text-sm italic text-muted-foreground">Sem teor decisório disponível — apenas dados de tramitação.</p>
-)}
-
-
-                  {/* Processo number */}
-                  {d.numero_processo && !d.numero_processo.includes('<UNKNOWN>') && (
-                    <p className="text-xs text-muted-foreground font-mono mt-2">
-                      Proc. {d.numero_processo}
+                <Link to={`/decisao/${d.id}`} className="block mt-2 group">
+                  {(d.ementa || d.resumo_ia) ? (
+                    <p className={`font-serif text-base leading-relaxed text-navy group-hover:text-gold ${expandedId === d.id ? "" : "line-clamp-3"}`}>
+                      {d.ementa || d.resumo_ia}
+                    </p>
+                  ) : (
+                    <p className="font-serif text-base text-navy/70 group-hover:text-gold">
+                      Sem teor decisório disponível, apenas dados de tramitação.
                     </p>
                   )}
+                </Link>
 
-                  {/* Relator + Órgão Julgador + Comarca */}
-                  <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 mt-1">
-                    {d.relator && (
-                      <span className="text-xs text-muted-foreground">
-                        Rel. {d.relator}
-                      </span>
-                    )}
-                    {d.orgao_julgador && (
-                      <span className="text-xs text-muted-foreground flex items-center gap-1">
-                        <Gavel className="h-3 w-3" />
-                        {d.orgao_julgador}
-                      </span>
-                    )}
-                    {d.comarca && d.uf && (
-                      <span className={`text-xs flex items-center gap-1 ${d.comarca_pequena ? "text-purple-700 dark:text-purple-300 font-medium" : "text-muted-foreground"}`}>
-                        <MapPin className="h-3 w-3" />
-                        {d.comarca}/{d.uf}
-                      </span>
-                    )}
+                {d.numero_processo && !d.numero_processo.includes('<UNKNOWN>') && (
+                  <p className="font-mono text-note text-navy/70 mt-2">
+                    {d.numero_processo}
+                  </p>
+                )}
+
+                <p className="text-note text-navy/60 mt-1">
+                  {[
+                    d.relator ? `Rel. ${d.relator}` : null,
+                    d.orgao_julgador,
+                    d.comarca && d.uf ? `${d.comarca}/${d.uf}` : null,
+                    d.resultado,
+                  ].filter(Boolean).join(", ")}
+                </p>
+
+                {d.resumo_ia && expandedId === d.id && (
+                  <div className="mt-3 border-l-2 border-cream-dark pl-4">
+                    <p className="text-note text-navy/70">Resumo por IA</p>
+                    <p className="text-sm text-navy/80 mt-1">{d.resumo_ia}</p>
                   </div>
+                )}
 
-                  {/* AI Summary */}
-                  {d.resumo_ia && expandedId === d.id && (
-                    <div className="mt-3 p-2.5 rounded bg-accent/5 border border-accent/10">
-                      <p className="text-xs font-medium text-accent mb-1 flex items-center gap-1">
-                        <Sparkles className="h-3 w-3" /> Resumo IA
-                      </p>
-                      <p className="text-sm text-muted-foreground">{d.resumo_ia}</p>
-                    </div>
-                  )}
+                {d.temas_juridicos?.length > 0 && expandedId === d.id && (
+                  <p className="text-note text-navy/70 mt-3">
+                    Temas: {d.temas_juridicos.join(", ")}
+                  </p>
+                )}
 
-                  {/* Temas */}
-                  {d.temas_juridicos?.length > 0 && expandedId === d.id && (
-                    <div className="flex flex-wrap gap-1 mt-3">
-                      {d.temas_juridicos.map((tema, i) => (
-                        <Badge key={i} variant="outline" className="text-xs">
-                          {tema}
-                        </Badge>
-                      ))}
-                    </div>
-                  )}
+                <div className="flex flex-wrap items-center gap-x-5 gap-y-2 mt-4 text-note">
+                  <button
+                    onClick={() => setExpandedId(expandedId === d.id ? null : d.id)}
+                    className="text-navy underline underline-offset-4 hover:text-gold"
+                  >
+                    {expandedId === d.id ? "Ver menos" : "Ver mais"}
+                  </button>
 
-                  {/* Actions */}
-                  <div className="flex items-center justify-between mt-3 pt-2 border-t border-border">
+                  <button
+                    onClick={(e) => handleCopyCitation(e, d)}
+                    className="text-navy underline underline-offset-4 hover:text-gold inline-flex items-center gap-1"
+                    title="Copiar citação formatada"
+                  >
+                    {copiedId === d.id ? <Check className="h-3.5 w-3.5" /> : null}
+                    {copiedId === d.id ? "Copiado" : "Citar"}
+                  </button>
+
+                  {d.numero_processo && !d.numero_processo.includes('<UNKNOWN>') && (
                     <button
-                      onClick={(e) => { e.preventDefault(); e.stopPropagation(); setExpandedId(expandedId === d.id ? null : d.id); }}
-                      className="text-xs text-accent hover:underline"
+                      onClick={() => {
+                        navigator.clipboard.writeText(d.numero_processo!);
+                        toast({ title: "Nº CNJ copiado", description: "Cole na consulta processual do tribunal de origem." });
+                      }}
+                      className="text-navy underline underline-offset-4 hover:text-gold"
+                      title="Copiar número CNJ do processo"
                     >
-                      {expandedId === d.id ? "Ver menos" : "Ver mais"}
+                      Copiar nº CNJ
                     </button>
+                  )}
 
-                    <div className="flex items-center gap-3">
-                      <button
-                        onClick={(e) => handleCopyCitation(e, d)}
-                        className="text-xs text-muted-foreground hover:text-accent flex items-center gap-1 transition-colors"
-                        title="Copiar citação formatada"
-                      >
-                        {copiedId === d.id ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
-                        {copiedId === d.id ? "Copiado" : "Citar"}
-                      </button>
-                     {d.numero_processo && !d.numero_processo.includes('<UNKNOWN>') && (
-                       <button
-                         onClick={(e) => {
-                           e.preventDefault();
-                           e.stopPropagation();
-                           navigator.clipboard.writeText(d.numero_processo!);
-                           toast({ title: "Nº CNJ copiado", description: "Cole na consulta processual do tribunal de origem." });
-                         }}
-                         className="text-xs text-muted-foreground hover:text-accent flex items-center gap-1 transition-colors"
-                         title="Copiar número CNJ do processo"
-                       >
-                         <Copy className="h-3 w-3" />
-                         Copiar nº CNJ
-                       </button>
-                     )}
-
-                     {d.source_url && (
-                       <a
-                         href={d.source_url}
-                         target="_blank"
-                         rel="noopener noreferrer"
-                         onClick={(e) => e.stopPropagation()}
-                         className="text-xs text-muted-foreground hover:text-accent flex items-center gap-1 transition-colors"
-                         title="Abrir a decisão na fonte oficial"
-                       >
-                         <ExternalLink className="h-3 w-3" />
-                         Ver no tribunal
-                       </a>
-                     )}
-                    </div>
-
-                  </div>
-                </CardContent>
-              </Card>
-              </Link>
+                  {d.source_url && (
+                    <a
+                      href={d.source_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-navy underline underline-offset-4 hover:text-gold"
+                      title="Abrir a decisão na fonte oficial"
+                    >
+                      Ver no tribunal
+                    </a>
+                  )}
+                </div>
+              </article>
             ))}
           </div>
 
-          {/* Empty State */}
           {!hasSearched && (
-            <div className="text-center py-16">
-              <Scale className="h-12 w-12 mx-auto text-muted-foreground/30 mb-4" />
-              <h2 className="font-serif text-lg font-semibold text-foreground mb-2">
-                Consulte processos e decisões
-              </h2>
-              <p className="text-sm text-muted-foreground max-w-md mx-auto">
-                Descreva a situação jurídica em linguagem natural. A IA expande sua busca com termos técnicos e localiza processos nos dados oficiais do CNJ, além das decisões com ementa já indexadas.
+            <div className="py-10">
+              <h2 className="text-h3 text-navy">Consulte processos e decisões</h2>
+              <p className="text-navy/70 max-w-[60ch] mt-3">
+                A busca localiza processos nos dados oficiais do CNJ e decisões com ementa já indexadas. Todo resultado traz tribunal, número e link para a fonte.
               </p>
-
             </div>
           )}
         </div>
+
       </main>
       <AppFooter />
     </div>
