@@ -57,6 +57,7 @@ const fonteRows: { label: string; sem: string; com: string }[] = [
   { label: "Número do processo", sem: "Formato plausível, sem garantia de existir", com: "Número CNJ real, com botão de copiar" },
   { label: "Conferência", sem: "Não há link", com: "Link direto para a fonte no CNJ/DataJud" },
   { label: "Quando não há decisão", sem: "A resposta preenche o vazio", com: "A resposta diz que não encontrou" },
+  { label: "Origem da fonte", sem: "Não informada", com: "CNJ/DataJud, registro oficial do Judiciário, não um acervo privado" },
 ];
 
 const plans: { name: string; price: string; period: string; desc: string; features: string[]; cta: string; highlight: boolean; annualNote?: string }[] = [
