@@ -216,7 +216,7 @@ if (!res.ok) {
 
 
   return (
-    <div className="min-h-screen flex flex-col bg-background">
+    <div className="min-h-screen flex flex-col bg-cream text-navy font-sans">
       <AppHeader />
       <SEO
         title="Consulta processual e jurisprudência — Honorífico"
