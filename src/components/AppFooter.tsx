@@ -3,14 +3,11 @@ import Logo from "@/components/Logo";
 
 export function AppFooter() {
   return (
-    <footer
-      className="py-14 border-t mt-auto"
-      style={{ backgroundColor: "hsl(218 60% 5%)", borderColor: "hsl(var(--gold) / 0.1)" }}
-    >
+    <footer className="bg-navy border-t border-gold/12 py-14 mt-auto">
       <div className="container mx-auto px-4 sm:px-6">
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-8 lg:gap-6 mb-12">
           <div>
-            <h4 className="font-sans font-semibold text-white text-sm mb-4">Calculadoras</h4>
+            <h4 className="font-sans font-medium text-cream text-sm mb-4">Calculadoras</h4>
             <ul className="space-y-2">
               {[
                 { label: "Correção monetária e juros", to: "/calculadoras/correcao-monetaria-juros-lei-14905" },
@@ -22,7 +19,7 @@ export function AppFooter() {
                 { label: "Pensão alimentícia", to: "/calculadoras/pensao-alimenticia" },
               ].map((l) => (
                 <li key={l.label}>
-                  <Link to={l.to} className="text-sm text-white/40 hover:text-[hsl(var(--gold))] transition-colors">
+                  <Link to={l.to} className="text-sm text-cream/50 hover:text-gold transition-colors">
                     {l.label}
                   </Link>
                 </li>
@@ -31,7 +28,7 @@ export function AppFooter() {
           </div>
 
           <div>
-            <h4 className="font-sans font-semibold text-white text-sm mb-4">Plataforma</h4>
+            <h4 className="font-sans font-medium text-cream text-sm mb-4">Plataforma</h4>
             <ul className="space-y-2">
               {[
                 { label: "Jurisprudência", to: "/jurisprudencia" },
@@ -40,9 +37,10 @@ export function AppFooter() {
                 { label: "Chat Jurídico", to: "/chat" },
                 { label: "Painel do Advogado", to: "/painel-advogado" },
                 { label: "Modelos de Minutas", to: "/modelos-de-minutas" },
+                { label: "Por que o Honorífico", to: "/comparativo" },
               ].map((l) => (
                 <li key={l.label}>
-                  <Link to={l.to} className="text-sm text-white/40 hover:text-[hsl(var(--gold))] transition-colors">
+                  <Link to={l.to} className="text-sm text-cream/50 hover:text-gold transition-colors">
                     {l.label}
                   </Link>
                 </li>
@@ -51,17 +49,16 @@ export function AppFooter() {
           </div>
 
           <div>
-            <h4 className="font-sans font-semibold text-white text-sm mb-4">Conta</h4>
+            <h4 className="font-sans font-medium text-cream text-sm mb-4">Conta</h4>
             <ul className="space-y-2">
               {[
                 { label: "Planos e Preços", to: "/planos" },
                 { label: "Minha Conta", to: "/conta" },
                 { label: "Histórico", to: "/historico" },
-                { label: "Por que o Honorífico", to: "/comparativo" },
                 { label: "Mapa do Site", to: "/mapa-do-site" },
               ].map((l) => (
                 <li key={l.label}>
-                  <Link to={l.to} className="text-sm text-white/40 hover:text-[hsl(var(--gold))] transition-colors">
+                  <Link to={l.to} className="text-sm text-cream/50 hover:text-gold transition-colors">
                     {l.label}
                   </Link>
                 </li>
@@ -70,7 +67,7 @@ export function AppFooter() {
           </div>
 
           <div>
-            <h4 className="font-sans font-semibold text-white text-sm mb-4">Legal</h4>
+            <h4 className="font-sans font-medium text-cream text-sm mb-4">Legal</h4>
             <ul className="space-y-2">
               {[
                 { label: "Termos e Condições", to: "/termos" },
@@ -78,7 +75,7 @@ export function AppFooter() {
                 { label: "Aviso de Privacidade", to: "/privacidade" },
               ].map((l) => (
                 <li key={l.label}>
-                  <Link to={l.to} className="text-sm text-white/40 hover:text-[hsl(var(--gold))] transition-colors">
+                  <Link to={l.to} className="text-sm text-cream/50 hover:text-gold transition-colors">
                     {l.label}
                   </Link>
                 </li>
@@ -87,33 +84,30 @@ export function AppFooter() {
           </div>
 
           <div className="col-span-2 sm:col-span-3 lg:col-span-1">
-            <h4 className="font-sans font-semibold text-white text-sm mb-4">Sobre</h4>
+            <h4 className="font-sans font-medium text-cream text-sm mb-4">Sobre</h4>
             <div className="mb-3">
               <Logo className="h-7" />
             </div>
-            <p className="text-sm text-white/40 leading-relaxed">
-              Cálculos e prazos jurídicos com fonte oficial, com memória de cálculo em PDF e Word.
+            <p className="text-sm text-cream/50 leading-relaxed">
+              Diagnóstico, análise de documentos, consulta processual e petição, com precedentes do CNJ. Calculadoras com séries do Banco Central e memória de cálculo.
             </p>
-            <p className="text-xs text-white/30 mt-3 leading-relaxed">
-              Pagamentos processados com segurança via <strong className="text-white/50">Stripe</strong>.
+            <p className="text-xs text-cream/40 mt-3 leading-relaxed">
+              Pagamentos processados com segurança via <strong className="text-cream/72">Stripe</strong>.
             </p>
           </div>
         </div>
 
-        <div
-          className="border-t pt-5 flex flex-col items-center gap-2 text-center"
-          style={{ borderColor: "hsl(var(--gold) / 0.1)" }}
-        >
-          <p className="text-xs text-white/30">
+        <div className="border-t border-gold/12 pt-5 flex flex-col items-center gap-2 text-center">
+          <p className="text-xs text-cream/40">
             © {new Date().getFullYear()} Honorífico. Todos os direitos reservados.
           </p>
-          <p className="text-xs text-white/25">
+          <p className="text-xs text-cream/40">
             Desenvolvido por{" "}
             <a
               href="https://www.wrcc.design"
               target="_blank"
               rel="noopener noreferrer"
-              className="hover:text-[hsl(var(--gold))] transition-colors underline underline-offset-2"
+              className="hover:text-gold transition-colors underline underline-offset-2"
             >
               WRCC Design
             </a>

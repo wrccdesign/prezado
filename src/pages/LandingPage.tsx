@@ -57,6 +57,7 @@ const fonteRows: { label: string; sem: string; com: string }[] = [
   { label: "Número do processo", sem: "Formato plausível, sem garantia de existir", com: "Número CNJ real, com botão de copiar" },
   { label: "Conferência", sem: "Não há link", com: "Link direto para a fonte no CNJ/DataJud" },
   { label: "Quando não há decisão", sem: "A resposta preenche o vazio", com: "A resposta diz que não encontrou" },
+  { label: "Origem da fonte", sem: "Não informada", com: "CNJ/DataJud, registro oficial do Judiciário, não um acervo privado" },
 ];
 
 const plans: { name: string; price: string; period: string; desc: string; features: string[]; cta: string; highlight: boolean; annualNote?: string }[] = [
@@ -178,7 +179,7 @@ export default function LandingPage() {
         <div className="container mx-auto px-4 sm:px-6">
           <h2 className="text-h2">Por que a fonte importa</h2>
           <p className="text-body-serif text-navy/80 max-w-[60ch] mt-3">
-            Uma resposta jurídica sem fonte é uma aposta. A diferença está em quatro pontos.
+            Uma resposta jurídica sem fonte é uma aposta. A diferença está em cinco pontos.
           </p>
 
           <div className="overflow-x-auto">
