@@ -3,19 +3,14 @@ import { useParams, Link } from "react-router-dom";
 import ReactMarkdown from "react-markdown";
 import { AppHeader } from "@/components/AppHeader";
 import { AppFooter } from "@/components/AppFooter";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent } from "@/components/ui/card";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import {
-  ArrowLeft, Calendar, MapPin, Scale, Send, Loader2, Sparkles, MessageCircle,
-  ExternalLink, BookOpen, FileText, Lightbulb, Copy, Check, Gavel,
-} from "lucide-react";
+import { Send, Loader2, Check } from "lucide-react";
 import { formatCitation } from "@/lib/citation";
 import { SEO } from "@/components/SEO";
 
