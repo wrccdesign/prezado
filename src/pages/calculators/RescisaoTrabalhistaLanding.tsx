@@ -27,7 +27,7 @@ export default function RescisaoTrabalhistaLanding() {
       ]}
       content={
         <>
-          <h2 className="text-xl font-semibold">O que muda em cada tipo de rescisão</h2>
+          <h2 className="text-h3 text-navy">O que muda em cada tipo de rescisão</h2>
           <p>
             Na <strong>dispensa sem justa causa</strong> o trabalhador recebe o conjunto completo:
             saldo de salário, aviso prévio indenizado proporcional, 13º proporcional, férias
@@ -42,7 +42,7 @@ export default function RescisaoTrabalhistaLanding() {
             férias proporcionais não são pagos.
           </p>
 
-          <h2 className="text-xl font-semibold">Acordo mútuo (art. 484-A da CLT)</h2>
+          <h2 className="text-h3 text-navy">Acordo mútuo (art. 484-A da CLT)</h2>
           <p>
             No distrato por acordo entre empregado e empregador, previsto no art. 484-A da CLT, o
             aviso prévio indenizado é pago pela metade e a multa do FGTS cai para 20%. As demais
@@ -51,7 +51,7 @@ export default function RescisaoTrabalhistaLanding() {
             o acordo mútuo.
           </p>
 
-          <h2 className="text-xl font-semibold">Base de cálculo e aviso prévio proporcional</h2>
+          <h2 className="text-h3 text-navy">Base de cálculo e aviso prévio proporcional</h2>
           <p>
             A remuneração usada como base soma o salário-base às horas extras habituais e às
             comissões informadas. O aviso prévio segue a Lei 12.506/2011: 30 dias, mais 3 dias por

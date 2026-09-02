@@ -27,7 +27,7 @@ export default function PrazoProcessualLanding() {
       ]}
       content={
         <>
-          <h2 className="text-xl font-semibold">Quando o prazo começa a correr</h2>
+          <h2 className="text-h3 text-navy">Quando o prazo começa a correr</h2>
           <p>
             A contagem só se inicia no primeiro dia útil seguinte à publicação. Quando a intimação é
             eletrônica pelo Diário de Justiça, a publicação é o dia útil seguinte à disponibilização
@@ -35,7 +35,7 @@ export default function PrazoProcessualLanding() {
             calculadora aplica essa cadeia automaticamente quando você informa a data de
             disponibilização.
           </p>
-          <h2 className="text-xl font-semibold">Dias úteis, dias corridos e suspensões</h2>
+          <h2 className="text-h3 text-navy">Dias úteis, dias corridos e suspensões</h2>
           <p>
             Prazos processuais civis correm em dias úteis (art. 219 do CPC); prazos materiais,
             penais e da maioria dos procedimentos trabalhistas correm em dias corridos. Além dos

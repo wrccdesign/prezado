@@ -25,14 +25,14 @@ export default function OperacoesDatasLanding() {
       ]}
       content={
         <>
-          <h2 className="text-xl font-semibold">Para que serve no dia a dia</h2>
+          <h2 className="text-h3 text-navy">Para que serve no dia a dia</h2>
           <p>
             Serve para os prazos que não são processuais: vencimento contratual, contagem de
             carência, agenda interna do escritório, controle de diligências e conferência rápida do
             intervalo entre dois marcos temporais. Você escolhe se a contagem é em dias úteis ou
             corridos e o resultado sai imediatamente.
           </p>
-          <h2 className="text-xl font-semibold">Quando usar a calculadora de prazo processual</h2>
+          <h2 className="text-h3 text-navy">Quando usar a calculadora de prazo processual</h2>
           <p>
             Se o prazo corre dentro de um processo, use a{" "}
             <a href="/calculadoras/prazo-processual">calculadora de prazo processual</a>: ela

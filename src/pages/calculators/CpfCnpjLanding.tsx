@@ -25,14 +25,14 @@ export default function CpfCnpjLanding() {
       ]}
       content={
         <>
-          <h2 className="text-xl font-semibold">O que a validação verifica</h2>
+          <h2 className="text-h3 text-navy">O que a validação verifica</h2>
           <p>
             CPF e CNPJ terminam em dígitos verificadores calculados a partir dos números anteriores
             pelo algoritmo de módulo 11. A validação confirma se esses dígitos batem com o restante
             da sequência, é o mesmo teste que sistemas de tribunais e cartórios fazem antes de
             aceitar o documento em uma petição ou contrato.
           </p>
-          <h2 className="text-xl font-semibold">O que ela não verifica</h2>
+          <h2 className="text-h3 text-navy">O que ela não verifica</h2>
           <p>
             Um número matematicamente válido não significa que exista, esteja ativo ou pertença à
             pessoa indicada. A verificação de titularidade e situação cadastral só é possível nos
