@@ -239,7 +239,7 @@ export const ROUTE_META: RouteMeta[] = [
     path: "/comparativo",
     title: "Comparativo de ferramentas — Honorífico",
     description:
-      "Como o Honorífico se posiciona frente a JusBrasil, Advbox e assistentes generalistas em cálculo com fonte, consulta ao acervo do CNJ e geração de peças.",
+      "Comparativo entre o Honorífico, assistentes de IA generalistas, portais de jurisprudência e sistemas de gestão: origem do precedente, link para a fonte oficial, cálculo com série do Banco Central e exportação em PDF e Word.",
     ogImage: OG_DEFAULT, // TODO: OG própria
   },
   {
