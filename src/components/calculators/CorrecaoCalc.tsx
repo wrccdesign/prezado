@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -316,9 +315,9 @@ export function CorrecaoCalc({ onUsarValor, usarValorLabel = "Usar este valor", 
       {result && (
         <div className="space-y-4">
           {result.meses_faltantes.length > 0 && (
-            <div className="flex items-start gap-2 rounded-lg border border-yellow-500/30 bg-yellow-50 dark:bg-yellow-950/20 p-4">
-              <AlertTriangle className="h-5 w-5 text-yellow-600 dark:text-yellow-400 shrink-0 mt-0.5" />
-              <div className="text-sm text-yellow-700 dark:text-yellow-300">
+            <div className="flex items-start gap-2 rounded-lg border border-yellow-500/30 bg-yellow-50  p-4">
+              <AlertTriangle className="h-5 w-5 text-yellow-600  shrink-0 mt-0.5" />
+              <div className="text-sm text-yellow-700 ">
                 <p className="font-medium">Índices ainda não divulgados para os meses abaixo — considerados como 0%:</p>
                 <p className="mt-1">
                   {result.meses_faltantes.map(m => `${mesLabel(m.mes_ref)} (${m.indice.toUpperCase()})`).join(", ")}
@@ -335,18 +334,18 @@ export function CorrecaoCalc({ onUsarValor, usarValorLabel = "Usar este valor", 
               { label: "Honorários", v: result.honorarios },
             ].map(c => (
               <Card key={c.label}>
-                <CardContent className="pt-6">
+                <div className="p-5">
                   <p className="text-xs text-muted-foreground">{c.label}</p>
-                  <p className="text-base font-semibold">{fmt(c.v)}</p>
-                </CardContent>
-              </Card>
+                  <p className="text-base font-medium">{fmt(c.v)}</p>
+                </div>
+              </div>
             ))}
-            <Card className="border-primary/30 bg-primary/5">
-              <CardContent className="pt-6">
+            <div className="rounded-lg border border-cream-dark bg-white border-primary/30 bg-primary/5">
+              <div className="p-5">
                 <p className="text-xs text-muted-foreground">TOTAL</p>
-                <p className="text-base font-bold text-primary">{fmt(result.total)}</p>
-              </CardContent>
-            </Card>
+                <p className="text-base  text-primary">{fmt(result.total)}</p>
+              </div>
+            </div>
           </div>
 
           <div className="flex flex-wrap gap-2">
@@ -394,7 +393,7 @@ export function CorrecaoCalc({ onUsarValor, usarValorLabel = "Usar este valor", 
                     {result.memoria.map(l => (
                       <TableRow key={l.mes_ref}>
                         <TableCell className="font-medium">{mesLabel(l.mes_ref)}</TableCell>
-                        <TableCell className="uppercase text-xs">{l.indice_utilizado}</TableCell>
+                        <TableCell className="text-xs">{l.indice_utilizado}</TableCell>
                         <TableCell className="text-right">{l.variacao_percentual.toFixed(2)}%</TableCell>
                         <TableCell className="text-right">{l.fator_acumulado.toFixed(6)}</TableCell>
                         <TableCell className="text-right">{fmt(l.saldo_corrigido)}</TableCell>
@@ -412,8 +411,8 @@ export function CorrecaoCalc({ onUsarValor, usarValorLabel = "Usar este valor", 
             </CollapsibleContent>
           </Collapsible>
 
-          <Card className="border-muted">
-            <CardContent className="pt-6 space-y-1 text-xs text-muted-foreground">
+          <div className="rounded-lg border border-cream-dark bg-white border-muted">
+            <div className="p-5 space-y-1 text-xs text-muted-foreground">
               <p><strong className="text-foreground">Fonte:</strong> {result.fonte}</p>
               <p>
                 <strong className="text-foreground">Última sincronização dos índices:</strong>{" "}
@@ -436,8 +435,8 @@ export function CorrecaoCalc({ onUsarValor, usarValorLabel = "Usar este valor", 
                 Banco Central (art. 406, §1º, do CC), desconsiderando-se resultado negativo (art. 406, §3º).
               </p>
 
-            </CardContent>
-          </Card>
+            </div>
+          </div>
         </div>
       )}
     </div>

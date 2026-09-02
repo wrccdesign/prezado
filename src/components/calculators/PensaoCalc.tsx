@@ -4,7 +4,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Card, CardContent } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { AlertTriangle, FileText } from "lucide-react";
 import { toast } from "sonner";
@@ -175,13 +174,13 @@ export function PensaoCalc() {
 
       {result && (
         <div className="space-y-4">
-          <Card className="border-primary/30 bg-primary/5">
-            <CardContent className="pt-6 text-center space-y-1">
+          <div className="rounded-lg border border-cream-dark bg-white border-primary/30 bg-primary/5">
+            <div className="p-5 text-center space-y-1">
               <p className="text-sm text-muted-foreground">Valor Sugerido</p>
-              <p className="text-3xl font-bold text-primary">{fmt(result.sugerido)}</p>
+              <p className="text-3xl  text-primary">{fmt(result.sugerido)}</p>
               <p className="text-sm text-muted-foreground">({result.percentualSug.toFixed(1)}% da renda)</p>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
 
           <div className="rounded-md border overflow-x-auto">
             <Table>
@@ -194,24 +193,24 @@ export function PensaoCalc() {
               </TableHeader>
               <TableBody>
                 <TableRow><TableCell>Faixa Mínima</TableCell><TableCell className="text-right">{fmt(result.minimo)}</TableCell><TableCell className="text-right">{result.percentualMin.toFixed(1)}%</TableCell></TableRow>
-                <TableRow className="bg-primary/5 font-semibold"><TableCell>Valor Sugerido</TableCell><TableCell className="text-right">{fmt(result.sugerido)}</TableCell><TableCell className="text-right">{result.percentualSug.toFixed(1)}%</TableCell></TableRow>
+                <TableRow className="bg-primary/5 font-medium"><TableCell>Valor Sugerido</TableCell><TableCell className="text-right">{fmt(result.sugerido)}</TableCell><TableCell className="text-right">{result.percentualSug.toFixed(1)}%</TableCell></TableRow>
                 <TableRow><TableCell>Faixa Máxima</TableCell><TableCell className="text-right">{fmt(result.maximo)}</TableCell><TableCell className="text-right">{result.percentualMax.toFixed(1)}%</TableCell></TableRow>
                 <TableRow><TableCell>Valor por Filho (sugerido)</TableCell><TableCell className="text-right">{fmt(result.porFilhoSug)}</TableCell><TableCell className="text-right">—</TableCell></TableRow>
               </TableBody>
             </Table>
           </div>
 
-          <Card className="bg-muted/50">
-            <CardContent className="pt-6 text-sm text-muted-foreground space-y-2">
-              <p className="font-semibold text-foreground">Como o juiz calcula a pensão?</p>
+          <div className="rounded-lg border border-cream-dark bg-white bg-muted/50">
+            <div className="p-5 text-sm text-muted-foreground space-y-2">
+              <p className="font-medium text-foreground">Como o juiz calcula a pensão?</p>
               <p>O valor da pensão alimentícia é definido pelo juiz com base no <strong>binômio necessidade × possibilidade</strong> (art. 1.694 do Código Civil).</p>
               <p>Na prática, a jurisprudência do STJ costuma fixar entre <strong>15% e 30%</strong> da renda líquida por filho.</p>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
 
           <div className="flex items-start gap-2 rounded-md border border-yellow-500/30 bg-yellow-500/10 p-4">
             <AlertTriangle className="h-5 w-5 shrink-0 text-yellow-600 mt-0.5" />
-            <p className="text-sm text-yellow-800 dark:text-yellow-200">Este é um valor de referência. O juiz decidirá com base nas necessidades e possibilidades das partes.</p>
+            <p className="text-sm text-yellow-800 ">Este é um valor de referência. O juiz decidirá com base nas necessidades e possibilidades das partes.</p>
           </div>
 
           <Button variant="outline" onClick={() => requireAccount(gerarPDF, "baixar o relatório em PDF")} className="h-11 w-full sm:w-auto">

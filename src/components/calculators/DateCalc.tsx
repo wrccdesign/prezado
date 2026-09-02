@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -107,14 +106,14 @@ export function DateCalc() {
       </Button>
 
       {resultado && (
-        <Card>
-          <CardContent className="pt-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-            <p className="text-lg font-semibold">{resultado}</p>
+        <div className="rounded-lg border border-cream-dark bg-white">
+          <div className="p-5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <p className="text-lg font-medium">{resultado}</p>
             <Button variant="outline" size="sm" onClick={copiar}>
               <Copy className="mr-1.5 h-4 w-4" /> Copiar
             </Button>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       )}
 
       <p className="text-xs text-muted-foreground">
