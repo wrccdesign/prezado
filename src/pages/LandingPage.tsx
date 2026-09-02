@@ -8,6 +8,7 @@ import { AppFooter } from "@/components/AppFooter";
 import { SEO } from "@/components/SEO";
 import { CorrecaoCalc } from "@/components/calculators/CorrecaoCalc";
 import { savePeticaoPrefill } from "@/lib/peticaoPrefill";
+import { FonteTable } from "@/components/FonteTable";
 
 // Registro real da tabela `decisions`, id 2247d42f-1f63-44e9-b884-eda515070ff6
 const heroDecision = {
@@ -54,13 +55,6 @@ const etapas = [
   },
 ];
 
-const fonteRows: { label: string; sem: string; com: string }[] = [
-  { label: "Tribunal", sem: "Pode vir inventado ou omitido", com: "Vem do registro oficial consultado" },
-  { label: "Número do processo", sem: "Formato plausível, sem garantia de existir", com: "Número CNJ real, com botão de copiar" },
-  { label: "Conferência", sem: "Não há link", com: "Link direto para a fonte no CNJ/DataJud" },
-  { label: "Quando não há decisão", sem: "A resposta preenche o vazio", com: "A resposta diz que não encontrou" },
-  { label: "Origem da fonte", sem: "Não informada", com: "CNJ/DataJud, registro oficial do Judiciário, não um acervo privado" },
-];
 
 const plans: { name: string; price: string; period: string; desc: string; features: string[]; cta: string; highlight: boolean; annualNote?: string }[] = [
   { name: "Gratuito", price: "R$ 0", period: "/mês", desc: "Para conhecer a plataforma", features: ["Calculadoras ilimitadas", "20 consultas processuais/mês", "10 mensagens de chat/mês", "1 diagnóstico jurídico/mês", "Petições não incluídas"], cta: "Começar Grátis", highlight: false },
@@ -221,40 +215,15 @@ export default function LandingPage() {
       {/* POR QUE A FONTE IMPORTA */}
       <section id="fonte" className="bg-cream text-navy border-t border-cream-dark py-16 md:py-24">
         <div className="container mx-auto px-4 sm:px-6">
-          <h2 className="text-h2">Por que a fonte importa</h2>
-          <p className="text-body-serif text-navy/80 max-w-[60ch] mt-3">
-            Uma resposta jurídica sem fonte é uma aposta. A diferença está em cinco pontos.
-          </p>
-
-          <div className="overflow-x-auto">
-            <table className="mt-10 w-full text-sm text-left">
-              <thead>
-                <tr className="border-b border-cream-dark font-medium">
-                  <th scope="col" className="py-3 pr-4"></th>
-                  <th scope="col" className="py-3 pr-4">Sem fonte verificável</th>
-                  <th scope="col" className="py-3">No Honorífico</th>
-                </tr>
-              </thead>
-              <tbody>
-                {fonteRows.map((r) => (
-                  <tr key={r.label} className="border-b border-cream-dark">
-                    <th scope="row" className="py-3 pr-4 font-medium align-top">{r.label}</th>
-                    <td className="py-3 pr-4 text-navy/70 align-top">{r.sem}</td>
-                    <td className="py-3 align-top">{r.com}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-
-          <p className="text-note text-navy/60 mt-4">
-            Coluna da esquerda é ilustrativa e não se refere a nenhuma ferramenta específica.
-          </p>
-          <Link to="/jurisprudencia" className="mt-4 inline-block font-medium underline underline-offset-4">
-            Consultar processos
-          </Link>
+          <FonteTable
+            title="Por que a fonte importa"
+            intro="Uma resposta jurídica sem fonte é uma aposta. A diferença está em cinco pontos."
+            linkLabel="Consultar processos"
+            linkTo="/jurisprudencia"
+          />
         </div>
       </section>
+
 
       {/* MEMÓRIA DE CÁLCULO */}
       <section id="memoria" className="bg-cream text-navy border-t border-cream-dark py-16 md:py-24">
