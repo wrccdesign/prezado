@@ -252,7 +252,7 @@ export function CorrecaoCalc({ onUsarValor, usarValorLabel = "Usar este valor", 
           <Label>Cálculo pro rata die</Label>
           <div className="flex items-center gap-3 pt-1">
             <Switch checked={proRata} onCheckedChange={setProRata} />
-            <span className="text-sm text-muted-foreground">
+            <span className="text-sm text-navy/70">
               {proRata ? "Proporcional nos meses parciais" : "Meses inteiros"}
             </span>
           </div>
@@ -262,7 +262,7 @@ export function CorrecaoCalc({ onUsarValor, usarValorLabel = "Usar este valor", 
             <Label>Manter o índice escolhido após 30/08/2024</Label>
             <div className="flex items-center gap-3 pt-1">
               <Switch checked={manterIndiceContratual} onCheckedChange={setManterIndiceContratual} />
-              <span className="text-sm text-muted-foreground">
+              <span className="text-sm text-navy/70">
                 {manterIndiceContratual
                   ? "Índice contratual mantido (art. 389, § único, CC, norma supletiva)"
                   : "Substituir pelo IPCA a partir da vigência da Lei 14.905/2024"}
@@ -279,7 +279,7 @@ export function CorrecaoCalc({ onUsarValor, usarValorLabel = "Usar este valor", 
           <Label>A multa incide também sobre os juros?</Label>
           <div className="flex items-center gap-3 pt-1">
             <Switch checked={multaSobreJuros} onCheckedChange={setMultaSobreJuros} />
-            <span className="text-sm text-muted-foreground">{multaSobreJuros ? "Sim" : "Não"}</span>
+            <span className="text-sm text-navy/70">{multaSobreJuros ? "Sim" : "Não"}</span>
           </div>
         </div>
         <div className="space-y-2">
@@ -411,7 +411,7 @@ export function CorrecaoCalc({ onUsarValor, usarValorLabel = "Usar este valor", 
           </Collapsible>
 
           <div className="rounded-lg border border-cream-dark bg-white border-muted">
-            <div className="p-5 space-y-1 text-xs text-muted-foreground">
+            <div className="p-5 space-y-1 text-xs text-navy/60">
               <p><strong className="text-foreground">Fonte:</strong> {result.fonte}</p>
               <p>
                 <strong className="text-foreground">Última sincronização dos índices:</strong>{" "}

@@ -116,7 +116,7 @@ export function DateCalc() {
         </div>
       )}
 
-      <p className="text-xs text-muted-foreground">
+      <p className="text-xs text-navy/60">
         Para cálculos processuais completos (feriados, recesso forense, publicação no DJe), use a
         Calculadora de Prazo Processual.
       </p>

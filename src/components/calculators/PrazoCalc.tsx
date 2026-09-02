@@ -353,7 +353,7 @@ export function PrazoCalc() {
         <div className="space-y-4">
           <div className={"rounded-lg border border-cream-dark bg-white " + bgPrazo}>
             <div className="p-5 space-y-3">
-              <p className="text-sm text-muted-foreground">Data de vencimento do prazo:</p>
+              <p className="text-sm text-navy/70">Data de vencimento do prazo:</p>
               <p className={cn("text-2xl capitalize", corPrazo)}>
                 {format(parseISO(result.data_vencimento), "EEEE, dd 'de' MMMM 'de' yyyy", { locale: ptBR })}
               </p>
@@ -364,13 +364,13 @@ export function PrazoCalc() {
                     ? "O prazo vence HOJE"
                     : `Faltam ${result.dias_restantes} dia(s) corridos para o vencimento`}
               </div>
-              <div className="grid gap-1 text-xs text-muted-foreground sm:grid-cols-3 pt-2">
+              <div className="grid gap-1 text-xs text-navy/60 sm:grid-cols-3 pt-2">
                 <span>Publicação: {format(parseISO(result.data_publicacao), "dd/MM/yyyy")}</span>
                 <span>Início da contagem: {format(parseISO(result.data_inicio_contagem), "dd/MM/yyyy")}</span>
                 <span>Contagem: {result.contagem === "uteis" ? "dias úteis" : "dias corridos"}</span>
               </div>
               {(codigoIbge && codigoIbge !== "__todos__") || (tribunal && tribunal !== "__nenhum__") ? (
-                <div className="text-xs text-muted-foreground pt-1">
+                <div className="text-xs text-navy/60 pt-1">
                   {codigoIbge && codigoIbge !== "__todos__" && `Município: ${municipios.find(m => String(m.id) === codigoIbge)?.nome || codigoIbge}`}
                   {codigoIbge && codigoIbge !== "__todos__" && tribunal && tribunal !== "__nenhum__" && " · "}
                   {tribunal && tribunal !== "__nenhum__" && `Tribunal: ${tribunalLabel}`}
@@ -382,7 +382,7 @@ export function PrazoCalc() {
               </Button>
 
               {RECURSOS_COM_PREPARO.includes(tipoPrazo) && (
-                <p className="pt-2 text-xs text-muted-foreground">
+                <p className="pt-2 text-xs text-navy/60">
                   Recurso sujeito a preparo: o comprovante deve acompanhar a petição.{" "}
                   <Link to="/calculadoras/custas-tjsp" className="text-navy underline hover:text-gold underline-offset-2">
                     Calcular as custas do TJSP
@@ -413,7 +413,7 @@ export function PrazoCalc() {
                       {result.dias_excluidos.map(d => (
                         <TableRow key={d.data}>
                           <TableCell className="font-medium">{format(parseISO(d.data), "dd/MM/yyyy")}</TableCell>
-                          <TableCell className="text-sm text-muted-foreground">{d.motivo}</TableCell>
+                          <TableCell className="text-sm text-navy/70">{d.motivo}</TableCell>
                         </TableRow>
                       ))}
                     </TableBody>
@@ -424,7 +424,7 @@ export function PrazoCalc() {
           )}
 
           <div className="rounded-lg border border-cream-dark bg-white border-muted">
-            <div className="p-5 space-y-1 text-xs text-muted-foreground">
+            <div className="p-5 space-y-1 text-xs text-navy/60">
               <p className="text-foreground font-medium">Base legal</p>
               {result.base_legal.map(b => <p key={b}>{b}</p>)}
               <p className="pt-2">

@@ -128,7 +128,7 @@ export function CpfCnpjCalc() {
               <p className={cn("font-medium", valido ? "text-green-700 " : "text-destructive")}>
                 {valido ? "Número válido" : "Número inválido"}
               </p>
-              <p className="text-sm text-muted-foreground">
+              <p className="text-sm text-navy/70">
                 {tipo.toUpperCase()}: {tipo === "cpf" ? formatarCpf(valor) : formatarCnpj(valor)}
               </p>
               <div className="flex flex-wrap gap-2 pt-1">
@@ -144,7 +144,7 @@ export function CpfCnpjCalc() {
         </div>
       )}
 
-      <p className="text-xs text-muted-foreground">
+      <p className="text-xs text-navy/60">
         A validação segue o algoritmo oficial dos dígitos verificadores. Não consulta a Receita Federal,
         portanto não confirma se o documento está ativo, cancelado ou se pertence a uma pessoa real.
       </p>

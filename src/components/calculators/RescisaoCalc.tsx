@@ -128,11 +128,11 @@ export function RescisaoCalc() {
         </div>
         <div className="space-y-2">
           <Label>Data de Admissão</Label>
-          <Popover><PopoverTrigger asChild><Button variant="outline" className={cn("w-full justify-start text-left font-normal", !admissao && "text-muted-foreground")}><CalendarIcon className="mr-2 h-4 w-4" />{admissao ? format(admissao, "dd/MM/yyyy") : "Selecione a data"}</Button></PopoverTrigger><PopoverContent className="w-auto p-0" align="start"><Calendar mode="single" selected={admissao} onSelect={setAdmissao} initialFocus className="p-3 pointer-events-auto" locale={ptBR} /></PopoverContent></Popover>
+          <Popover><PopoverTrigger asChild><Button variant="outline" className={cn("w-full justify-start text-left font-normal", !admissao && "text-navy/60")}><CalendarIcon className="mr-2 h-4 w-4" />{admissao ? format(admissao, "dd/MM/yyyy") : "Selecione a data"}</Button></PopoverTrigger><PopoverContent className="w-auto p-0" align="start"><Calendar mode="single" selected={admissao} onSelect={setAdmissao} initialFocus className="p-3 pointer-events-auto" locale={ptBR} /></PopoverContent></Popover>
         </div>
         <div className="space-y-2">
           <Label>Data de Demissão</Label>
-          <Popover><PopoverTrigger asChild><Button variant="outline" className={cn("w-full justify-start text-left font-normal", !demissao && "text-muted-foreground")}><CalendarIcon className="mr-2 h-4 w-4" />{demissao ? format(demissao, "dd/MM/yyyy") : "Selecione a data"}</Button></PopoverTrigger><PopoverContent className="w-auto p-0" align="start"><Calendar mode="single" selected={demissao} onSelect={setDemissao} initialFocus className="p-3 pointer-events-auto" locale={ptBR} /></PopoverContent></Popover>
+          <Popover><PopoverTrigger asChild><Button variant="outline" className={cn("w-full justify-start text-left font-normal", !demissao && "text-navy/60")}><CalendarIcon className="mr-2 h-4 w-4" />{demissao ? format(demissao, "dd/MM/yyyy") : "Selecione a data"}</Button></PopoverTrigger><PopoverContent className="w-auto p-0" align="start"><Calendar mode="single" selected={demissao} onSelect={setDemissao} initialFocus className="p-3 pointer-events-auto" locale={ptBR} /></PopoverContent></Popover>
         </div>
         <div className="space-y-2"><Label>Média de Horas Extras Mensais (R$)</Label><Input className="h-11" type="number" inputMode="decimal" placeholder="0" value={horasExtras} onChange={e => setHorasExtras(e.target.value)} /></div>
         <div className="space-y-4">
