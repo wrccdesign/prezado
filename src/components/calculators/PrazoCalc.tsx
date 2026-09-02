@@ -6,7 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { ChevronDown, Download, Loader2 } from "lucide-react";
+import { ChevronDown, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { format, parseISO } from "date-fns";
 import { ptBR } from "date-fns/locale";
@@ -372,13 +372,13 @@ export function PrazoCalc() {
               {(codigoIbge && codigoIbge !== "__todos__") || (tribunal && tribunal !== "__nenhum__") ? (
                 <div className="text-xs text-navy/60 pt-1">
                   {codigoIbge && codigoIbge !== "__todos__" && `Município: ${municipios.find(m => String(m.id) === codigoIbge)?.nome || codigoIbge}`}
-                  {codigoIbge && codigoIbge !== "__todos__" && tribunal && tribunal !== "__nenhum__" && " · "}
+                  {codigoIbge && codigoIbge !== "__todos__" && tribunal && tribunal !== "__nenhum__" && ", "}
                   {tribunal && tribunal !== "__nenhum__" && `Tribunal: ${tribunalLabel}`}
                 </div>
               ) : null}
 
               <Button variant="outline" size="sm" onClick={baixarICS} className="mt-2">
-                <Download className="mr-1.5 h-4 w-4" /> Adicionar ao calendário (.ics)
+                Adicionar ao calendário (.ics)
               </Button>
 
               {RECURSOS_COM_PREPARO.includes(tipoPrazo) && (

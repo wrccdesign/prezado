@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import { CalendarIcon, AlertTriangle, FileDown } from "lucide-react";
+import { CalendarIcon, AlertTriangle } from "lucide-react";
 import { jsPDF } from "jspdf";
 import { toast } from "sonner";
 
@@ -161,7 +161,7 @@ export function RescisaoCalc() {
             </div>
           </div>
           <div className="flex flex-col sm:flex-row gap-3 items-start">
-            <Button onClick={() => requireAccount(gerarPDF, "baixar o relatório em PDF")} variant="outline" className="gap-2"><FileDown className="h-4 w-4" /> Gerar Relatório PDF</Button>
+            <Button onClick={() => requireAccount(gerarPDF, "baixar o relatório em PDF")} variant="outline" className="gap-2">Gerar Relatório PDF</Button>
           </div>
           <div className="flex items-start gap-2 rounded-md border border-yellow-500/30 bg-yellow-50  p-3 text-sm text-yellow-800 ">
             <AlertTriangle className="h-4 w-4 mt-0.5 shrink-0" /><span>Cálculo estimado. Consulte um advogado trabalhista para valores exatos.</span>

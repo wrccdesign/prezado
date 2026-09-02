@@ -7,12 +7,8 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/component
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import {
   AlertTriangle,
-  ArrowLeft,
   ChevronDown,
   Copy,
-  ExternalLink,
-  FileDown,
-  FileText,
   Loader2,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
@@ -344,7 +340,7 @@ export function CustasCalc() {
         <StepIndicator steps={PASSOS} current={2} ariaLabel="Etapas do cálculo" />
 
         <Button variant="ghost" size="sm" className="h-11 px-0" onClick={() => setEtapa(1)}>
-          <ArrowLeft className="mr-1.5 h-4 w-4" /> Trocar o ato
+          Trocar o ato
         </Button>
 
         <div className="space-y-1">
@@ -487,7 +483,7 @@ export function CustasCalc() {
         <StepIndicator steps={PASSOS} current={3} ariaLabel="Etapas do cálculo" />
 
         <Button variant="ghost" size="sm" className="h-11 px-0" onClick={() => setEtapa(2)}>
-          <ArrowLeft className="mr-1.5 h-4 w-4" /> Ajustar dados
+          Ajustar dados
         </Button>
 
         {/* valor + ações */}
@@ -496,8 +492,8 @@ export function CustasCalc() {
           value={fmt(result.valor_devido)}
           meta={
             <>
-              {atoInfo?.titulo ?? result.tipo_ato} · ato em {dataBR(dataAto)} · recolhimento previsto
-              em {dataBR(recolhimentoEfetivo)} · {result.unidade_fiscal.codigo}{" "}
+              {atoInfo?.titulo ?? result.tipo_ato}, ato em {dataBR(dataAto)}, recolhimento previsto
+              em {dataBR(recolhimentoEfetivo)}, {result.unidade_fiscal.codigo}{" "}
               {result.unidade_fiscal.ano} = {fmt(result.unidade_fiscal.valor)}
             </>
           }
@@ -531,14 +527,14 @@ export function CustasCalc() {
                 className="h-11 w-full sm:w-auto"
                 onClick={() => exportar("pdf")}
               >
-                <FileDown className="mr-1.5 h-4 w-4" /> Exportar PDF
+                Exportar PDF
               </Button>
               <Button
                 variant="outline"
                 className="h-11 w-full sm:w-auto"
                 onClick={() => exportar("docx")}
               >
-                <FileText className="mr-1.5 h-4 w-4" /> Exportar Word
+                Exportar Word
               </Button>
               <Button
                 variant="outline"
@@ -606,7 +602,7 @@ export function CustasCalc() {
                 <div className="flex items-center justify-between gap-2">
                   <p className="font-medium">
                     {result.tipo_guia}
-                    {result.codigo_receita ? ` · ${result.codigo_receita}` : ""}
+                    {result.codigo_receita ? `, ${result.codigo_receita}` : ""}
                   </p>
                   {result.codigo_receita && (
                     <Button
@@ -627,7 +623,6 @@ export function CustasCalc() {
               <Button asChild className="h-11 w-full sm:w-auto">
                 <a href={result.url_emissao} target="_blank" rel="noopener noreferrer">
                   Emitir a guia no Portal de Custas do TJSP
-                  <ExternalLink className="ml-2 h-4 w-4" />
                 </a>
               </Button>
             )}

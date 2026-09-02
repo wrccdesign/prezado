@@ -6,7 +6,7 @@ import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { AlertTriangle, ChevronDown, FileDown, FileText, Loader2 } from "lucide-react";
+import { AlertTriangle, ChevronDown, Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 import { exportToPDF, exportToDOCX, slugify, type ExportSection } from "@/lib/exportDocument";
@@ -349,10 +349,10 @@ export function CorrecaoCalc({ onUsarValor, usarValorLabel = "Usar este valor", 
 
           <div className="flex flex-wrap gap-2">
             <Button variant="outline" size="sm" onClick={() => exportar("pdf")}>
-              <FileDown className="mr-1.5 h-4 w-4" /> Exportar PDF
+              Exportar PDF
             </Button>
             <Button variant="outline" size="sm" onClick={() => exportar("docx")}>
-              <FileText className="mr-1.5 h-4 w-4" /> Exportar Word
+              Exportar Word
             </Button>
             {onUsarValor && (
               <Button

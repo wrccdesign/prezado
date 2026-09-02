@@ -5,7 +5,7 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { AlertTriangle, FileText } from "lucide-react";
+import { AlertTriangle } from "lucide-react";
 import { toast } from "sonner";
 import jsPDF from "jspdf";
 import { useGuestExportGate } from "@/components/calculators/shared/GuestExportGate";
@@ -214,7 +214,7 @@ export function PensaoCalc() {
           </div>
 
           <Button variant="outline" onClick={() => requireAccount(gerarPDF, "baixar o relatório em PDF")} className="h-11 w-full sm:w-auto">
-            <FileText className="mr-2 h-4 w-4" /> Gerar Relatório PDF
+            Gerar Relatório PDF
           </Button>
         </div>
       )}

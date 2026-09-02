@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { CheckCircle, XCircle, Copy, RotateCcw } from "lucide-react";
+import { CheckCircle, XCircle, Copy } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { toast } from "@/hooks/use-toast";
 
@@ -136,7 +136,7 @@ export function CpfCnpjCalc() {
                   <Copy className="mr-1.5 h-4 w-4" /> Copiar formatado
                 </Button>
                 <Button variant="ghost" size="sm" onClick={() => { setValor(""); setValido(null); }}>
-                  <RotateCcw className="mr-1.5 h-4 w-4" /> Limpar
+                  Limpar
                 </Button>
               </div>
             </div>

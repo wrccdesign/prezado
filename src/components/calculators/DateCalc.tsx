@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Copy, CalendarDays } from "lucide-react";
+import { Copy } from "lucide-react";
 import { format, parseISO, addDays, addBusinessDays, differenceInDays, differenceInBusinessDays, isWeekend } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { toast } from "@/hooks/use-toast";
@@ -40,7 +40,7 @@ export function DateCalc() {
       const d2 = parseISO(data2);
       const corridos = differenceInDays(d2, d1);
       const uteis = differenceInBusinessDays(d2, d1);
-      setResultado(`${Math.abs(corridos)} dia(s) corridos · ${Math.abs(uteis)} dia(s) úteis`);
+      setResultado(`${Math.abs(corridos)} dias corridos, ${Math.abs(uteis)} dias úteis`);
     } else {
       // converter: mostra info sobre a data
       const info = isWeekend(d1) ? "fim de semana" : "dia útil";
@@ -102,7 +102,7 @@ export function DateCalc() {
       </div>
 
       <Button onClick={calcular} className="h-11 w-full sm:w-auto">
-        <CalendarDays className="mr-1.5 h-4 w-4" /> Calcular
+        Calcular
       </Button>
 
       {resultado && (
