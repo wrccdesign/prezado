@@ -257,50 +257,42 @@ if (!res.ok) {
         ]}
       />
       <main className="flex-1">
-        {/* Hero Search */}
-        <div className="bg-primary text-primary-foreground py-8 sm:py-12">
+        {/* Busca */}
+        <div className="bg-cream text-navy py-12 md:py-16">
           <div className="container px-4 max-w-3xl mx-auto">
-            <h1 className="font-serif text-2xl sm:text-3xl font-bold text-center mb-2">
-              Busca de Jurisprudência
-            </h1>
-            <p className="text-center text-primary-foreground/70 text-sm sm:text-base mb-6">
-              Descreva seu caso em linguagem natural — a IA encontra os precedentes
+            <h1 className="text-h1 max-w-[18ch]">Consulta processual e jurisprudência</h1>
+            <p className="text-body-serif text-navy/80 max-w-[60ch] mt-5">
+              Descreva a situação ou cole o número CNJ. A busca cobre o acervo indexado; com conta, também a consulta ao vivo no DataJud.
             </p>
 
-            <div className="flex gap-2">
-              <div className="relative flex-1">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input
-                  value={query}
-                  onChange={(e) => setQuery(e.target.value)}
-                  onKeyDown={(e) => e.key === "Enter" && handleSearch()}
-                  placeholder="Ex: plano de saúde negou cirurgia de urgência..."
-                  className="pl-10 bg-white text-foreground border-0 h-11"
-                />
-              </div>
+            <div className="flex flex-col sm:flex-row gap-3 mt-8">
+              <Input
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+                placeholder="Descreva a situação ou cole o número CNJ"
+                className="h-12 flex-1 bg-white text-navy border border-cream-dark rounded-md placeholder:text-navy/50 font-sans focus-visible:ring-gold"
+              />
               <Button
                 onClick={() => handleSearch()}
                 disabled={loading || !query.trim()}
-                className="bg-accent text-accent-foreground hover:bg-accent/90 h-11 px-6"
+                className="h-12 px-8 bg-gold text-navy hover:bg-gold-light"
               >
                 {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Buscar"}
               </Button>
             </div>
 
-            {/* Filter toggle */}
             <button
               onClick={() => setShowFilters(!showFilters)}
-              className="flex items-center gap-1.5 mx-auto mt-3 text-xs text-primary-foreground/60 hover:text-primary-foreground/80 transition-colors"
+              className="mt-4 text-note text-navy/70 underline underline-offset-4 hover:text-navy"
             >
-              <Filter className="h-3.5 w-3.5" />
-              Filtros avançados
-              {showFilters ? <ChevronUp className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />}
+              {showFilters ? "Ocultar filtros avançados" : "Filtros avançados"}
             </button>
 
             {showFilters && (
               <div className="mt-4 grid grid-cols-2 sm:grid-cols-4 gap-3">
                 <Select value={tribunal} onValueChange={setTribunal}>
-                  <SelectTrigger className="bg-white/10 border-white/20 text-primary-foreground text-sm h-9">
+                  <SelectTrigger className="bg-white border-cream-dark text-navy text-sm h-10">
                     <SelectValue placeholder="Tribunal" />
                   </SelectTrigger>
                   <SelectContent>
@@ -310,7 +302,7 @@ if (!res.ok) {
                 </Select>
 
                 <Select value={uf} onValueChange={setUf}>
-                  <SelectTrigger className="bg-white/10 border-white/20 text-primary-foreground text-sm h-9">
+                  <SelectTrigger className="bg-white border-cream-dark text-navy text-sm h-10">
                     <SelectValue placeholder="UF" />
                   </SelectTrigger>
                   <SelectContent>
@@ -320,7 +312,7 @@ if (!res.ok) {
                 </Select>
 
                 <Select value={instancia} onValueChange={setInstancia}>
-                  <SelectTrigger className="bg-white/10 border-white/20 text-primary-foreground text-sm h-9">
+                  <SelectTrigger className="bg-white border-cream-dark text-navy text-sm h-10">
                     <SelectValue placeholder="Instância" />
                   </SelectTrigger>
                   <SelectContent>
@@ -329,14 +321,14 @@ if (!res.ok) {
                   </SelectContent>
                 </Select>
 
-                <div className="flex items-center gap-2 bg-white/10 rounded-md px-3 h-9">
+                <div className="flex items-center gap-2 bg-white border border-cream-dark rounded-md px-3 h-10">
                   <Checkbox
                     id="comarca-pequena"
                     checked={comarcaPequena}
                     onCheckedChange={(v) => setComarcaPequena(!!v)}
-                    className="border-white/40"
+                    className="border-navy/30"
                   />
-                  <label htmlFor="comarca-pequena" className="text-xs text-primary-foreground/80 cursor-pointer">
+                  <label htmlFor="comarca-pequena" className="text-note text-navy/80 cursor-pointer">
                     Interior
                   </label>
                 </div>
@@ -344,6 +336,7 @@ if (!res.ok) {
             )}
           </div>
         </div>
+
 
         {/* Results */}
         <div className="container px-4 max-w-3xl mx-auto py-6">
