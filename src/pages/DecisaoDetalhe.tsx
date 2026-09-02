@@ -40,9 +40,9 @@ interface Decision {
 }
 
 const SUGGESTIONS = [
-  { label: "Explique esta decisão", icon: BookOpen },
-  { label: "Redija parágrafo para petição", icon: FileText },
-  { label: "Quais teses foram acolhidas?", icon: Lightbulb },
+  "Explique esta decisão",
+  "Redija parágrafo para petição",
+  "Quais teses foram acolhidas?",
 ];
 
 const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/chat-decisao`;
