@@ -418,12 +418,13 @@ export default function Planos() {
         </section>
 
 
-        <div className="text-center text-sm text-muted-foreground space-y-1">
+        <div className="mt-8 space-y-1 text-note text-navy/60">
           <p>Pagamentos processados de forma segura. Cancele a qualquer momento.</p>
           <p>Limites são renovados mensalmente, no primeiro dia de cada mês (horário de Brasília).</p>
         </div>
 
-        <FaqSection items={faqItems} className="mt-14 max-w-3xl mx-auto" />
+        <FaqSection items={faqItems} className="mt-14 max-w-3xl" />
+
       </main>
 
 
