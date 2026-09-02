@@ -101,13 +101,8 @@ async function streamChat({
   onDone();
 }
 
-function resultadoColor(r: string | null) {
-  if (!r) return "bg-muted text-muted-foreground";
-  if (r.includes("procedente") && !r.includes("improcedente")) return "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300";
-  if (r === "improcedente") return "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300";
-  if (r === "provido") return "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300";
-  return "bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300";
-}
+
+
 
 function ChatPanel({ decisionId }: { decisionId: string }) {
   const [messages, setMessages] = useState<Msg[]>([]);
