@@ -3,7 +3,7 @@ import { formatCents, onlyDigits } from "@/lib/currency";
 
 interface CurrencyInputProps {
   id?: string;
-  /** Dígitos (centavos) — estado controlado pelo componente pai. */
+  /** Dígitos (centavos), estado controlado pelo componente pai. */
   value: string;
   onChange: (cents: string) => void;
   placeholder?: string;
