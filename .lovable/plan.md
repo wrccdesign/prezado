@@ -1,53 +1,41 @@
-# Reestruturação do /comparativo
+# Reforma visual de /jurisprudencia
 
-Avaliação da proposta e plano de execução. A proposta é defensável e reduz risco jurídico: sai o subjetivo ("Preço acessível", "100% Brasileiro"), entra o verificável.
+Avaliação da proposta e plano de execução. A proposta é compatível com o sistema visual e não exige tocar em lógica.
 
-## a) Riscos técnicos e de SEO
+## a) Tema escuro
 
-Estado atual verificado:
-- `src/seo/routeMeta.ts` tem entrada para `/comparativo`: título "Comparativo de ferramentas — Honorífico" e descrição citando JusBrasil, Advbox e assistentes generalistas. `ogImage` é o padrão (TODO de OG própria).
-- O `<SEO />` da página passa título/descrição próprios, mas `SEO.tsx` dá precedência ao `routeMeta`, então o que vale no HTML estático e no runtime é o do `routeMeta`.
-- `src/seo/faqData.ts` não tem entrada para `/comparativo`.
-- `public/sitemap.xml` já lista a rota; nada muda ali.
+Não há tema escuro ativo em rota nenhuma, pública ou logada. `tailwind.config.ts` define `darkMode: ["class"]`, mas nada adiciona a classe `dark` ao `<html>`: não existe `ThemeProvider`, nem toggle, nem classe no `index.html`. A única referência a `next-themes` está em `src/components/ui/sonner.tsx`, que chama `useTheme()` sem provider e cai no padrão. Ou seja, as 6 variantes `dark:` em `Jurisprudencia.tsx` são código morto e podem sair com segurança.
 
-Riscos e o que muda junto:
-- Manter a URL e não mexer no `title`/`description` do `routeMeta` mantém o histórico de indexação. Se ajustarmos a descrição para refletir as novas categorias, é mudança pequena e segura; o título pode permanecer.
-- Nomear concorrentes em texto de página é comparação factual e continua permitido, desde que cada célula descreva um fato público ou uma limitação genérica. Para reduzir exposição: os cabeçalhos de coluna são categorias, com o exemplo entre parênteses, e as células sobre terceiros descrevem a categoria, não a empresa.
-- Corrigir a linha errada (Jus IA linka o acervo do próprio Jusbrasil, não o CNJ) é obrigatório.
-- Sem FAQ na página, nenhum JSON-LD novo. Se quiser, dá para adicionar depois; não faz parte deste plano.
-- `scripts/check-jsonld.mjs` não cobre `/comparativo`, então nada quebra lá.
+## b) /decisao/:id
 
-## b) Extrair `fonteRows` para componente compartilhado
+Sim, `DecisaoDetalhe.tsx` segue o visual antigo: `Card`, `Badge`, cores `bg-green-100`/`bg-red-100`/`bg-amber-100` com variantes `dark:`, `Sparkles` no assistente, `Scale` no estado vazio, `bg-muted`. Também tem 6 ocorrências `dark:`.
 
-Sim, vale. `fonteRows` hoje vive dentro de `LandingPage.tsx` com cinco linhas e a nota "coluna da esquerda é ilustrativa". Duplicar em duas páginas garante divergência futura.
+Recomendação: entra no mesmo lote, mas como segunda etapa dentro da mesma entrega, com escopo reduzido: fundo creme, tipografia da escala, resultado como texto em vez de badge colorido, remoção de ícones decorativos e das classes `dark:`. O painel do assistente de IA (chat lateral) fica só com ajuste de tipografia e cor; a lógica de mensagens não muda. Se preferir manter o lote pequeno, dá para fazer só `/jurisprudencia` agora, aceitando uma descontinuidade visível ao clicar num resultado.
 
-Objeção única: o componente deve aceitar props para título, parágrafo e o link final, porque a home encerra com "Consultar processos" e o comparativo pode não querer o mesmo. Dados (`fonteRows`) e marcação da tabela ficam dentro; contexto vem de fora.
+## c) Card para article dentro do Link
 
-## c) Células que o código sustenta
+Sem risco. O `Link` externo (`<Link to={/decisao/${d.id}} className="block">`) permanece; só o filho `Card` vira `<article>`. Os handlers internos já fazem `e.preventDefault()` e `e.stopPropagation()`:
+- "Ver mais" e "Copiar nº CNJ" chamam ambos;
+- `handleCopyCitation` chama ambos;
+- "Ver no tribunal" é um `<a>` com `stopPropagation`, e como o clique não é impedido o browser abre o `target="_blank"` sem seguir o `Link` pai.
 
-Verificado no código:
-- Origem do precedente CNJ/DataJud: sustentado (consulta processual e ficha do hero usam registro real com `source_url`).
-- Link para conferir na fonte: sustentado ("Ver no tribunal" / "Ver fonte no CNJ").
-- Diz quando não encontra decisão: sustentado pela regra de grounding já aplicada.
-- Cálculo com série oficial do Banco Central e memória de cálculo: sustentado (séries SGS, `CorrecaoCalc`, `CustasCalc`).
-- Petição a partir dos fatos: sustentado (`generate-petition`, fluxo em etapas).
-- Exportação em PDF e Word: sustentado nos dois casos. `PetitionResult.tsx` exporta PDF (jsPDF) e DOCX (docx, com timbre), e a memória de cálculo exporta PDF e DOCX por `src/lib/exportDocument.ts`. Ou seja, a célula pode dizer "petição e memória de cálculo em PDF e Word".
+Esse comportamento independe do elemento usado. Um ponto de HTML a observar: `<a>` dentro de `<a>` é inválido. Isso já existe hoje com o "Ver no tribunal" dentro do `Link`. Como estamos mexendo na marcação, vale corrigir: manter o `Link` só no título/ementa em vez de envolver o bloco inteiro, e deixar as ações fora dele. Isso remove a necessidade de `preventDefault` nos botões e torna o markup válido, sem tocar em nenhuma função de dados.
 
-Ressalvas de redação, não de fato:
-- Nas colunas de terceiros, evitar afirmar ausência categórica. Usar formulações de categoria: "não se aplica", "sem vínculo com registro oficial do Judiciário", "acervo próprio da plataforma". São descrições de categoria, não auditoria de produto.
-- Uma célula que eu não sustentaria como está: qualquer afirmação sobre o que ChatGPT, Claude ou Gemini fazem hoje com plugins ou navegação. A linha "origem do precedente" para IA generalista deve dizer "vem do modelo, sem registro oficial vinculado", sem prometer que nunca acessam nada.
+## d) Arquivos tocados e dependências
 
-## d) Arquivos tocados
+Estimativa: 2 arquivos (3 se contar o teste visual).
 
-Estimativa: 4.
+1. `src/pages/Jurisprudencia.tsx` — bloco de busca em creme, H1/parágrafo da escala, input branco com borda `cream-dark`, botão dourado, "Filtros avançados" como link sublinhado, selects com estilo claro (`bg-white border-cream-dark`) no lugar de `bg-white/10 border-white/20`, resultados em `<article class="border-t border-cream-dark pt-5">`, ementa em serif, número CNJ em mono, ações como links de texto, "Provido"/"Improcedente" como texto em `text-navy/70`, "Andamento processual" e "Interior" entre parênteses, bloco de IA sem `Sparkles` com alternativas como links separados por vírgula, aviso de visitante em `bg-white border border-cream-dark rounded-lg p-5`, estado vazio sem `Scale`, remoção das classes `dark:`. `Loader2` permanece. Imports de ícones ficam reduzidos a `Loader2` e `Check`.
+2. `src/pages/DecisaoDetalhe.tsx` — mesma linguagem, conforme o item b.
 
-1. `src/components/FonteTable.tsx` (novo) — dados `fonteRows` e tabela, com props de título, parágrafo, nota e link opcional.
-2. `src/pages/LandingPage.tsx` — remove `fonteRows` e o markup da tabela, passa a usar `FonteTable`.
-3. `src/pages/Comparativo.tsx` — reescrita: `AppHeader`, fundo creme, tabela de 4 colunas por categoria com células em texto, segunda seção com `FonteTable`, CTA final em navy "Comece pelo caso que está na sua mesa agora.", `AppFooter`. Remove hero com gradiente, botões pill, ícones de status, "Nossos Diferenciais" e o botão de compartilhar.
-4. `src/seo/routeMeta.ts` — ajuste apenas da descrição de `/comparativo` para refletir as categorias. Título mantido.
+Não há componente compartilhado de badge de tribunal: `resultadoColor` é uma função local em cada uma das duas páginas, então ambas somem junto com os badges. `formatCitation` em `src/lib/citation.ts` não é visual e não muda. `AppHeader`/`AppFooter` já estão no novo padrão.
 
-Sem mudanças em cobrança, autenticação, cálculos, sitemap ou JSON-LD.
+Intocados: `handleSearch`, quotas, `notifyUsageConsumed`, toasts, leitura de `?q=` com o `useEffect` guardado por ref, filtros e chamadas de edge function.
+
+## Ponto que precisa da sua decisão
+
+O `Link` envolvendo o resultado inteiro: mantenho como está (bloco clicável, `<a>` aninhado inválido) ou passo o link para o título e a ementa, deixando as ações fora? A segunda opção é o HTML correto e melhora acessibilidade, mas muda a área de clique.
 
 ## Validação
 
-`bunx tsgo --noEmit`, `bun run build` (26 rotas) e screenshot de `/comparativo` contra a checklist da seção 5 do project knowledge.
+`bunx tsgo --noEmit`, `bun run build`, screenshot de `/jurisprudencia` com resultado real e de `/decisao/:id`, e grep por `dark:`, `Card`, `Badge`, `font-bold`, `font-semibold`, `rounded-full` nos arquivos tocados.
