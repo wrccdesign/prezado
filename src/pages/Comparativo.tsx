@@ -1,161 +1,142 @@
 import { Link } from "react-router-dom";
-import { Check, X, Minus, Share2, Shield, Users, Briefcase, Globe } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { AppHeader } from "@/components/AppHeader";
 import { AppFooter } from "@/components/AppFooter";
 import { SEO } from "@/components/SEO";
-import Logo from "@/components/Logo";
-import { toast } from "@/hooks/use-toast";
+import { FonteTable } from "@/components/FonteTable";
 
-const features = [
-  { name: "Diagnóstico jurídico com IA", prezado: "full", jusbrasil: "none", advbox: "none", chatgpt: "partial", claude: "partial", gemini: "partial" },
-  { name: "Geração de petições estruturadas", prezado: "full", jusbrasil: "none", advbox: "partial", chatgpt: "partial", claude: "partial", gemini: "partial" },
-  { name: "Chat com legislação brasileira", prezado: "full", jusbrasil: "none", advbox: "none", chatgpt: "partial", claude: "partial", gemini: "partial" },
-  { name: "Jurisprudência real (DataJud/CNJ)", prezado: "full", jusbrasil: "full", advbox: "none", chatgpt: "none", claude: "none", gemini: "none" },
-  { name: "Sete calculadoras jurídicas", prezado: "full", jusbrasil: "none", advbox: "partial", chatgpt: "none", claude: "none", gemini: "none" },
-  { name: "Painel do advogado", prezado: "full", jusbrasil: "none", advbox: "full", chatgpt: "none", claude: "none", gemini: "none" },
-  { name: "Linguagem acessível ao cidadão", prezado: "full", jusbrasil: "partial", advbox: "none", chatgpt: "partial", claude: "partial", gemini: "partial" },
-  { name: "Fontes oficiais verificadas", prezado: "full", jusbrasil: "full", advbox: "none", chatgpt: "none", claude: "none", gemini: "none" },
-  { name: "Exportação PDF/DOCX ABNT", prezado: "full", jusbrasil: "none", advbox: "partial", chatgpt: "none", claude: "none", gemini: "none" },
-  { name: "Preço acessível", prezado: "full", jusbrasil: "partial", advbox: "none", chatgpt: "partial", claude: "partial", gemini: "partial" },
+const columns = [
+  "Honorífico",
+  "IA generalista (ChatGPT, Claude, Gemini)",
+  "Portal de jurisprudência com IA (Jus IA)",
+  "Gestão de escritório (Advbox)",
 ];
 
-type Support = "full" | "partial" | "none";
-
-function StatusIcon({ status }: { status: Support }) {
-  if (status === "full") return <Check className="h-5 w-5 text-emerald-500" />;
-  if (status === "partial") return <Minus className="h-5 w-5 text-amber-500" />;
-  return <X className="h-5 w-5 text-red-400/60" />;
-}
-
-const differentials = [
-  { icon: Briefcase, title: "Plataforma Integrada", desc: "Diagnóstico, petições, jurisprudência, calculadoras e chat — tudo em um só lugar." },
-  { icon: Users, title: "Público Híbrido", desc: "Feito tanto para advogados quanto para cidadãos, com linguagem clara e acessível." },
-  { icon: Shield, title: "Fontes Verificáveis", desc: "Cada cálculo e cada citação trazem a fonte oficial e a base legal, para conferência." },
-  { icon: Globe, title: "100% Brasileiro", desc: "Desenvolvido para o direito brasileiro, com base na legislação e jurisprudência nacional." },
+const rows: { label: string; cells: string[] }[] = [
+  {
+    label: "Origem do precedente",
+    cells: [
+      "CNJ/DataJud, registro oficial do Judiciário",
+      "Vem do modelo, sem registro oficial vinculado",
+      "Acervo próprio da plataforma",
+      "Não se aplica",
+    ],
+  },
+  {
+    label: "Link para conferir na fonte oficial",
+    cells: [
+      "Sim, para o tribunal de origem",
+      "Depende do uso, sem vínculo ao registro oficial",
+      "Para o acervo da própria plataforma",
+      "Não se aplica",
+    ],
+  },
+  {
+    label: "Quando não há decisão",
+    cells: [
+      "A resposta diz que não encontrou",
+      "Pode preencher o vazio",
+      "Depende do acervo",
+      "Não se aplica",
+    ],
+  },
+  {
+    label: "Cálculo com série oficial",
+    cells: [
+      "Banco Central (SGS), com memória de cálculo mês a mês",
+      "Sem série oficial vinculada",
+      "Não é o foco",
+      "Depende do módulo",
+    ],
+  },
+  {
+    label: "Petição a partir dos fatos",
+    cells: [
+      "Sim, em etapas com aprovação de teses e precedentes",
+      "Sim, sem fonte vinculada",
+      "Sim, com o acervo da plataforma",
+      "Modelos e templates",
+    ],
+  },
+  {
+    label: "Exportação",
+    cells: [
+      "Petição e memória de cálculo em PDF e Word",
+      "Texto para copiar",
+      "Depende do plano",
+      "Depende do plano",
+    ],
+  },
 ];
 
 export default function Comparativo() {
-  const handleShare = async () => {
-    const url = window.location.href;
-    const text = "Veja como o Honorífico se compara a outras ferramentas jurídicas.";
-    if (navigator.share) {
-      try { await navigator.share({ title: "Honorífico", text, url }); } catch {}
-    } else {
-      await navigator.clipboard.writeText(url);
-      toast({ title: "Link copiado!", description: "Cole onde quiser para compartilhar." });
-    }
-  };
-
   return (
-    <div className="min-h-screen flex flex-col" style={{ backgroundColor: "hsl(var(--navy))" }}>
+    <div className="min-h-screen font-sans bg-cream text-navy">
       <SEO
-        title="Honorífico x JusBrasil, Advbox e IAs generalistas"
-        description="Comparativo entre o Honorífico e outras ferramentas jurídicas: cálculos com fonte oficial, jurisprudência do CNJ/DataJud, petições em PDF/DOCX e painel do advogado."
+        title="Comparativo de ferramentas"
+        description="Comparativo entre o Honorífico, assistentes de IA generalistas, portais de jurisprudência e sistemas de gestão."
         path="/comparativo"
       />
-      {/* Hero */}
-      <section className="relative py-20 sm:py-28 overflow-hidden">
-        <div className="absolute inset-0 opacity-20" style={{ background: "radial-gradient(ellipse at 30% 20%, hsl(var(--gold) / 0.25), transparent 60%)" }} />
-        <div className="container mx-auto px-4 sm:px-6 relative z-10 text-center max-w-3xl">
-          <Link to="/">
-            <Logo className="h-10 mx-auto mb-8" />
-          </Link>
-          <h1 className="font-serif text-3xl sm:text-5xl font-bold mb-5 leading-tight" style={{ color: "hsl(var(--cream))" }}>
-            Por que o <span style={{ color: "hsl(var(--gold))" }}>Honorífico</span>?
-          </h1>
-          <p className="text-base sm:text-lg leading-relaxed mb-8" style={{ color: "hsl(var(--cream) / 0.65)" }}>
-            Cálculos com fonte oficial, consulta processual e petições em PDF/DOCX, tudo no mesmo lugar. Veja como o Honorífico se compara a outras ferramentas.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-3 justify-center">
-            <Button asChild size="lg" className="rounded-full font-sans font-semibold text-sm px-8" style={{ background: "hsl(var(--gold))", color: "hsl(var(--navy))" }}>
-              <Link to="/auth">Criar conta grátis</Link>
-            </Button>
-            <Button variant="outline" size="lg" onClick={handleShare} className="rounded-full font-sans font-semibold text-sm px-8 gap-2 border-white/20 hover:border-white/40 bg-transparent" style={{ color: "hsl(var(--cream))" }}>
-              <Share2 className="h-4 w-4" /> Compartilhar
-            </Button>
-          </div>
-        </div>
-      </section>
 
-      {/* Tabela comparativa */}
-      <section className="py-16 sm:py-20" style={{ backgroundColor: "hsl(218 60% 7%)" }}>
+      <AppHeader />
+
+      <section className="bg-cream text-navy py-12 md:py-20">
         <div className="container mx-auto px-4 sm:px-6">
-          <h2 className="font-serif text-2xl sm:text-3xl font-bold text-center mb-3" style={{ color: "hsl(var(--cream))" }}>
-            Comparativo de Mercado
-          </h2>
-          <p className="text-center mb-10 text-sm" style={{ color: "hsl(var(--cream) / 0.5)" }}>
-            Veja como o Honorífico se posiciona frente às principais ferramentas do mercado jurídico.
+          <h1 className="text-h1 max-w-[20ch]">Por que a fonte importa mais que a ferramenta</h1>
+          <p className="text-body-serif text-navy/80 max-w-[60ch] mt-6">
+            Toda IA jurídica gera texto. A diferença está em de onde vem o precedente e se você consegue conferir antes de protocolar.
           </p>
 
-          <div className="overflow-x-auto rounded-xl border" style={{ borderColor: "hsl(var(--gold) / 0.15)" }}>
-            <table className="w-full text-sm" style={{ backgroundColor: "hsl(218 50% 9%)" }}>
+          <div className="overflow-x-auto mt-10">
+            <table className="w-full text-sm text-left min-w-[720px]">
               <thead>
-                <tr style={{ borderBottom: "1px solid hsl(var(--gold) / 0.12)" }}>
-                  <th className="text-left py-4 px-4 sm:px-6 font-sans font-semibold" style={{ color: "hsl(var(--cream) / 0.7)" }}>Funcionalidade</th>
-                  <th className="text-center py-4 px-3 font-sans font-bold" style={{ color: "hsl(var(--gold))" }}>Honorífico</th>
-                  <th className="text-center py-4 px-3 font-sans font-semibold" style={{ color: "hsl(var(--cream) / 0.5)" }}>JusBrasil</th>
-                  <th className="text-center py-4 px-3 font-sans font-semibold hidden sm:table-cell" style={{ color: "hsl(var(--cream) / 0.5)" }}>Advbox</th>
-                  <th className="text-center py-4 px-3 font-sans font-semibold hidden sm:table-cell" style={{ color: "hsl(var(--cream) / 0.5)" }}>ChatGPT</th>
-                  <th className="text-center py-4 px-3 font-sans font-semibold hidden sm:table-cell" style={{ color: "hsl(var(--cream) / 0.5)" }}>Claude</th>
-                  <th className="text-center py-4 px-3 font-sans font-semibold hidden sm:table-cell" style={{ color: "hsl(var(--cream) / 0.5)" }}>Gemini</th>
+                <tr className="border-b border-cream-dark font-medium align-bottom">
+                  <th scope="col" className="py-3 pr-4 sticky left-0 bg-cream"></th>
+                  {columns.map((c) => (
+                    <th key={c} scope="col" className="py-3 pr-4 align-bottom">{c}</th>
+                  ))}
                 </tr>
               </thead>
               <tbody>
-                {features.map((f, i) => (
-                  <tr key={i} style={{ borderBottom: i < features.length - 1 ? "1px solid hsl(var(--gold) / 0.06)" : "none" }}>
-                    <td className="py-3.5 px-4 sm:px-6 font-sans" style={{ color: "hsl(var(--cream) / 0.8)" }}>{f.name}</td>
-                    <td className="py-3.5 px-3 text-center"><div className="flex justify-center"><StatusIcon status={f.prezado as Support} /></div></td>
-                    <td className="py-3.5 px-3 text-center"><div className="flex justify-center"><StatusIcon status={f.jusbrasil as Support} /></div></td>
-                    <td className="py-3.5 px-3 text-center hidden sm:table-cell"><div className="flex justify-center"><StatusIcon status={f.advbox as Support} /></div></td>
-                    <td className="py-3.5 px-3 text-center hidden sm:table-cell"><div className="flex justify-center"><StatusIcon status={f.chatgpt as Support} /></div></td>
-                    <td className="py-3.5 px-3 text-center hidden sm:table-cell"><div className="flex justify-center"><StatusIcon status={f.claude as Support} /></div></td>
-                    <td className="py-3.5 px-3 text-center hidden sm:table-cell"><div className="flex justify-center"><StatusIcon status={f.gemini as Support} /></div></td>
+                {rows.map((r) => (
+                  <tr key={r.label} className="border-b border-cream-dark">
+                    <th scope="row" className="py-3 pr-4 font-medium align-top sticky left-0 bg-cream">{r.label}</th>
+                    {r.cells.map((cell, i) => (
+                      <td key={i} className={`py-3 pr-4 align-top ${i === 0 ? "" : "text-navy/70"}`}>{cell}</td>
+                    ))}
                   </tr>
                 ))}
               </tbody>
             </table>
           </div>
 
-          <div className="flex items-center gap-6 justify-center mt-6 text-xs font-sans" style={{ color: "hsl(var(--cream) / 0.4)" }}>
-            <span className="flex items-center gap-1.5"><Check className="h-3.5 w-3.5 text-emerald-500" /> Completo</span>
-            <span className="flex items-center gap-1.5"><Minus className="h-3.5 w-3.5 text-amber-500" /> Parcial</span>
-            <span className="flex items-center gap-1.5"><X className="h-3.5 w-3.5 text-red-400/60" /> Ausente</span>
-          </div>
-        </div>
-      </section>
-
-      {/* Diferenciais */}
-      <section className="py-16 sm:py-20" style={{ backgroundColor: "hsl(var(--navy))" }}>
-        <div className="container mx-auto px-4 sm:px-6">
-          <h2 className="font-serif text-2xl sm:text-3xl font-bold text-center mb-12" style={{ color: "hsl(var(--cream))" }}>
-            Nossos Diferenciais
-          </h2>
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {differentials.map((d, i) => (
-              <div key={i} className="rounded-xl p-6 transition-all hover:-translate-y-1" style={{ backgroundColor: "hsl(218 50% 12%)", border: "1px solid hsl(var(--gold) / 0.1)" }}>
-                <div className="h-11 w-11 rounded-lg flex items-center justify-center mb-4" style={{ backgroundColor: "hsl(var(--gold) / 0.12)" }}>
-                  <d.icon className="h-5 w-5" style={{ color: "hsl(var(--gold))" }} />
-                </div>
-                <h3 className="font-sans font-semibold text-base mb-2" style={{ color: "hsl(var(--cream))" }}>{d.title}</h3>
-                <p className="text-sm leading-relaxed" style={{ color: "hsl(var(--cream) / 0.55)" }}>{d.desc}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* CTA final */}
-      <section className="py-16 sm:py-20 text-center" style={{ backgroundColor: "hsl(218 60% 7%)" }}>
-        <div className="container mx-auto px-4 sm:px-6 max-w-2xl">
-          <h2 className="font-serif text-2xl sm:text-3xl font-bold mb-4" style={{ color: "hsl(var(--cream))" }}>
-            Pronto para transformar sua prática jurídica?
-          </h2>
-          <p className="text-sm mb-8" style={{ color: "hsl(var(--cream) / 0.5)" }}>
-            Comece a usar o Honorífico gratuitamente e descubra o poder da IA jurídica brasileira.
+          <p className="text-note text-navy/60 mt-4">
+            As colunas de terceiros descrevem a categoria de ferramenta, não uma auditoria de produto. Verifique as condições atuais em cada serviço.
           </p>
-          <Button asChild size="lg" className="rounded-full font-sans font-bold text-sm px-10" style={{ background: "hsl(var(--gold))", color: "hsl(var(--navy))" }}>
-            <Link to="/auth">Começar agora</Link>
-          </Button>
+        </div>
+      </section>
+
+      <section className="bg-cream text-navy border-t border-cream-dark py-16 md:py-24">
+        <div className="container mx-auto px-4 sm:px-6">
+          <FonteTable
+            title="Sem fonte e com fonte, lado a lado"
+            linkLabel="Consultar processos"
+            linkTo="/jurisprudencia"
+          />
+        </div>
+      </section>
+
+      <section className="bg-navy py-16 md:py-24">
+        <div className="container mx-auto px-4 sm:px-6 text-center">
+          <h2 className="text-h2 text-cream">Comece pelo caso que está na sua mesa agora.</h2>
+          <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-5">
+            <Button asChild size="lg" className="bg-gold text-navy hover:bg-gold-light">
+              <Link to="/auth">Criar conta grátis</Link>
+            </Button>
+            <Link to="/planos" className="text-cream/72 underline underline-offset-4 hover:text-cream">
+              Ver planos
+            </Link>
+          </div>
         </div>
       </section>
 
