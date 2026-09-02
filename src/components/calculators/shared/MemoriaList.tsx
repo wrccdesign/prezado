@@ -33,8 +33,9 @@ export function MemoriaList({ items }: { items: MemoriaItem[] }) {
               <td className="py-2 pr-4 text-sm text-navy">{l.rotulo}</td>
               <td className="py-2 pr-4 text-note text-navy/70">{l.detalhe}</td>
               <td className="py-2 text-right text-sm text-navy tabular whitespace-nowrap">
-                {l.valor != null ? fmtBRL(l.valor) : "."}
+                {l.valor != null ? fmtBRL(l.valor) : ""}
               </td>
+
             </tr>
           ))}
         </tbody>
