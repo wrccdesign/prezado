@@ -91,7 +91,7 @@ export function RescisaoCalc() {
   const gerarPDF = () => {
     if (!verbas) return;
     const doc = new jsPDF();
-    doc.setFontSize(16); doc.text("Relatório de Rescisão Trabalhista — Honorífico", 14, 20);
+    doc.setFontSize(16); doc.text("Relatório de Rescisão Trabalhista, Honorífico", 14, 20);
     doc.setFontSize(10); doc.text(`Data: ${format(new Date(), "dd/MM/yyyy")}`, 14, 28);
     if (admissao) doc.text(`Admissão: ${format(admissao, "dd/MM/yyyy")}`, 14, 34);
     if (demissao) doc.text(`Demissão: ${format(demissao, "dd/MM/yyyy")}`, 14, 40);
@@ -155,7 +155,7 @@ export function RescisaoCalc() {
                 <TableHeader><TableRow><TableHead>Verba</TableHead><TableHead className="text-right">Valor</TableHead></TableRow></TableHeader>
                 <TableBody>
                   {verbas.map((v) => (<TableRow key={v.label}><TableCell>{v.label}</TableCell><TableCell className="text-right font-medium">{fmt(v.valor)}</TableCell></TableRow>))}
-                  <TableRow className="border-t-2"><TableCell className="text-base ">Total Líquido Estimado</TableCell><TableCell className="text-right text-base  text-primary">{fmt(total)}</TableCell></TableRow>
+                  <TableRow className="border-t-2"><TableCell className="text-base ">Total Líquido Estimado</TableCell><TableCell className="text-right text-base text-primary">{fmt(total)}</TableCell></TableRow>
                 </TableBody>
               </Table>
             </div>

@@ -44,7 +44,7 @@ export function DateCalc() {
     } else {
       // converter: mostra info sobre a data
       const info = isWeekend(d1) ? "fim de semana" : "dia útil";
-      setResultado(`${format(d1, "dd/MM/yyyy (EEEE)", { locale: ptBR })} — ${info}`);
+      setResultado(`${format(d1, "dd/MM/yyyy (EEEE)", { locale: ptBR })}, ${info}`);
     }
   };
 

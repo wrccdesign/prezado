@@ -82,7 +82,7 @@ export function PensaoCalc() {
     const f = parseInt(filhos) || 1;
 
     doc.setFontSize(16);
-    doc.text("Relatório de Pensão Alimentícia — Honorífico", 14, 20);
+    doc.text("Relatório de Pensão Alimentícia, Honorífico", 14, 20);
     doc.setFontSize(10);
     doc.text(`Data: ${new Date().toLocaleDateString("pt-BR")}`, 14, 28);
 
@@ -109,7 +109,7 @@ export function PensaoCalc() {
       ["Valor Mínimo", fmt(result.minimo), `${result.percentualMin.toFixed(1)}%`],
       ["Valor Sugerido", fmt(result.sugerido), `${result.percentualSug.toFixed(1)}%`],
       ["Valor Máximo", fmt(result.maximo), `${result.percentualMax.toFixed(1)}%`],
-      ["Por Filho (sugerido)", fmt(result.porFilhoSug), "—"],
+      ["Por Filho (sugerido)", fmt(result.porFilhoSug), ""],
     ];
 
     linhas.forEach((row, i) => {
@@ -177,7 +177,7 @@ export function PensaoCalc() {
           <div className="rounded-lg border border-cream-dark bg-white border-primary/30 bg-primary/5">
             <div className="p-5 text-center space-y-1">
               <p className="text-sm text-muted-foreground">Valor Sugerido</p>
-              <p className="text-3xl  text-primary">{fmt(result.sugerido)}</p>
+              <p className="text-3xl text-primary">{fmt(result.sugerido)}</p>
               <p className="text-sm text-muted-foreground">({result.percentualSug.toFixed(1)}% da renda)</p>
             </div>
           </div>

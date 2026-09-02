@@ -123,8 +123,7 @@ interface Resultado {
   rodape_legal: string;
 }
 
-const RODAPE_PADRAO =
- "O Honorífico calcula e fundamenta o valor. A emissão e o pagamento da guia são feitos exclusivamente no portal oficial do tribunal, e o valor deve ser conferido no ato da emissão.";
+const RODAPE_PADRAO = "O Honorífico calcula e fundamenta o valor. A emissão e o pagamento da guia são feitos exclusivamente no portal oficial do tribunal, e o valor deve ser conferido no ato da emissão.";
 
 const PASSOS = [
   { n: 1, label: "Ato" },
@@ -212,7 +211,7 @@ export function CustasCalc() {
         `Data prevista do recolhimento: ${dataBR(recolhimentoEfetivo)}`,
         r.valor_base ? `Base de cálculo: ${fmt(r.valor_base)}` : "",
         `Valor devido: ${fmt(r.valor_devido)}`,
-        `Guia: ${r.tipo_guia}${r.codigo_receita ? ` — código de receita ${r.codigo_receita}` : ""}`,
+        `Guia: ${r.tipo_guia}${r.codigo_receita ? `, código de receita ${r.codigo_receita}` : ""}`,
       ]
         .filter(Boolean)
         .join("\n"),
@@ -220,7 +219,7 @@ export function CustasCalc() {
     {
       heading: "Memória de cálculo",
       body: r.memoria
-        .map(l => `${l.rotulo}: ${l.detalhe}${l.valor != null ? ` — ${fmt(l.valor)}` : ""}`)
+        .map(l => `${l.rotulo}: ${l.detalhe}${l.valor != null ? `, ${fmt(l.valor)}` : ""}`)
         .join("\n"),
     },
     {
@@ -243,7 +242,7 @@ export function CustasCalc() {
       requireAccount(() => {}, "exportar a memória de cálculo");
       return;
     }
-    const title = `Cálculo de Custas — ${result.tribunal}`;
+    const title = `Cálculo de Custas, ${result.tribunal}`;
     const filename = slugify(`custas-${result.tribunal}-${result.tipo_ato}-${dataAto}`);
     const sections = buildSections(result);
     if (tipo === "pdf") exportToPDF(title, sections, `${filename}.pdf`);
@@ -264,7 +263,7 @@ export function CustasCalc() {
         {
           user_id: userId,
           tipo: "custas",
-          titulo: `Custas ${result.tribunal} — ${atoInfo?.titulo ?? result.tipo_ato} (${dataBR(dataAto)})`,
+          titulo: `Custas ${result.tribunal}, ${atoInfo?.titulo ?? result.tipo_ato} (${dataBR(dataAto)})`,
           inputs: {
             tribunal: result.tribunal,
             tipo_ato: result.tipo_ato,
@@ -494,7 +493,7 @@ export function CustasCalc() {
 
         {/* valor + ações */}
         <ResultCard
-          label={`Taxa judiciária devida — ${result.tribunal}`}
+          label={`Taxa judiciária devida, ${result.tribunal}`}
           value={fmt(result.valor_devido)}
           meta={
             <>
@@ -574,7 +573,7 @@ export function CustasCalc() {
         <div className="rounded-lg border border-cream-dark bg-white border-amber-500/40 bg-amber-500/5">
           <div className="space-y-2 p-5">
             <p className="flex items-center gap-2 text-sm font-medium">
-              <AlertTriangle className="h-4 w-4 text-amber-600" /> Atenção — outras guias
+              <AlertTriangle className="h-4 w-4 text-amber-600" /> Atenção, outras guias
             </p>
             <ul className="list-disc space-y-1 pl-5 text-sm text-muted-foreground">
               {result.aviso_outras_guias.map(a => (

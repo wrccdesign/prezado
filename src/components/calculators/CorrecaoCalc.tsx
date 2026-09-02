@@ -175,7 +175,7 @@ export function CorrecaoCalc({ onUsarValor, usarValorLabel = "Usar este valor", 
     {
       heading: "Fonte e base legal",
       body: `${r.fonte}\nÚltima sincronização dos índices: ${
-        r.ultima_sincronizacao ? new Date(r.ultima_sincronizacao).toLocaleString("pt-BR") : "—"
+        r.ultima_sincronizacao ? new Date(r.ultima_sincronizacao).toLocaleString("pt-BR") : ""
       }\n${r.base_legal.join("\n")}`,
     },
 
@@ -187,7 +187,7 @@ export function CorrecaoCalc({ onUsarValor, usarValorLabel = "Usar este valor", 
       requireAccount(() => {}, "exportar a memória de cálculo");
       return;
     }
-    const title = "Memória de Cálculo — Atualização Monetária";
+    const title = "Memória de Cálculo, Atualização Monetária";
     const filename = slugify(`memoria-calculo-${dataInicial}-${dataFinal}`);
     const sections = buildSections(result);
     if (tipo === "pdf") exportToPDF(title, sections, `${filename}.pdf`);
@@ -264,7 +264,7 @@ export function CorrecaoCalc({ onUsarValor, usarValorLabel = "Usar este valor", 
               <Switch checked={manterIndiceContratual} onCheckedChange={setManterIndiceContratual} />
               <span className="text-sm text-muted-foreground">
                 {manterIndiceContratual
-                  ? "Índice contratual mantido (art. 389, § único, CC — norma supletiva)"
+                  ? "Índice contratual mantido (art. 389, § único, CC, norma supletiva)"
                   : "Substituir pelo IPCA a partir da vigência da Lei 14.905/2024"}
               </span>
             </div>
@@ -318,7 +318,7 @@ export function CorrecaoCalc({ onUsarValor, usarValorLabel = "Usar este valor", 
             <div className="flex items-start gap-2 rounded-lg border border-yellow-500/30 bg-yellow-50  p-4">
               <AlertTriangle className="h-5 w-5 text-yellow-600  shrink-0 mt-0.5" />
               <div className="text-sm text-yellow-700 ">
-                <p className="font-medium">Índices ainda não divulgados para os meses abaixo — considerados como 0%:</p>
+                <p className="font-medium">Índices ainda não divulgados para os meses abaixo, considerados como 0%:</p>
                 <p className="mt-1">
                   {result.meses_faltantes.map(m => `${mesLabel(m.mes_ref)} (${m.indice.toUpperCase()})`).join(", ")}
                 </p>
@@ -417,7 +417,7 @@ export function CorrecaoCalc({ onUsarValor, usarValorLabel = "Usar este valor", 
                 <strong className="text-foreground">Última sincronização dos índices:</strong>{" "}
                 {result.ultima_sincronizacao
                   ? new Date(result.ultima_sincronizacao).toLocaleString("pt-BR")
-                  : "—"}
+                  : ""}
               </p>
               <div>
                 <strong className="text-foreground">Base legal:</strong>
