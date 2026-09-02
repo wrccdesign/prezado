@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import { CalendarIcon, AlertTriangle, FileDown } from "lucide-react";
+import { CalendarIcon, AlertTriangle } from "lucide-react";
 import { jsPDF } from "jspdf";
 import { toast } from "sonner";
 
@@ -128,11 +128,11 @@ export function RescisaoCalc() {
         </div>
         <div className="space-y-2">
           <Label>Data de Admissão</Label>
-          <Popover><PopoverTrigger asChild><Button variant="outline" className={cn("w-full justify-start text-left font-normal", !admissao && "text-muted-foreground")}><CalendarIcon className="mr-2 h-4 w-4" />{admissao ? format(admissao, "dd/MM/yyyy") : "Selecione a data"}</Button></PopoverTrigger><PopoverContent className="w-auto p-0" align="start"><Calendar mode="single" selected={admissao} onSelect={setAdmissao} initialFocus className="p-3 pointer-events-auto" locale={ptBR} /></PopoverContent></Popover>
+          <Popover><PopoverTrigger asChild><Button variant="outline" className={cn("w-full justify-start text-left font-normal", !admissao && "text-navy/60")}><CalendarIcon className="mr-2 h-4 w-4" />{admissao ? format(admissao, "dd/MM/yyyy") : "Selecione a data"}</Button></PopoverTrigger><PopoverContent className="w-auto p-0" align="start"><Calendar mode="single" selected={admissao} onSelect={setAdmissao} initialFocus className="p-3 pointer-events-auto" locale={ptBR} /></PopoverContent></Popover>
         </div>
         <div className="space-y-2">
           <Label>Data de Demissão</Label>
-          <Popover><PopoverTrigger asChild><Button variant="outline" className={cn("w-full justify-start text-left font-normal", !demissao && "text-muted-foreground")}><CalendarIcon className="mr-2 h-4 w-4" />{demissao ? format(demissao, "dd/MM/yyyy") : "Selecione a data"}</Button></PopoverTrigger><PopoverContent className="w-auto p-0" align="start"><Calendar mode="single" selected={demissao} onSelect={setDemissao} initialFocus className="p-3 pointer-events-auto" locale={ptBR} /></PopoverContent></Popover>
+          <Popover><PopoverTrigger asChild><Button variant="outline" className={cn("w-full justify-start text-left font-normal", !demissao && "text-navy/60")}><CalendarIcon className="mr-2 h-4 w-4" />{demissao ? format(demissao, "dd/MM/yyyy") : "Selecione a data"}</Button></PopoverTrigger><PopoverContent className="w-auto p-0" align="start"><Calendar mode="single" selected={demissao} onSelect={setDemissao} initialFocus className="p-3 pointer-events-auto" locale={ptBR} /></PopoverContent></Popover>
         </div>
         <div className="space-y-2"><Label>Média de Horas Extras Mensais (R$)</Label><Input className="h-11" type="number" inputMode="decimal" placeholder="0" value={horasExtras} onChange={e => setHorasExtras(e.target.value)} /></div>
         <div className="space-y-4">
@@ -161,7 +161,7 @@ export function RescisaoCalc() {
             </div>
           </div>
           <div className="flex flex-col sm:flex-row gap-3 items-start">
-            <Button onClick={() => requireAccount(gerarPDF, "baixar o relatório em PDF")} variant="outline" className="gap-2"><FileDown className="h-4 w-4" /> Gerar Relatório PDF</Button>
+            <Button onClick={() => requireAccount(gerarPDF, "baixar o relatório em PDF")} variant="outline" className="gap-2">Gerar Relatório PDF</Button>
           </div>
           <div className="flex items-start gap-2 rounded-md border border-yellow-500/30 bg-yellow-50  p-3 text-sm text-yellow-800 ">
             <AlertTriangle className="h-4 w-4 mt-0.5 shrink-0" /><span>Cálculo estimado. Consulte um advogado trabalhista para valores exatos.</span>

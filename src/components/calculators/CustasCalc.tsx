@@ -7,12 +7,8 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/component
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import {
   AlertTriangle,
-  ArrowLeft,
   ChevronDown,
   Copy,
-  ExternalLink,
-  FileDown,
-  FileText,
   Loader2,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
@@ -300,7 +296,7 @@ export function CustasCalc() {
     return (
       <div className="space-y-5">
         <StepIndicator steps={PASSOS} current={1} ariaLabel="Etapas do cálculo" />
-        <p className="text-sm text-muted-foreground">
+        <p className="text-sm text-navy/70">
           Selecione o ato processual. Nesta primeira versão as regras são do <strong>TJSP</strong>.
         </p>
         <div className="grid gap-3 sm:grid-cols-2">
@@ -327,12 +323,12 @@ export function CustasCalc() {
                   
                   <p className="text-sm font-medium">{a.titulo}</p>
                 </div>
-                <p className="text-xs text-muted-foreground">{a.desc}</p>
+                <p className="text-xs text-navy/60">{a.desc}</p>
               </div>
             </div>
           ))}
         </div>
-        <p className="text-xs text-muted-foreground">{RODAPE_PADRAO}</p>
+        <p className="text-xs text-navy/60">{RODAPE_PADRAO}</p>
       </div>
     );
   }
@@ -344,12 +340,12 @@ export function CustasCalc() {
         <StepIndicator steps={PASSOS} current={2} ariaLabel="Etapas do cálculo" />
 
         <Button variant="ghost" size="sm" className="h-11 px-0" onClick={() => setEtapa(1)}>
-          <ArrowLeft className="mr-1.5 h-4 w-4" /> Trocar o ato
+          Trocar o ato
         </Button>
 
         <div className="space-y-1">
           <p className="font-medium">{atoInfo.titulo}</p>
-          <p className="text-xs text-muted-foreground">{atoInfo.desc}</p>
+          <p className="text-xs text-navy/60">{atoInfo.desc}</p>
         </div>
 
         <div className="grid gap-4 sm:grid-cols-2">
@@ -383,7 +379,7 @@ export function CustasCalc() {
               value={dataAto}
               onChange={e => setDataAto(e.target.value)}
             />
-            <p className="text-xs text-muted-foreground">
+            <p className="text-xs text-navy/60">
               Define a regra (alíquota) vigente na época do ato.
             </p>
           </div>
@@ -397,7 +393,7 @@ export function CustasCalc() {
               value={recolhimentoEfetivo}
               onChange={e => setDataRecolhimento(e.target.value)}
             />
-            <p className="text-xs text-muted-foreground">
+            <p className="text-xs text-navy/60">
               A alíquota vem da data do ato; a UFESP aplicada é a vigente no primeiro dia do mês do
               recolhimento. Por padrão, igual à data do ato.
             </p>
@@ -415,7 +411,7 @@ export function CustasCalc() {
                 value={qtdAutores}
                 onChange={e => setQtdAutores(e.target.value)}
               />
-              <p className="text-xs text-muted-foreground">
+              <p className="text-xs text-navy/60">
                 No litisconsórcio ativo voluntário acrescentam-se 10 UFESPs a cada grupo de 10 autores
                 (ou fração) que exceder.
               </p>
@@ -429,7 +425,7 @@ export function CustasCalc() {
             <Checkbox checked={justicaGratuita} onCheckedChange={v => setJusticaGratuita(v === true)} />
             <span className="text-sm">
               Justiça gratuita
-              <span className="block text-xs text-muted-foreground">
+              <span className="block text-xs text-navy/60">
                 Benefício da justiça gratuita já deferido. Pedido ainda pendente de decisão não
                 dispensa o recolhimento.
               </span>
@@ -439,7 +435,7 @@ export function CustasCalc() {
             <Checkbox checked={parteIsenta} onCheckedChange={v => setParteIsenta(v === true)} />
             <span className="text-sm">
               Parte isenta por qualidade
-              <span className="block text-xs text-muted-foreground">
+              <span className="block text-xs text-navy/60">
                 União, Estado, Município, suas autarquias e fundações e o Ministério Público.
               </span>
             </span>
@@ -448,7 +444,7 @@ export function CustasCalc() {
             <Checkbox checked={naturezaIsenta} onCheckedChange={v => setNaturezaIsenta(v === true)} />
             <span className="text-sm">
               Feito isento pela natureza
-              <span className="block text-xs text-muted-foreground">
+              <span className="block text-xs text-navy/60">
                 Jurisdição de menores, acidentes do trabalho, alimentos até 2 salários mínimos e
                 Juizados Especiais em 1ª instância.
               </span>
@@ -487,7 +483,7 @@ export function CustasCalc() {
         <StepIndicator steps={PASSOS} current={3} ariaLabel="Etapas do cálculo" />
 
         <Button variant="ghost" size="sm" className="h-11 px-0" onClick={() => setEtapa(2)}>
-          <ArrowLeft className="mr-1.5 h-4 w-4" /> Ajustar dados
+          Ajustar dados
         </Button>
 
         {/* valor + ações */}
@@ -496,8 +492,8 @@ export function CustasCalc() {
           value={fmt(result.valor_devido)}
           meta={
             <>
-              {atoInfo?.titulo ?? result.tipo_ato} · ato em {dataBR(dataAto)} · recolhimento previsto
-              em {dataBR(recolhimentoEfetivo)} · {result.unidade_fiscal.codigo}{" "}
+              {atoInfo?.titulo ?? result.tipo_ato}, ato em {dataBR(dataAto)}, recolhimento previsto
+              em {dataBR(recolhimentoEfetivo)}, {result.unidade_fiscal.codigo}{" "}
               {result.unidade_fiscal.ano} = {fmt(result.unidade_fiscal.valor)}
             </>
           }
@@ -512,7 +508,7 @@ export function CustasCalc() {
                 </p>
               )}
               {!isAuthenticated && (
-                <p className="pt-2 text-sm text-muted-foreground">
+                <p className="pt-2 text-sm text-navy/70">
                   O cálculo e a memória são livres, sem conta. Para exportar em PDF/Word ou
                   salvar no histórico, crie sua conta grátis.
                 </p>
@@ -531,14 +527,14 @@ export function CustasCalc() {
                 className="h-11 w-full sm:w-auto"
                 onClick={() => exportar("pdf")}
               >
-                <FileDown className="mr-1.5 h-4 w-4" /> Exportar PDF
+                Exportar PDF
               </Button>
               <Button
                 variant="outline"
                 className="h-11 w-full sm:w-auto"
                 onClick={() => exportar("docx")}
               >
-                <FileText className="mr-1.5 h-4 w-4" /> Exportar Word
+                Exportar Word
               </Button>
               <Button
                 variant="outline"
@@ -574,7 +570,7 @@ export function CustasCalc() {
             <p className="flex items-center gap-2 text-sm font-medium">
               <AlertTriangle className="h-4 w-4 text-amber-600" /> Atenção, outras guias
             </p>
-            <ul className="list-disc space-y-1 pl-5 text-sm text-muted-foreground">
+            <ul className="list-disc space-y-1 pl-5 text-sm text-navy/70">
               {result.aviso_outras_guias.map(a => (
                 <li key={a}>{a}</li>
               ))}
@@ -587,7 +583,7 @@ export function CustasCalc() {
           <div className="space-y-4 p-5">
             <div className="grid gap-3 sm:grid-cols-2">
               <div className="rounded-md border p-3">
-                <p className="text-xs text-muted-foreground">Valor a recolher</p>
+                <p className="text-xs text-navy/60">Valor a recolher</p>
                 <div className="flex items-center justify-between gap-2">
                   <p className="font-medium">{fmt(result.valor_devido)}</p>
                   <Button
@@ -602,11 +598,11 @@ export function CustasCalc() {
                 </div>
               </div>
               <div className="rounded-md border p-3">
-                <p className="text-xs text-muted-foreground">Guia e código de receita</p>
+                <p className="text-xs text-navy/60">Guia e código de receita</p>
                 <div className="flex items-center justify-between gap-2">
                   <p className="font-medium">
                     {result.tipo_guia}
-                    {result.codigo_receita ? ` · ${result.codigo_receita}` : ""}
+                    {result.codigo_receita ? `, ${result.codigo_receita}` : ""}
                   </p>
                   {result.codigo_receita && (
                     <Button
@@ -627,17 +623,16 @@ export function CustasCalc() {
               <Button asChild className="h-11 w-full sm:w-auto">
                 <a href={result.url_emissao} target="_blank" rel="noopener noreferrer">
                   Emitir a guia no Portal de Custas do TJSP
-                  <ExternalLink className="ml-2 h-4 w-4" />
                 </a>
               </Button>
             )}
 
-            <p className="text-xs text-muted-foreground">{result.aviso_emissao}</p>
+            <p className="text-xs text-navy/60">{result.aviso_emissao}</p>
           </div>
         </div>
 
         {/* base legal */}
-        <div className="space-y-2 text-xs text-muted-foreground">
+        <div className="space-y-2 text-xs text-navy/60">
           <div>
             <strong className="text-foreground">Base legal:</strong>
             <ul className="mt-1 list-disc space-y-1 pl-4">

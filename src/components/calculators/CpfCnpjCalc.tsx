@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { CheckCircle, XCircle, Copy, RotateCcw } from "lucide-react";
+import { CheckCircle, XCircle, Copy } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { toast } from "@/hooks/use-toast";
 
@@ -128,7 +128,7 @@ export function CpfCnpjCalc() {
               <p className={cn("font-medium", valido ? "text-green-700 " : "text-destructive")}>
                 {valido ? "Número válido" : "Número inválido"}
               </p>
-              <p className="text-sm text-muted-foreground">
+              <p className="text-sm text-navy/70">
                 {tipo.toUpperCase()}: {tipo === "cpf" ? formatarCpf(valor) : formatarCnpj(valor)}
               </p>
               <div className="flex flex-wrap gap-2 pt-1">
@@ -136,7 +136,7 @@ export function CpfCnpjCalc() {
                   <Copy className="mr-1.5 h-4 w-4" /> Copiar formatado
                 </Button>
                 <Button variant="ghost" size="sm" onClick={() => { setValor(""); setValido(null); }}>
-                  <RotateCcw className="mr-1.5 h-4 w-4" /> Limpar
+                  Limpar
                 </Button>
               </div>
             </div>
@@ -144,7 +144,7 @@ export function CpfCnpjCalc() {
         </div>
       )}
 
-      <p className="text-xs text-muted-foreground">
+      <p className="text-xs text-navy/60">
         A validação segue o algoritmo oficial dos dígitos verificadores. Não consulta a Receita Federal,
         portanto não confirma se o documento está ativo, cancelado ou se pertence a uma pessoa real.
       </p>
