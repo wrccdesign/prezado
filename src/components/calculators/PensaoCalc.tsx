@@ -195,7 +195,7 @@ export function PensaoCalc() {
                 <TableRow><TableCell>Faixa Mínima</TableCell><TableCell className="text-right">{fmt(result.minimo)}</TableCell><TableCell className="text-right">{result.percentualMin.toFixed(1)}%</TableCell></TableRow>
                 <TableRow className="bg-primary/5 font-medium"><TableCell>Valor Sugerido</TableCell><TableCell className="text-right">{fmt(result.sugerido)}</TableCell><TableCell className="text-right">{result.percentualSug.toFixed(1)}%</TableCell></TableRow>
                 <TableRow><TableCell>Faixa Máxima</TableCell><TableCell className="text-right">{fmt(result.maximo)}</TableCell><TableCell className="text-right">{result.percentualMax.toFixed(1)}%</TableCell></TableRow>
-                <TableRow><TableCell>Valor por Filho (sugerido)</TableCell><TableCell className="text-right">{fmt(result.porFilhoSug)}</TableCell><TableCell className="text-right">—</TableCell></TableRow>
+                <TableRow><TableCell>Valor por Filho (sugerido)</TableCell><TableCell className="text-right">{fmt(result.porFilhoSug)}</TableCell><TableCell className="text-right"></TableCell></TableRow>
               </TableBody>
             </Table>
           </div>
