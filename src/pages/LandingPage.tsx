@@ -179,7 +179,7 @@ export default function LandingPage() {
         <div className="container mx-auto px-4 sm:px-6">
           <h2 className="text-h2">Por que a fonte importa</h2>
           <p className="text-body-serif text-navy/80 max-w-[60ch] mt-3">
-            Uma resposta jurídica sem fonte é uma aposta. A diferença está em quatro pontos.
+            Uma resposta jurídica sem fonte é uma aposta. A diferença está em cinco pontos.
           </p>
 
           <div className="overflow-x-auto">
