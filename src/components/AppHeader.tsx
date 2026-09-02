@@ -10,8 +10,8 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import {
-  History, LogOut, Plus, FileSignature, MessageCircle, Briefcase, User, Calculator,
-  LayoutDashboard, Menu, Stethoscope, Scale, Crown, FileText, ChevronDown, Wrench, Lock,
+  History, Plus, FileSignature, MessageCircle, Briefcase, User, Calculator,
+  LayoutDashboard, Menu, Stethoscope, Scale, Crown, FileText, ChevronDown, Lock,
 } from "lucide-react";
 import Logo from "@/components/Logo";
 import { UsageSummaryCompact } from "@/components/UsageSummary";
@@ -30,13 +30,6 @@ interface NavItem {
 // Menu único: os mesmos rótulos com e sem login. Itens que exigem conta ficam
 // visíveis com cadeado e levam ao cadastro preservando o destino.
 const analiseItem: NavItem = { path: "/", label: "Análise", icon: Plus, requiresAuth: true };
-
-const homeNavSections = [
-  { label: "Recursos", href: "#recursos" },
-  { label: "Memória de cálculo", href: "#memoria" },
-  { label: "Calcular", href: "#calcular" },
-  { label: "Planos", href: "/planos" },
-];
 
 const publicNav: NavItem[] = [
   { path: "/calculadoras", label: "Calculadoras", icon: Calculator },
@@ -60,21 +53,18 @@ const accountNav: NavItem[] = [
 ];
 
 
-function NavButton({ item, active, onClick, compact, locked }: { item: NavItem; active: boolean; onClick: () => void; compact?: boolean; locked?: boolean }) {
+function NavButton({ item, active, onClick, locked }: { item: NavItem; active: boolean; onClick: () => void; compact?: boolean; locked?: boolean }) {
   return (
     <button
       onClick={onClick}
-      title={compact ? item.label : undefined}
-      aria-label={compact ? item.label : undefined}
+      aria-label={item.label}
       className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
-        active ? "bg-white/10 text-white" : "text-white/60 hover:text-white hover:bg-white/5"
+        active ? "bg-cream/10 text-cream" : "text-cream/72 hover:text-cream hover:bg-cream/5"
       }`}
     >
-      <item.icon className="h-4 w-4" aria-hidden="true" />
-      {compact ? <span className="sr-only">{item.label}</span> : item.label}
-      {!compact && locked && <Lock className="h-3 w-3 opacity-50" />}
+      {item.label}
+      {locked && <Lock className="h-3 w-3 opacity-50" />}
     </button>
-
   );
 }
 
@@ -101,21 +91,6 @@ export function AppHeader() {
     else navigate(item.path);
   };
 
-  // As âncoras (#recursos, #memoria, #calcular) só existem na LandingPage,
-  // que é renderizada apenas para visitantes deslogados.
-  const isHome = location.pathname === "/" && !user;
-  const goHomeSection = (href: string) => {
-    if (href.startsWith("#")) {
-      const id = href.slice(1);
-      const el = document.getElementById(id);
-      if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
-      else window.location.hash = href;
-    } else {
-      navigate(href);
-    }
-  };
-
-
   const handleNavigate = (path: string) => {
     navigate(path);
     setSheetOpen(false);
@@ -132,7 +107,7 @@ export function AppHeader() {
 
     return (
       <span className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-medium ${
-        isLawyer ? "bg-gold/20 text-gold-light" : "bg-white/10 text-white/70"
+        isLawyer ? "bg-gold/20 text-gold-light" : "bg-cream/10 text-cream/72"
       }`}>
         {isLawyer ? <Briefcase className="h-3 w-3" /> : <User className="h-3 w-3" />}
         {variant === "full" && <span>{isLawyer ? "Advogado" : "Cidadão"}</span>}
@@ -140,18 +115,17 @@ export function AppHeader() {
     );
   };
 
-  const dropdownContent = "w-56 bg-navy border border-gold/20 text-white/80";
-  const dropdownItem = "gap-2 text-white/70 focus:bg-white/10 focus:text-white cursor-pointer";
+  const dropdownContent = "w-56 bg-navy border border-gold/12 text-cream/72";
+  const dropdownItem = "gap-2 text-cream/72 focus:bg-cream/10 focus:text-cream cursor-pointer";
 
   const toolsMenu = (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <button
           className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
-            groupActive(tools) ? "bg-white/10 text-white" : "text-white/60 hover:text-white hover:bg-white/5"
+            groupActive(tools) ? "bg-cream/10 text-cream" : "text-cream/72 hover:text-cream hover:bg-cream/5"
           }`}
         >
-          <Wrench className="h-4 w-4" />
           Ferramentas
           <ChevronDown className="h-3.5 w-3.5 opacity-60" />
         </button>
@@ -159,7 +133,6 @@ export function AppHeader() {
       <DropdownMenuContent align="end" className={dropdownContent}>
         {tools.map((item) => (
           <DropdownMenuItem key={item.path} className={dropdownItem} onClick={() => go(item)}>
-            <item.icon className="h-4 w-4" />
             <span className="flex-1">{item.label}</span>
             {isLocked(item) && <Lock className="h-3 w-3 opacity-50" />}
           </DropdownMenuItem>
@@ -174,33 +147,30 @@ export function AppHeader() {
       <DropdownMenuTrigger asChild>
         <button
           className={`inline-flex items-center gap-1.5 h-9 px-2 rounded-md transition-colors ${
-            groupActive(accountNav) ? "bg-white/10" : "hover:bg-white/5"
+            groupActive(accountNav) ? "bg-cream/10" : "hover:bg-cream/5"
           }`}
           aria-label="Menu da conta"
         >
           <span className={`h-7 w-7 inline-flex items-center justify-center rounded-full ${
-            isLawyer ? "bg-gold/20 text-gold-light" : "bg-white/10 text-white/70"
+            isLawyer ? "bg-gold/20 text-gold-light" : "bg-cream/10 text-cream/72"
           }`}>
             {isLawyer ? <Briefcase className="h-3.5 w-3.5" /> : <User className="h-3.5 w-3.5" />}
           </span>
-          <ChevronDown className="h-3.5 w-3.5 text-white/50" />
+          <ChevronDown className="h-3.5 w-3.5 text-cream/50" />
         </button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className={dropdownContent}>
         <div className="px-2 py-2">{profileBadge("full")}</div>
-        <DropdownMenuSeparator className="bg-white/10" />
+        <DropdownMenuSeparator className="bg-cream/10" />
         <UsageSummaryCompact />
-        <DropdownMenuSeparator className="bg-white/10" />
+        <DropdownMenuSeparator className="bg-cream/10" />
         {accountNav.map((item) => (
-
           <DropdownMenuItem key={item.path} className={dropdownItem} onClick={() => navigate(item.path)}>
-            <item.icon className="h-4 w-4" />
             {item.label}
           </DropdownMenuItem>
         ))}
-        <DropdownMenuSeparator className="bg-white/10" />
-        <DropdownMenuItem className="gap-2 text-red-400/90 focus:bg-white/10 focus:text-red-400 cursor-pointer" onClick={handleSignOut}>
-          <LogOut className="h-4 w-4" />
+        <DropdownMenuSeparator className="bg-cream/10" />
+        <DropdownMenuItem className="gap-2 text-red-400/90 focus:bg-cream/10 focus:text-red-400 cursor-pointer" onClick={handleSignOut}>
           Sair
         </DropdownMenuItem>
       </DropdownMenuContent>
@@ -211,34 +181,30 @@ export function AppHeader() {
     <div className="flex items-center gap-2">
       <button
         onClick={() => navigate("/auth")}
-        className="px-3 py-1.5 rounded-md text-sm font-medium text-white/70 hover:text-white hover:bg-white/5 transition-colors"
+        className="px-3 py-1.5 rounded-md text-sm font-medium text-cream/72 hover:text-cream hover:bg-cream/5 transition-colors"
       >
         Entrar
       </button>
       <button
         onClick={() => navigate("/auth?mode=signup")}
-        className="px-3 py-1.5 rounded-md text-sm font-semibold bg-gold text-navy hover:bg-gold-light transition-colors"
+        className="px-3 py-1.5 rounded-md text-sm font-medium bg-gold text-navy hover:bg-gold-light transition-colors"
       >
         Criar conta grátis
       </button>
     </div>
   );
 
-
-
-
   const sheetSection = (items: NavItem[], label: string) => (
     <>
-      <div className="text-xs font-semibold text-white/40 px-2 mb-2 tracking-wider">{label}</div>
+      <div className="text-note text-cream/50 px-2 mb-2">{label}</div>
       {items.map((item) => (
         <button
           key={item.path}
           onClick={() => { go(item); setSheetOpen(false); }}
           className={`flex items-center gap-3 w-full px-3 py-2.5 rounded-md text-sm font-medium transition-colors ${
-            isActive(item.path) ? "bg-white/10 text-white" : "text-white/60 hover:text-white hover:bg-white/5"
+            isActive(item.path) ? "bg-cream/10 text-cream" : "text-cream/72 hover:text-cream hover:bg-cream/5"
           }`}
         >
-          <item.icon className="h-5 w-5" />
           <span className="flex-1 text-left">{item.label}</span>
           {isLocked(item) && <Lock className="h-3.5 w-3.5 opacity-50" />}
         </button>
@@ -249,7 +215,7 @@ export function AppHeader() {
 
   return (
     <>
-    <header className="sticky top-0 z-50 bg-navy border-b border-gold/20">
+    <header className="sticky top-0 z-50 bg-navy border-b border-gold/12">
 
       <div className="container flex h-14 sm:h-16 items-center justify-between px-4">
         <button onClick={() => navigate("/")} className="flex items-center flex-shrink-0">
@@ -263,18 +229,18 @@ export function AppHeader() {
           ))}
           {toolsMenu}
           {!user && <NavButton item={planosItem} active={isActive(planosItem.path)} onClick={() => navigate(planosItem.path)} />}
-          <div className="w-px h-6 bg-white/10 mx-1" />
+          <div className="w-px h-6 bg-cream/10 mx-1" />
           {user ? accountMenu : guestActions}
         </nav>
 
-        {/* Tablet (md–lg): ícones sem rótulo */}
+        {/* Tablet (md–lg) */}
         <nav className="hidden md:flex lg:hidden items-center gap-1">
           {primaryNav.map((item) => (
-            <NavButton key={item.path} item={item} active={isActive(item.path)} onClick={() => go(item)} locked={isLocked(item)} compact />
+            <NavButton key={item.path} item={item} active={isActive(item.path)} onClick={() => go(item)} locked={isLocked(item)} />
           ))}
           {toolsMenu}
-          {!user && <NavButton item={planosItem} active={isActive(planosItem.path)} onClick={() => navigate(planosItem.path)} compact />}
-          <div className="w-px h-6 bg-white/10 mx-1" />
+          {!user && <NavButton item={planosItem} active={isActive(planosItem.path)} onClick={() => navigate(planosItem.path)} />}
+          <div className="w-px h-6 bg-cream/10 mx-1" />
           {user ? accountMenu : guestActions}
 
         </nav>
@@ -285,62 +251,45 @@ export function AppHeader() {
           {profileBadge("small")}
           <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
             <SheetTrigger asChild>
-              <button className="h-9 w-9 inline-flex items-center justify-center rounded-md text-white/70 hover:text-white hover:bg-white/5 transition-colors">
+              <button className="h-9 w-9 inline-flex items-center justify-center rounded-md text-cream/72 hover:text-cream hover:bg-cream/5 transition-colors">
                 <Menu className="h-5 w-5" />
                 <span className="sr-only">Abrir menu</span>
               </button>
             </SheetTrigger>
-            <SheetContent side="right" className="w-72 sm:w-80 bg-navy border-l border-gold/20 p-6 overflow-y-auto">
+            <SheetContent side="right" className="w-72 sm:w-80 bg-navy border-l border-gold/12 p-6 overflow-y-auto">
               <SheetHeader className="text-left">
-                <SheetTitle className="flex items-center text-white">
+                <SheetTitle className="flex items-center text-cream">
                   <Logo className="h-8" />
                 </SheetTitle>
               </SheetHeader>
               <div className="mt-4">{profileBadge("full")}</div>
               {user && (
-                <div className="mt-3 rounded-md bg-white/5">
+                <div className="mt-3 rounded-md bg-cream/5">
                   <UsageSummaryCompact onNavigate={() => setSheetOpen(false)} />
                 </div>
               )}
 
               <nav className="mt-6 flex flex-col gap-1">
-                {isHome && (
-                  <>
-                    <div className="text-xs font-semibold text-white/40 px-2 mb-2 tracking-wider">SEÇÕES</div>
-                    {homeNavSections.map((s) => (
-                      <button
-                        key={s.href}
-                        onClick={() => { goHomeSection(s.href); setSheetOpen(false); }}
-                        className="flex items-center gap-3 w-full px-3 py-2.5 rounded-md text-sm font-medium text-white/60 hover:text-white hover:bg-white/5 transition-colors"
-                      >
-                        <span className="flex-1 text-left">{s.label}</span>
-                      </button>
-                    ))}
-                    <div className="mt-4" />
-                  </>
-                )}
-                {sheetSection(primaryNav, "PRINCIPAIS")}
+                {sheetSection(primaryNav, "Principais")}
                 <div className="mt-4" />
-                {sheetSection(tools, "FERRAMENTAS")}
+                {sheetSection(tools, "Ferramentas")}
                 <div className="mt-4" />
                 {user ? (
                   <>
-                    {sheetSection(accountNav, "CONTA")}
-                    <div className="h-px bg-white/10 my-3" />
-                    <button onClick={handleSignOut} className="flex items-center gap-3 w-full px-3 py-2.5 rounded-md text-sm font-medium text-red-400/80 hover:text-red-400 hover:bg-white/5 transition-colors">
-                      <LogOut className="h-5 w-5" />
+                    {sheetSection(accountNav, "Conta")}
+                    <div className="h-px bg-cream/10 my-3" />
+                    <button onClick={handleSignOut} className="flex items-center gap-3 w-full px-3 py-2.5 rounded-md text-sm font-medium text-red-400/80 hover:text-red-400 hover:bg-cream/5 transition-colors">
                       Sair
                     </button>
                   </>
                 ) : (
                   <>
-                    {sheetSection([planosItem], "CONTA")}
-                    <div className="h-px bg-white/10 my-3" />
-                    <button onClick={() => handleNavigate("/auth")} className="flex items-center gap-3 w-full px-3 py-2.5 rounded-md text-sm font-medium text-white/70 hover:text-white hover:bg-white/5 transition-colors">
-                      <User className="h-5 w-5" />
+                    {sheetSection([planosItem], "Conta")}
+                    <div className="h-px bg-cream/10 my-3" />
+                    <button onClick={() => handleNavigate("/auth")} className="flex items-center gap-3 w-full px-3 py-2.5 rounded-md text-sm font-medium text-cream/72 hover:text-cream hover:bg-cream/5 transition-colors">
                       Entrar
                     </button>
-                    <button onClick={() => handleNavigate("/auth?mode=signup")} className="mt-1 flex items-center justify-center gap-2 w-full px-3 py-2.5 rounded-md text-sm font-semibold bg-gold text-navy hover:bg-gold-light transition-colors">
+                    <button onClick={() => handleNavigate("/auth?mode=signup")} className="mt-1 flex items-center justify-center gap-2 w-full px-3 py-2.5 rounded-md text-sm font-medium bg-gold text-navy hover:bg-gold-light transition-colors">
                       Criar conta grátis
                     </button>
                   </>
@@ -352,24 +301,6 @@ export function AppHeader() {
         </div>
       </div>
     </header>
-
-    {isHome && (
-      <div className="hidden md:block bg-navy border-b border-gold/10">
-        <div className="container mx-auto px-4 py-2">
-          <nav className="flex items-center gap-1 overflow-x-auto no-scrollbar" aria-label="Seções da home">
-            {homeNavSections.map((s) => (
-              <button
-                key={s.href}
-                onClick={() => goHomeSection(s.href)}
-                className="text-sm text-white/60 hover:text-white hover:bg-white/5 px-3 py-1.5 rounded-md transition-colors whitespace-nowrap"
-              >
-                {s.label}
-              </button>
-            ))}
-          </nav>
-        </div>
-      </div>
-    )}
 
     <TrialBanner />
     </>
