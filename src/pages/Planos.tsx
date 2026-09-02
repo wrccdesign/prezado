@@ -186,8 +186,9 @@ export default function Planos() {
 
 
   return (
-    <div className="flex min-h-screen flex-col bg-background">
+    <div className="flex min-h-screen flex-col bg-cream text-navy">
       <AppHeader />
+
       <SEO
         title="Planos e Preços — Honorífico"
         description="Gratuito, Profissional (R$ 49/mês) e Escritório. 7 dias grátis no Profissional, sem cartão. Pagamento em reais."
