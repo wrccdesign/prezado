@@ -241,28 +241,26 @@ export default function Planos() {
       />
       <PaymentTestModeBanner />
 
-      <main className="flex-1 container max-w-5xl py-12 px-4">
-        <div className="text-center mb-12">
-          <h1 className="text-3xl md:text-4xl font-bold font-heading text-foreground mb-3">
-            Escolha seu plano
-          </h1>
-          <p className="text-muted-foreground max-w-2xl mx-auto">
-            As calculadoras são livres e ilimitadas em todos os planos — inclusive sem conta. A assinatura libera IA
-            (petições, análise de documentos, diagnóstico e chat), histórico salvo e volume de consulta processual.
-            As cotas são mensais e renovam no primeiro dia de cada mês.
+      <main className="container max-w-5xl flex-1 px-4 py-12">
+        <div className="max-w-[60ch] space-y-4">
+          <h1 className="text-h1 text-navy">Escolha seu plano</h1>
+          <p className="text-body-serif text-navy/80">
+            As calculadoras são livres e ilimitadas em todos os planos, inclusive sem conta. A
+            assinatura libera a IA (petições, análise de documentos, diagnóstico e chat), o
+            histórico salvo e o volume de consulta processual. As cotas são mensais e renovam no
+            primeiro dia de cada mês.
           </p>
-          <p className="mt-3 text-sm font-medium text-accent">
-            Toda conta nova começa com 7 dias grátis no plano Profissional — sem cartão.
+          <p className="text-note text-navy/70">
+            Toda conta nova começa com 7 dias grátis no plano Profissional, sem cartão.
           </p>
-
         </div>
 
         {isPastDue && (
-          <div className="mb-8 rounded-lg border border-destructive/40 bg-destructive/10 p-4 text-sm">
-            <p className="font-semibold text-destructive">Pagamento pendente</p>
-            <p className="mt-1 text-muted-foreground">
+          <div className="mt-8 rounded-lg border border-destructive/40 bg-white p-4 text-sm">
+            <p className="text-destructive">Pagamento pendente</p>
+            <p className="mt-1 text-navy/70">
               Sua última cobrança falhou. Atualize o meio de pagamento em{" "}
-              <button className="underline font-medium" onClick={() => navigate("/conta")}>
+              <button className="underline underline-offset-4 hover:text-gold" onClick={() => navigate("/conta")}>
                 Minha conta
               </button>{" "}
               para manter o acesso.
@@ -270,13 +268,13 @@ export default function Planos() {
           </div>
         )}
 
-        <div className="mb-8 flex flex-col items-center gap-2">
-          <div className="inline-flex rounded-lg border border-border bg-muted/40 p-1">
+        <div className="mt-8 flex flex-col gap-2">
+          <div className="inline-flex w-fit rounded border border-cream-dark bg-white p-1">
             <button
               type="button"
               onClick={() => setCycle("mensal")}
-              className={`rounded-md px-4 py-2 text-sm font-medium transition-colors ${
-                cycle === "mensal" ? "bg-background text-foreground shadow-sm" : "text-muted-foreground"
+              className={`rounded-sm px-4 py-2 text-sm transition-colors ${
+                cycle === "mensal" ? "bg-navy text-cream" : "text-navy/70 hover:text-navy"
               }`}
             >
               Mensal
@@ -284,28 +282,26 @@ export default function Planos() {
             <button
               type="button"
               onClick={() => setCycle("anual")}
-              className={`rounded-md px-4 py-2 text-sm font-medium transition-colors ${
-                cycle === "anual" ? "bg-background text-foreground shadow-sm" : "text-muted-foreground"
+              className={`rounded-sm px-4 py-2 text-sm transition-colors ${
+                cycle === "anual" ? "bg-navy text-cream" : "text-navy/70 hover:text-navy"
               }`}
             >
-              Anual
-              <span className="ml-2 rounded bg-accent px-1.5 py-0.5 text-[10px] font-semibold text-accent-foreground">
-                -30%
-              </span>
+              Anual, 30% menor
             </button>
           </div>
           {cycle === "anual" && (
-            <p className="text-xs text-muted-foreground text-center max-w-md">
+            <p className="text-note text-navy/60">
               Pagamento único de 12 meses, à vista no cartão. Sem renovação automática.
             </p>
           )}
           {cycle === "anual" && creditCents !== null && creditCents > 0 && (
-            <p className="text-xs font-medium text-accent text-center">
+            <p className="text-note text-navy/70">
               Crédito de {(creditCents / 100).toLocaleString("pt-BR", { style: "currency", currency: "BRL" })} pelo
               período não usado da sua assinatura mensal será aplicado no checkout.
             </p>
           )}
         </div>
+
 
 
         <div className="grid md:grid-cols-3 gap-6 mb-12">
