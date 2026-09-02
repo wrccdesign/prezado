@@ -7,7 +7,7 @@ export default function PensaoAlimenticiaLanding() {
       title="Calculadora de Pensão Alimentícia"
       description="Estime uma faixa de referência de pensão alimentícia a partir da renda líquida do alimentante, do número de filhos, do padrão de vida, da moradia e de outras obrigações alimentares já existentes."
       path="/calculadoras/pensao-alimenticia"
-      seoTitle="Calcular Pensão Alimentícia — Faixa de Referência Grátis"
+      seoTitle="Calcular Pensão Alimentícia, Faixa de Referência Grátis"
       seoDescription="Estime a faixa de pensão alimentícia pelo binômio necessidade x possibilidade (art. 1.694 do Código Civil), considerando renda, número de filhos, moradia e padrão de vida. Grátis, sem login."
       keywords={[
         "pensão alimentícia",
@@ -25,7 +25,7 @@ export default function PensaoAlimenticiaLanding() {
       ]}
       content={
         <>
-          <h2 className="text-xl font-semibold">O resultado é referência, não decisão judicial</h2>
+          <h2 className="text-h3 text-navy">O resultado é referência, não decisão judicial</h2>
           <p>
             A calculadora não fixa pensão. Quem define o valor é o juiz, caso a caso, com base no
             binômio necessidade × possibilidade do art. 1.694 do Código Civil: de um lado, o que o
@@ -33,11 +33,11 @@ export default function PensaoAlimenticiaLanding() {
             alimentante pode pagar sem comprometer o próprio sustento.
           </p>
 
-          <h2 className="text-xl font-semibold">Como a faixa é montada</h2>
+          <h2 className="text-h3 text-navy">Como a faixa é montada</h2>
           <p>
-            O cálculo parte de faixas percentuais da renda líquida observadas na prática — em torno
+            O cálculo parte de faixas percentuais da renda líquida observadas na prática, em torno
             de 15% a 30% para um filho, com percentuais totais maiores conforme aumenta o número de
-            filhos — e devolve três valores: mínimo, sugerido e máximo. Sobre essa base são
+            filhos, e devolve três valores: mínimo, sugerido e máximo. Sobre essa base são
             aplicados ajustes: padrão de vida informado, filhos que residem com o alimentante
             (integral ou parcialmente) e existência de outras obrigações alimentares.
           </p>
@@ -47,11 +47,11 @@ export default function PensaoAlimenticiaLanding() {
             adotar valores diferentes, inclusive em salários mínimos ou em valor fixo.
           </p>
 
-          <h2 className="text-xl font-semibold">Para que serve na prática</h2>
+          <h2 className="text-h3 text-navy">Para que serve na prática</h2>
           <p>
             A faixa serve para orientar conversas iniciais, propostas de acordo e a preparação de
             uma ação de alimentos, mostrando uma ordem de grandeza compatível com a renda informada.
-            Despesas específicas — escola, plano de saúde, tratamentos — costumam ser tratadas à
+            Despesas específicas, escola, plano de saúde, tratamentos, costumam ser tratadas à
             parte e não estão embutidas no percentual.
           </p>
         </>

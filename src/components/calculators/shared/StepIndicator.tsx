@@ -9,28 +9,26 @@ interface StepIndicatorProps {
   ariaLabel?: string;
 }
 
-/** Indicador de etapas discreto (1 · 2 · 3) usado nas calculadoras multi-etapa. */
+/** Indicador de etapas das calculadoras multi-etapa: número e rótulo, sem pílula. */
 export function StepIndicator({ steps, current, ariaLabel = "Etapas" }: StepIndicatorProps) {
   return (
-    <ol className="flex items-center gap-2 text-xs" aria-label={ariaLabel}>
+    <ol className="flex flex-wrap items-center gap-x-4 gap-y-2 text-note" aria-label={ariaLabel}>
       {steps.map((p, i) => (
         <li key={p.n} className="flex items-center gap-2">
           <span
             aria-current={current === p.n ? "step" : undefined}
-            className={`flex h-6 w-6 items-center justify-center rounded-full border text-[11px] font-medium ${
+            className={
               current === p.n
-                ? "border-primary bg-primary text-primary-foreground"
+                ? "tabular text-gold"
                 : current > p.n
-                ? "border-primary/40 bg-primary/10 text-primary"
-                : "border-border text-muted-foreground"
-            }`}
+                ? "tabular text-navy/70"
+                : "tabular text-navy/40"
+            }
           >
             {p.n}
           </span>
-          <span className={current === p.n ? "font-medium text-foreground" : "text-muted-foreground"}>
-            {p.label}
-          </span>
-          {i < steps.length - 1 && <span className="h-px w-4 bg-border sm:w-8" aria-hidden />}
+          <span className={current === p.n ? "text-navy" : "text-navy/60"}>{p.label}</span>
+          {i < steps.length - 1 && <span className="h-px w-6 bg-cream-dark" aria-hidden />}
         </li>
       ))}
     </ol>

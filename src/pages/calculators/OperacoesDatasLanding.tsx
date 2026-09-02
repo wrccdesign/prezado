@@ -7,7 +7,7 @@ export default function OperacoesDatasLanding() {
       title="Operações com Datas"
       description="Some ou subtraia dias corridos ou úteis, calcule a diferença entre duas datas e descubra informações úteis sobre qualquer data. Ideal para prazos internos e cálculos de prazo fora do processo."
       path="/calculadoras/operacoes-datas"
-      seoTitle="Calculadora de Datas — Somar Dias Úteis e Diferença entre Datas"
+      seoTitle="Calculadora de Datas, Somar Dias Úteis e Diferença entre Datas"
       seoDescription="Some ou subtraia dias úteis e corridos, calcule a diferença entre duas datas e veja se a data cai em dia útil. Gratuito, sem cadastro."
       keywords={[
         "somar dias",
@@ -25,19 +25,19 @@ export default function OperacoesDatasLanding() {
       ]}
       content={
         <>
-          <h2 className="text-xl font-semibold">Para que serve no dia a dia</h2>
+          <h2 className="text-h3 text-navy">Para que serve no dia a dia</h2>
           <p>
             Serve para os prazos que não são processuais: vencimento contratual, contagem de
             carência, agenda interna do escritório, controle de diligências e conferência rápida do
             intervalo entre dois marcos temporais. Você escolhe se a contagem é em dias úteis ou
             corridos e o resultado sai imediatamente.
           </p>
-          <h2 className="text-xl font-semibold">Quando usar a calculadora de prazo processual</h2>
+          <h2 className="text-h3 text-navy">Quando usar a calculadora de prazo processual</h2>
           <p>
             Se o prazo corre dentro de um processo, use a{" "}
             <a href="/calculadoras/prazo-processual">calculadora de prazo processual</a>: ela
             considera feriados forenses, suspensões do tribunal, recesso de fim de ano e a
-            diferença entre disponibilização no DJe e publicação — regras que esta ferramenta, mais
+            diferença entre disponibilização no DJe e publicação, regras que esta ferramenta, mais
             simples, não aplica.
           </p>
         </>

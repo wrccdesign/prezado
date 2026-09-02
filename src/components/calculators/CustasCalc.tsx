@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -15,7 +14,6 @@ import {
   FileDown,
   FileText,
   Loader2,
-  Scale,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
@@ -124,8 +122,7 @@ interface Resultado {
   rodape_legal: string;
 }
 
-const RODAPE_PADRAO =
-  "O Honorífico calcula e fundamenta o valor. A emissão e o pagamento da guia são feitos exclusivamente no portal oficial do tribunal, e o valor deve ser conferido no ato da emissão.";
+const RODAPE_PADRAO = "O Honorífico calcula e fundamenta o valor. A emissão e o pagamento da guia são feitos exclusivamente no portal oficial do tribunal, e o valor deve ser conferido no ato da emissão.";
 
 const PASSOS = [
   { n: 1, label: "Ato" },
@@ -213,7 +210,7 @@ export function CustasCalc() {
         `Data prevista do recolhimento: ${dataBR(recolhimentoEfetivo)}`,
         r.valor_base ? `Base de cálculo: ${fmt(r.valor_base)}` : "",
         `Valor devido: ${fmt(r.valor_devido)}`,
-        `Guia: ${r.tipo_guia}${r.codigo_receita ? ` — código de receita ${r.codigo_receita}` : ""}`,
+        `Guia: ${r.tipo_guia}${r.codigo_receita ? `, código de receita ${r.codigo_receita}` : ""}`,
       ]
         .filter(Boolean)
         .join("\n"),
@@ -221,7 +218,7 @@ export function CustasCalc() {
     {
       heading: "Memória de cálculo",
       body: r.memoria
-        .map(l => `${l.rotulo}: ${l.detalhe}${l.valor != null ? ` — ${fmt(l.valor)}` : ""}`)
+        .map(l => `${l.rotulo}: ${l.detalhe}${l.valor != null ? `, ${fmt(l.valor)}` : ""}`)
         .join("\n"),
     },
     {
@@ -244,7 +241,7 @@ export function CustasCalc() {
       requireAccount(() => {}, "exportar a memória de cálculo");
       return;
     }
-    const title = `Cálculo de Custas — ${result.tribunal}`;
+    const title = `Cálculo de Custas, ${result.tribunal}`;
     const filename = slugify(`custas-${result.tribunal}-${result.tipo_ato}-${dataAto}`);
     const sections = buildSections(result);
     if (tipo === "pdf") exportToPDF(title, sections, `${filename}.pdf`);
@@ -265,7 +262,7 @@ export function CustasCalc() {
         {
           user_id: userId,
           tipo: "custas",
-          titulo: `Custas ${result.tribunal} — ${atoInfo?.titulo ?? result.tipo_ato} (${dataBR(dataAto)})`,
+          titulo: `Custas ${result.tribunal}, ${atoInfo?.titulo ?? result.tipo_ato} (${dataBR(dataAto)})`,
           inputs: {
             tribunal: result.tribunal,
             tipo_ato: result.tipo_ato,
@@ -308,7 +305,7 @@ export function CustasCalc() {
         </p>
         <div className="grid gap-3 sm:grid-cols-2">
           {ATOS.map(a => (
-            <Card
+            <div
               key={a.id}
               role="button"
               tabIndex={0}
@@ -325,14 +322,14 @@ export function CustasCalc() {
               }}
               className="h-full cursor-pointer transition-all hover:border-primary/40 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
             >
-              <CardContent className="flex h-full min-h-[92px] flex-col gap-1.5 p-4 sm:p-5">
+              <div className="flex h-full min-h-[92px] flex-col gap-1.5 p-4 sm:p-5">
                 <div className="flex items-center gap-2">
-                  <Scale className="h-4 w-4 shrink-0 text-primary" />
+                  
                   <p className="text-sm font-medium">{a.titulo}</p>
                 </div>
                 <p className="text-xs text-muted-foreground">{a.desc}</p>
-              </CardContent>
-            </Card>
+              </div>
+            </div>
           ))}
         </div>
         <p className="text-xs text-muted-foreground">{RODAPE_PADRAO}</p>
@@ -362,7 +359,7 @@ export function CustasCalc() {
                 <Label htmlFor="custas-base">{atoInfo.baseLabel}</Label>
                 <button
                   type="button"
-                  className="rounded-sm text-xs text-primary underline underline-offset-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                  className="rounded-sm text-xs text-navy underline hover:text-gold underline-offset-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                   onClick={() => setCorrecaoAberta(true)}
                 >
                   atualizar este valor
@@ -495,7 +492,7 @@ export function CustasCalc() {
 
         {/* valor + ações */}
         <ResultCard
-          label={`Taxa judiciária devida — ${result.tribunal}`}
+          label={`Taxa judiciária devida, ${result.tribunal}`}
           value={fmt(result.valor_devido)}
           meta={
             <>
@@ -572,22 +569,22 @@ export function CustasCalc() {
         </Collapsible>
 
         {/* aviso de outras guias */}
-        <Card className="border-amber-500/40 bg-amber-500/5">
-          <CardContent className="space-y-2 p-5">
+        <div className="rounded-lg border border-cream-dark bg-white border-amber-500/40 bg-amber-500/5">
+          <div className="space-y-2 p-5">
             <p className="flex items-center gap-2 text-sm font-medium">
-              <AlertTriangle className="h-4 w-4 text-amber-600" /> Atenção — outras guias
+              <AlertTriangle className="h-4 w-4 text-amber-600" /> Atenção, outras guias
             </p>
             <ul className="list-disc space-y-1 pl-5 text-sm text-muted-foreground">
               {result.aviso_outras_guias.map(a => (
                 <li key={a}>{a}</li>
               ))}
             </ul>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
 
         {/* emissão */}
-        <Card>
-          <CardContent className="space-y-4 p-5">
+        <div className="rounded-lg border border-cream-dark bg-white">
+          <div className="space-y-4 p-5">
             <div className="grid gap-3 sm:grid-cols-2">
               <div className="rounded-md border p-3">
                 <p className="text-xs text-muted-foreground">Valor a recolher</p>
@@ -636,8 +633,8 @@ export function CustasCalc() {
             )}
 
             <p className="text-xs text-muted-foreground">{result.aviso_emissao}</p>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
 
         {/* base legal */}
         <div className="space-y-2 text-xs text-muted-foreground">

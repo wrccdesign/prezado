@@ -1,6 +1,5 @@
 import { Link } from "react-router-dom";
 import { useEffect, useMemo, useState } from "react";
-import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -30,19 +29,7 @@ const PRAZOS_TIPO = [
 
 const UFS = ["AC","AL","AM","AP","BA","CE","DF","ES","GO","MA","MG","MS","MT","PA","PB","PE","PI","PR","RJ","RN","RO","RR","RS","SC","SE","SP","TO"];
 
-const VARAS = [
-  "Cível",
-  "Consumidor",
-  "Trabalho",
-  "Federal",
-  "Família",
-  "Juizado Especial Cível",
-  "Juizado Especial Federal",
-  "Criminal",
-  "Execução Fiscal",
-  "Fazenda Pública",
-  "Registros Públicos",
-  "Outro",
+const VARAS = [ "Cível", "Consumidor", "Trabalho", "Federal", "Família", "Juizado Especial Cível", "Juizado Especial Federal", "Criminal", "Execução Fiscal", "Fazenda Pública", "Registros Públicos", "Outro",
 ];
 
 interface Municipio {
@@ -78,16 +65,12 @@ function gerarICS(dataVencimento: string, dataPublicacao: string, tipoPrazo: str
   const venc = parseISO(dataVencimento);
   const now = new Date();
   const stamp = `${now.getFullYear()}${pad(now.getMonth() + 1)}${pad(now.getDate())}T${pad(now.getHours())}${pad(now.getMinutes())}${pad(now.getSeconds())}`;
-  return [
-    "BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//Honorífico//Prazo Processual//PT", "BEGIN:VEVENT",
+  return [ "BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//Honorífico//Prazo Processual//PT", "BEGIN:VEVENT",
     `DTSTART;VALUE=DATE:${toICSDate(venc)}`,
     `DTEND;VALUE=DATE:${toICSDate(new Date(venc.getTime() + 86400000))}`,
     `DTSTAMP:${stamp}`, `UID:honorifico-prazo-${stamp}@honorifico.com.br`,
     `SUMMARY:Vencimento: ${tipoPrazo} (${uf})`,
-    `DESCRIPTION:Prazo calculado pelo Honorífico.\\nPublicação: ${dataPublicacao}\\nVencimento: ${dataVencimento}\\n\\nSempre confirme no sistema do tribunal.`,
-    "BEGIN:VALARM", "TRIGGER:-P1D", "ACTION:DISPLAY", "DESCRIPTION:Prazo processual vence amanhã!", "END:VALARM",
-    "BEGIN:VALARM", "TRIGGER:-P3D", "ACTION:DISPLAY", "DESCRIPTION:Prazo processual vence em 3 dias!", "END:VALARM",
-    "END:VEVENT", "END:VCALENDAR",
+    `DESCRIPTION:Prazo calculado pelo Honorífico.\\nPublicação: ${dataPublicacao}\\nVencimento: ${dataVencimento}\\n\\nSempre confirme no sistema do tribunal.`, "BEGIN:VALARM", "TRIGGER:-P1D", "ACTION:DISPLAY", "DESCRIPTION:Prazo processual vence amanhã!", "END:VALARM", "BEGIN:VALARM", "TRIGGER:-P3D", "ACTION:DISPLAY", "DESCRIPTION:Prazo processual vence em 3 dias!", "END:VALARM", "END:VEVENT", "END:VCALENDAR",
   ].join("\r\n");
 }
 
@@ -135,7 +118,7 @@ export function PrazoCalc() {
       for (const codigo of comSuspensao) {
         lista.push({
           tribunal: codigo,
-          nome_completo: `${nomes.get(codigo) ?? codigo} — suspensões cadastradas`,
+          nome_completo: `${nomes.get(codigo) ?? codigo}, suspensões cadastradas`,
         });
       }
       for (const [codigo, nome] of nomes) {
@@ -240,21 +223,21 @@ export function PrazoCalc() {
     ? dr <= 3
       ? "text-destructive"
       : dr <= 7
-        ? "text-yellow-600 dark:text-yellow-400"
-        : "text-green-600 dark:text-green-400"
+        ? "text-yellow-600 "
+        : "text-green-600 "
     : "";
   const bgPrazo = result
     ? dr <= 3
       ? "border-destructive/30 bg-destructive/5"
       : dr <= 7
-        ? "border-yellow-500/30 bg-yellow-50 dark:bg-yellow-950/20"
-        : "border-green-500/30 bg-green-50 dark:bg-green-950/20"
+        ? "border-yellow-500/30 bg-yellow-50 "
+        : "border-green-500/30 bg-green-50 "
     : "";
 
   const tribunalLabel = useMemo(() => {
     if (!tribunal || tribunal === "__nenhum__") return "";
     const t = tribunais.find(x => x.tribunal === tribunal);
-    return t ? `${t.tribunal} — ${t.nome_completo}` : tribunal;
+    return t ? `${t.tribunal}, ${t.nome_completo}` : tribunal;
   }, [tribunal, tribunais]);
 
 
@@ -344,7 +327,7 @@ export function PrazoCalc() {
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="__nenhum__">Nenhum tribunal específico</SelectItem>
-              {tribunais.map(t => <SelectItem key={t.tribunal} value={t.tribunal}>{t.tribunal} — {t.nome_completo}</SelectItem>)}
+              {tribunais.map(t => <SelectItem key={t.tribunal} value={t.tribunal}>{t.tribunal}, {t.nome_completo}</SelectItem>)}
             </SelectContent>
           </Select>
         </div>
@@ -368,10 +351,10 @@ export function PrazoCalc() {
 
       {result && (
         <div className="space-y-4">
-          <Card className={bgPrazo}>
-            <CardContent className="pt-6 space-y-3">
+          <div className={"rounded-lg border border-cream-dark bg-white " + bgPrazo}>
+            <div className="p-5 space-y-3">
               <p className="text-sm text-muted-foreground">Data de vencimento do prazo:</p>
-              <p className={cn("text-2xl font-bold capitalize", corPrazo)}>
+              <p className={cn("text-2xl capitalize", corPrazo)}>
                 {format(parseISO(result.data_vencimento), "EEEE, dd 'de' MMMM 'de' yyyy", { locale: ptBR })}
               </p>
               <div className={cn("text-sm font-medium", corPrazo)}>
@@ -401,13 +384,13 @@ export function PrazoCalc() {
               {RECURSOS_COM_PREPARO.includes(tipoPrazo) && (
                 <p className="pt-2 text-xs text-muted-foreground">
                   Recurso sujeito a preparo: o comprovante deve acompanhar a petição.{" "}
-                  <Link to="/calculadoras/custas-tjsp" className="text-primary underline underline-offset-2">
+                  <Link to="/calculadoras/custas-tjsp" className="text-navy underline hover:text-gold underline-offset-2">
                     Calcular as custas do TJSP
                   </Link>
                 </p>
               )}
-            </CardContent>
-          </Card>
+            </div>
+          </div>
 
           {result.dias_excluidos.length > 0 && (
             <Collapsible open={detalhesAberto} onOpenChange={setDetalhesAberto}>
@@ -440,16 +423,16 @@ export function PrazoCalc() {
             </Collapsible>
           )}
 
-          <Card className="border-muted">
-            <CardContent className="pt-6 space-y-1 text-xs text-muted-foreground">
+          <div className="rounded-lg border border-cream-dark bg-white border-muted">
+            <div className="p-5 space-y-1 text-xs text-muted-foreground">
               <p className="text-foreground font-medium">Base legal</p>
               {result.base_legal.map(b => <p key={b}>{b}</p>)}
               <p className="pt-2">
                 Cálculo com feriados nacionais, estaduais, municipais (quando informado) e suspensões
                 forenses do tribunal (quando informado). Sempre confirme no sistema do tribunal.
               </p>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
         </div>
       )}
     </div>

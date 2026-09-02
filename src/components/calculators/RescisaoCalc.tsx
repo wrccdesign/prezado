@@ -14,7 +14,6 @@ import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Card, CardContent } from "@/components/ui/card";
 import { useGuestExportGate } from "@/components/calculators/shared/GuestExportGate";
 
 function fmt(v: number) {
@@ -92,7 +91,7 @@ export function RescisaoCalc() {
   const gerarPDF = () => {
     if (!verbas) return;
     const doc = new jsPDF();
-    doc.setFontSize(16); doc.text("Relatório de Rescisão Trabalhista — Honorífico", 14, 20);
+    doc.setFontSize(16); doc.text("Relatório de Rescisão Trabalhista, Honorífico", 14, 20);
     doc.setFontSize(10); doc.text(`Data: ${format(new Date(), "dd/MM/yyyy")}`, 14, 28);
     if (admissao) doc.text(`Admissão: ${format(admissao, "dd/MM/yyyy")}`, 14, 34);
     if (demissao) doc.text(`Demissão: ${format(demissao, "dd/MM/yyyy")}`, 14, 40);
@@ -150,21 +149,21 @@ export function RescisaoCalc() {
 
       {verbas && (
         <div className="space-y-4">
-          <Card className="border-primary/20 bg-primary/5">
-            <CardContent className="pt-6">
+          <div className="rounded-lg border border-cream-dark bg-white">
+            <div className="p-5">
               <Table>
                 <TableHeader><TableRow><TableHead>Verba</TableHead><TableHead className="text-right">Valor</TableHead></TableRow></TableHeader>
                 <TableBody>
                   {verbas.map((v) => (<TableRow key={v.label}><TableCell>{v.label}</TableCell><TableCell className="text-right font-medium">{fmt(v.valor)}</TableCell></TableRow>))}
-                  <TableRow className="border-t-2"><TableCell className="text-base font-bold">Total Líquido Estimado</TableCell><TableCell className="text-right text-base font-bold text-primary">{fmt(total)}</TableCell></TableRow>
+                  <TableRow className="border-t-2"><TableCell className="text-base ">Total Líquido Estimado</TableCell><TableCell className="text-right text-base text-navy tabular">{fmt(total)}</TableCell></TableRow>
                 </TableBody>
               </Table>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
           <div className="flex flex-col sm:flex-row gap-3 items-start">
             <Button onClick={() => requireAccount(gerarPDF, "baixar o relatório em PDF")} variant="outline" className="gap-2"><FileDown className="h-4 w-4" /> Gerar Relatório PDF</Button>
           </div>
-          <div className="flex items-start gap-2 rounded-md border border-yellow-500/30 bg-yellow-50 dark:bg-yellow-950/20 p-3 text-sm text-yellow-800 dark:text-yellow-200">
+          <div className="flex items-start gap-2 rounded-md border border-yellow-500/30 bg-yellow-50  p-3 text-sm text-yellow-800 ">
             <AlertTriangle className="h-4 w-4 mt-0.5 shrink-0" /><span>Cálculo estimado. Consulte um advogado trabalhista para valores exatos.</span>
           </div>
         </div>

@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -118,15 +117,15 @@ export function CpfCnpjCalc() {
       </Button>
 
       {valido !== null && (
-        <Card className={valido ? "border-green-500/30 bg-green-50 dark:bg-green-950/20" : "border-destructive/30 bg-destructive/5"}>
-          <CardContent className="pt-6 flex items-start gap-4">
+        <div className={"rounded-lg border border-cream-dark bg-white " + valido ? "border-green-500/30 bg-green-50 " : "border-destructive/30 bg-destructive/5"}>
+          <div className="p-5 flex items-start gap-4">
             {valido ? (
-              <CheckCircle className="h-6 w-6 text-green-600 dark:text-green-400 shrink-0" />
+              <CheckCircle className="h-6 w-6 text-green-600  shrink-0" />
             ) : (
               <XCircle className="h-6 w-6 text-destructive shrink-0" />
             )}
             <div className="space-y-2 flex-1">
-              <p className={cn("font-semibold", valido ? "text-green-700 dark:text-green-300" : "text-destructive")}>
+              <p className={cn("font-medium", valido ? "text-green-700 " : "text-destructive")}>
                 {valido ? "Número válido" : "Número inválido"}
               </p>
               <p className="text-sm text-muted-foreground">
@@ -141,8 +140,8 @@ export function CpfCnpjCalc() {
                 </Button>
               </div>
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       )}
 
       <p className="text-xs text-muted-foreground">

@@ -8,9 +8,7 @@ import { buildFaqJsonLd, FAQ_PLANOS } from "@/seo/faqData";
 import { PaymentTestModeBanner } from "@/components/PaymentTestModeBanner";
 
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Check, X, Loader2, Crown, Building2, User } from "lucide-react";
+import { Loader2, Crown, Building2, User } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useSubscription, type PlanId } from "@/hooks/useSubscription";
 import { useStripeCheckout } from "@/hooks/useStripeCheckout";
@@ -37,7 +35,7 @@ const features: PlanFeature[] = [
   { label: "Modelos de minutas e petições", free: "✓", profissional: "✓", escritorio: "✓" },
   { label: "Exportação em PDF e Word", free: "✓", profissional: "✓", escritorio: "✓" },
   { label: "Histórico de consultas", free: "✓", profissional: "✓", escritorio: "✓" },
-  { label: "Painel do advogado (clientes, petições, modelos)", free: "—", profissional: "✓", escritorio: "✓" },
+  { label: "Painel do advogado (clientes, petições, modelos)", free: "", profissional: "✓", escritorio: "✓" },
 ];
 
 
@@ -114,7 +112,7 @@ export default function Planos() {
   useEffect(() => {
     if (searchParams.get("checkout") === "success") {
       toast.success("Pagamento realizado! Ativando seu plano...");
-      // Webhook can take a few seconds — poll the subscription query.
+      // Webhook can take a few seconds, poll the subscription query.
       let attempts = 0;
       const interval = setInterval(() => {
         attempts++;
@@ -186,10 +184,11 @@ export default function Planos() {
 
 
   return (
-    <div className="flex min-h-screen flex-col bg-background">
+    <div className="flex min-h-screen flex-col bg-cream text-navy">
       <AppHeader />
+
       <SEO
-        title="Planos e Preços — Honorífico"
+        title="Planos e Preços | Honorífico"
         description="Gratuito, Profissional (R$ 49/mês) e Escritório. 7 dias grátis no Profissional, sem cartão. Pagamento em reais."
         path="/planos"
         image="/og/planos.jpg"
@@ -198,7 +197,7 @@ export default function Planos() {
           {
             "@context": "https://schema.org",
             "@type": "Product",
-            name: "Honorífico — IA jurídica",
+            name: "Honorífico, IA jurídica",
             description:
               "Cálculos e prazos jurídicos com fonte oficial, mais petições, análise de documentos e consulta processual com IA.",
             brand: { "@type": "Brand", name: "Honorífico" },
@@ -240,28 +239,26 @@ export default function Planos() {
       />
       <PaymentTestModeBanner />
 
-      <main className="flex-1 container max-w-5xl py-12 px-4">
-        <div className="text-center mb-12">
-          <h1 className="text-3xl md:text-4xl font-bold font-heading text-foreground mb-3">
-            Escolha seu plano
-          </h1>
-          <p className="text-muted-foreground max-w-2xl mx-auto">
-            As calculadoras são livres e ilimitadas em todos os planos — inclusive sem conta. A assinatura libera IA
-            (petições, análise de documentos, diagnóstico e chat), histórico salvo e volume de consulta processual.
-            As cotas são mensais e renovam no primeiro dia de cada mês.
+      <main className="container max-w-5xl flex-1 px-4 py-12">
+        <div className="max-w-[60ch] space-y-4">
+          <h1 className="text-h1 text-navy">Escolha seu plano</h1>
+          <p className="text-body-serif text-navy/80">
+            As calculadoras são livres e ilimitadas em todos os planos, inclusive sem conta. A
+            assinatura libera a IA (petições, análise de documentos, diagnóstico e chat), o
+            histórico salvo e o volume de consulta processual. As cotas são mensais e renovam no
+            primeiro dia de cada mês.
           </p>
-          <p className="mt-3 text-sm font-medium text-accent">
-            Toda conta nova começa com 7 dias grátis no plano Profissional — sem cartão.
+          <p className="text-note text-navy/70">
+            Toda conta nova começa com 7 dias grátis no plano Profissional, sem cartão.
           </p>
-
         </div>
 
         {isPastDue && (
-          <div className="mb-8 rounded-lg border border-destructive/40 bg-destructive/10 p-4 text-sm">
-            <p className="font-semibold text-destructive">Pagamento pendente</p>
-            <p className="mt-1 text-muted-foreground">
+          <div className="mt-8 rounded-lg border border-destructive/40 bg-white p-4 text-sm">
+            <p className="text-destructive">Pagamento pendente</p>
+            <p className="mt-1 text-navy/70">
               Sua última cobrança falhou. Atualize o meio de pagamento em{" "}
-              <button className="underline font-medium" onClick={() => navigate("/conta")}>
+              <button className="underline underline-offset-4 hover:text-gold" onClick={() => navigate("/conta")}>
                 Minha conta
               </button>{" "}
               para manter o acesso.
@@ -269,13 +266,13 @@ export default function Planos() {
           </div>
         )}
 
-        <div className="mb-8 flex flex-col items-center gap-2">
-          <div className="inline-flex rounded-lg border border-border bg-muted/40 p-1">
+        <div className="mt-8 flex flex-col gap-2">
+          <div className="inline-flex w-fit rounded border border-cream-dark bg-white p-1">
             <button
               type="button"
               onClick={() => setCycle("mensal")}
-              className={`rounded-md px-4 py-2 text-sm font-medium transition-colors ${
-                cycle === "mensal" ? "bg-background text-foreground shadow-sm" : "text-muted-foreground"
+              className={`rounded-sm px-4 py-2 text-sm transition-colors ${
+                cycle === "mensal" ? "bg-navy text-cream" : "text-navy/70 hover:text-navy"
               }`}
             >
               Mensal
@@ -283,23 +280,20 @@ export default function Planos() {
             <button
               type="button"
               onClick={() => setCycle("anual")}
-              className={`rounded-md px-4 py-2 text-sm font-medium transition-colors ${
-                cycle === "anual" ? "bg-background text-foreground shadow-sm" : "text-muted-foreground"
+              className={`rounded-sm px-4 py-2 text-sm transition-colors ${
+                cycle === "anual" ? "bg-navy text-cream" : "text-navy/70 hover:text-navy"
               }`}
             >
-              Anual
-              <span className="ml-2 rounded bg-accent px-1.5 py-0.5 text-[10px] font-semibold text-accent-foreground">
-                -30%
-              </span>
+              Anual, 30% menor
             </button>
           </div>
           {cycle === "anual" && (
-            <p className="text-xs text-muted-foreground text-center max-w-md">
+            <p className="text-note text-navy/60">
               Pagamento único de 12 meses, à vista no cartão. Sem renovação automática.
             </p>
           )}
           {cycle === "anual" && creditCents !== null && creditCents > 0 && (
-            <p className="text-xs font-medium text-accent text-center">
+            <p className="text-note text-navy/70">
               Crédito de {(creditCents / 100).toLocaleString("pt-BR", { style: "currency", currency: "BRL" })} pelo
               período não usado da sua assinatura mensal será aplicado no checkout.
             </p>
@@ -307,149 +301,135 @@ export default function Planos() {
         </div>
 
 
-        <div className="grid md:grid-cols-3 gap-6 mb-12">
+
+        <div className="mt-10 grid gap-6 md:grid-cols-3">
           {plans.map((plan) => {
             const isCurrent = planId === plan.id;
             return (
-              <Card
+              <div
                 key={plan.id}
-                className={`relative flex flex-col ${
+                className={`flex flex-col rounded-lg border bg-white p-6 ${
                   plan.popular
-                    ? "border-accent shadow-lg ring-2 ring-accent/20"
-                    : "border-border"
+                    ? "border-gold shadow-[0_8px_24px_hsl(var(--navy)/0.12)]"
+                    : "border-cream-dark"
                 }`}
               >
-                {plan.popular && (
-                  <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                    <Badge className="bg-accent text-accent-foreground px-3 py-1 text-xs font-semibold">
-                      Mais popular
-                    </Badge>
-                  </div>
-                )}
-                {isCurrent && (
-                  <div className="absolute -top-3 right-4">
-                    <Badge variant="secondary" className="px-3 py-1 text-xs font-semibold">
-                      Seu plano
-                    </Badge>
-                  </div>
-                )}
+                <div className="flex items-baseline justify-between gap-2">
+                  <h2 className="text-h3 text-navy">{plan.name}</h2>
+                  {plan.popular && <span className="text-note text-gold">Mais escolhido</span>}
+                  {isCurrent && <span className="text-note text-navy/60">Seu plano</span>}
+                </div>
+                <p className="mt-1 text-sm text-navy/70">{plan.description}</p>
 
-                <CardHeader className="text-center pb-2">
-                  <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
-                    <plan.icon className="h-6 w-6 text-primary" />
-                  </div>
-                  <CardTitle className="text-xl font-heading">{plan.name}</CardTitle>
-                  <CardDescription className="text-sm">{plan.description}</CardDescription>
-                  {cycle === "anual" && plan.annualPrice ? (
-                    <>
-                      <div className="mt-4">
-                        <span className="text-3xl font-bold text-foreground">{plan.annualPrice}</span>
-                        <span className="text-muted-foreground text-sm">/ano</span>
-                      </div>
-                      <p className="mt-1 text-xs text-muted-foreground">
-                        Equivale a {plan.annualMonthly}/mês · economia de 30%
-                      </p>
-                    </>
-                  ) : (
-                    <div className="mt-4">
-                      <span className="text-3xl font-bold text-foreground">{plan.price}</span>
-                      <span className="text-muted-foreground text-sm">{plan.period}</span>
-                    </div>
-                  )}
-                  {plan.priceId && (
-                    <p className="mt-2 text-xs text-muted-foreground">
-                      Cobrança em reais (BRL). O processamento é internacional, portanto o
-                      seu banco pode aplicar IOF sobre a compra.
+                {cycle === "anual" && plan.annualPrice ? (
+                  <div className="mt-5">
+                    <span className="tabular text-3xl text-navy">{plan.annualPrice}</span>
+                    <span className="text-note text-navy/60">/ano</span>
+                    <p className="mt-1 text-note text-navy/60">
+                      Equivale a {plan.annualMonthly} por mês, economia de 30%
                     </p>
-                  )}
+                  </div>
+                ) : (
+                  <div className="mt-5">
+                    <span className="tabular text-3xl text-navy">{plan.price}</span>
+                    <span className="text-note text-navy/60">{plan.period}</span>
+                  </div>
+                )}
+                {plan.priceId && (
+                  <p className="mt-2 text-note text-navy/60">
+                    Cobrança em reais (BRL). O processamento é internacional, portanto o seu banco
+                    pode aplicar IOF sobre a compra.
+                  </p>
+                )}
 
-                </CardHeader>
+                <div className="mt-6 flex-1" />
 
-                <CardContent className="flex-1 flex flex-col">
-                  <ul className="space-y-3 mb-6 flex-1">
-                    {features.map((feat) => {
-                      const val = feat[plan.id];
-                      const isBlocked = val === 0;
-                      return (
-                        <li key={feat.label} className="flex items-center gap-2 text-sm">
-                          {isBlocked ? (
-                            <X className="h-4 w-4 text-muted-foreground/50 shrink-0" />
-                          ) : (
-                            <Check className="h-4 w-4 text-accent shrink-0" />
-                          )}
-                          <span className={isBlocked ? "text-muted-foreground line-through" : "text-foreground"}>
-                            {feat.label}
-                            {typeof val === "number" && val > 0 && (
-                              <span className="font-semibold text-accent ml-1">({val})</span>
-                            )}
-                          </span>
-                        </li>
-                      );
-                    })}
-                  </ul>
-
-                  {plan.id === "free" ? (
-                    <Button
-                      variant="outline"
-                      className="w-full"
-                      disabled={!!user && isCurrent}
-                      onClick={() => !user && navigate("/auth?mode=signup")}
-                    >
-                      {user ? (isCurrent ? "Plano atual" : "Incluído na sua conta") : "Criar conta grátis"}
-                    </Button>
-
-                  ) : cycle === "anual" && plan.annualPriceId ? (
-                    <Button
-                      className={`w-full ${plan.popular ? "bg-accent text-accent-foreground hover:bg-accent/90" : ""}`}
-                      disabled={isLoading}
-                      onClick={() => handleSubscribe(plan)}
-                    >
-                      {isCurrent ? `Migrar para o anual` : `Assinar ${plan.name} anual`}
-                    </Button>
-                  ) : isCurrent ? (
-                    <Button variant="outline" className="w-full" onClick={() => navigate("/conta")}>
-                      Gerenciar assinatura
-                    </Button>
-                  ) : hasPaidPlan ? (
-                    <Button
-                      variant={plan.id === "escritorio" ? "default" : "outline"}
-                      className="w-full"
-                      disabled={changingPlan !== null}
-                      onClick={() => handleSubscribe(plan)}
-                    >
-                      {changingPlan === plan.id ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
-                      {plan.id === "escritorio" ? `Fazer upgrade para ${plan.name}` : `Mudar para ${plan.name}`}
-                    </Button>
-
-                  ) : (
-                    <Button
-                      className={`w-full ${plan.popular ? "bg-accent text-accent-foreground hover:bg-accent/90" : ""}`}
-                      disabled={isLoading}
-                      onClick={() => handleSubscribe(plan)}
-                    >
-                      Assinar {plan.name}
-                    </Button>
-                  )}
-
-                </CardContent>
-              </Card>
+                {plan.id === "free" ? (
+                  <Button
+                    variant="outline"
+                    className="w-full"
+                    disabled={!!user && isCurrent}
+                    onClick={() => !user && navigate("/auth?mode=signup")}
+                  >
+                    {user ? (isCurrent ? "Plano atual" : "Incluído na sua conta") : "Criar conta grátis"}
+                  </Button>
+                ) : cycle === "anual" && plan.annualPriceId ? (
+                  <Button
+                    className={`w-full ${plan.popular ? "bg-gold text-navy hover:bg-gold-light" : ""}`}
+                    disabled={isLoading}
+                    onClick={() => handleSubscribe(plan)}
+                  >
+                    {isCurrent ? "Migrar para o anual" : `Assinar ${plan.name} anual`}
+                  </Button>
+                ) : isCurrent ? (
+                  <Button variant="outline" className="w-full" onClick={() => navigate("/conta")}>
+                    Gerenciar assinatura
+                  </Button>
+                ) : hasPaidPlan ? (
+                  <Button
+                    variant={plan.id === "escritorio" ? "default" : "outline"}
+                    className="w-full"
+                    disabled={changingPlan !== null}
+                    onClick={() => handleSubscribe(plan)}
+                  >
+                    {changingPlan === plan.id ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+                    {plan.id === "escritorio" ? `Fazer upgrade para ${plan.name}` : `Mudar para ${plan.name}`}
+                  </Button>
+                ) : (
+                  <Button
+                    className={`w-full ${plan.popular ? "bg-gold text-navy hover:bg-gold-light" : ""}`}
+                    disabled={isLoading}
+                    onClick={() => handleSubscribe(plan)}
+                  >
+                    Assinar {plan.name}
+                  </Button>
+                )}
+              </div>
             );
           })}
         </div>
 
-        <div className="text-center text-sm text-muted-foreground space-y-1">
+        <section className="mt-14">
+          <h2 className="text-h2 text-navy">O que cada plano libera</h2>
+          <div className="mt-6 overflow-x-auto">
+            <table className="w-full border-collapse text-left">
+              <thead>
+                <tr className="border-b border-cream-dark">
+                  <th scope="col" className="py-2 pr-4 text-note text-navy/60">Recurso</th>
+                  <th scope="col" className="py-2 px-3 text-right text-note text-navy/60">Gratuito</th>
+                  <th scope="col" className="py-2 px-3 text-right text-note text-navy/60">Profissional</th>
+                  <th scope="col" className="py-2 pl-3 text-right text-note text-navy/60">Escritório</th>
+                </tr>
+              </thead>
+              <tbody>
+                {features.map((feat) => (
+                  <tr key={feat.label} className="border-b border-cream-dark">
+                    <td className="py-2 pr-4 text-sm text-navy/80">{feat.label}</td>
+                    <td className="py-2 px-3 text-right text-sm text-navy tabular">{feat.free === 0 ? "" : feat.free}</td>
+                    <td className="py-2 px-3 text-right text-sm text-navy tabular">{feat.profissional === 0 ? "" : feat.profissional}</td>
+                    <td className="py-2 pl-3 text-right text-sm text-navy tabular">{feat.escritorio === 0 ? "" : feat.escritorio}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+
+        <div className="mt-8 space-y-1 text-note text-navy/60">
           <p>Pagamentos processados de forma segura. Cancele a qualquer momento.</p>
           <p>Limites são renovados mensalmente, no primeiro dia de cada mês (horário de Brasília).</p>
         </div>
 
-        <FaqSection items={faqItems} className="mt-14 max-w-3xl mx-auto" />
+        <FaqSection items={faqItems} className="mt-14 max-w-3xl" />
+
       </main>
 
 
       <Dialog open={isOpen} onOpenChange={(open) => !open && closeCheckout()}>
         <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle className="font-heading">Finalizar assinatura</DialogTitle>
+            <DialogTitle >Finalizar assinatura</DialogTitle>
           </DialogHeader>
           {checkoutElement}
         </DialogContent>

@@ -1,9 +1,7 @@
 import { useState } from "react";
 import { AppHeader } from "@/components/AppHeader";
 import { SEO } from "@/components/SEO";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Briefcase, Users, Calendar, DollarSign, ShieldCheck, CalendarClock, Scale } from "lucide-react";
 import { RescisaoCalc } from "@/components/calculators/RescisaoCalc";
 import { PensaoCalc } from "@/components/calculators/PensaoCalc";
 import { PrazoCalc } from "@/components/calculators/PrazoCalc";
@@ -16,13 +14,13 @@ import { AppFooter } from "@/components/AppFooter";
 type CalculatorType = null | "rescisao" | "pensao" | "prazo" | "correcao" | "cpfcnpj" | "datas" | "custas";
 
 const mainCalculators = [
-  { id: "rescisao" as const, title: "Rescisão Trabalhista", icon: Briefcase, desc: "Calcule verbas rescisórias: saldo de salário, férias, 13º, aviso prévio e FGTS." },
-  { id: "pensao" as const, title: "Pensão Alimentícia", icon: Users, desc: "Estime o valor mensal de pensão alimentícia com base na renda." },
-  { id: "correcao" as const, title: "Correção Monetária e Juros", icon: DollarSign, desc: "Atualize valores com índices oficiais do Banco Central e juros da Lei 14.905/2024." },
-  { id: "prazo" as const, title: "Prazo Processual", icon: Calendar, desc: "Calcule prazos em dias úteis ou corridos com feriados oficiais e recesso forense." },
-  { id: "custas" as const, title: "Custas Processuais (TJSP)", icon: Scale, desc: "Calcule a taxa judiciária do TJSP com UFESP, piso, teto e isenções, com base legal." },
-  { id: "cpfcnpj" as const, title: "Validador CPF/CNPJ", icon: ShieldCheck, desc: "Verifique a validade dos dígitos verificadores de CPF e CNPJ." },
-  { id: "datas" as const, title: "Operações com Datas", icon: CalendarClock, desc: "Some dias, calcule diferenças e obtenha informações sobre datas." },
+  { id: "rescisao" as const, title: "Rescisão trabalhista", desc: "Verbas rescisórias: saldo de salário, férias, 13º, aviso prévio e FGTS." },
+  { id: "pensao" as const, title: "Pensão alimentícia", desc: "Estimativa do valor mensal com base na renda informada." },
+  { id: "correcao" as const, title: "Correção monetária e juros", desc: "Atualização por índices oficiais do Banco Central e juros da Lei 14.905/2024." },
+  { id: "prazo" as const, title: "Prazo processual", desc: "Contagem em dias úteis ou corridos, com feriados oficiais e recesso forense." },
+  { id: "custas" as const, title: "Custas processuais no TJSP", desc: "Taxa judiciária com UFESP, piso, teto e isenções, com base legal." },
+  { id: "cpfcnpj" as const, title: "Validador de CPF e CNPJ", desc: "Conferência dos dígitos verificadores, sem consulta à Receita Federal." },
+  { id: "datas" as const, title: "Operações com datas", desc: "Soma de dias, diferença entre datas e informações sobre a data escolhida." },
 ];
 
 const calcComponents: Record<string, () => JSX.Element> = {
@@ -43,56 +41,47 @@ export default function Calculators() {
   const activeInfo = active ? mainCalculators.find(c => c.id === active) : null;
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-cream text-navy">
       <AppHeader />
-      <SEO title="Calculadoras Jurídicas — Honorífico" description="Sete ferramentas grátis do Honorífico: custas processuais do TJSP, correção monetária e juros (Lei 14.905/2024), prazos processuais, rescisão trabalhista, pensão alimentícia, validador de CPF/CNPJ e operações com datas." path="/calculadoras" />
-      <main className="container py-6 sm:py-8 px-4 sm:px-6 space-y-6 sm:space-y-8">
-        <div>
-          <h1 className="text-2xl sm:text-3xl font-bold font-serif text-foreground">Calculadoras Jurídicas</h1>
-          <p className="text-sm sm:text-base text-muted-foreground mt-1">Ferramentas de cálculo para auxiliar na prática jurídica.</p>
+      <SEO title="Calculadoras Jurídicas | Honorífico" description="Sete ferramentas grátis do Honorífico: custas processuais do TJSP, correção monetária e juros (Lei 14.905/2024), prazos processuais, rescisão trabalhista, pensão alimentícia, validador de CPF/CNPJ e operações com datas." path="/calculadoras" />
+      <main className="container px-4 py-12 sm:px-6 md:py-16">
+        <div className="max-w-[60ch] space-y-4">
+          <h1 className="text-h1 text-navy">Calculadoras jurídicas</h1>
+          <p className="text-body-serif text-navy/80">
+            O cálculo é livre, sem conta. Todo resultado vem com memória de cálculo ou com a lista
+            dos dias descartados, para conferência e anexo ao processo.
+          </p>
         </div>
 
         {!active && (
-          <>
-          <h2 className="text-lg sm:text-xl font-semibold font-serif text-foreground">Escolha uma calculadora</h2>
-          <div className="grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
-
-            {mainCalculators.map(c => (
-              <Card
-                key={c.id}
-                className="cursor-pointer transition-all hover:shadow-md hover:border-primary/40 group"
-                onClick={() => setActive(c.id)}
-              >
-                <CardHeader className="pb-2 sm:pb-3">
-                  <div className="flex h-10 w-10 sm:h-12 sm:w-12 items-center justify-center rounded-lg bg-primary/10 text-primary mb-2 group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
-                    <c.icon className="h-5 w-5 sm:h-6 sm:w-6" />
-                  </div>
-                  <CardTitle className="text-sm sm:text-base">{c.title}</CardTitle>
-                </CardHeader>
-                <CardContent className="pt-0">
-                  <p className="text-xs sm:text-sm text-muted-foreground">{c.desc}</p>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-          </>
+          <section className="mt-10">
+            <h2 className="text-h2 text-navy">Escolha uma calculadora</h2>
+            <ul className="mt-6">
+              {mainCalculators.map(c => (
+                <li key={c.id} className="border-t border-cream-dark">
+                  <button
+                    type="button"
+                    onClick={() => setActive(c.id)}
+                    className="flex w-full flex-col gap-1 py-5 text-left transition-colors hover:text-gold"
+                  >
+                    <span className="text-h3 text-navy">{c.title}</span>
+                    <span className="max-w-[68ch] text-sm text-navy/70">{c.desc}</span>
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </section>
         )}
 
         {active && activeInfo && (
-          <div className="space-y-6">
+          <div className="mt-10 space-y-6">
             <Button variant="ghost" size="sm" onClick={() => setActive(null)}>
-              <ArrowLeft className="mr-1.5 h-4 w-4" /> Voltar às calculadoras
+              Voltar às calculadoras
             </Button>
-            <Card>
-              <CardHeader>
-                <h2 className="flex items-center gap-2 text-xl font-semibold leading-none tracking-tight">
-                  {activeInfo.title}
-                </h2>
-              </CardHeader>
-              <CardContent>
-                {ActiveCalc && <ActiveCalc />}
-              </CardContent>
-            </Card>
+            <section className="rounded-lg border border-cream-dark bg-white p-5 sm:p-6">
+              <h2 className="text-h3 text-navy">{activeInfo.title}</h2>
+              <div className="mt-5">{ActiveCalc && <ActiveCalc />}</div>
+            </section>
           </div>
         )}
       </main>

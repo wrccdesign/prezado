@@ -22,14 +22,14 @@ export function FaqSection({ items, title = "Perguntas frequentes", className }:
 
   return (
     <section className={className}>
-      <h2 className="text-xl font-semibold font-serif text-foreground mb-4">{title}</h2>
+      <h2 className="text-h2 text-navy mb-4">{title}</h2>
       <Accordion type="single" collapsible className="w-full">
         {items.map((item, i) => (
           <AccordionItem key={item.question} value={`faq-${i}`}>
-            <AccordionTrigger className="text-left text-sm font-medium">
+            <AccordionTrigger className="text-left text-base text-navy">
               {item.question}
             </AccordionTrigger>
-            <AccordionContent className="text-sm text-muted-foreground leading-relaxed">
+            <AccordionContent className="text-body-serif text-navy/80">
               {item.answer}
             </AccordionContent>
           </AccordionItem>

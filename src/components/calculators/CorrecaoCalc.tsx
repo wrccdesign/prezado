@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -176,7 +175,7 @@ export function CorrecaoCalc({ onUsarValor, usarValorLabel = "Usar este valor", 
     {
       heading: "Fonte e base legal",
       body: `${r.fonte}\nÚltima sincronização dos índices: ${
-        r.ultima_sincronizacao ? new Date(r.ultima_sincronizacao).toLocaleString("pt-BR") : "—"
+        r.ultima_sincronizacao ? new Date(r.ultima_sincronizacao).toLocaleString("pt-BR") : ""
       }\n${r.base_legal.join("\n")}`,
     },
 
@@ -188,7 +187,7 @@ export function CorrecaoCalc({ onUsarValor, usarValorLabel = "Usar este valor", 
       requireAccount(() => {}, "exportar a memória de cálculo");
       return;
     }
-    const title = "Memória de Cálculo — Atualização Monetária";
+    const title = "Memória de Cálculo, Atualização Monetária";
     const filename = slugify(`memoria-calculo-${dataInicial}-${dataFinal}`);
     const sections = buildSections(result);
     if (tipo === "pdf") exportToPDF(title, sections, `${filename}.pdf`);
@@ -265,7 +264,7 @@ export function CorrecaoCalc({ onUsarValor, usarValorLabel = "Usar este valor", 
               <Switch checked={manterIndiceContratual} onCheckedChange={setManterIndiceContratual} />
               <span className="text-sm text-muted-foreground">
                 {manterIndiceContratual
-                  ? "Índice contratual mantido (art. 389, § único, CC — norma supletiva)"
+                  ? "Índice contratual mantido (art. 389, § único, CC, norma supletiva)"
                   : "Substituir pelo IPCA a partir da vigência da Lei 14.905/2024"}
               </span>
             </div>
@@ -316,10 +315,10 @@ export function CorrecaoCalc({ onUsarValor, usarValorLabel = "Usar este valor", 
       {result && (
         <div className="space-y-4">
           {result.meses_faltantes.length > 0 && (
-            <div className="flex items-start gap-2 rounded-lg border border-yellow-500/30 bg-yellow-50 dark:bg-yellow-950/20 p-4">
-              <AlertTriangle className="h-5 w-5 text-yellow-600 dark:text-yellow-400 shrink-0 mt-0.5" />
-              <div className="text-sm text-yellow-700 dark:text-yellow-300">
-                <p className="font-medium">Índices ainda não divulgados para os meses abaixo — considerados como 0%:</p>
+            <div className="flex items-start gap-2 rounded-lg border border-yellow-500/30 bg-yellow-50  p-4">
+              <AlertTriangle className="h-5 w-5 text-yellow-600  shrink-0 mt-0.5" />
+              <div className="text-sm text-yellow-700 ">
+                <p className="font-medium">Índices ainda não divulgados para os meses abaixo, considerados como 0%:</p>
                 <p className="mt-1">
                   {result.meses_faltantes.map(m => `${mesLabel(m.mes_ref)} (${m.indice.toUpperCase()})`).join(", ")}
                 </p>
@@ -327,27 +326,26 @@ export function CorrecaoCalc({ onUsarValor, usarValorLabel = "Usar este valor", 
             </div>
           )}
 
-          <div className="grid gap-3 grid-cols-2 lg:grid-cols-5">
-            {[
-              { label: "Valor Corrigido", v: result.valor_corrigido },
-              { label: "Juros", v: result.juros },
-              { label: "Multa", v: result.multa },
-              { label: "Honorários", v: result.honorarios },
-            ].map(c => (
-              <Card key={c.label}>
-                <CardContent className="pt-6">
-                  <p className="text-xs text-muted-foreground">{c.label}</p>
-                  <p className="text-base font-semibold">{fmt(c.v)}</p>
-                </CardContent>
-              </Card>
-            ))}
-            <Card className="border-primary/30 bg-primary/5">
-              <CardContent className="pt-6">
-                <p className="text-xs text-muted-foreground">TOTAL</p>
-                <p className="text-base font-bold text-primary">{fmt(result.total)}</p>
-              </CardContent>
-            </Card>
-          </div>
+          <table className="w-full border-collapse text-left">
+            <tbody>
+              {[
+                { label: "Valor corrigido", v: result.valor_corrigido },
+                { label: "Juros", v: result.juros },
+                { label: "Multa", v: result.multa },
+                { label: "Honorários", v: result.honorarios },
+              ].map(c => (
+                <tr key={c.label} className="border-t border-cream-dark">
+                  <td className="py-2 pr-4 text-sm text-navy/70">{c.label}</td>
+                  <td className="py-2 text-right text-sm text-navy tabular">{fmt(c.v)}</td>
+                </tr>
+              ))}
+              <tr className="border-t border-navy/20">
+                <td className="py-3 pr-4 text-sm text-navy">Total</td>
+                <td className="py-3 text-right text-lg text-navy tabular">{fmt(result.total)}</td>
+              </tr>
+            </tbody>
+          </table>
+
 
           <div className="flex flex-wrap gap-2">
             <Button variant="outline" size="sm" onClick={() => exportar("pdf")}>
@@ -394,7 +392,7 @@ export function CorrecaoCalc({ onUsarValor, usarValorLabel = "Usar este valor", 
                     {result.memoria.map(l => (
                       <TableRow key={l.mes_ref}>
                         <TableCell className="font-medium">{mesLabel(l.mes_ref)}</TableCell>
-                        <TableCell className="uppercase text-xs">{l.indice_utilizado}</TableCell>
+                        <TableCell className="text-xs">{l.indice_utilizado}</TableCell>
                         <TableCell className="text-right">{l.variacao_percentual.toFixed(2)}%</TableCell>
                         <TableCell className="text-right">{l.fator_acumulado.toFixed(6)}</TableCell>
                         <TableCell className="text-right">{fmt(l.saldo_corrigido)}</TableCell>
@@ -412,14 +410,14 @@ export function CorrecaoCalc({ onUsarValor, usarValorLabel = "Usar este valor", 
             </CollapsibleContent>
           </Collapsible>
 
-          <Card className="border-muted">
-            <CardContent className="pt-6 space-y-1 text-xs text-muted-foreground">
+          <div className="rounded-lg border border-cream-dark bg-white border-muted">
+            <div className="p-5 space-y-1 text-xs text-muted-foreground">
               <p><strong className="text-foreground">Fonte:</strong> {result.fonte}</p>
               <p>
                 <strong className="text-foreground">Última sincronização dos índices:</strong>{" "}
                 {result.ultima_sincronizacao
                   ? new Date(result.ultima_sincronizacao).toLocaleString("pt-BR")
-                  : "—"}
+                  : ""}
               </p>
               <div>
                 <strong className="text-foreground">Base legal:</strong>
@@ -436,8 +434,8 @@ export function CorrecaoCalc({ onUsarValor, usarValorLabel = "Usar este valor", 
                 Banco Central (art. 406, §1º, do CC), desconsiderando-se resultado negativo (art. 406, §3º).
               </p>
 
-            </CardContent>
-          </Card>
+            </div>
+          </div>
         </div>
       )}
     </div>
