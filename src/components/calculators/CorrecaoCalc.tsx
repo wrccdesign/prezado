@@ -326,27 +326,26 @@ export function CorrecaoCalc({ onUsarValor, usarValorLabel = "Usar este valor", 
             </div>
           )}
 
-          <div className="grid gap-3 grid-cols-2 lg:grid-cols-5">
-            {[
-              { label: "Valor Corrigido", v: result.valor_corrigido },
-              { label: "Juros", v: result.juros },
-              { label: "Multa", v: result.multa },
-              { label: "Honorários", v: result.honorarios },
-            ].map(c => (
-              <Card key={c.label}>
-                <div className="p-5">
-                  <p className="text-xs text-muted-foreground">{c.label}</p>
-                  <p className="text-base font-medium">{fmt(c.v)}</p>
-                </div>
-              </div>
-            ))}
-            <div className="rounded-lg border border-cream-dark bg-white border-primary/30 bg-primary/5">
-              <div className="p-5">
-                <p className="text-xs text-muted-foreground">TOTAL</p>
-                <p className="text-base  text-primary">{fmt(result.total)}</p>
-              </div>
-            </div>
-          </div>
+          <table className="w-full border-collapse text-left">
+            <tbody>
+              {[
+                { label: "Valor corrigido", v: result.valor_corrigido },
+                { label: "Juros", v: result.juros },
+                { label: "Multa", v: result.multa },
+                { label: "Honorários", v: result.honorarios },
+              ].map(c => (
+                <tr key={c.label} className="border-t border-cream-dark">
+                  <td className="py-2 pr-4 text-sm text-navy/70">{c.label}</td>
+                  <td className="py-2 text-right text-sm text-navy tabular">{fmt(c.v)}</td>
+                </tr>
+              ))}
+              <tr className="border-t border-navy/20">
+                <td className="py-3 pr-4 text-sm text-navy">Total</td>
+                <td className="py-3 text-right text-lg text-navy tabular">{fmt(result.total)}</td>
+              </tr>
+            </tbody>
+          </table>
+
 
           <div className="flex flex-wrap gap-2">
             <Button variant="outline" size="sm" onClick={() => exportar("pdf")}>
