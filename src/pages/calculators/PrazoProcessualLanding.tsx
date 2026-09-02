@@ -8,7 +8,7 @@ export default function PrazoProcessualLanding() {
       title="Calculadora de Prazo Processual"
       description="Calcule prazos processuais em dias úteis ou corridos considerando feriados nacionais, estaduais e municipais, suspensões forenses, recesso de final de ano e a distinção entre disponibilização no DJe e publicação."
       path="/calculadoras/prazo-processual"
-      seoTitle="Calcular Prazo Processual em Dias Úteis (CPC) — Grátis"
+      seoTitle="Calcular Prazo Processual em Dias Úteis (CPC), Grátis"
       seoDescription="Calcule prazo processual em dias úteis com feriados, suspensões forenses e recesso. Considera disponibilização no DJe e publicação. Grátis, sem login."
       keywords={[
         "prazo processual",

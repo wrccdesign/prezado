@@ -7,7 +7,7 @@ export default function CpfCnpjLanding() {
       title="Validador de CPF e CNPJ"
       description="Verifique rapidamente se os dígitos verificadores de CPF ou CNPJ estão corretos. Ferramenta prática para advogados, escritórios e análise de documentos."
       path="/calculadoras/validador-cpf-cnpj"
-      seoTitle="Validar CPF e CNPJ Online — Grátis e Sem Consulta na Receita"
+      seoTitle="Validar CPF e CNPJ Online, Grátis e Sem Consulta na Receita"
       seoDescription="Confira em segundos se um CPF ou CNPJ tem dígitos verificadores válidos. Formatação automática, sem cadastro e sem enviar o número para a Receita Federal."
       keywords={[
         "validar CPF",
@@ -21,7 +21,7 @@ export default function CpfCnpjLanding() {
         "Formatação automática",
         "CPF e CNPJ no mesmo lugar",
         "Cópia rápida para a área de transferência",
-        "Sem consulta à Receita Federal — privacidade garantida",
+        "Sem consulta à Receita Federal, privacidade garantida",
       ]}
       content={
         <>
@@ -29,7 +29,7 @@ export default function CpfCnpjLanding() {
           <p>
             CPF e CNPJ terminam em dígitos verificadores calculados a partir dos números anteriores
             pelo algoritmo de módulo 11. A validação confirma se esses dígitos batem com o restante
-            da sequência — é o mesmo teste que sistemas de tribunais e cartórios fazem antes de
+            da sequência, é o mesmo teste que sistemas de tribunais e cartórios fazem antes de
             aceitar o documento em uma petição ou contrato.
           </p>
           <h2 className="text-xl font-semibold">O que ela não verifica</h2>

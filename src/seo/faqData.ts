@@ -1,5 +1,5 @@
 // Fonte única de verdade dos FAQs estruturados.
-// TypeScript puro: sem React e sem APIs de browser — este arquivo é
+// TypeScript puro: sem React e sem APIs de browser, este arquivo é
 // importado tanto pelas páginas quanto pelo vite.config.ts (Node).
 
 export interface FaqItem {
@@ -30,7 +30,7 @@ export const FAQ_PLANOS: FaqItem[] = [
   {
     question: "As calculadoras estão incluídas em todos os planos?",
     answer:
-      "Sim. Correção monetária, prazo processual, custas do TJSP, rescisão, pensão alimentícia, operações com datas e validador de CPF/CNPJ são ilimitadas em todos os planos — inclusive sem conta. A assinatura libera os recursos de IA, o histórico salvo e o volume de consulta processual.",
+      "Sim. Correção monetária, prazo processual, custas do TJSP, rescisão, pensão alimentícia, operações com datas e validador de CPF/CNPJ são ilimitadas em todos os planos, inclusive sem conta. A assinatura libera os recursos de IA, o histórico salvo e o volume de consulta processual.",
   },
   {
     question: "Como funcionam as cotas mensais?",
@@ -73,7 +73,7 @@ export const FAQ_CORRECAO_MONETARIA: FaqItem[] = [
         {
           question: "De onde vêm os índices?",
           answer:
-            "Das séries oficiais do Sistema Gerenciador de Séries Temporais do Banco Central — IPCA, INPC, IGP-M, Selic e Taxa Legal — sincronizadas diariamente. O resultado informa a data da última sincronização.",
+            "Das séries oficiais do Sistema Gerenciador de Séries Temporais do Banco Central, IPCA, INPC, IGP-M, Selic e Taxa Legal, sincronizadas diariamente. O resultado informa a data da última sincronização.",
         },
         {
           question: "Posso escolher juros simples ou compostos?",
@@ -83,7 +83,7 @@ export const FAQ_CORRECAO_MONETARIA: FaqItem[] = [
         {
           question: "A calculadora inclui multa e honorários?",
           answer:
-            "Inclui. É possível informar um percentual de multa — indicando se ela incide também sobre os juros — e um percentual de honorários, que entram no total apurado. Ambos aparecem discriminados no resultado.",
+            "Inclui. É possível informar um percentual de multa, indicando se ela incide também sobre os juros, e um percentual de honorários, que entram no total apurado. Ambos aparecem discriminados no resultado.",
         },
         {
           question: "Como funciona o cálculo pró-rata nos meses parciais?",

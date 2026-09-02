@@ -7,7 +7,7 @@ export default function PensaoAlimenticiaLanding() {
       title="Calculadora de Pensão Alimentícia"
       description="Estime uma faixa de referência de pensão alimentícia a partir da renda líquida do alimentante, do número de filhos, do padrão de vida, da moradia e de outras obrigações alimentares já existentes."
       path="/calculadoras/pensao-alimenticia"
-      seoTitle="Calcular Pensão Alimentícia — Faixa de Referência Grátis"
+      seoTitle="Calcular Pensão Alimentícia, Faixa de Referência Grátis"
       seoDescription="Estime a faixa de pensão alimentícia pelo binômio necessidade x possibilidade (art. 1.694 do Código Civil), considerando renda, número de filhos, moradia e padrão de vida. Grátis, sem login."
       keywords={[
         "pensão alimentícia",
@@ -35,9 +35,9 @@ export default function PensaoAlimenticiaLanding() {
 
           <h2 className="text-xl font-semibold">Como a faixa é montada</h2>
           <p>
-            O cálculo parte de faixas percentuais da renda líquida observadas na prática — em torno
+            O cálculo parte de faixas percentuais da renda líquida observadas na prática, em torno
             de 15% a 30% para um filho, com percentuais totais maiores conforme aumenta o número de
-            filhos — e devolve três valores: mínimo, sugerido e máximo. Sobre essa base são
+            filhos, e devolve três valores: mínimo, sugerido e máximo. Sobre essa base são
             aplicados ajustes: padrão de vida informado, filhos que residem com o alimentante
             (integral ou parcialmente) e existência de outras obrigações alimentares.
           </p>
@@ -51,7 +51,7 @@ export default function PensaoAlimenticiaLanding() {
           <p>
             A faixa serve para orientar conversas iniciais, propostas de acordo e a preparação de
             uma ação de alimentos, mostrando uma ordem de grandeza compatível com a renda informada.
-            Despesas específicas — escola, plano de saúde, tratamentos — costumam ser tratadas à
+            Despesas específicas, escola, plano de saúde, tratamentos, costumam ser tratadas à
             parte e não estão embutidas no percentual.
           </p>
         </>

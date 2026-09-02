@@ -7,7 +7,7 @@ export default function RescisaoTrabalhistaLanding() {
       title="Calculadora de Rescisão Trabalhista"
       description="Estime as verbas rescisórias a partir do salário, das datas de admissão e demissão e do tipo de rescisão: saldo de salário, aviso prévio proporcional, 13º e férias proporcionais, férias vencidas com 1/3, FGTS do mês e multa rescisória."
       path="/calculadoras/rescisao-trabalhista"
-      seoTitle="Calcular Rescisão Trabalhista Online — Grátis"
+      seoTitle="Calcular Rescisão Trabalhista Online, Grátis"
       seoDescription="Calcule saldo de salário, aviso prévio, 13º e férias proporcionais, FGTS e multa rescisória para demissão sem justa causa, pedido de demissão ou acordo (art. 484-A da CLT). Grátis, sem login."
       keywords={[
         "rescisão trabalhista",
@@ -38,7 +38,7 @@ export default function RescisaoTrabalhistaLanding() {
             No <strong>pedido de demissão</strong> não há aviso prévio indenizado a favor do
             empregado nem multa do FGTS; permanecem o saldo de salário, o 13º proporcional e as
             férias proporcionais e vencidas com 1/3. Na <strong>dispensa por justa causa</strong>{" "}
-            ficam apenas o saldo de salário e as férias vencidas com 1/3, quando existirem — 13º e
+            ficam apenas o saldo de salário e as férias vencidas com 1/3, quando existirem, 13º e
             férias proporcionais não são pagos.
           </p>
 
@@ -46,7 +46,7 @@ export default function RescisaoTrabalhistaLanding() {
           <p>
             No distrato por acordo entre empregado e empregador, previsto no art. 484-A da CLT, o
             aviso prévio indenizado é pago pela metade e a multa do FGTS cai para 20%. As demais
-            verbas — saldo de salário, 13º e férias proporcionais, férias vencidas e 1/3 — são
+            verbas, saldo de salário, 13º e férias proporcionais, férias vencidas e 1/3, são
             devidas integralmente. A calculadora aplica essas reduções automaticamente ao selecionar
             o acordo mútuo.
           </p>

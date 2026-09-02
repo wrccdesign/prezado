@@ -7,7 +7,7 @@ export default function OperacoesDatasLanding() {
       title="Operações com Datas"
       description="Some ou subtraia dias corridos ou úteis, calcule a diferença entre duas datas e descubra informações úteis sobre qualquer data. Ideal para prazos internos e cálculos de prazo fora do processo."
       path="/calculadoras/operacoes-datas"
-      seoTitle="Calculadora de Datas — Somar Dias Úteis e Diferença entre Datas"
+      seoTitle="Calculadora de Datas, Somar Dias Úteis e Diferença entre Datas"
       seoDescription="Some ou subtraia dias úteis e corridos, calcule a diferença entre duas datas e veja se a data cai em dia útil. Gratuito, sem cadastro."
       keywords={[
         "somar dias",
@@ -37,7 +37,7 @@ export default function OperacoesDatasLanding() {
             Se o prazo corre dentro de um processo, use a{" "}
             <a href="/calculadoras/prazo-processual">calculadora de prazo processual</a>: ela
             considera feriados forenses, suspensões do tribunal, recesso de fim de ano e a
-            diferença entre disponibilização no DJe e publicação — regras que esta ferramenta, mais
+            diferença entre disponibilização no DJe e publicação, regras que esta ferramenta, mais
             simples, não aplica.
           </p>
         </>
