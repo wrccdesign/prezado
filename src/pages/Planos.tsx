@@ -304,135 +304,119 @@ export default function Planos() {
 
 
 
-        <div className="grid md:grid-cols-3 gap-6 mb-12">
+        <div className="mt-10 grid gap-6 md:grid-cols-3">
           {plans.map((plan) => {
             const isCurrent = planId === plan.id;
             return (
-              <Card
+              <div
                 key={plan.id}
-                className={`relative flex flex-col ${
+                className={`flex flex-col rounded-lg border bg-white p-6 ${
                   plan.popular
-                    ? "border-accent shadow-lg ring-2 ring-accent/20"
-                    : "border-border"
+                    ? "border-gold shadow-[0_8px_24px_hsl(var(--navy)/0.12)]"
+                    : "border-cream-dark"
                 }`}
               >
-                {plan.popular && (
-                  <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                    <Badge className="bg-accent text-accent-foreground px-3 py-1 text-xs font-semibold">
-                      Mais popular
-                    </Badge>
-                  </div>
-                )}
-                {isCurrent && (
-                  <div className="absolute -top-3 right-4">
-                    <Badge variant="secondary" className="px-3 py-1 text-xs font-semibold">
-                      Seu plano
-                    </Badge>
-                  </div>
-                )}
+                <div className="flex items-baseline justify-between gap-2">
+                  <h2 className="text-h3 text-navy">{plan.name}</h2>
+                  {plan.popular && <span className="text-note text-gold">Mais escolhido</span>}
+                  {isCurrent && <span className="text-note text-navy/60">Seu plano</span>}
+                </div>
+                <p className="mt-1 text-sm text-navy/70">{plan.description}</p>
 
-                <CardHeader className="text-center pb-2">
-                  <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
-                    <plan.icon className="h-6 w-6 text-primary" />
-                  </div>
-                  <CardTitle className="text-xl font-heading">{plan.name}</CardTitle>
-                  <CardDescription className="text-sm">{plan.description}</CardDescription>
-                  {cycle === "anual" && plan.annualPrice ? (
-                    <>
-                      <div className="mt-4">
-                        <span className="text-3xl font-bold text-foreground">{plan.annualPrice}</span>
-                        <span className="text-muted-foreground text-sm">/ano</span>
-                      </div>
-                      <p className="mt-1 text-xs text-muted-foreground">
-                        Equivale a {plan.annualMonthly}/mês · economia de 30%
-                      </p>
-                    </>
-                  ) : (
-                    <div className="mt-4">
-                      <span className="text-3xl font-bold text-foreground">{plan.price}</span>
-                      <span className="text-muted-foreground text-sm">{plan.period}</span>
-                    </div>
-                  )}
-                  {plan.priceId && (
-                    <p className="mt-2 text-xs text-muted-foreground">
-                      Cobrança em reais (BRL). O processamento é internacional, portanto o
-                      seu banco pode aplicar IOF sobre a compra.
+                {cycle === "anual" && plan.annualPrice ? (
+                  <div className="mt-5">
+                    <span className="tabular text-3xl text-navy">{plan.annualPrice}</span>
+                    <span className="text-note text-navy/60">/ano</span>
+                    <p className="mt-1 text-note text-navy/60">
+                      Equivale a {plan.annualMonthly} por mês, economia de 30%
                     </p>
-                  )}
+                  </div>
+                ) : (
+                  <div className="mt-5">
+                    <span className="tabular text-3xl text-navy">{plan.price}</span>
+                    <span className="text-note text-navy/60">{plan.period}</span>
+                  </div>
+                )}
+                {plan.priceId && (
+                  <p className="mt-2 text-note text-navy/60">
+                    Cobrança em reais (BRL). O processamento é internacional, portanto o seu banco
+                    pode aplicar IOF sobre a compra.
+                  </p>
+                )}
 
-                </CardHeader>
+                <div className="mt-6 flex-1" />
 
-                <CardContent className="flex-1 flex flex-col">
-                  <ul className="space-y-3 mb-6 flex-1">
-                    {features.map((feat) => {
-                      const val = feat[plan.id];
-                      const isBlocked = val === 0;
-                      return (
-                        <li key={feat.label} className="flex items-center gap-2 text-sm">
-                          {isBlocked ? (
-                            <X className="h-4 w-4 text-muted-foreground/50 shrink-0" />
-                          ) : (
-                            <Check className="h-4 w-4 text-accent shrink-0" />
-                          )}
-                          <span className={isBlocked ? "text-muted-foreground line-through" : "text-foreground"}>
-                            {feat.label}
-                            {typeof val === "number" && val > 0 && (
-                              <span className="font-semibold text-accent ml-1">({val})</span>
-                            )}
-                          </span>
-                        </li>
-                      );
-                    })}
-                  </ul>
-
-                  {plan.id === "free" ? (
-                    <Button
-                      variant="outline"
-                      className="w-full"
-                      disabled={!!user && isCurrent}
-                      onClick={() => !user && navigate("/auth?mode=signup")}
-                    >
-                      {user ? (isCurrent ? "Plano atual" : "Incluído na sua conta") : "Criar conta grátis"}
-                    </Button>
-
-                  ) : cycle === "anual" && plan.annualPriceId ? (
-                    <Button
-                      className={`w-full ${plan.popular ? "bg-accent text-accent-foreground hover:bg-accent/90" : ""}`}
-                      disabled={isLoading}
-                      onClick={() => handleSubscribe(plan)}
-                    >
-                      {isCurrent ? `Migrar para o anual` : `Assinar ${plan.name} anual`}
-                    </Button>
-                  ) : isCurrent ? (
-                    <Button variant="outline" className="w-full" onClick={() => navigate("/conta")}>
-                      Gerenciar assinatura
-                    </Button>
-                  ) : hasPaidPlan ? (
-                    <Button
-                      variant={plan.id === "escritorio" ? "default" : "outline"}
-                      className="w-full"
-                      disabled={changingPlan !== null}
-                      onClick={() => handleSubscribe(plan)}
-                    >
-                      {changingPlan === plan.id ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
-                      {plan.id === "escritorio" ? `Fazer upgrade para ${plan.name}` : `Mudar para ${plan.name}`}
-                    </Button>
-
-                  ) : (
-                    <Button
-                      className={`w-full ${plan.popular ? "bg-accent text-accent-foreground hover:bg-accent/90" : ""}`}
-                      disabled={isLoading}
-                      onClick={() => handleSubscribe(plan)}
-                    >
-                      Assinar {plan.name}
-                    </Button>
-                  )}
-
-                </CardContent>
-              </Card>
+                {plan.id === "free" ? (
+                  <Button
+                    variant="outline"
+                    className="w-full"
+                    disabled={!!user && isCurrent}
+                    onClick={() => !user && navigate("/auth?mode=signup")}
+                  >
+                    {user ? (isCurrent ? "Plano atual" : "Incluído na sua conta") : "Criar conta grátis"}
+                  </Button>
+                ) : cycle === "anual" && plan.annualPriceId ? (
+                  <Button
+                    className={`w-full ${plan.popular ? "bg-gold text-navy hover:bg-gold-light" : ""}`}
+                    disabled={isLoading}
+                    onClick={() => handleSubscribe(plan)}
+                  >
+                    {isCurrent ? "Migrar para o anual" : `Assinar ${plan.name} anual`}
+                  </Button>
+                ) : isCurrent ? (
+                  <Button variant="outline" className="w-full" onClick={() => navigate("/conta")}>
+                    Gerenciar assinatura
+                  </Button>
+                ) : hasPaidPlan ? (
+                  <Button
+                    variant={plan.id === "escritorio" ? "default" : "outline"}
+                    className="w-full"
+                    disabled={changingPlan !== null}
+                    onClick={() => handleSubscribe(plan)}
+                  >
+                    {changingPlan === plan.id ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+                    {plan.id === "escritorio" ? `Fazer upgrade para ${plan.name}` : `Mudar para ${plan.name}`}
+                  </Button>
+                ) : (
+                  <Button
+                    className={`w-full ${plan.popular ? "bg-gold text-navy hover:bg-gold-light" : ""}`}
+                    disabled={isLoading}
+                    onClick={() => handleSubscribe(plan)}
+                  >
+                    Assinar {plan.name}
+                  </Button>
+                )}
+              </div>
             );
           })}
         </div>
+
+        <section className="mt-14">
+          <h2 className="text-h2 text-navy">O que cada plano libera</h2>
+          <div className="mt-6 overflow-x-auto">
+            <table className="w-full border-collapse text-left">
+              <thead>
+                <tr className="border-b border-cream-dark">
+                  <th scope="col" className="py-2 pr-4 text-note text-navy/60">Recurso</th>
+                  <th scope="col" className="py-2 px-3 text-right text-note text-navy/60">Gratuito</th>
+                  <th scope="col" className="py-2 px-3 text-right text-note text-navy/60">Profissional</th>
+                  <th scope="col" className="py-2 pl-3 text-right text-note text-navy/60">Escritório</th>
+                </tr>
+              </thead>
+              <tbody>
+                {features.map((feat) => (
+                  <tr key={feat.label} className="border-b border-cream-dark">
+                    <td className="py-2 pr-4 text-sm text-navy/80">{feat.label}</td>
+                    <td className="py-2 px-3 text-right text-sm text-navy tabular">{feat.free === 0 ? "" : feat.free}</td>
+                    <td className="py-2 px-3 text-right text-sm text-navy tabular">{feat.profissional === 0 ? "" : feat.profissional}</td>
+                    <td className="py-2 pl-3 text-right text-sm text-navy tabular">{feat.escritorio === 0 ? "" : feat.escritorio}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </section>
+
 
         <div className="text-center text-sm text-muted-foreground space-y-1">
           <p>Pagamentos processados de forma segura. Cancele a qualquer momento.</p>
