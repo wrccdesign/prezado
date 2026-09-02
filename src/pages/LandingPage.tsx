@@ -1,5 +1,7 @@
+import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Check, FileDown } from "lucide-react";
 import { AppHeader } from "@/components/AppHeader";
 import { AppFooter } from "@/components/AppFooter";
@@ -68,6 +70,7 @@ const plans: { name: string; price: string; period: string; desc: string; featur
 
 export default function LandingPage() {
   const navigate = useNavigate();
+  const [heroQuery, setHeroQuery] = useState("");
 
   return (
     <div className="min-h-screen font-sans">
@@ -101,16 +104,57 @@ export default function LandingPage() {
               <p className="text-body-serif text-cream/72 max-w-[60ch] mt-6">
                 Diagnóstico, análise de documentos, consulta processual e petição em uma só plataforma. Todo precedente vem do acervo do CNJ, com link para conferência. Quando não há decisão, a resposta diz isso.
               </p>
-              <div className="mt-8 flex flex-wrap items-center gap-6">
-                <Button size="lg" className="bg-gold text-navy hover:bg-gold-light font-medium rounded-md" asChild>
-                  <Link to="/auth">Criar conta grátis</Link>
+              <form
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  const q = heroQuery.trim();
+                  if (q) navigate(`/jurisprudencia?q=${encodeURIComponent(q)}`);
+                }}
+                className="mt-8 flex gap-2 max-w-[560px]"
+              >
+                <Input
+                  value={heroQuery}
+                  onChange={(e) => setHeroQuery(e.target.value)}
+                  placeholder="Descreva a situação ou cole o número CNJ"
+                  aria-label="Buscar processo ou decisão"
+                  className="h-12 bg-cream text-navy border-0 rounded-md placeholder:text-navy/50 font-sans flex-1"
+                />
+                <Button
+                  type="submit"
+                  size="lg"
+                  className="h-12 bg-gold text-navy hover:bg-gold-light font-medium rounded-md px-5"
+                >
+                  Buscar
                 </Button>
-                <a href="#calcular" className="text-cream underline underline-offset-4 hover:text-gold">
-                  Calcular sem cadastro
+              </form>
+              <div className="mt-4 flex flex-wrap gap-2">
+                <Link
+                  to="/jurisprudencia"
+                  className="inline-flex items-center rounded-md border border-cream/25 px-3 py-1.5 text-sm text-cream/72 hover:border-cream hover:text-cream transition-colors"
+                >
+                  Consultar um processo
+                </Link>
+                <a
+                  href="#calcular"
+                  className="inline-flex items-center rounded-md border border-cream/25 px-3 py-1.5 text-sm text-cream/72 hover:border-cream hover:text-cream transition-colors"
+                >
+                  Calcular correção e juros
                 </a>
+                <Link
+                  to="/diagnostico"
+                  className="inline-flex items-center rounded-md border border-cream/25 px-3 py-1.5 text-sm text-cream/72 hover:border-cream hover:text-cream transition-colors"
+                >
+                  Descrever um caso
+                </Link>
+                <Link
+                  to="/peticao"
+                  className="inline-flex items-center rounded-md border border-cream/25 px-3 py-1.5 text-sm text-cream/72 hover:border-cream hover:text-cream transition-colors"
+                >
+                  Gerar uma petição
+                </Link>
               </div>
-              <p className="text-note text-cream/50 mt-4">
-                Conta nova começa com 7 dias no plano Profissional, sem cartão. As calculadoras são livres e não exigem conta.
+              <p className="text-note text-cream/50 mt-5 max-w-[60ch]">
+                Três buscas por dia sem conta, no acervo já indexado. A conta grátis libera a consulta ao vivo no CNJ e começa com 7 dias do plano Profissional, sem cartão.
               </p>
             </div>
 
