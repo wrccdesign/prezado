@@ -1,41 +1,82 @@
-# Reforma visual de /jurisprudencia
+# Fase 4, último lote: planos e calculadoras
 
-Avaliação da proposta e plano de execução. A proposta é compatível com o sistema visual e não exige tocar em lógica.
+Inventário do que existe hoje e proposta de execução. Nada de lógica de cálculo, fonte oficial ou gate de exportação muda.
 
-## a) Tema escuro
+## 1. Arquivos no escopo
 
-Não há tema escuro ativo em rota nenhuma, pública ou logada. `tailwind.config.ts` define `darkMode: ["class"]`, mas nada adiciona a classe `dark` ao `<html>`: não existe `ThemeProvider`, nem toggle, nem classe no `index.html`. A única referência a `next-themes` está em `src/components/ui/sonner.tsx`, que chama `useTheme()` sem provider e cai no padrão. Ou seja, as 6 variantes `dark:` em `Jurisprudencia.tsx` são código morto e podem sair com segurança.
+Páginas
+- `src/pages/Planos.tsx` (461 linhas)
+- `src/pages/Calculators.tsx` (101)
+- `src/pages/calculators/CorrecaoMonetariaLanding.tsx`, `PrazoProcessualLanding.tsx`, `CustasTjspLanding.tsx`, `RescisaoTrabalhistaLanding.tsx`, `PensaoAlimenticiaLanding.tsx`, `CpfCnpjLanding.tsx`, `OperacoesDatasLanding.tsx` (53 a 106 linhas cada)
 
-## b) /decisao/:id
+Componentes
+- `src/components/calculators/CalculatorLanding.tsx` (moldura de todas as landings)
+- `src/components/calculators/CorrecaoCalc.tsx`, `CustasCalc.tsx`, `PrazoCalc.tsx`, `PensaoCalc.tsx`, `RescisaoCalc.tsx`, `DateCalc.tsx`, `CpfCnpjCalc.tsx`
+- `src/components/calculators/shared/ResultCard.tsx`, `StepIndicator.tsx`, `MemoriaList.tsx`, `CurrencyInput.tsx`, `GuestExportGate.tsx`
 
-Sim, `DecisaoDetalhe.tsx` segue o visual antigo: `Card`, `Badge`, cores `bg-green-100`/`bg-red-100`/`bg-amber-100` com variantes `dark:`, `Sparkles` no assistente, `Scale` no estado vazio, `bg-muted`. Também tem 6 ocorrências `dark:`.
+Não existe página "Como calculamos" no código; nenhuma rota com esse nome em `src/seo/routeMeta.ts`. O papel dela hoje é o bloco "Como funciona" dentro de `CalculatorLanding`.
 
-Recomendação: entra no mesmo lote, mas como segunda etapa dentro da mesma entrega, com escopo reduzido: fundo creme, tipografia da escala, resultado como texto em vez de badge colorido, remoção de ícones decorativos e das classes `dark:`. O painel do assistente de IA (chat lateral) fica só com ajuste de tipografia e cor; a lógica de mensagens não muda. Se preferir manter o lote pequeno, dá para fazer só `/jurisprudencia` agora, aceitando uma descontinuidade visível ao clicar num resultado.
+## 2. Ocorrências por arquivo
 
-## c) Card para article dentro do Link
+Contagem por padrão (Card, Badge, uppercase, tracking-wider, font-bold, font-semibold, rounded-full, gradiente, bg-primary, bg-navy, text-white, dark:, animate-, seta, travessão, "advogado", "cidadão"):
 
-Sem risco. O `Link` externo (`<Link to={/decisao/${d.id}} className="block">`) permanece; só o filho `Card` vira `<article>`. Os handlers internos já fazem `e.preventDefault()` e `e.stopPropagation()`:
-- "Ver mais" e "Copiar nº CNJ" chamam ambos;
-- `handleCopyCitation` chama ambos;
-- "Ver no tribunal" é um `<a>` com `stopPropagation`, e como o clique não é impedido o browser abre o `target="_blank"` sem seguir o `Link` pai.
+```text
+arquivo                          Card Bdg upp trk bold semi pill grad bgpri navy white dark anim seta trav adv cid
+Planos.tsx                         5   2   0   0   3    5    0    0    1    0     0    0    1    0    6   2   0
+Calculators.tsx                    7   0   0   0   1    2    0    0    2    0     0    0    0    2    1   0   0
+CalculatorLanding.tsx              8   0   0   0   1    3    1    0    2    0     0    1    0    2    2   1   1
+CorrecaoCalc.tsx                   6   0   1   0   1    1    0    0    1    0     0    3    1    0    5   0   0
+CustasCalc.tsx                     6   0   0   0   0    0    0    0    0    0     0    0    2    3    6   0   0
+PrazoCalc.tsx                      4   0   0   0   1    0    0    0    0    0     0    4    1    0    3   0   0
+PensaoCalc.tsx                     4   0   0   0   1    2    0    0    2    0     0    1    0    0    3   0   0
+RescisaoCalc.tsx                   2   0   0   0   2    0    0    0    1    0     0    2    0    0    1   2   0
+CpfCnpjCalc.tsx                    2   0   0   0   0    1    0    0    0    0     0    3    0    0    0   0   0
+DateCalc.tsx                       2   0   0   0   0    1    0    0    0    0     0    0    0    0    1   0   0
+shared/ResultCard.tsx              2   0   1   0   1    0    0    0    1    0     0    0    0    0    1   0   0
+shared/StepIndicator.tsx           0   0   0   0   0    0    1    0    2    0     0    0    0    0    0   0   0
+shared/MemoriaList.tsx             0   0   0   0   0    0    0    0    0    0     0    0    0    0    1   0   0
+shared/CurrencyInput.tsx           0   0   0   0   0    0    0    0    0    0     0    0    0    0    1   0   0
+shared/GuestExportGate.tsx         0   0   0   0   0    0    0    0    0    0     0    0    0    0    1   0   0
+CorrecaoMonetariaLanding.tsx       0   0   0   0   0    2    0    0    0    0     0    0    0    0    3   0   0
+PrazoProcessualLanding.tsx         0   0   0   0   0    2    0    0    0    0     0    0    0    0    1   0   0
+CustasTjspLanding.tsx              0   0   0   0   0    4    0    0    0    0     0    0    0    0    5   0   0
+RescisaoTrabalhistaLanding.tsx     0   0   0   0   0    3    0    0    0    0     0    0    0    0    4   1   0
+PensaoAlimenticiaLanding.tsx       0   0   0   0   0    3    0    0    0    0     0    0    0    0    5   0   0
+CpfCnpjLanding.tsx                 0   0   0   0   0    2    0    0    0    0     0    0    0    0    3   1   0
+OperacoesDatasLanding.tsx          0   0   0   0   0    2    0    0    0    0     0    0    0    0    2   0   0
+```
 
-Esse comportamento independe do elemento usado. Um ponto de HTML a observar: `<a>` dentro de `<a>` é inválido. Isso já existe hoje com o "Ver no tribunal" dentro do `Link`. Como estamos mexendo na marcação, vale corrigir: manter o `Link` só no título/ementa em vez de envolver o bloco inteiro, e deixar as ações fora dele. Isso remove a necessidade de `preventDefault` nos botões e torna o markup válido, sem tocar em nenhuma função de dados.
+Observações que a contagem não mostra
+- Nenhum gradiente, nenhum `text-white`, nenhum `bg-navy` em qualquer arquivo do lote. Fundo de seção problemático é só `bg-primary`/`bg-primary/5`.
+- `Calculators.tsx` usa grade de sete cards com ícone decorativo em quadrado colorido acima do título; é o caso mais claro de card repetido para conteúdo não comparável.
+- `CalculatorLanding.tsx` concentra os piores tells: chips `rounded-full bg-primary/10` com as keywords de SEO, três cards laterais, `CheckCircle` ao lado de cada benefício, botão "Ver todas" com `ArrowRight`, `prose dark:prose-invert`, e o texto "para advogados, estudantes de Direito e cidadãos", que se dirige ao leitor pelo rótulo.
+- `ResultCard.tsx` usa `uppercase tracking-wide` no rótulo e `font-bold` no valor: corrigir aqui conserta as sete calculadoras de uma vez.
+- `StepIndicator.tsx` usa `rounded-full` em bolinhas de etapa; é sinal de progresso, será convertido para números com linha, sem pílula.
+- `Planos.tsx` tem `animate-` (uma transição de entrada), `Badge` "Mais popular", ícones `Crown`/`Building2`/`User` ao lado do nome do plano e `—` dentro da própria tabela de features.
+- Travessões nos textos de página são copy real (não só SEO) e entram na limpeza.
 
-## d) Arquivos tocados e dependências
+## 3. Travessões em SEO
 
-Estimativa: 2 arquivos (3 se contar o teste visual).
+- `src/seo/routeMeta.ts`: 29 ocorrências, quase todas no padrão `Título — Honorífico` e em descrições com aposto.
+- `src/seo/faqData.ts`: 4 ocorrências, dentro de respostas.
 
-1. `src/pages/Jurisprudencia.tsx` — bloco de busca em creme, H1/parágrafo da escala, input branco com borda `cream-dark`, botão dourado, "Filtros avançados" como link sublinhado, selects com estilo claro (`bg-white border-cream-dark`) no lugar de `bg-white/10 border-white/20`, resultados em `<article class="border-t border-cream-dark pt-5">`, ementa em serif, número CNJ em mono, ações como links de texto, "Provido"/"Improcedente" como texto em `text-navy/70`, "Andamento processual" e "Interior" entre parênteses, bloco de IA sem `Sparkles` com alternativas como links separados por vírgula, aviso de visitante em `bg-white border border-cream-dark rounded-lg p-5`, estado vazio sem `Scale`, remoção das classes `dark:`. `Loader2` permanece. Imports de ícones ficam reduzidos a `Loader2` e `Check`.
-2. `src/pages/DecisaoDetalhe.tsx` — mesma linguagem, conforme o item b.
+Regra de substituição, sem mudar sentido: em título, `X — Honorífico` vira `X | Honorífico` (separador de marca já usado em parte das rotas) ou dois pontos quando for aposto explicativo; em descrição e resposta de FAQ, travessão vira vírgula quando é aposto, dois pontos quando introduz lista, ponto quando separa duas frases. Cada troca revisada uma a uma, mantendo o limite de 60 caracteres no título e 160 na descrição, e depois `bun run check:seo` e os testes de JSON-LD.
 
-Não há componente compartilhado de badge de tribunal: `resultadoColor` é uma função local em cada uma das duas páginas, então ambas somem junto com os badges. `formatCitation` em `src/lib/citation.ts` não é visual e não muda. `AppHeader`/`AppFooter` já estão no novo padrão.
+## 4. Riscos verificados
 
-Intocados: `handleSearch`, quotas, `notifyUsageConsumed`, toasts, leitura de `?q=` com o `useEffect` guardado por ref, filtros e chamadas de edge function.
+- Tabela de planos: os dados estão duplicados, não compartilhados. `src/pages/LandingPage.tsx` tem seu próprio `const plans` (nome, preço, features resumidas) e `src/pages/Planos.tsx` tem outro `const plans` mais o array `features` com as cotas por mês. Preço e cotas precisam ser conferidos entre os dois arquivos no mesmo prompt; a unificação em um módulo compartilhado é possível, mas fica fora deste lote para não misturar refatoração com visual.
+- `GuestExportGate.tsx`: é um hook, não componente visual. Só lê `user` do `AuthContext` e dispara um toast com `ToastAction` para `/auth`. Nada a mudar além, no máximo, do texto do toast (contém um travessão). O gate em si fica intacto.
+- Formulários shadcn: `Input`, `Select`, `Button`, `Table` já herdaram as fontes e o raio de 0.5rem da Fase 1, então tipografia e cantos já estão corretos sozinhos. Falta o que é classe local no arquivo: `Card` como moldura, `bg-primary/5` como fundo de bloco de resultado, `font-bold` no valor, rótulo em caixa alta, ícones ao lado de título e altura/contraste dos campos em fundo creme (hoje muitos campos herdam `bg-background` genérico em vez de branco com borda `cream-dark`).
 
-## Ponto que precisa da sua decisão
+## 5. Execução proposta
 
-O `Link` envolvendo o resultado inteiro: mantenho como está (bloco clicável, `<a>` aninhado inválido) ou passo o link para o título e a ementa, deixando as ações fora? A segunda opção é o HTML correto e melhora acessibilidade, mas muda a área de clique.
+Quatro prompts, agrupados por semelhança:
 
-## Validação
+1. Base compartilhada: `shared/ResultCard.tsx`, `shared/StepIndicator.tsx`, `shared/MemoriaList.tsx`, `shared/CurrencyInput.tsx`, texto do toast em `GuestExportGate.tsx`. Efeito imediato nas sete calculadoras.
+2. Moldura e vitrine: `CalculatorLanding.tsx` e `Calculators.tsx`. Sai a grade de cards com ícone, entram lista e tabela; saem chips pílula, `CheckCircle`, seta e `prose dark:`; a frase "para advogados, estudantes e cidadãos" é reescrita falando da situação.
+3. Corpo das sete calculadoras: `CorrecaoCalc`, `CustasCalc`, `PrazoCalc`, `PensaoCalc`, `RescisaoCalc`, `DateCalc`, `CpfCnpjCalc`. Remoção de `Card`, `dark:`, `animate-`, `font-bold`/`semibold` e travessão; tabela real onde hoje há lista de memória.
+4. Planos e SEO: `Planos.tsx` (Card, Badge, ícones de plano, animação, travessões da tabela) mais os travessões de `routeMeta.ts` e `faqData.ts`, com `check:seo` e testes de JSON-LD ao final. As sete landings de calculadora, que só têm `font-semibold` em `h2` e travessões de copy, entram junto porque são edições de uma linha cada.
 
-`bunx tsgo --noEmit`, `bun run build`, screenshot de `/jurisprudencia` com resultado real e de `/decisao/:id`, e grep por `dark:`, `Card`, `Badge`, `font-bold`, `font-semibold`, `rounded-full` nos arquivos tocados.
+Ao final de cada prompt: typecheck, build, grep dos tells nos arquivos tocados e screenshot das rotas afetadas.
+
+Estimativa de créditos: prompts 1 e 4 pequenos, 2 médio, 3 o maior (cerca de 2.150 linhas somadas). Ordem de grandeza total de 8 a 12 créditos, sendo o prompt 3 metade disso; se o orçamento apertar, o prompt 3 pode ser dividido em duas metades (Correção e Custas primeiro; Prazo, Pensão, Rescisão, Datas e CPF/CNPJ depois).
