@@ -174,7 +174,7 @@ export function PensaoCalc() {
 
       {result && (
         <div className="space-y-4">
-          <div className="rounded-lg border border-cream-dark bg-white border-primary/30 bg-primary/5">
+          <div className="rounded-lg border border-cream-dark bg-white">
             <div className="p-5 text-center space-y-1">
               <p className="text-sm text-muted-foreground">Valor Sugerido</p>
               <p className="text-3xl text-primary">{fmt(result.sugerido)}</p>
@@ -193,7 +193,7 @@ export function PensaoCalc() {
               </TableHeader>
               <TableBody>
                 <TableRow><TableCell>Faixa Mínima</TableCell><TableCell className="text-right">{fmt(result.minimo)}</TableCell><TableCell className="text-right">{result.percentualMin.toFixed(1)}%</TableCell></TableRow>
-                <TableRow className="bg-primary/5 font-medium"><TableCell>Valor Sugerido</TableCell><TableCell className="text-right">{fmt(result.sugerido)}</TableCell><TableCell className="text-right">{result.percentualSug.toFixed(1)}%</TableCell></TableRow>
+                <TableRow className="border-t border-navy/20"><TableCell>Valor Sugerido</TableCell><TableCell className="text-right">{fmt(result.sugerido)}</TableCell><TableCell className="text-right">{result.percentualSug.toFixed(1)}%</TableCell></TableRow>
                 <TableRow><TableCell>Faixa Máxima</TableCell><TableCell className="text-right">{fmt(result.maximo)}</TableCell><TableCell className="text-right">{result.percentualMax.toFixed(1)}%</TableCell></TableRow>
                 <TableRow><TableCell>Valor por Filho (sugerido)</TableCell><TableCell className="text-right">{fmt(result.porFilhoSug)}</TableCell><TableCell className="text-right"></TableCell></TableRow>
               </TableBody>

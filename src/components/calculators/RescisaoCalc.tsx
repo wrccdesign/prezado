@@ -149,7 +149,7 @@ export function RescisaoCalc() {
 
       {verbas && (
         <div className="space-y-4">
-          <div className="rounded-lg border border-cream-dark bg-white border-primary/20 bg-primary/5">
+          <div className="rounded-lg border border-cream-dark bg-white">
             <div className="p-5">
               <Table>
                 <TableHeader><TableRow><TableHead>Verba</TableHead><TableHead className="text-right">Valor</TableHead></TableRow></TableHeader>
