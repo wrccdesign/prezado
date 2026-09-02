@@ -1,6 +1,5 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { Link } from "react-router-dom";
+import { useEffect, useRef, useState } from "react";
+import { useNavigate, useSearchParams, Link } from "react-router-dom";
 import { AppHeader } from "@/components/AppHeader";
 import { SEO } from "@/components/SEO";
 import { AppFooter } from "@/components/AppFooter";
@@ -98,6 +97,7 @@ const INSTANCIAS = [
 
 export default function Jurisprudencia() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [query, setQuery] = useState("");
   const [loading, setLoading] = useState(false);
   const [results, setResults] = useState<Decision[]>([]);
@@ -203,6 +203,17 @@ if (!res.ok) {
       setLoading(false);
     }
   };
+
+  const hasSearchedRef = useRef(false);
+
+  useEffect(() => {
+    const q = searchParams.get("q");
+    if (q && !hasSearchedRef.current) {
+      hasSearchedRef.current = true;
+      setQuery(q);
+      handleSearch(q);
+    }
+  }, [searchParams, handleSearch]);
 
   const resultadoColor = (resultado: string | null) => {
     if (!resultado) return "bg-muted text-muted-foreground";
