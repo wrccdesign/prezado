@@ -244,7 +244,7 @@ export default function DecisaoDetalhe() {
 
   if (loadingDec) {
     return (
-      <div className="min-h-screen flex flex-col bg-background">
+      <div className="min-h-screen flex flex-col bg-cream text-navy font-sans">
         <AppHeader />
         <main className="flex-1 container px-4 py-8 max-w-5xl mx-auto space-y-4">
           <Skeleton className="h-8 w-64" />
@@ -259,13 +259,12 @@ export default function DecisaoDetalhe() {
 
   if (!decision || !id) {
     return (
-      <div className="min-h-screen flex flex-col bg-background">
+      <div className="min-h-screen flex flex-col bg-cream text-navy font-sans">
         <AppHeader />
         <main className="flex-1 flex items-center justify-center">
           <div className="text-center">
-            <Scale className="h-12 w-12 mx-auto text-muted-foreground/30 mb-4" />
-            <p className="text-muted-foreground">Decisão não encontrada</p>
-            <Link to="/jurisprudencia" className="text-accent hover:underline text-sm mt-2 inline-block">
+            <p className="text-navy/70">Decisão não encontrada</p>
+            <Link to="/jurisprudencia" className="text-navy underline underline-offset-4 hover:text-gold text-sm mt-2 inline-block">
               Voltar à busca
             </Link>
           </div>
@@ -285,8 +284,16 @@ export default function DecisaoDetalhe() {
     setTimeout(() => setCopied(false), 2000);
   };
 
+  const linhaMeta = [
+    decision.tribunal,
+    instanciaLabel,
+    decision.resultado,
+    decision.data_decisao ? new Date(decision.data_decisao).toLocaleDateString("pt-BR") : null,
+    decision.comarca_pequena ? "interior" : null,
+  ].filter(Boolean).join(", ");
+
   return (
-    <div className="min-h-screen flex flex-col bg-background">
+    <div className="min-h-screen flex flex-col bg-cream text-navy font-sans">
       <AppHeader />
       <SEO
         title={`${decision.numero_processo || "Decisão"}${decision.tribunal ? ` — ${decision.tribunal}` : ""} | Honorífico`}
@@ -298,154 +305,109 @@ export default function DecisaoDetalhe() {
         path={`/decisao/${decision.id}`}
       />
       <main className="flex-1 flex flex-col lg:flex-row">
-        {/* Decision content */}
         <div className="flex-1 overflow-y-auto">
-          <div className="container px-4 py-6 max-w-3xl mx-auto">
-            <Link to="/jurisprudencia" className="inline-flex items-center gap-1 text-sm text-accent hover:underline mb-4">
-              <ArrowLeft className="h-4 w-4" /> Voltar à busca
+          <div className="container px-4 py-8 max-w-3xl mx-auto">
+            <Link to="/jurisprudencia" className="text-note text-navy underline underline-offset-4 hover:text-gold">
+              Voltar à busca
             </Link>
 
-            {/* Metadata */}
-            <div className="flex flex-wrap items-center gap-2 mb-3">
-              {decision.tribunal && <Badge variant="secondary" className="font-semibold">{decision.tribunal}</Badge>}
-              {decision.resultado && <Badge className={resultadoColor(decision.resultado)}>{decision.resultado}</Badge>}
-              {instanciaLabel && <Badge variant="outline">{instanciaLabel}</Badge>}
-              {decision.comarca_pequena && (
-                <Badge className="bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300">
-                  <MapPin className="h-3 w-3 mr-0.5" /> Interior
-                </Badge>
-              )}
-            </div>
+            <p className="text-sm font-medium text-navy mt-6">{linhaMeta}</p>
 
-            <div className="flex flex-wrap items-center gap-2 mb-1">
-              {decision.numero_processo && (
-                <h1 className="font-serif text-xl font-bold">{decision.numero_processo}</h1>
-              )}
-              <Button
-                variant="outline"
-                size="sm"
+            {decision.numero_processo && (
+              <h1 className="font-mono text-xl text-navy mt-2">{decision.numero_processo}</h1>
+            )}
+
+            <div className="flex flex-wrap items-center gap-x-5 gap-y-2 mt-3 text-note">
+              <button
                 onClick={handleCopyCitation}
-                className="h-8 gap-1.5 text-xs flex-shrink-0"
+                className="text-navy underline underline-offset-4 hover:text-gold inline-flex items-center gap-1"
               >
-                {copied ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
-                {copied ? "Copiado!" : "Copiar Citação"}
-              </Button>
+                {copied ? <Check className="h-3.5 w-3.5" /> : null}
+                {copied ? "Copiado" : "Copiar citação"}
+              </button>
               {decision.source_url && (
-                <Button asChild variant="outline" size="sm" className="h-8 gap-1.5 text-xs flex-shrink-0">
-                  <a href={decision.source_url} target="_blank" rel="noopener noreferrer" title="Abrir a decisão na fonte oficial">
-                    <ExternalLink className="h-3.5 w-3.5" />
-                    Ver no tribunal
-                  </a>
-                </Button>
+                <a
+                  href={decision.source_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  title="Abrir a decisão na fonte oficial"
+                  className="text-navy underline underline-offset-4 hover:text-gold"
+                >
+                  Ver no tribunal
+                </a>
               )}
             </div>
 
+            <p className="text-note text-navy/60 mt-3">
+              {[
+                decision.relator ? `Rel. ${decision.relator}` : null,
+                decision.orgao_julgador,
+                decision.comarca && decision.uf ? `${decision.comarca}/${decision.uf}` : null,
+                decision.numero_processo ? "Consulte pelo nº CNJ no portal do tribunal de origem" : null,
+              ].filter(Boolean).join(", ")}
+            </p>
 
-            <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-muted-foreground mb-4">
-              {decision.relator && <span>Rel. {decision.relator}</span>}
-              {decision.orgao_julgador && (
-                <span className="flex items-center gap-1">
-                  <Gavel className="h-3.5 w-3.5" />
-                  {decision.orgao_julgador}
-                </span>
-              )}
-              {decision.data_decisao && (
-                <span className="flex items-center gap-1">
-                  <Calendar className="h-3.5 w-3.5" />
-                  {new Date(decision.data_decisao).toLocaleDateString("pt-BR")}
-                </span>
-              )}
-              {decision.comarca && decision.uf && (
-                <span className="flex items-center gap-1">
-                  <MapPin className="h-3.5 w-3.5" />
-                  {decision.comarca}/{decision.uf}
-                </span>
-              )}
-              {decision.numero_processo && (
-                <span className="flex items-center gap-1">
-                  <ExternalLink className="h-3.5 w-3.5" />
-                  Consulte pelo nº CNJ no portal do tribunal de origem
-                </span>
-              )}
-
-            </div>
-
-            {/* Ementa */}
             {decision.ementa && (
-              <Card className="mb-4">
-                <CardContent className="pt-4">
-                  <h2 className="font-serif text-sm font-semibold mb-2 text-muted-foreground uppercase tracking-wide">Ementa</h2>
-                  <p className="text-sm leading-relaxed">{decision.ementa}</p>
-                </CardContent>
-              </Card>
+              <section className="mt-8 border-t border-cream-dark pt-6">
+                <h2 className="text-h3 text-navy">Ementa</h2>
+                <p className="text-body-serif text-navy/85 max-w-[68ch] mt-3">{decision.ementa}</p>
+              </section>
             )}
 
-            {/* AI Summary */}
             {decision.resumo_ia && (
-              <Card className="mb-4 border-accent/20 bg-accent/5">
-                <CardContent className="pt-4">
-                  <h2 className="text-sm font-semibold mb-2 flex items-center gap-1.5 text-accent">
-                    <Sparkles className="h-4 w-4" /> Resumo IA
-                  </h2>
-                  <p className="text-sm leading-relaxed text-muted-foreground">{decision.resumo_ia}</p>
-                </CardContent>
-              </Card>
+              <section className="mt-8 border-t border-cream-dark pt-6">
+                <h2 className="text-h3 text-navy">Resumo por IA</h2>
+                <p className="text-body-serif text-navy/80 max-w-[68ch] mt-3">{decision.resumo_ia}</p>
+              </section>
             )}
 
-            {/* Temas & Legislação */}
-            <div className="grid gap-4 sm:grid-cols-2 mb-4">
-              {decision.temas_juridicos && decision.temas_juridicos.length > 0 && (
-                <div>
-                  <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">Temas Jurídicos</h3>
-                  <div className="flex flex-wrap gap-1.5">
-                    {decision.temas_juridicos.map((t, i) => <Badge key={i} variant="outline" className="text-xs">{t}</Badge>)}
+            {((decision.temas_juridicos?.length ?? 0) > 0 || (decision.legislacao_citada?.length ?? 0) > 0) && (
+              <section className="mt-8 border-t border-cream-dark pt-6 grid gap-6 sm:grid-cols-2">
+                {decision.temas_juridicos && decision.temas_juridicos.length > 0 && (
+                  <div>
+                    <h3 className="text-sm font-medium text-navy">Temas jurídicos</h3>
+                    <p className="text-note text-navy/70 mt-2">{decision.temas_juridicos.join(", ")}</p>
                   </div>
-                </div>
-              )}
-              {decision.legislacao_citada && decision.legislacao_citada.length > 0 && (
-                <div>
-                  <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">Legislação Citada</h3>
-                  <div className="flex flex-wrap gap-1.5">
-                    {decision.legislacao_citada.map((l, i) => <Badge key={i} variant="outline" className="text-xs">{l}</Badge>)}
+                )}
+                {decision.legislacao_citada && decision.legislacao_citada.length > 0 && (
+                  <div>
+                    <h3 className="text-sm font-medium text-navy">Legislação citada</h3>
+                    <p className="text-note text-navy/70 mt-2">{decision.legislacao_citada.join(", ")}</p>
                   </div>
-                </div>
-              )}
-            </div>
+                )}
+              </section>
+            )}
 
-            {/* Full text */}
             {decision.full_text && (
-              <Card className="mb-6">
-                <CardContent className="pt-4">
-                  <h2 className="font-serif text-sm font-semibold mb-2 text-muted-foreground uppercase tracking-wide">Texto Completo</h2>
-                  <p className="text-sm leading-relaxed whitespace-pre-wrap">{decision.full_text}</p>
-                </CardContent>
-              </Card>
+              <section className="mt-8 border-t border-cream-dark pt-6">
+                <h2 className="text-h3 text-navy">Texto completo</h2>
+                <p className="text-body-serif text-navy/85 max-w-[68ch] mt-3 whitespace-pre-wrap">{decision.full_text}</p>
+              </section>
             )}
           </div>
         </div>
 
-        {/* Chat sidebar - desktop */}
-        <aside className="hidden lg:flex w-[380px] border-l border-border flex-col bg-background">
+        <aside className="hidden lg:flex w-[380px] border-l border-cream-dark flex-col bg-white">
           <ChatPanel decisionId={id} />
         </aside>
 
-        {/* Chat FAB - mobile */}
         <div className="lg:hidden fixed bottom-4 right-4 z-50">
           <Sheet>
             <SheetTrigger asChild>
-              <Button size="lg" className="rounded-full shadow-lg h-14 w-14">
-                <MessageCircle className="h-6 w-6" />
+              <Button className="h-12 px-5 rounded-md bg-gold text-navy hover:bg-gold-light">
+                Assistente
               </Button>
             </SheetTrigger>
-            <SheetContent side="bottom" className="h-[75vh] p-0 rounded-t-xl">
+            <SheetContent side="bottom" className="h-[75vh] p-0">
               <SheetHeader className="sr-only">
-                <SheetTitle>Chat Assistente</SheetTitle>
+                <SheetTitle>Assistente jurídico</SheetTitle>
               </SheetHeader>
               <ChatPanel decisionId={id} />
             </SheetContent>
           </Sheet>
         </div>
       </main>
+
       <AppFooter />
     </div>
   );
