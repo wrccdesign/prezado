@@ -19,14 +19,14 @@ interface ResultCardProps {
  */
 export function ResultCard({ label, value, meta, notes, actions }: ResultCardProps) {
   return (
-    <div className="rounded-lg border border-cream-dark bg-white p-5 sm:p-6">
+    <section className="rounded-lg border border-cream-dark bg-white p-5 sm:p-6 space-y-4">
       <div className="space-y-2">
         <p className="text-note text-navy/60">{label}</p>
-        <p className="tabular text-3xl text-navy sm:text-4xl">{value}</p>
-        {meta && <p className="text-note text-navy/70">{meta}</p>}
+        <p className="font-serif text-3xl sm:text-4xl font-medium text-navy tabular">{value}</p>
+        {meta && <p className="text-sm text-navy/70">{meta}</p>}
         {notes}
       </div>
       {actions && <div className="mt-5 grid gap-2 sm:flex sm:flex-wrap">{actions}</div>}
-    </div>
+    </section>
   );
 }

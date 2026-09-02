@@ -21,7 +21,7 @@ export function useGuestExportGate() {
       }
       toast({
         title: "Crie sua conta grátis",
-        description: `O cálculo é livre. Para ${motivo} basta criar uma conta gratuita, leva menos de um minuto.`,
+        description: `O cálculo é livre. Para ${motivo}, basta criar uma conta gratuita. Leva menos de um minuto.`,
         action: (
           <ToastAction
             altText="Criar conta"
