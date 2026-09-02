@@ -151,24 +151,22 @@ function ChatPanel({ decisionId }: { decisionId: string }) {
   };
 
   return (
-    <div className="flex flex-col h-full">
-      <div className="px-4 py-3 border-b border-border flex items-center gap-2">
-        <Sparkles className="h-4 w-4 text-accent" />
-        <span className="text-sm font-semibold">Assistente Jurídico</span>
+    <div className="flex flex-col h-full bg-white text-navy">
+      <div className="px-4 py-3 border-b border-cream-dark">
+        <span className="text-sm font-medium">Assistente jurídico</span>
       </div>
 
       <ScrollArea ref={scrollRef} className="flex-1 px-4 py-3">
         {messages.length === 0 && (
           <div className="space-y-2 mb-4">
-            <p className="text-xs text-muted-foreground mb-3">Pergunte sobre esta decisão:</p>
+            <p className="text-note text-navy/60 mb-3">Pergunte sobre esta decisão:</p>
             {SUGGESTIONS.map((s) => (
               <button
-                key={s.label}
-                onClick={() => send(s.label)}
-                className="flex items-center gap-2 w-full text-left text-sm px-3 py-2 rounded-lg bg-accent/5 hover:bg-accent/10 text-accent transition-colors"
+                key={s}
+                onClick={() => send(s)}
+                className="block w-full text-left text-sm text-navy underline underline-offset-4 hover:text-gold py-1"
               >
-                <s.icon className="h-4 w-4 flex-shrink-0" />
-                {s.label}
+                {s}
               </button>
             ))}
           </div>
@@ -180,12 +178,12 @@ function ChatPanel({ decisionId }: { decisionId: string }) {
               <div
                 className={`max-w-[85%] rounded-lg px-3 py-2 text-sm ${
                   m.role === "user"
-                    ? "bg-primary text-primary-foreground"
-                    : "bg-muted"
+                    ? "bg-navy text-cream"
+                    : "bg-cream text-navy"
                 }`}
               >
                 {m.role === "assistant" ? (
-                  <div className="prose prose-sm dark:prose-invert max-w-none">
+                  <div className="prose prose-sm max-w-none">
                     <ReactMarkdown>{m.content}</ReactMarkdown>
                   </div>
                 ) : (
@@ -196,30 +194,31 @@ function ChatPanel({ decisionId }: { decisionId: string }) {
           ))}
           {loading && messages[messages.length - 1]?.role !== "assistant" && (
             <div className="flex justify-start">
-              <div className="bg-muted rounded-lg px-3 py-2">
-                <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
+              <div className="bg-cream rounded-lg px-3 py-2">
+                <Loader2 className="h-4 w-4 animate-spin text-navy/60" />
               </div>
             </div>
           )}
         </div>
       </ScrollArea>
 
-      <div className="p-3 border-t border-border">
+      <div className="p-3 border-t border-cream-dark">
         <div className="flex gap-2">
           <Input
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && send(input)}
-            placeholder="Pergunte sobre a decisão..."
-            className="text-sm h-9"
+            placeholder="Pergunte sobre a decisão"
+            className="text-sm h-10 bg-white text-navy border border-cream-dark focus-visible:ring-gold"
             disabled={loading}
           />
-          <Button size="sm" aria-label="Enviar pergunta" onClick={() => send(input)} disabled={loading || !input.trim()} className="h-9 px-3">
+          <Button size="sm" aria-label="Enviar pergunta" onClick={() => send(input)} disabled={loading || !input.trim()} className="h-10 px-3 bg-gold text-navy hover:bg-gold-light">
             {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
           </Button>
         </div>
       </div>
     </div>
+
   );
 }
 
