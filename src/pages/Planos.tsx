@@ -8,9 +8,7 @@ import { buildFaqJsonLd, FAQ_PLANOS } from "@/seo/faqData";
 import { PaymentTestModeBanner } from "@/components/PaymentTestModeBanner";
 
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Check, X, Loader2, Crown, Building2, User } from "lucide-react";
+import { Loader2, Crown, Building2, User } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useSubscription, type PlanId } from "@/hooks/useSubscription";
 import { useStripeCheckout } from "@/hooks/useStripeCheckout";
@@ -37,7 +35,7 @@ const features: PlanFeature[] = [
   { label: "Modelos de minutas e petições", free: "✓", profissional: "✓", escritorio: "✓" },
   { label: "Exportação em PDF e Word", free: "✓", profissional: "✓", escritorio: "✓" },
   { label: "Histórico de consultas", free: "✓", profissional: "✓", escritorio: "✓" },
-  { label: "Painel do advogado (clientes, petições, modelos)", free: "—", profissional: "✓", escritorio: "✓" },
+  { label: "Painel do advogado (clientes, petições, modelos)", free: "", profissional: "✓", escritorio: "✓" },
 ];
 
 
@@ -114,7 +112,7 @@ export default function Planos() {
   useEffect(() => {
     if (searchParams.get("checkout") === "success") {
       toast.success("Pagamento realizado! Ativando seu plano...");
-      // Webhook can take a few seconds — poll the subscription query.
+      // Webhook can take a few seconds, poll the subscription query.
       let attempts = 0;
       const interval = setInterval(() => {
         attempts++;
@@ -190,7 +188,7 @@ export default function Planos() {
       <AppHeader />
 
       <SEO
-        title="Planos e Preços — Honorífico"
+        title="Planos e Preços | Honorífico"
         description="Gratuito, Profissional (R$ 49/mês) e Escritório. 7 dias grátis no Profissional, sem cartão. Pagamento em reais."
         path="/planos"
         image="/og/planos.jpg"
@@ -199,7 +197,7 @@ export default function Planos() {
           {
             "@context": "https://schema.org",
             "@type": "Product",
-            name: "Honorífico — IA jurídica",
+            name: "Honorífico, IA jurídica",
             description:
               "Cálculos e prazos jurídicos com fonte oficial, mais petições, análise de documentos e consulta processual com IA.",
             brand: { "@type": "Brand", name: "Honorífico" },
@@ -431,7 +429,7 @@ export default function Planos() {
       <Dialog open={isOpen} onOpenChange={(open) => !open && closeCheckout()}>
         <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle className="font-heading">Finalizar assinatura</DialogTitle>
+            <DialogTitle >Finalizar assinatura</DialogTitle>
           </DialogHeader>
           {checkoutElement}
         </DialogContent>
