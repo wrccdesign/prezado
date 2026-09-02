@@ -2,11 +2,7 @@ import { AppHeader } from "@/components/AppHeader";
 import { AppFooter } from "@/components/AppFooter";
 import { SEO } from "@/components/SEO";
 import { FaqSection, buildFaqJsonLd } from "@/components/FaqSection";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { ArrowRight, CheckCircle } from "lucide-react";
 import { Link } from "react-router-dom";
-
 
 export interface CalculatorFaq {
   question: string;
@@ -19,7 +15,7 @@ interface CalculatorLandingProps {
   path: string;
   keywords: string[];
   features: string[];
-  /** Título usado em <title>/og:title. Se omitido, usa `${title} — Honorífico`. */
+  /** Título usado em title/og:title. Se omitido, usa `${title} | Honorífico`. */
   seoTitle?: string;
   /** Meta description. Se omitida, usa `description`. */
   seoDescription?: string;
@@ -71,82 +67,76 @@ export function CalculatorLanding({
     jsonLd.push(buildFaqJsonLd(faq));
   }
 
-
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-cream text-navy">
       <AppHeader />
       <SEO
-        title={seoTitle || `${title} — Honorífico`}
+        title={seoTitle || `${title} | Honorífico`}
         description={seoDescription || description}
         path={path}
         jsonLd={jsonLd}
       />
-      <main className="container py-8 sm:py-12 px-4 sm:px-6 space-y-8">
-        <div className="max-w-3xl space-y-4">
-          <h1 className="text-2xl sm:text-4xl font-bold font-serif text-foreground">{title}</h1>
-          <p className="text-base sm:text-lg text-muted-foreground">{description}</p>
-          <div className="flex flex-wrap gap-2">
-            {keywords.map(k => (
-              <span key={k} className="inline-flex items-center rounded-full bg-primary/10 px-3 py-1 text-xs font-medium text-primary">
-                {k}
-              </span>
-            ))}
-          </div>
+      <main className="container px-4 py-12 sm:px-6 md:py-16">
+        <div className="max-w-[60ch] space-y-5">
+          <h1 className="text-h1 text-navy">{title}</h1>
+          <p className="text-body-serif text-navy/80">{description}</p>
+          <p className="text-note text-navy/60">{keywords.join(", ")}</p>
         </div>
 
-        <div className="grid gap-6 lg:grid-cols-3">
-          <div className="lg:col-span-2 space-y-6">
-            <Card>
-              <CardHeader>
-                <h2 className="text-xl font-semibold leading-none tracking-tight">Calcule agora</h2>
-              </CardHeader>
-              <CardContent>{children}</CardContent>
-            </Card>
+        <div className="mt-12 grid gap-12 lg:grid-cols-3">
+          <div className="space-y-12 lg:col-span-2">
+            <section>
+              <h2 className="text-h3 text-navy">Calcule agora</h2>
+              <div className="mt-5 rounded-lg border border-cream-dark bg-white p-5 sm:p-6">
+                {children}
+              </div>
+            </section>
 
-            <div className="prose dark:prose-invert max-w-none">
-              <h2 className="text-xl font-semibold">Como funciona</h2>
-              <p>
-                Esta calculadora foi desenvolvida para advogados, estudantes de Direito e cidadãos que
-                precisam de resultados precisos com base em dados oficiais. Todos os cálculos são
-                executados nos servidores do Honorífico e acompanham a memória de cálculo ou a lista
-                de dias não computados, quando aplicável.
-              </p>
-              {content}
-            </div>
-
-            {faq?.length ? <FaqSection items={faq} /> : null}
-
-          </div>
-
-          <div className="space-y-6">
-            <Card>
-              <CardHeader>
-                <h2 className="text-lg font-semibold leading-none tracking-tight">Por que usar?</h2>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                {features.map(f => (
-                  <div key={f} className="flex items-start gap-2">
-                    <CheckCircle className="h-4 w-4 text-primary shrink-0 mt-0.5" />
-                    <span className="text-sm text-muted-foreground">{f}</span>
-                  </div>
-                ))}
-              </CardContent>
-            </Card>
-
-            <Card className="bg-primary/5 border-primary/20">
-              <CardContent className="pt-6 space-y-4">
-                <p className="font-medium text-foreground">Acesse todas as calculadoras</p>
-                <p className="text-sm text-muted-foreground">
-                  O Honorífico reúne ferramentas jurídicas práticas em um só lugar.
+            <section className="border-t border-cream-dark pt-10">
+              <h2 className="text-h2 text-navy">Como funciona</h2>
+              <div className="mt-4 max-w-[68ch] space-y-4 text-body-serif text-navy/80 [&_a]:text-navy [&_a]:underline [&_a]:underline-offset-4 [&_h2]:text-h3 [&_h2]:text-navy [&_h2]:mt-8">
+                <p>
+                  O cálculo é livre, sem conta. Todos os cálculos são executados nos servidores do
+                  Honorífico e acompanham a memória de cálculo ou a lista de dias não computados,
+                  quando aplicável.
                 </p>
-                <Button asChild className="w-full">
-                  <Link to="/calculadoras">
-                    Ver todas <ArrowRight className="ml-2 h-4 w-4" />
-                  </Link>
-                </Button>
-              </CardContent>
-            </Card>
+                {content}
+              </div>
+            </section>
+
+            {faq?.length ? (
+              <section className="border-t border-cream-dark pt-10">
+                <FaqSection items={faq} />
+              </section>
+            ) : null}
           </div>
+
+          <aside className="space-y-10">
+            <section>
+              <h2 className="text-h3 text-navy">O que esta calculadora entrega</h2>
+              <ul className="mt-4">
+                {features.map(f => (
+                  <li key={f} className="border-t border-cream-dark py-3 text-sm text-navy/80">
+                    {f}
+                  </li>
+                ))}
+              </ul>
+            </section>
+
+            <section className="border-t border-cream-dark pt-6">
+              <h2 className="text-h3 text-navy">Todas as calculadoras</h2>
+              <p className="mt-3 text-sm text-navy/70">
+                Correção monetária, prazo processual, custas, rescisão, pensão, datas e validação de
+                CPF e CNPJ, no mesmo lugar.
+              </p>
+              <Link
+                to="/calculadoras"
+                className="mt-3 inline-block text-navy underline underline-offset-4 hover:text-gold"
+              >
+                Ver todas
+              </Link>
+            </section>
+          </aside>
         </div>
       </main>
       <AppFooter />
