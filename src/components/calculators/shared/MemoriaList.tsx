@@ -12,34 +12,18 @@ export interface MemoriaItem {
  */
 export function MemoriaList({ items }: { items: MemoriaItem[] }) {
   return (
-    <div className="overflow-x-auto">
-      <table className="w-full border-collapse text-left">
-        <thead>
-          <tr className="border-b border-cream-dark">
-            <th scope="col" className="py-2 pr-4 text-note text-navy/60">
-              Etapa
-            </th>
-            <th scope="col" className="py-2 pr-4 text-note text-navy/60">
-              Detalhe
-            </th>
-            <th scope="col" className="py-2 text-right text-note text-navy/60">
-              Valor
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          {items.map((l, i) => (
-            <tr key={`${l.rotulo}-${i}`} className="border-b border-cream-dark align-top">
-              <td className="py-2 pr-4 text-sm text-navy">{l.rotulo}</td>
-              <td className="py-2 pr-4 text-note text-navy/70">{l.detalhe}</td>
-              <td className="py-2 text-right text-sm text-navy tabular whitespace-nowrap">
-                {l.valor != null ? fmtBRL(l.valor) : ""}
-              </td>
-
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
+    <ul className="divide-y divide-cream-dark rounded-lg border border-cream-dark bg-white">
+      {items.map((l, i) => (
+        <li key={`${l.rotulo}-${i}`} className="flex items-baseline justify-between gap-4 p-4">
+          <div className="min-w-0">
+            <p className="text-sm font-medium text-navy">{l.rotulo}</p>
+            <p className="text-note text-navy/60">{l.detalhe}</p>
+          </div>
+          <p className="text-sm font-medium text-navy tabular whitespace-nowrap">
+            {l.valor != null ? fmtBRL(l.valor) : <span className="text-navy/50">sem valor</span>}
+          </p>
+        </li>
+      ))}
+    </ul>
   );
 }

@@ -9,7 +9,7 @@ interface StepIndicatorProps {
   ariaLabel?: string;
 }
 
-/** Indicador de etapas das calculadoras multi-etapa: número e rótulo, sem pílula. */
+/** Indicador de etapas das calculadoras multi.etapa: número e rótulo, sem pílula. */
 export function StepIndicator({ steps, current, ariaLabel = "Etapas" }: StepIndicatorProps) {
   return (
     <ol className="flex flex-wrap items-center gap-x-4 gap-y-2 text-note" aria-label={ariaLabel}>
@@ -19,15 +19,15 @@ export function StepIndicator({ steps, current, ariaLabel = "Etapas" }: StepIndi
             aria-current={current === p.n ? "step" : undefined}
             className={
               current === p.n
-                ? "tabular text-gold"
+                ? "font-serif text-base font-medium text-navy"
                 : current > p.n
-                ? "tabular text-navy/70"
-                : "tabular text-navy/40"
+                ? "font-serif text-base font-medium text-navy/60"
+                : "font-serif text-base font-medium text-navy/40"
             }
           >
             {p.n}
           </span>
-          <span className={current === p.n ? "text-navy" : "text-navy/60"}>{p.label}</span>
+          <span className={current === p.n ? "font-medium text-navy" : "text-navy/60"}>{p.label}</span>
           {i < steps.length - 1 && <span className="h-px w-6 bg-cream-dark" aria-hidden />}
         </li>
       ))}
