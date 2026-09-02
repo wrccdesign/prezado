@@ -94,15 +94,15 @@ export default function LandingPage() {
       <AppHeader />
 
       {/* HERO */}
-      <section className="bg-navy py-16 md:py-24">
+      <section className="bg-cream text-navy py-12 md:py-20">
         <div className="container mx-auto px-4 sm:px-6">
           <div className="grid gap-8 lg:grid-cols-12 lg:items-start">
             <div className="lg:col-span-7">
-              <h1 className="text-display text-cream max-w-[14ch]">
+              <h1 className="text-display text-navy max-w-[14ch]">
                 Precedente com fonte. Petição que você confere antes de protocolar.
               </h1>
-              <p className="text-body-serif text-cream/72 max-w-[60ch] mt-6">
-                Diagnóstico, análise de documentos, consulta processual e petição em uma só plataforma. Todo precedente vem do acervo do CNJ, com link para conferência. Quando não há decisão, a resposta diz isso.
+              <p className="text-body-serif text-navy/80 max-w-[60ch] mt-6">
+                Todo precedente vem do acervo do CNJ, com link para conferência. Quando não há decisão, a resposta diz isso.
               </p>
               <form
                 onSubmit={(e) => {
@@ -117,7 +117,7 @@ export default function LandingPage() {
                   onChange={(e) => setHeroQuery(e.target.value)}
                   placeholder="Descreva a situação ou cole o número CNJ"
                   aria-label="Buscar processo ou decisão"
-                  className="h-12 bg-cream text-navy border-0 rounded-md placeholder:text-navy/50 font-sans flex-1"
+                  className="h-12 bg-white text-navy border border-cream-dark rounded-md placeholder:text-navy/50 font-sans focus-visible:ring-gold flex-1"
                 />
                 <Button
                   type="submit"
@@ -130,37 +130,37 @@ export default function LandingPage() {
               <div className="mt-4 flex flex-wrap gap-2">
                 <Link
                   to="/jurisprudencia"
-                  className="inline-flex items-center rounded-md border border-cream/25 px-3 py-1.5 text-sm text-cream/72 hover:border-cream hover:text-cream transition-colors"
+                  className="inline-flex items-center rounded-md border border-navy/25 px-3 py-1.5 text-sm text-navy/80 hover:border-navy hover:text-navy transition-colors"
                 >
                   Consultar um processo
                 </Link>
                 <a
                   href="#calcular"
-                  className="inline-flex items-center rounded-md border border-cream/25 px-3 py-1.5 text-sm text-cream/72 hover:border-cream hover:text-cream transition-colors"
+                  className="inline-flex items-center rounded-md border border-navy/25 px-3 py-1.5 text-sm text-navy/80 hover:border-navy hover:text-navy transition-colors"
                 >
                   Calcular correção e juros
                 </a>
                 <Link
                   to="/diagnostico"
-                  className="inline-flex items-center rounded-md border border-cream/25 px-3 py-1.5 text-sm text-cream/72 hover:border-cream hover:text-cream transition-colors"
+                  className="inline-flex items-center rounded-md border border-navy/25 px-3 py-1.5 text-sm text-navy/80 hover:border-navy hover:text-navy transition-colors"
                 >
                   Descrever um caso
                 </Link>
                 <Link
                   to="/peticao"
-                  className="inline-flex items-center rounded-md border border-cream/25 px-3 py-1.5 text-sm text-cream/72 hover:border-cream hover:text-cream transition-colors"
+                  className="inline-flex items-center rounded-md border border-navy/25 px-3 py-1.5 text-sm text-navy/80 hover:border-navy hover:text-navy transition-colors"
                 >
                   Gerar uma petição
                 </Link>
               </div>
-              <p className="text-note text-cream/50 mt-5 max-w-[60ch]">
+              <p className="text-note text-navy/60 mt-5 max-w-[60ch]">
                 Três buscas por dia sem conta, no acervo já indexado. A conta grátis libera a consulta ao vivo no CNJ e começa com 7 dias do plano Profissional, sem cartão.
               </p>
             </div>
 
             <div className="lg:col-span-5">
               <article
-                className="bg-cream text-navy rounded-lg overflow-hidden lg:-mr-6 p-6"
+                className="bg-white text-navy border border-cream-dark rounded-lg overflow-hidden lg:-mr-6 p-6"
                 style={{ borderTop: "3px solid hsl(var(--gold))" }}
               >
                 <div className="flex items-start justify-between gap-4 font-sans font-medium text-sm">
@@ -188,22 +188,22 @@ export default function LandingPage() {
       </section>
 
       {/* DO FATO AO FUNDAMENTO */}
-      <section id="recursos" className="bg-navy border-t border-gold/12 py-16 md:py-24">
+      <section id="recursos" className="bg-cream text-navy border-t border-cream-dark py-16 md:py-24">
         <div className="container mx-auto px-4 sm:px-6">
-          <h2 className="text-h2 text-cream">Do fato ao fundamento</h2>
-          <p className="text-cream/72 max-w-[60ch] mt-3">
+          <h2 className="text-h2 text-navy">Do fato ao fundamento</h2>
+          <p className="text-navy/80 max-w-[60ch] mt-3">
             Quatro etapas, na ordem em que o trabalho acontece. Cada uma entrega um artefato que você aproveita na seguinte.
           </p>
 
           <ol className="grid gap-8 lg:grid-cols-4 mt-12">
             {etapas.map((e, i) => (
-              <li key={e.title} className="border-t border-gold/25 pt-5">
+              <li key={e.title} className="border-t border-navy/15 pt-5">
                 <span className="font-serif text-h3 text-gold">{i + 1}</span>
-                <h3 className="text-h3 text-cream mt-2">{e.title}</h3>
-                <p className="text-cream/72 text-sm mt-2">{e.body}</p>
+                <h3 className="text-h3 text-navy mt-2">{e.title}</h3>
+                <p className="text-navy/70 text-sm mt-2">{e.body}</p>
                 <Link
                   to={e.href}
-                  className="block text-gold font-medium text-sm mt-3 underline underline-offset-4"
+                  className="block text-navy text-sm mt-3 underline underline-offset-4 hover:text-gold"
                 >
                   {e.cta}
                 </Link>
@@ -211,15 +211,15 @@ export default function LandingPage() {
             ))}
           </ol>
 
-          <p className="text-cream/72 text-sm mt-10">
+          <p className="text-navy/70 text-sm mt-10">
             O chat jurídico acompanha todas as etapas para dúvidas de legislação e jurisprudência.{" "}
-            <Link to="/chat" className="text-gold underline underline-offset-4">Abrir o chat</Link>
+            <Link to="/chat" className="text-navy underline underline-offset-4 hover:text-gold">Abrir o chat</Link>
           </p>
         </div>
       </section>
 
       {/* POR QUE A FONTE IMPORTA */}
-      <section id="fonte" className="bg-cream text-navy py-16 md:py-24">
+      <section id="fonte" className="bg-cream text-navy border-t border-cream-dark py-16 md:py-24">
         <div className="container mx-auto px-4 sm:px-6">
           <h2 className="text-h2">Por que a fonte importa</h2>
           <p className="text-body-serif text-navy/80 max-w-[60ch] mt-3">
