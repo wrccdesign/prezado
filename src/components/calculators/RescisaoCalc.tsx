@@ -155,7 +155,7 @@ export function RescisaoCalc() {
                 <TableHeader><TableRow><TableHead>Verba</TableHead><TableHead className="text-right">Valor</TableHead></TableRow></TableHeader>
                 <TableBody>
                   {verbas.map((v) => (<TableRow key={v.label}><TableCell>{v.label}</TableCell><TableCell className="text-right font-medium">{fmt(v.valor)}</TableCell></TableRow>))}
-                  <TableRow className="border-t-2"><TableCell className="text-base ">Total Líquido Estimado</TableCell><TableCell className="text-right text-base text-primary">{fmt(total)}</TableCell></TableRow>
+                  <TableRow className="border-t-2"><TableCell className="text-base ">Total Líquido Estimado</TableCell><TableCell className="text-right text-base text-navy tabular">{fmt(total)}</TableCell></TableRow>
                 </TableBody>
               </Table>
             </div>

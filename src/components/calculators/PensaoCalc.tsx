@@ -177,7 +177,7 @@ export function PensaoCalc() {
           <div className="rounded-lg border border-cream-dark bg-white">
             <div className="p-5 text-center space-y-1">
               <p className="text-sm text-muted-foreground">Valor Sugerido</p>
-              <p className="text-3xl text-primary">{fmt(result.sugerido)}</p>
+              <p className="text-3xl text-navy tabular">{fmt(result.sugerido)}</p>
               <p className="text-sm text-muted-foreground">({result.percentualSug.toFixed(1)}% da renda)</p>
             </div>
           </div>

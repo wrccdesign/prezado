@@ -384,7 +384,7 @@ export function PrazoCalc() {
               {RECURSOS_COM_PREPARO.includes(tipoPrazo) && (
                 <p className="pt-2 text-xs text-muted-foreground">
                   Recurso sujeito a preparo: o comprovante deve acompanhar a petição.{" "}
-                  <Link to="/calculadoras/custas-tjsp" className="text-primary underline underline-offset-2">
+                  <Link to="/calculadoras/custas-tjsp" className="text-navy underline hover:text-gold underline-offset-2">
                     Calcular as custas do TJSP
                   </Link>
                 </p>

@@ -325,7 +325,7 @@ export function CustasCalc() {
             >
               <div className="flex h-full min-h-[92px] flex-col gap-1.5 p-4 sm:p-5">
                 <div className="flex items-center gap-2">
-                  <Scale className="h-4 w-4 shrink-0 text-primary" />
+                  
                   <p className="text-sm font-medium">{a.titulo}</p>
                 </div>
                 <p className="text-xs text-muted-foreground">{a.desc}</p>
@@ -360,7 +360,7 @@ export function CustasCalc() {
                 <Label htmlFor="custas-base">{atoInfo.baseLabel}</Label>
                 <button
                   type="button"
-                  className="rounded-sm text-xs text-primary underline underline-offset-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                  className="rounded-sm text-xs text-navy underline hover:text-gold underline-offset-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                   onClick={() => setCorrecaoAberta(true)}
                 >
                   atualizar este valor
