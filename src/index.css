@@ -138,10 +138,22 @@
 
 @layer utilities {
   .text-display {
-    font-size: 3.5rem;
+    font-size: 2.5rem;
     line-height: 1.05;
     font-family: 'Source Serif 4', Georgia, serif;
     font-weight: 500;
+  }
+
+  @media (min-width: 768px) {
+    .text-display {
+      font-size: 3rem;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .text-display {
+      font-size: 3.5rem;
+    }
   }
 
   .text-h1 {
@@ -152,10 +164,16 @@
   }
 
   .text-h2 {
-    font-size: 2rem;
+    font-size: 1.75rem;
     line-height: 1.15;
     font-family: 'Source Serif 4', Georgia, serif;
     font-weight: 500;
+  }
+
+  @media (min-width: 768px) {
+    .text-h2 {
+      font-size: 2rem;
+    }
   }
 
   .text-h3 {
