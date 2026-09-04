@@ -242,8 +242,25 @@ serve(async (req) => {
         if (!extractedText || extractedText.length < 10) {
           extractedText = "[Não foi possível extrair texto do documento. Tente copiar e colar o texto manualmente.]";
         }
+      } else if (IMAGE_MIME[fileName.slice(fileName.lastIndexOf("."))]) {
+        const mime = IMAGE_MIME[fileName.slice(fileName.lastIndexOf("."))];
+        const ocrResult = await ocrWithVision(bytes, file.name, 1, _userId, mime);
+
+        if (ocrResult.timedOut) {
+          return new Response(
+            JSON.stringify({ text: "", ocr: false, ocr_timeout: true }),
+            { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+          );
+        }
+
+        if (ocrResult.text && ocrResult.text.length > 10) {
+          extractedText = sanitizeText(ocrResult.text);
+          usedOcr = true;
+        } else {
+          extractedText = "[Não foi possível ler texto nesta imagem. Tente uma foto mais nítida, com o documento bem enquadrado e iluminado, ou cole o texto manualmente.]";
+        }
       } else {
-        throw new Error("Formato não suportado. Use PDF, DOCX ou TXT.");
+        throw new Error("Formato não suportado. Use PDF, DOCX, TXT ou imagem (JPG, PNG, WEBP, HEIC).");
       }
     }
 
