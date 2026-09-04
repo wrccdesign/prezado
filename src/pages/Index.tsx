@@ -30,6 +30,7 @@ export default function Index() {
   const [saveState, setSaveState] = useState<"idle" | "saving" | "saved">("idle");
   const [showPreview, setShowPreview] = useState(false);
   const [partialExtraction, setPartialExtraction] = useState(false);
+  const [dragging, setDragging] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
 
   const processFile = async (file: File) => {
