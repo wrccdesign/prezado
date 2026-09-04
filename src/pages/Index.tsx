@@ -95,14 +95,31 @@ export default function Index() {
       const data = await response.json();
       
       if (data.ocr_timeout) {
-        toast({ title: "OCR expirou", description: "O documento é muito pesado para OCR. Tente um PDF menor ou cole o texto manualmente.", variant: "destructive" });
+        toast({
+          title: isImage ? "Não consegui ler a imagem" : "OCR expirou",
+          description: isImage
+            ? "Tente um print mais nítido, sem corte, ou cole o texto da conversa."
+            : "O documento é muito pesado para OCR. Tente um PDF menor ou cole o texto manualmente.",
+          variant: "destructive",
+        });
+        setFileName(null);
+        return;
+      }
+
+      const extracted: string = data.text ?? "";
+      if (isImage && (extracted.trim().length < 10 || extracted.startsWith("[Não foi possível"))) {
+        toast({
+          title: "Não consegui ler o texto dessa imagem",
+          description: "Tente um print mais nítido, sem corte, ou cole o texto da conversa.",
+          variant: "destructive",
+        });
         setFileName(null);
         return;
       }
 
       if (data.ocr) {
         setParseProgress(90);
-        setParseStage("OCR aplicado em documento escaneado...");
+        setParseStage(isImage ? "Texto reconhecido..." : "OCR aplicado em documento escaneado...");
       }
       
       if (data.partial) {
@@ -111,12 +128,16 @@ export default function Index() {
       
       setParseProgress(100);
       setParseStage("Concluído!");
-      setText(data.text);
+      setText(extracted);
       setShowPreview(true);
       notifyUsageConsumed();
-      const ocrNote = data.ocr ? " (via OCR — documento escaneado)" : "";
+      const ocrNote = data.ocr && !isImage ? " (via OCR — documento escaneado)" : "";
       const partialNote = data.partial ? " ⚠️ Extração parcial — PDF muito grande, apenas parte do texto foi extraída." : "";
-      toast({ title: "Documento processado!", description: `Texto extraído de ${file.name}${ocrNote}.${partialNote}` });
+      toast({
+        title: isImage ? "Imagem lida!" : "Documento processado!",
+        description: `Texto extraído de ${file.name}${ocrNote}.${partialNote}`,
+      });
+
     } catch (err: any) {
       if (err?.name === "AbortError") {
         toast({ title: "Timeout no upload", description: "O processamento demorou demais. Tente um PDF menor, TXT ou cole o texto manualmente.", variant: "destructive" });
