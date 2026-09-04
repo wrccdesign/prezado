@@ -296,9 +296,16 @@ export default function Index() {
         <Card className="animate-fade-in">
           <CardHeader className="pb-4 space-y-1.5">
             <CardTitle className="text-lg sm:text-xl font-semibold">Texto para Análise</CardTitle>
-            <CardDescription className="text-xs sm:text-sm leading-relaxed">Cole o texto jurídico ou envie um arquivo (PDF: máx 5MB / TXT, DOCX e fotos JPG, PNG: máx 10MB)</CardDescription>
+            <CardDescription className="text-xs sm:text-sm leading-relaxed">Print de conversa, foto de documento, PDF, Word ou texto. Lemos o texto da imagem.</CardDescription>
           </CardHeader>
-          <CardContent className="space-y-5">
+          <CardContent
+            className="space-y-5"
+            onPaste={handlePaste}
+            onDragOver={(e) => { e.preventDefault(); if (!dragging) setDragging(true); }}
+            onDragLeave={() => setDragging(false)}
+            onDrop={handleDrop}
+          >
+
             <Textarea
               placeholder="Cole aqui o texto jurídico que deseja analisar..."
               className="min-h-[180px] sm:min-h-[240px] resize-y font-sans text-sm sm:text-base leading-relaxed"
