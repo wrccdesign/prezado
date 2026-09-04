@@ -42,6 +42,7 @@ export default function Index() {
 
     if (file.size > maxSize) {
       toast({ title: "Arquivo muito grande", description: `O limite para ${isPdf ? "PDF" : "este formato"} é ${limitLabel}.`, variant: "destructive" });
+      if (fileRef.current) fileRef.current.value = "";
       return;
     }
 
@@ -237,7 +238,7 @@ export default function Index() {
         <Card className="animate-fade-in">
           <CardHeader className="pb-4 space-y-1.5">
             <CardTitle className="text-lg sm:text-xl font-semibold">Texto para Análise</CardTitle>
-            <CardDescription className="text-xs sm:text-sm leading-relaxed">Cole o texto jurídico ou envie um arquivo (PDF: máx 5MB / TXT e DOCX: máx 10MB)</CardDescription>
+            <CardDescription className="text-xs sm:text-sm leading-relaxed">Cole o texto jurídico ou envie um arquivo (PDF: máx 5MB / TXT, DOCX e fotos JPG, PNG: máx 10MB)</CardDescription>
           </CardHeader>
           <CardContent className="space-y-5">
             <Textarea
