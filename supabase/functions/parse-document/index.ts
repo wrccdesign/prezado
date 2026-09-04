@@ -92,6 +92,7 @@ async function ocrWithVision(
   fileName: string,
   retries = 1,
   userId?: string,
+  mimeType = "application/pdf",
 ): Promise<{ text: string; timedOut: boolean }> {
   const base64 = bytesToBase64(bytes);
 
