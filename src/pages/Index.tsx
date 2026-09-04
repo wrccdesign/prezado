@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
-import { Upload, Search, FileText, Loader2, X, Eye, ChevronDown, ChevronUp } from "lucide-react";
+import { Search, FileText, Loader2, X, Eye, ChevronDown, ChevronUp } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import { AppFooter } from "@/components/AppFooter";
 import { SEO } from "@/components/SEO";
@@ -30,13 +30,14 @@ export default function Index() {
   const [saveState, setSaveState] = useState<"idle" | "saving" | "saved">("idle");
   const [showPreview, setShowPreview] = useState(false);
   const [partialExtraction, setPartialExtraction] = useState(false);
+  const [dragging, setDragging] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
 
-  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
+  const processFile = async (file: File) => {
     if (!file) return;
 
     const isPdf = file.name.toLowerCase().endsWith(".pdf");
+    const isImage = file.type.startsWith("image/");
     const maxSize = isPdf ? 5 * 1024 * 1024 : 10 * 1024 * 1024;
     const limitLabel = isPdf ? "5MB" : "10MB";
 
@@ -49,7 +50,7 @@ export default function Index() {
     setParsing(true);
     setFileName(file.name);
     setParseProgress(10);
-    setParseStage("Enviando arquivo...");
+    setParseStage(isImage ? "Lendo a imagem..." : "Enviando arquivo...");
 
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 90000);
@@ -59,13 +60,18 @@ export default function Index() {
       formData.append("file", file);
 
       setParseProgress(30);
-      setParseStage("Extraindo texto do documento...");
+      setParseStage(isImage ? "Reconhecendo o texto..." : "Extraindo texto do documento...");
 
       // Start a timer to update stage if taking long (OCR)
       const ocrStageTimer = setTimeout(() => {
         setParseProgress(50);
-        setParseStage("Aplicando OCR em documento escaneado (pode levar até 1 min)...");
+        setParseStage(
+          isImage
+            ? "Reconhecendo o texto da imagem (pode levar até 1 min)..."
+            : "Aplicando OCR em documento escaneado (pode levar até 1 min)...",
+        );
       }, 8000);
+
 
       const response = await fetch(
         `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/parse-document`,
@@ -90,14 +96,31 @@ export default function Index() {
       const data = await response.json();
       
       if (data.ocr_timeout) {
-        toast({ title: "OCR expirou", description: "O documento é muito pesado para OCR. Tente um PDF menor ou cole o texto manualmente.", variant: "destructive" });
+        toast({
+          title: isImage ? "Não consegui ler a imagem" : "OCR expirou",
+          description: isImage
+            ? "Tente um print mais nítido, sem corte, ou cole o texto da conversa."
+            : "O documento é muito pesado para OCR. Tente um PDF menor ou cole o texto manualmente.",
+          variant: "destructive",
+        });
+        setFileName(null);
+        return;
+      }
+
+      const extracted: string = data.text ?? "";
+      if (isImage && (extracted.trim().length < 10 || extracted.startsWith("[Não foi possível"))) {
+        toast({
+          title: "Não consegui ler o texto dessa imagem",
+          description: "Tente um print mais nítido, sem corte, ou cole o texto da conversa.",
+          variant: "destructive",
+        });
         setFileName(null);
         return;
       }
 
       if (data.ocr) {
         setParseProgress(90);
-        setParseStage("OCR aplicado em documento escaneado...");
+        setParseStage(isImage ? "Texto reconhecido..." : "OCR aplicado em documento escaneado...");
       }
       
       if (data.partial) {
@@ -106,12 +129,16 @@ export default function Index() {
       
       setParseProgress(100);
       setParseStage("Concluído!");
-      setText(data.text);
+      setText(extracted);
       setShowPreview(true);
       notifyUsageConsumed();
-      const ocrNote = data.ocr ? " (via OCR — documento escaneado)" : "";
+      const ocrNote = data.ocr && !isImage ? " (via OCR — documento escaneado)" : "";
       const partialNote = data.partial ? " ⚠️ Extração parcial — PDF muito grande, apenas parte do texto foi extraída." : "";
-      toast({ title: "Documento processado!", description: `Texto extraído de ${file.name}${ocrNote}.${partialNote}` });
+      toast({
+        title: isImage ? "Imagem lida!" : "Documento processado!",
+        description: `Texto extraído de ${file.name}${ocrNote}.${partialNote}`,
+      });
+
     } catch (err: any) {
       if (err?.name === "AbortError") {
         toast({ title: "Timeout no upload", description: "O processamento demorou demais. Tente um PDF menor, TXT ou cole o texto manualmente.", variant: "destructive" });
@@ -137,6 +164,34 @@ export default function Index() {
       if (fileRef.current) fileRef.current.value = "";
     }
   };
+
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) void processFile(file);
+  };
+
+  const handlePaste = (e: React.ClipboardEvent) => {
+    if (loading || parsing) return;
+    const item = Array.from(e.clipboardData?.items ?? []).find((i) => i.type.startsWith("image/"));
+    if (!item) return;
+    const file = item.getAsFile();
+    if (!file) return;
+    e.preventDefault();
+    const named = file.name && file.name !== "image.png"
+      ? file
+      : new File([file], `print-${Date.now()}.png`, { type: file.type });
+    void processFile(named);
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    setDragging(false);
+    if (loading || parsing) return;
+    const file = e.dataTransfer.files?.[0];
+    if (file) void processFile(file);
+  };
+
+
 
   const handleAnalyze = async () => {
     if (!text.trim()) {
@@ -241,9 +296,16 @@ export default function Index() {
         <Card className="animate-fade-in">
           <CardHeader className="pb-4 space-y-1.5">
             <CardTitle className="text-lg sm:text-xl font-semibold">Texto para Análise</CardTitle>
-            <CardDescription className="text-xs sm:text-sm leading-relaxed">Cole o texto jurídico ou envie um arquivo (PDF: máx 5MB / TXT, DOCX e fotos JPG, PNG: máx 10MB)</CardDescription>
+            <CardDescription className="text-xs sm:text-sm leading-relaxed">Print de conversa, foto de documento, PDF, Word ou texto. Lemos o texto da imagem.</CardDescription>
           </CardHeader>
-          <CardContent className="space-y-5">
+          <CardContent
+            className="space-y-5"
+            onPaste={handlePaste}
+            onDragOver={(e) => { e.preventDefault(); if (!dragging) setDragging(true); }}
+            onDragLeave={() => setDragging(false)}
+            onDrop={handleDrop}
+          >
+
             <Textarea
               placeholder="Cole aqui o texto jurídico que deseja analisar..."
               className="min-h-[180px] sm:min-h-[240px] resize-y font-sans text-sm sm:text-base leading-relaxed"
@@ -286,7 +348,7 @@ export default function Index() {
               </div>
             )}
 
-            <div className="flex flex-col sm:flex-row sm:flex-wrap sm:items-center gap-3">
+            <div className="space-y-3">
               <input
                 ref={fileRef}
                 type="file"
@@ -294,22 +356,24 @@ export default function Index() {
                 onChange={handleFileUpload}
                 className="hidden"
               />
-              <Button
-                variant="outline"
-                className="w-full sm:w-auto"
+              <button
+                type="button"
                 onClick={() => fileRef.current?.click()}
                 disabled={loading || parsing}
+                className={`w-full rounded-lg border bg-card px-4 py-6 text-center transition-colors disabled:opacity-60 ${
+                  dragging ? "border-primary bg-primary/5" : "border-border hover:border-primary/50"
+                }`}
               >
-              {parsing ? (
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                ) : (
-                  <Upload className="mr-2 h-4 w-4" />
-                )}
-                {parsing ? "Processando..." : "Upload de Arquivo"}
-              </Button>
+                <span className="block text-sm font-medium text-foreground">
+                  {parsing ? "Processando..." : "Arraste o arquivo, cole um print com Ctrl+V ou escolha do aparelho."}
+                </span>
+                <span className="mt-1 block text-xs leading-relaxed text-muted-foreground">
+                  Print de conversa, foto de documento, PDF, Word ou texto. PDF até 5MB, demais formatos até 10MB.
+                </span>
+              </button>
 
               {parsing && (
-                <div className="w-full sm:flex-1 sm:min-w-[200px] space-y-1.5">
+                <div className="w-full space-y-1.5">
                   <div className="flex items-center justify-between gap-2 text-xs text-muted-foreground">
                     <span className="truncate">{parseStage}</span>
                     <span className="shrink-0 tabular-nums">{parseProgress}%</span>
@@ -317,6 +381,7 @@ export default function Index() {
                   <Progress value={parseProgress} className="h-2" />
                 </div>
               )}
+
 
               {fileName && (
                 <div className="flex w-full sm:w-auto max-w-full items-center gap-2 rounded-md bg-muted px-3 py-2 text-sm">
