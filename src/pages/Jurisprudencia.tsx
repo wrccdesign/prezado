@@ -267,6 +267,7 @@ if (!res.ok) {
 
             <div className="flex flex-col sm:flex-row gap-3 mt-8">
               <Input
+                aria-label="Descreva a situação ou cole o número CNJ"
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && handleSearch()}

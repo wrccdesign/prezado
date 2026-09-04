@@ -205,6 +205,7 @@ function ChatPanel({ decisionId }: { decisionId: string }) {
       <div className="p-3 border-t border-cream-dark">
         <div className="flex gap-2">
           <Input
+            aria-label="Pergunte sobre a decisão"
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && send(input)}
@@ -313,9 +314,9 @@ export default function DecisaoDetalhe() {
 
             <p className="text-sm font-medium text-navy mt-6">{linhaMeta}</p>
 
-            {decision.numero_processo && (
-              <h1 className="font-mono text-xl text-navy mt-2">{decision.numero_processo}</h1>
-            )}
+            <h1 className={`text-xl text-navy mt-2 ${decision.numero_processo ? "font-mono" : ""}`}>
+              {decision.numero_processo || "Decisão judicial"}
+            </h1>
 
             <div className="flex flex-wrap items-center gap-x-5 gap-y-2 mt-3 text-note">
               <button
