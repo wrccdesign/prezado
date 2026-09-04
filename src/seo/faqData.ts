@@ -23,10 +23,16 @@ export function buildFaqJsonLd(items: FaqItem[]): Record<string, unknown> {
 
 export const FAQ_PLANOS: FaqItem[] = [
   {
+    question: "Posso enviar um print do WhatsApp?",
+    answer:
+      "Sim. Na análise de documentos você pode arrastar o arquivo, colar o print direto com Ctrl+V ou escolher a imagem no aparelho. Lemos o texto da imagem e devolvemos a análise. Aceitamos JPG, PNG, WEBP e HEIC até 10MB, além de PDF até 5MB, Word e texto.",
+  },
+  {
     question: "Preciso de cartão para testar o plano Profissional?",
     answer:
       "Não. Toda conta nova começa com 7 dias no plano Profissional, sem cartão. Terminado o período, a conta passa ao plano Gratuito automaticamente, sem cobrança.",
   },
+
   {
     question: "As calculadoras estão incluídas em todos os planos?",
     answer:
