@@ -13,6 +13,15 @@ const OCR_CHUNK_SIZE = 2 * 1024 * 1024;  // 2MB chunks for OCR
 const OCR_TIMEOUT_MS = 55000;
 const MAX_TEXT_LENGTH = 50000;
 
+const IMAGE_MIME: Record<string, string> = {
+  ".jpg": "image/jpeg",
+  ".jpeg": "image/jpeg",
+  ".png": "image/png",
+  ".webp": "image/webp",
+  ".heic": "image/heic",
+  ".heif": "image/heif",
+};
+
 function sanitizeText(raw: string): string {
   let text = raw.replace(/[^\x20-\x7E\xA0-\xFF\u00C0-\u024F\n\r\t]/g, " ");
   text = text.replace(/\.{5,}/g, " ");
