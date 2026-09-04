@@ -286,7 +286,7 @@ export default function Index() {
               <input
                 ref={fileRef}
                 type="file"
-                accept=".pdf,.docx,.doc,.txt"
+                accept=".pdf,.docx,.doc,.txt,.jpg,.jpeg,.png,.webp,.heic,.heif"
                 onChange={handleFileUpload}
                 className="hidden"
               />
