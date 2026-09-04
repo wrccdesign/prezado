@@ -148,8 +148,12 @@ export default function LandingPage() {
                 </Link>
               </div>
               <p className="text-note text-navy/60 mt-5 max-w-[60ch]">
+                Print de conversa, foto de documento ou PDF: lemos o texto e devolvemos a análise.
+              </p>
+              <p className="text-note text-navy/60 mt-2 max-w-[60ch]">
                 Três buscas por dia sem conta, no acervo já indexado. A conta grátis libera a consulta ao vivo no CNJ e começa com 7 dias do plano Profissional, sem cartão.
               </p>
+
             </div>
 
             <div className="lg:col-span-5">
