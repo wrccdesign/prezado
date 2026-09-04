@@ -348,7 +348,7 @@ export default function Index() {
               </div>
             )}
 
-            <div className="flex flex-col sm:flex-row sm:flex-wrap sm:items-center gap-3">
+            <div className="space-y-3">
               <input
                 ref={fileRef}
                 type="file"
@@ -356,22 +356,24 @@ export default function Index() {
                 onChange={handleFileUpload}
                 className="hidden"
               />
-              <Button
-                variant="outline"
-                className="w-full sm:w-auto"
+              <button
+                type="button"
                 onClick={() => fileRef.current?.click()}
                 disabled={loading || parsing}
+                className={`w-full rounded-lg border bg-card px-4 py-6 text-center transition-colors disabled:opacity-60 ${
+                  dragging ? "border-primary bg-primary/5" : "border-border hover:border-primary/50"
+                }`}
               >
-              {parsing ? (
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                ) : (
-                  <Upload className="mr-2 h-4 w-4" />
-                )}
-                {parsing ? "Processando..." : "Upload de Arquivo"}
-              </Button>
+                <span className="block text-sm font-medium text-foreground">
+                  {parsing ? "Processando..." : "Arraste o arquivo, cole um print com Ctrl+V ou escolha do aparelho."}
+                </span>
+                <span className="mt-1 block text-xs leading-relaxed text-muted-foreground">
+                  Print de conversa, foto de documento, PDF, Word ou texto. PDF até 5MB, demais formatos até 10MB.
+                </span>
+              </button>
 
               {parsing && (
-                <div className="w-full sm:flex-1 sm:min-w-[200px] space-y-1.5">
+                <div className="w-full space-y-1.5">
                   <div className="flex items-center justify-between gap-2 text-xs text-muted-foreground">
                     <span className="truncate">{parseStage}</span>
                     <span className="shrink-0 tabular-nums">{parseProgress}%</span>
@@ -379,6 +381,7 @@ export default function Index() {
                   <Progress value={parseProgress} className="h-2" />
                 </div>
               )}
+
 
               {fileName && (
                 <div className="flex w-full sm:w-auto max-w-full items-center gap-2 rounded-md bg-muted px-3 py-2 text-sm">
