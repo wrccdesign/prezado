@@ -32,11 +32,11 @@ export default function Index() {
   const [partialExtraction, setPartialExtraction] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
 
-  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
+  const processFile = async (file: File) => {
     if (!file) return;
 
     const isPdf = file.name.toLowerCase().endsWith(".pdf");
+    const isImage = file.type.startsWith("image/");
     const maxSize = isPdf ? 5 * 1024 * 1024 : 10 * 1024 * 1024;
     const limitLabel = isPdf ? "5MB" : "10MB";
 
@@ -49,7 +49,7 @@ export default function Index() {
     setParsing(true);
     setFileName(file.name);
     setParseProgress(10);
-    setParseStage("Enviando arquivo...");
+    setParseStage(isImage ? "Lendo a imagem..." : "Enviando arquivo...");
 
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 90000);
@@ -59,13 +59,18 @@ export default function Index() {
       formData.append("file", file);
 
       setParseProgress(30);
-      setParseStage("Extraindo texto do documento...");
+      setParseStage(isImage ? "Reconhecendo o texto..." : "Extraindo texto do documento...");
 
       // Start a timer to update stage if taking long (OCR)
       const ocrStageTimer = setTimeout(() => {
         setParseProgress(50);
-        setParseStage("Aplicando OCR em documento escaneado (pode levar até 1 min)...");
+        setParseStage(
+          isImage
+            ? "Reconhecendo o texto da imagem (pode levar até 1 min)..."
+            : "Aplicando OCR em documento escaneado (pode levar até 1 min)...",
+        );
       }, 8000);
+
 
       const response = await fetch(
         `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/parse-document`,
