@@ -164,6 +164,34 @@ export default function Index() {
     }
   };
 
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) void processFile(file);
+  };
+
+  const handlePaste = (e: React.ClipboardEvent) => {
+    if (loading || parsing) return;
+    const item = Array.from(e.clipboardData?.items ?? []).find((i) => i.type.startsWith("image/"));
+    if (!item) return;
+    const file = item.getAsFile();
+    if (!file) return;
+    e.preventDefault();
+    const named = file.name && file.name !== "image.png"
+      ? file
+      : new File([file], `print-${Date.now()}.png`, { type: file.type });
+    void processFile(named);
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    setDragging(false);
+    if (loading || parsing) return;
+    const file = e.dataTransfer.files?.[0];
+    if (file) void processFile(file);
+  };
+
+
+
   const handleAnalyze = async () => {
     if (!text.trim()) {
       toast({ title: "Texto vazio", description: "Insira um texto jurídico para análise.", variant: "destructive" });
