@@ -83,7 +83,10 @@ export default function Index() {
       setParseProgress(80);
       setParseStage("Finalizando processamento...");
 
-      if (!response.ok) throw new Error("Falha ao processar documento");
+      if (!response.ok) {
+        const detail = await response.json().catch(() => null);
+        throw new Error(detail?.error || "Falha ao processar documento");
+      }
       const data = await response.json();
       
       if (data.ocr_timeout) {
