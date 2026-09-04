@@ -115,11 +115,11 @@ async function ocrWithVision(
             content: [
               {
                 type: "text",
-                text: `Extraia TODO o texto deste documento PDF escaneado (${fileName}). Retorne APENAS o texto extraído, sem comentários, explicações ou formatação markdown. Mantenha a estrutura original de parágrafos. Se houver tabelas, formate-as de forma legível. Texto em português do Brasil.`,
+                text: `Extraia TODO o texto deste documento digitalizado (${fileName}). Retorne APENAS o texto extraído, sem comentários, explicações ou formatação markdown. Mantenha a estrutura original de parágrafos. Se houver tabelas, formate-as de forma legível. Texto em português do Brasil.`,
               },
               {
                 type: "image_url",
-                image_url: { url: `data:application/pdf;base64,${base64}` },
+                image_url: { url: `data:${mimeType};base64,${base64}` },
               },
             ],
           },
