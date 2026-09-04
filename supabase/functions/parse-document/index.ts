@@ -13,6 +13,15 @@ const OCR_CHUNK_SIZE = 2 * 1024 * 1024;  // 2MB chunks for OCR
 const OCR_TIMEOUT_MS = 55000;
 const MAX_TEXT_LENGTH = 50000;
 
+const IMAGE_MIME: Record<string, string> = {
+  ".jpg": "image/jpeg",
+  ".jpeg": "image/jpeg",
+  ".png": "image/png",
+  ".webp": "image/webp",
+  ".heic": "image/heic",
+  ".heif": "image/heif",
+};
+
 function sanitizeText(raw: string): string {
   let text = raw.replace(/[^\x20-\x7E\xA0-\xFF\u00C0-\u024F\n\r\t]/g, " ");
   text = text.replace(/\.{5,}/g, " ");
@@ -92,6 +101,7 @@ async function ocrWithVision(
   fileName: string,
   retries = 1,
   userId?: string,
+  mimeType = "application/pdf",
 ): Promise<{ text: string; timedOut: boolean }> {
   const base64 = bytesToBase64(bytes);
 
@@ -114,11 +124,11 @@ async function ocrWithVision(
             content: [
               {
                 type: "text",
-                text: `Extraia TODO o texto deste documento PDF escaneado (${fileName}). Retorne APENAS o texto extraído, sem comentários, explicações ou formatação markdown. Mantenha a estrutura original de parágrafos. Se houver tabelas, formate-as de forma legível. Texto em português do Brasil.`,
+                text: `Extraia TODO o texto deste documento digitalizado (${fileName}). Retorne APENAS o texto extraído, sem comentários, explicações ou formatação markdown. Mantenha a estrutura original de parágrafos. Se houver tabelas, formate-as de forma legível. Texto em português do Brasil.`,
               },
               {
                 type: "image_url",
-                image_url: { url: `data:application/pdf;base64,${base64}` },
+                image_url: { url: `data:${mimeType};base64,${base64}` },
               },
             ],
           },
@@ -241,8 +251,25 @@ serve(async (req) => {
         if (!extractedText || extractedText.length < 10) {
           extractedText = "[Não foi possível extrair texto do documento. Tente copiar e colar o texto manualmente.]";
         }
+      } else if (IMAGE_MIME[fileName.slice(fileName.lastIndexOf("."))]) {
+        const mime = IMAGE_MIME[fileName.slice(fileName.lastIndexOf("."))];
+        const ocrResult = await ocrWithVision(bytes, file.name, 1, _userId, mime);
+
+        if (ocrResult.timedOut) {
+          return new Response(
+            JSON.stringify({ text: "", ocr: false, ocr_timeout: true }),
+            { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+          );
+        }
+
+        if (ocrResult.text && ocrResult.text.length > 10) {
+          extractedText = sanitizeText(ocrResult.text);
+          usedOcr = true;
+        } else {
+          extractedText = "[Não foi possível ler texto nesta imagem. Tente uma foto mais nítida, com o documento bem enquadrado e iluminado, ou cole o texto manualmente.]";
+        }
       } else {
-        throw new Error("Formato não suportado. Use PDF, DOCX ou TXT.");
+        throw new Error("Formato não suportado. Use PDF, DOCX, TXT ou imagem (JPG, PNG, WEBP, HEIC).");
       }
     }
 

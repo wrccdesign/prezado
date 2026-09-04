@@ -42,6 +42,7 @@ export default function Index() {
 
     if (file.size > maxSize) {
       toast({ title: "Arquivo muito grande", description: `O limite para ${isPdf ? "PDF" : "este formato"} é ${limitLabel}.`, variant: "destructive" });
+      if (fileRef.current) fileRef.current.value = "";
       return;
     }
 
@@ -82,7 +83,10 @@ export default function Index() {
       setParseProgress(80);
       setParseStage("Finalizando processamento...");
 
-      if (!response.ok) throw new Error("Falha ao processar documento");
+      if (!response.ok) {
+        const detail = await response.json().catch(() => null);
+        throw new Error(detail?.error || "Falha ao processar documento");
+      }
       const data = await response.json();
       
       if (data.ocr_timeout) {
@@ -237,7 +241,7 @@ export default function Index() {
         <Card className="animate-fade-in">
           <CardHeader className="pb-4 space-y-1.5">
             <CardTitle className="text-lg sm:text-xl font-semibold">Texto para Análise</CardTitle>
-            <CardDescription className="text-xs sm:text-sm leading-relaxed">Cole o texto jurídico ou envie um arquivo (PDF: máx 5MB / TXT e DOCX: máx 10MB)</CardDescription>
+            <CardDescription className="text-xs sm:text-sm leading-relaxed">Cole o texto jurídico ou envie um arquivo (PDF: máx 5MB / TXT, DOCX e fotos JPG, PNG: máx 10MB)</CardDescription>
           </CardHeader>
           <CardContent className="space-y-5">
             <Textarea
@@ -286,7 +290,7 @@ export default function Index() {
               <input
                 ref={fileRef}
                 type="file"
-                accept=".pdf,.docx,.doc,.txt"
+                accept=".pdf,.docx,.doc,.txt,.jpg,.jpeg,.png,.webp,.heic,.heif"
                 onChange={handleFileUpload}
                 className="hidden"
               />
