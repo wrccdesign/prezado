@@ -24,7 +24,4 @@ export const formatCents = (raw: string) =>
 
 export const todayISO = () => new Date().toISOString().slice(0, 10);
 
-export const formatDateBR = (iso: string) => {
-  const [y, m, d] = iso.split("-");
-  return `${d}/${m}/${y}`;
-};
+export { formatDateBR } from "./date";
