@@ -13,6 +13,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Send, Loader2, Check } from "lucide-react";
 import { formatCitation } from "@/lib/citation";
 import { SEO } from "@/components/SEO";
+import { formatDateBR } from "@/lib/date";
 
 type Msg = { role: "user" | "assistant"; content: string };
 
@@ -289,7 +290,7 @@ export default function DecisaoDetalhe() {
     decision.tribunal,
     instanciaLabel,
     decision.resultado,
-    decision.data_decisao ? new Date(decision.data_decisao).toLocaleDateString("pt-BR") : null,
+    decision.data_decisao ? formatDateBR(decision.data_decisao) : null,
     decision.comarca_pequena ? "interior" : null,
   ].filter(Boolean).join(", ");
 

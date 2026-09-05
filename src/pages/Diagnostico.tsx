@@ -19,6 +19,8 @@ import { toast } from "@/hooks/use-toast";
 import { exportToPDF, exportToDOCX, type ExportSection } from "@/lib/exportDocument";
 import { format } from "date-fns";
 import { notifyUsageConsumed } from "@/hooks/useUsage";
+import { formatDateBR } from "@/lib/date";
+import { CitationCheck, type CitationReport } from "@/components/CitationCheck";
 
 interface Diagnostico {
   o_que_esta_acontecendo: string;
@@ -64,7 +66,7 @@ const formatCitationLine = (c: Citation) =>
     c.tribunal,
     c.numero_processo ? `Processo ${c.numero_processo}` : null,
     c.comarca,
-    c.data_decisao ? new Date(c.data_decisao).toLocaleDateString("pt-BR") : null,
+    c.data_decisao ? formatDateBR(c.data_decisao) : null,
     c.resultado ? `resultado ${c.resultado}` : null,
   ]
     .filter(Boolean)
@@ -87,6 +89,7 @@ export default function Diagnostico() {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<Diagnostico | null>(null);
   const [citations, setCitations] = useState<Citation[]>([]);
+  const [citationReport, setCitationReport] = useState<CitationReport | null>(null);
   const [teaserAvailable, setTeaserAvailable] = useState(false);
   const [teaserUsedThisSession, setTeaserUsedThisSession] = useState(false);
 
@@ -123,6 +126,7 @@ export default function Diagnostico() {
     setLoading(true);
     setResult(null);
     setCitations([]);
+    setCitationReport(null);
 
     try {
       const { data: { session } } = await supabase.auth.getSession();
@@ -167,6 +171,7 @@ export default function Diagnostico() {
 
       setResult(data.diagnostico);
       setCitations(Array.isArray(data.citations) ? data.citations : []);
+      setCitationReport(data.citation_report ?? null);
       notifyUsageConsumed();
 
       // Consumir teaser diário se aplicável
@@ -562,6 +567,7 @@ export default function Diagnostico() {
                     ))}
                   </ul>
                 )}
+                <CitationCheck report={citationReport} />
               </CardContent>
             </Card>
 

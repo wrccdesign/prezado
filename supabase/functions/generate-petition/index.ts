@@ -4,6 +4,7 @@ import { burstLimitMessage, checkRateLimit, extractEnv, monthlyLimitMessage } fr
 import { fetchGroundingContext, describeDecision, type GroundingDecision } from "../_shared/grounding.ts";
 import { searchLegislation, type NormaResumo } from "../_shared/legislation-search.ts";
 import { aiChatText, AIError } from "../_shared/ai.ts";
+import { buildCitationReport } from "../_shared/citation-check.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -286,7 +287,9 @@ INSTRUÇÕES: Com base nos fatos acima, INFIRA e SUGIRA toda a fundamentação j
     });
     if (insertError) console.error("Insert error:", insertError);
 
-    return new Response(JSON.stringify({ generated_text: generatedText }), {
+    const citationReport = await buildCitationReport(generatedText, supabase);
+
+    return new Response(JSON.stringify({ generated_text: generatedText, citation_report: citationReport }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } catch (e) {

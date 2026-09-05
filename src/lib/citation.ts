@@ -1,3 +1,5 @@
+import { formatDateBR } from "./date";
+
 interface CitationInput {
   tribunal?: string | null;
   tipo_decisao?: string | null;
@@ -23,7 +25,7 @@ export function formatCitation(d: CitationInput): string {
   if (d.comarca && d.uf) parts.push(`${d.comarca}/${d.uf}`);
   if (d.data_decisao) {
     parts.push(
-      `Julgado em ${new Date(d.data_decisao).toLocaleDateString("pt-BR")}`
+      `Julgado em ${formatDateBR(d.data_decisao)}`
     );
   }
   if (d.resultado) parts.push(`Resultado: ${d.resultado}`);
