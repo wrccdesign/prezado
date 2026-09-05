@@ -50,6 +50,11 @@ export function resolveModel(tier: ModelTier): string {
   return tier === "light" ? MODEL_LIGHT : MODEL_MAIN;
 }
 
+function resolveFallbackModel(tier: ModelTier): string {
+  return tier === "light" ? MODEL_LIGHT_FALLBACK : MODEL_MAIN_FALLBACK;
+}
+
+
 function getApiKey(): string {
   const key = Deno.env.get("GEMINI_API_KEY");
   if (!key) {
