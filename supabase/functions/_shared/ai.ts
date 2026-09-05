@@ -16,7 +16,13 @@
  * Um fallback silencioso para `LOVABLE_API_KEY` voltaria a consumir os créditos do
  * workspace de desenvolvimento (o que pode pausar o app publicado) sem ninguém
  * perceber — exatamente o problema que esta camada resolve.
+ *
+ * ── FALLBACK PERMITIDO: APENAS DE NOME DE MODELO ─────────────────────────────
+ * Em 429/503 persistente, tentamos outro MODELO Gemini usando a MESMA
+ * `GEMINI_API_KEY` paga. Isso não é o fallback proibido acima (troca de chave/
+ * provedor) — a chave, o provedor e a garantia de confidencialidade não mudam.
  */
+
 
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
