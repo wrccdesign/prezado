@@ -348,19 +348,28 @@ export default function DecisaoDetalhe() {
               ].filter(Boolean).join(", ")}
             </p>
 
-            {decision.ementa && (
+            {decision.ementa ? (
               <section className="mt-8 border-t border-cream-dark pt-6">
                 <h2 className="text-h3 text-navy">Ementa</h2>
                 <p className="text-body-serif text-navy/85 max-w-[68ch] mt-3">{decision.ementa}</p>
               </section>
-            )}
+            ) : decision.resumo_ia ? (
+              <section className="mt-8 border-t border-cream-dark pt-6">
+                <h2 className="text-h3 text-navy">Resumo do processo</h2>
+                <p className="text-note text-navy/60 mt-1">
+                  Resumo gerado a partir dos metadados oficiais do CNJ
+                </p>
+                <p className="text-body-serif text-navy/85 max-w-[68ch] mt-3">{decision.resumo_ia}</p>
+              </section>
+            ) : null}
 
-            {decision.resumo_ia && (
+            {decision.ementa && decision.resumo_ia && (
               <section className="mt-8 border-t border-cream-dark pt-6">
                 <h2 className="text-h3 text-navy">Resumo por IA</h2>
                 <p className="text-body-serif text-navy/80 max-w-[68ch] mt-3">{decision.resumo_ia}</p>
               </section>
             )}
+
 
             {((decision.temas_juridicos?.length ?? 0) > 0 || (decision.legislacao_citada?.length ?? 0) > 0) && (
               <section className="mt-8 border-t border-cream-dark pt-6 grid gap-6 sm:grid-cols-2">
