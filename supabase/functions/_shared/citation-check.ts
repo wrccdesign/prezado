@@ -66,13 +66,9 @@ export function extractCitations(text: string): CitationItem[] {
   return [...found.values()];
 }
 
-interface MinimalClient {
-  from: (table: string) => {
-    select: (cols: string) => {
-      in: (col: string, values: string[]) => Promise<{ data: unknown; error: unknown }>;
-    };
-  };
-}
+/** Aceita o client do supabase-js ou um duplo de teste. */
+// deno-lint-ignore no-explicit-any
+type MinimalClient = { from: (table: string) => any };
 
 /**
  * Confere os processos contra `decisions.numero_processo`, normalizando os dois
