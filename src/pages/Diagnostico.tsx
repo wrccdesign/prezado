@@ -39,20 +39,37 @@ interface Citation {
   comarca: string | null;
   data_decisao: string | null;
   ementa: string | null;
+  resumo_ia?: string | null;
+  resultado?: string | null;
+  tipo_decisao?: string | null;
+  natureza?: "julgado" | "processo_relacionado";
 }
 
 const SEM_FONTES_TEXTO =
   "Nenhuma decisão do nosso acervo foi usada nesta análise. O diagnóstico se apoiou apenas na legislação.";
 
+const citationNatureza = (c: Citation) =>
+  (c.natureza ?? (c.resultado ? "julgado" : "processo_relacionado")) === "julgado"
+    ? "Julgado"
+    : "Processo relacionado";
+
+const citationTexto = (c: Citation) => c.ementa || c.resumo_ia || "";
+
+const citationTextoNota = (c: Citation) =>
+  !c.ementa && c.resumo_ia ? "Resumo gerado a partir dos metadados oficiais do CNJ" : "";
+
 const formatCitationLine = (c: Citation) =>
   [
+    c.tipo_decisao,
     c.tribunal,
     c.numero_processo ? `Processo ${c.numero_processo}` : null,
     c.comarca,
     c.data_decisao ? new Date(c.data_decisao).toLocaleDateString("pt-BR") : null,
+    c.resultado ? `resultado ${c.resultado}` : null,
   ]
     .filter(Boolean)
-    .join(" · ");
+    .join(", ");
+
 
 const URGENCIA_CONFIG = {
   baixa: { label: "Baixa", color: "bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-300" },
