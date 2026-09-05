@@ -310,7 +310,7 @@ export async function aiChatStream(opts: AIRequestOptions): Promise<ReadableStre
     },
     flush() {
       // Não aguarda: log é best-effort.
-      logUsage(opts, model, usage);
+      logUsage(opts, usedModel, usage);
     },
   });
 
