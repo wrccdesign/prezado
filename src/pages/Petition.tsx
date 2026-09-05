@@ -49,6 +49,7 @@ export default function Petition() {
   const [modo, setModo] = useState<"direto" | "etapas">("direto");
   const [loading, setLoading] = useState(false);
   const [generatedText, setGeneratedText] = useState<string | null>(null);
+  const [citationReport, setCitationReport] = useState<CitationReport | null>(null);
 
   const [tipoAcao, setTipoAcao] = useState("");
   const [varaJuizo, setVaraJuizo] = useState("");

@@ -73,6 +73,7 @@ export function PeticaoStepperFlow({ tipoAcaoOptions, varaJuizoOptions, initial 
   const [precedentesSelecionados, setPrecedentesSelecionados] = useState<Set<string>>(new Set());
 
   const [generatedText, setGeneratedText] = useState<string | null>(null);
+  const [citationReport, setCitationReport] = useState<CitationReport | null>(null);
 
   const handleError = (err: any, fallbackTitle: string) => {
     const is429 = err?.context?.status === 429 || err?.status === 429 || /limite/i.test(err?.message ?? "");
