@@ -61,9 +61,14 @@ function buildLegislationContext(normas: NormaResumo[]): string {
 function buildPrecedentsBlock(precedents: GroundingDecision[]): string {
   return precedents.length > 0
     ? `\n\nPRECEDENTES DISPONÍVEIS NO NOSSO BANCO (você SÓ pode citar estes; caso nenhum sirva, omita a seção "Precedentes"):
-${precedents.map((p, i) => `[P${i + 1}] ${[p.tribunal, p.numero_processo, p.comarca, p.data_decisao].filter(Boolean).join(" · ")}\n"${(p.ementa || "").slice(0, 400)}"`).join("\n\n")}`
+${precedents.map((p, i) => describeDecision(p, i + 1)).join("\n\n")}
+
+Formato obrigatório de citação: "conforme [tipo_decisao] do [tribunal], processo [número], resultado [resultado]".
+Processo sem resultado registrado NÃO é precedente: pode ser mencionado apenas como caso relacionado, nunca como fundamento.
+Trechos marcados como RESUMO DE METADADOS não são texto oficial da decisão; não os transcreva como ementa.`
     : `\n\nATENÇÃO: Não foram encontrados precedentes específicos no nosso banco para este caso. NÃO invente números de processo, ementas ou súmulas. Baseie a fundamentação apenas na legislação.`;
 }
+
 
 
 serve(async (req) => {
