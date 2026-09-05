@@ -37,6 +37,13 @@ const GOOGLE_OPENAI_BASE =
 export const MODEL_MAIN = Deno.env.get("GEMINI_MODEL_MAIN") || "gemini-3.6-flash";
 export const MODEL_LIGHT = Deno.env.get("GEMINI_MODEL_LIGHT") || "gemini-3.5-flash-lite";
 
+/** Modelos de fallback (mesma GEMINI_API_KEY paga), usados só em 429/503 persistente. */
+export const MODEL_MAIN_FALLBACK =
+  Deno.env.get("GEMINI_MODEL_MAIN_FALLBACK") || "gemini-3.5-flash";
+export const MODEL_LIGHT_FALLBACK =
+  Deno.env.get("GEMINI_MODEL_LIGHT_FALLBACK") || "gemini-3.1-flash-lite";
+
+
 export type ModelTier = "main" | "light";
 
 export function resolveModel(tier: ModelTier): string {
