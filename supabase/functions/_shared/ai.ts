@@ -236,9 +236,14 @@ export async function aiChat(opts: AIRequestOptions): Promise<any> {
   if (opts.tool_choice) body.tool_choice = opts.tool_choice;
   if (typeof opts.temperature === "number") body.temperature = opts.temperature;
 
-  const res = await postChat(body, opts.timeoutMs ?? DEFAULT_TIMEOUT_MS);
+  const tier = opts.model ?? "main";
+  const { res, model: usedModel } = await postChat(
+    body,
+    opts.timeoutMs ?? DEFAULT_TIMEOUT_MS,
+    resolveFallbackModel(tier),
+  );
   const data = await res.json();
-  await logUsage(opts, model, data?.usage);
+  await logUsage(opts, usedModel, data?.usage);
   return data;
 }
 
