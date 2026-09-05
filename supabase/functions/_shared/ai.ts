@@ -138,8 +138,12 @@ async function logUsage(
   }
 }
 
-/** POST cru para a camada compatível com OpenAI do Google, com retry em 429/5xx. */
-async function postChat(body: Record<string, unknown>, timeoutMs?: number): Promise<Response> {
+/** Uma rodada de MAX_ATTEMPTS tentativas em um único modelo. */
+async function attemptModel(
+  body: Record<string, unknown>,
+  timeoutMs: number | undefined,
+  label: string,
+): Promise<{ res: Response } | { res: null; status: number }> {
   const apiKey = getApiKey();
   let lastStatus = 500;
 
@@ -163,11 +167,14 @@ async function postChat(body: Record<string, unknown>, timeoutMs?: number): Prom
       });
       if (timer) clearTimeout(timer);
 
-      if (res.ok) return res;
+      if (res.ok) return { res };
 
       lastStatus = res.status;
       const errText = await res.text().catch(() => "");
-      console.error(`[ai] upstream ${res.status} (tentativa ${attempt}/${MAX_ATTEMPTS}):`, errText.slice(0, 500));
+      console.error(
+        `[ai] upstream ${res.status} (${label}, tentativa ${attempt}/${MAX_ATTEMPTS}):`,
+        errText.slice(0, 500),
+      );
 
       // 4xx (exceto 429) não é retentável.
       if (res.status !== 429 && res.status < 500) {
@@ -176,13 +183,46 @@ async function postChat(body: Record<string, unknown>, timeoutMs?: number): Prom
     } catch (e) {
       if (timer) clearTimeout(timer);
       if (e instanceof AIError) throw e;
-      console.error(`[ai] erro de rede (tentativa ${attempt}/${MAX_ATTEMPTS}):`, e instanceof Error ? e.message : e);
+      console.error(
+        `[ai] erro de rede (${label}, tentativa ${attempt}/${MAX_ATTEMPTS}):`,
+        e instanceof Error ? e.message : e,
+      );
     }
 
-    if (attempt < MAX_ATTEMPTS) await sleep(500 * 2 ** (attempt - 1));
+    if (attempt < MAX_ATTEMPTS) await sleep(backoffFor(attempt));
   }
 
-  throw new AIError(userMessageFor(lastStatus), lastStatus >= 500 ? 503 : lastStatus);
+  return { res: null, status: lastStatus };
+}
+
+/**
+ * POST cru com retry em 429/5xx e, se o modelo primário ficar indisponível
+ * (429 ou 503 persistentes), uma rodada extra no modelo de fallback — mesma
+ * `GEMINI_API_KEY`. Devolve também o modelo realmente usado, para o logUsage.
+ */
+async function postChat(
+  body: Record<string, unknown>,
+  timeoutMs?: number,
+  fallbackModel?: string,
+): Promise<{ res: Response; model: string }> {
+  const primaryModel = String(body.model ?? "");
+  const first = await attemptModel(body, timeoutMs, primaryModel);
+  if (first.res) return { res: first.res, model: primaryModel };
+
+  const status = first.status;
+  const canFallback = fallbackModel && fallbackModel !== primaryModel && (status === 429 || status === 503);
+  if (!canFallback) {
+    throw new AIError(userMessageFor(status), status >= 500 ? 503 : status);
+  }
+
+  console.warn(
+    `[ai] fallback de modelo: ${primaryModel} -> ${fallbackModel} após ${MAX_ATTEMPTS} tentativas com status ${status}`,
+  );
+  const second = await attemptModel({ ...body, model: fallbackModel }, timeoutMs, `fallback ${fallbackModel}`);
+  if (second.res) return { res: second.res, model: fallbackModel! };
+
+  const finalStatus = second.status;
+  throw new AIError(userMessageFor(finalStatus), finalStatus >= 500 ? 503 : finalStatus);
 }
 
 /** Chamada não-streaming. Retorna o JSON no formato OpenAI (choices/message/tool_calls). */
