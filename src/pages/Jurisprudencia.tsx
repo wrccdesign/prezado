@@ -12,6 +12,7 @@ import { formatCitation } from "@/lib/citation";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { notifyUsageConsumed } from "@/hooks/useUsage";
+import { formatDateBR } from "@/lib/date";
 
 interface Decision {
   id: string;
@@ -405,7 +406,7 @@ if (!res.ok) {
                   {[
                     d.tribunal,
                     d.instancia ? (d.instancia === "1grau" ? "1º Grau" : d.instancia === "2grau" ? "2º Grau" : "Superior") : null,
-                    d.data_decisao ? new Date(d.data_decisao).toLocaleDateString("pt-BR") : null,
+                    d.data_decisao ? formatDateBR(d.data_decisao) : null,
                   ].filter(Boolean).join(", ")}
                   {!d.ementa ? " (andamento processual)" : ""}
                   {d.comarca_pequena ? " (interior)" : ""}

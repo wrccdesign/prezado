@@ -19,6 +19,7 @@ import { toast } from "@/hooks/use-toast";
 import { exportToPDF, exportToDOCX, type ExportSection } from "@/lib/exportDocument";
 import { format } from "date-fns";
 import { notifyUsageConsumed } from "@/hooks/useUsage";
+import { formatDateBR } from "@/lib/date";
 
 interface Diagnostico {
   o_que_esta_acontecendo: string;
@@ -64,7 +65,7 @@ const formatCitationLine = (c: Citation) =>
     c.tribunal,
     c.numero_processo ? `Processo ${c.numero_processo}` : null,
     c.comarca,
-    c.data_decisao ? new Date(c.data_decisao).toLocaleDateString("pt-BR") : null,
+    c.data_decisao ? formatDateBR(c.data_decisao) : null,
     c.resultado ? `resultado ${c.resultado}` : null,
   ]
     .filter(Boolean)
