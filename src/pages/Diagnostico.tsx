@@ -535,14 +535,19 @@ export default function Diagnostico() {
                   <ul className="space-y-4">
                     {citations.map((c) => (
                       <li key={c.id} className="space-y-1">
+                        <p className="text-xs text-muted-foreground">{citationNatureza(c)}</p>
                         <p className="text-sm font-medium text-foreground">
                           {formatCitationLine(c) || "Decisão do acervo"}
                         </p>
-                        {c.ementa && (
+                        {citationTexto(c) && (
                           <p className="text-xs text-muted-foreground leading-relaxed line-clamp-3">
-                            {c.ementa}
+                            {citationTexto(c)}
                           </p>
                         )}
+                        {citationTextoNota(c) && (
+                          <p className="text-xs text-muted-foreground">{citationTextoNota(c)}</p>
+                        )}
+
                         {c.id && (
                           <Button
                             variant="link"
