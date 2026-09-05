@@ -16,7 +16,13 @@
  * Um fallback silencioso para `LOVABLE_API_KEY` voltaria a consumir os créditos do
  * workspace de desenvolvimento (o que pode pausar o app publicado) sem ninguém
  * perceber — exatamente o problema que esta camada resolve.
+ *
+ * ── FALLBACK PERMITIDO: APENAS DE NOME DE MODELO ─────────────────────────────
+ * Em 429/503 persistente, tentamos outro MODELO Gemini usando a MESMA
+ * `GEMINI_API_KEY` paga. Isso não é o fallback proibido acima (troca de chave/
+ * provedor) — a chave, o provedor e a garantia de confidencialidade não mudam.
  */
+
 
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
@@ -31,11 +37,23 @@ const GOOGLE_OPENAI_BASE =
 export const MODEL_MAIN = Deno.env.get("GEMINI_MODEL_MAIN") || "gemini-3.6-flash";
 export const MODEL_LIGHT = Deno.env.get("GEMINI_MODEL_LIGHT") || "gemini-3.5-flash-lite";
 
+/** Modelos de fallback (mesma GEMINI_API_KEY paga), usados só em 429/503 persistente. */
+export const MODEL_MAIN_FALLBACK =
+  Deno.env.get("GEMINI_MODEL_MAIN_FALLBACK") || "gemini-3.5-flash";
+export const MODEL_LIGHT_FALLBACK =
+  Deno.env.get("GEMINI_MODEL_LIGHT_FALLBACK") || "gemini-3.1-flash-lite";
+
+
 export type ModelTier = "main" | "light";
 
 export function resolveModel(tier: ModelTier): string {
   return tier === "light" ? MODEL_LIGHT : MODEL_MAIN;
 }
+
+function resolveFallbackModel(tier: ModelTier): string {
+  return tier === "light" ? MODEL_LIGHT_FALLBACK : MODEL_MAIN_FALLBACK;
+}
+
 
 function getApiKey(): string {
   const key = Deno.env.get("GEMINI_API_KEY");
@@ -83,10 +101,18 @@ interface AIRequestOptions extends AIUsageMeta {
 
 const MAX_ATTEMPTS = 3;
 const DEFAULT_TIMEOUT_MS = 60_000;
+/** Espera base entre tentativas (ms), compatível com pico de demanda do Google. */
+const BACKOFF_MS = [1_000, 4_000, 8_000];
+/** Jitter aleatório de até 30% para dessincronizar retentativas simultâneas. */
+function backoffFor(attempt: number): number {
+  const base = BACKOFF_MS[attempt - 1] ?? BACKOFF_MS[BACKOFF_MS.length - 1];
+  return Math.round(base * (1 + Math.random() * 0.3));
+}
 
 function sleep(ms: number) {
   return new Promise((r) => setTimeout(r, ms));
 }
+
 
 async function logUsage(
   meta: AIUsageMeta,
@@ -112,8 +138,12 @@ async function logUsage(
   }
 }
 
-/** POST cru para a camada compatível com OpenAI do Google, com retry em 429/5xx. */
-async function postChat(body: Record<string, unknown>, timeoutMs?: number): Promise<Response> {
+/** Uma rodada de MAX_ATTEMPTS tentativas em um único modelo. */
+async function attemptModel(
+  body: Record<string, unknown>,
+  timeoutMs: number | undefined,
+  label: string,
+): Promise<{ res: Response } | { res: null; status: number }> {
   const apiKey = getApiKey();
   let lastStatus = 500;
 
@@ -137,11 +167,14 @@ async function postChat(body: Record<string, unknown>, timeoutMs?: number): Prom
       });
       if (timer) clearTimeout(timer);
 
-      if (res.ok) return res;
+      if (res.ok) return { res };
 
       lastStatus = res.status;
       const errText = await res.text().catch(() => "");
-      console.error(`[ai] upstream ${res.status} (tentativa ${attempt}/${MAX_ATTEMPTS}):`, errText.slice(0, 500));
+      console.error(
+        `[ai] upstream ${res.status} (${label}, tentativa ${attempt}/${MAX_ATTEMPTS}):`,
+        errText.slice(0, 500),
+      );
 
       // 4xx (exceto 429) não é retentável.
       if (res.status !== 429 && res.status < 500) {
@@ -150,13 +183,48 @@ async function postChat(body: Record<string, unknown>, timeoutMs?: number): Prom
     } catch (e) {
       if (timer) clearTimeout(timer);
       if (e instanceof AIError) throw e;
-      console.error(`[ai] erro de rede (tentativa ${attempt}/${MAX_ATTEMPTS}):`, e instanceof Error ? e.message : e);
+      console.error(
+        `[ai] erro de rede (${label}, tentativa ${attempt}/${MAX_ATTEMPTS}):`,
+        e instanceof Error ? e.message : e,
+      );
     }
 
-    if (attempt < MAX_ATTEMPTS) await sleep(500 * 2 ** (attempt - 1));
+    if (attempt < MAX_ATTEMPTS) await sleep(backoffFor(attempt));
   }
 
-  throw new AIError(userMessageFor(lastStatus), lastStatus >= 500 ? 503 : lastStatus);
+  return { res: null, status: lastStatus };
+}
+
+/**
+ * POST cru com retry em 429/5xx e, se o modelo primário ficar indisponível
+ * (429 ou 503 persistentes), uma rodada extra no modelo de fallback — mesma
+ * `GEMINI_API_KEY`. Devolve também o modelo realmente usado, para o logUsage.
+ */
+async function postChat(
+  body: Record<string, unknown>,
+  timeoutMs?: number,
+  fallbackModel?: string,
+): Promise<{ res: Response; model: string }> {
+  const primaryModel = String(body.model ?? "");
+  const first = await attemptModel(body, timeoutMs, primaryModel);
+  if (first.res) return { res: first.res, model: primaryModel };
+
+  const status = first.status;
+  const canFallback = fallbackModel && fallbackModel !== primaryModel && (status === 429 || status === 503);
+  if (!canFallback) {
+    throw new AIError(userMessageFor(status), status >= 500 ? 503 : status);
+  }
+
+  console.warn(
+    `[ai] fallback de modelo: ${primaryModel} -> ${fallbackModel} após ${MAX_ATTEMPTS} tentativas com status ${status}`,
+  );
+  // Terceira espera da escala (8s + jitter) antes de trocar de modelo.
+  await sleep(backoffFor(3));
+  const second = await attemptModel({ ...body, model: fallbackModel }, timeoutMs, `fallback ${fallbackModel}`);
+  if (second.res) return { res: second.res, model: fallbackModel! };
+
+  const finalStatus = second.status;
+  throw new AIError(userMessageFor(finalStatus), finalStatus >= 500 ? 503 : finalStatus);
 }
 
 /** Chamada não-streaming. Retorna o JSON no formato OpenAI (choices/message/tool_calls). */
@@ -170,9 +238,14 @@ export async function aiChat(opts: AIRequestOptions): Promise<any> {
   if (opts.tool_choice) body.tool_choice = opts.tool_choice;
   if (typeof opts.temperature === "number") body.temperature = opts.temperature;
 
-  const res = await postChat(body, opts.timeoutMs ?? DEFAULT_TIMEOUT_MS);
+  const tier = opts.model ?? "main";
+  const { res, model: usedModel } = await postChat(
+    body,
+    opts.timeoutMs ?? DEFAULT_TIMEOUT_MS,
+    resolveFallbackModel(tier),
+  );
   const data = await res.json();
-  await logUsage(opts, model, data?.usage);
+  await logUsage(opts, usedModel, data?.usage);
   return data;
 }
 
@@ -210,8 +283,8 @@ export async function aiChatStream(opts: AIRequestOptions): Promise<ReadableStre
   if (opts.tool_choice) body.tool_choice = opts.tool_choice;
   if (typeof opts.temperature === "number") body.temperature = opts.temperature;
 
-  // Sem timeout de corte: streaming longo é normal.
-  const res = await postChat(body);
+  // Sem timeout de corte: streaming longo é normal. Fallback de modelo também vale aqui.
+  const { res, model: usedModel } = await postChat(body, undefined, resolveFallbackModel(opts.model ?? "main"));
   const upstream = res.body;
   if (!upstream) throw new AIError(userMessageFor(502), 502);
 
@@ -239,7 +312,7 @@ export async function aiChatStream(opts: AIRequestOptions): Promise<ReadableStre
     },
     flush() {
       // Não aguarda: log é best-effort.
-      logUsage(opts, model, usage);
+      logUsage(opts, usedModel, usage);
     },
   });
 
