@@ -413,15 +413,23 @@ if (!res.ok) {
 
                 <Link to={`/decisao/${d.id}`} className="block mt-2 group">
                   {(d.ementa || d.resumo_ia) ? (
-                    <p className={`font-serif text-base leading-relaxed text-navy group-hover:text-gold ${expandedId === d.id ? "" : "line-clamp-3"}`}>
-                      {d.ementa || d.resumo_ia}
-                    </p>
+                    <>
+                      <p className={`font-serif text-base leading-relaxed text-navy group-hover:text-gold ${expandedId === d.id ? "" : "line-clamp-3"}`}>
+                        {d.ementa || d.resumo_ia}
+                      </p>
+                      {!d.ementa && (
+                        <p className="text-note text-navy/60 mt-1">
+                          Resumo gerado a partir dos metadados oficiais do CNJ
+                        </p>
+                      )}
+                    </>
                   ) : (
                     <p className="font-serif text-base text-navy/70 group-hover:text-gold">
                       Sem teor decisório disponível, apenas dados de tramitação.
                     </p>
                   )}
                 </Link>
+
 
                 {d.numero_processo && !d.numero_processo.includes('<UNKNOWN>') && (
                   <p className="font-mono text-note text-navy/70 mt-2">

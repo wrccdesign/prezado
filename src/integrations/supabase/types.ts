@@ -854,6 +854,7 @@ export type Database = {
         Args: {
           filter_comarca_pequena?: boolean
           filter_instancia?: string
+          filter_only_julgados?: boolean
           filter_ramo?: string
           filter_tribunal?: string
           filter_uf?: string
@@ -891,6 +892,7 @@ export type Database = {
         Args: {
           match_count?: number
           match_threshold?: number
+          only_julgados?: boolean
           query_embedding: string
         }
         Returns: {
@@ -902,6 +904,7 @@ export type Database = {
           id: string
           instancia: string
           numero_processo: string
+          orgao_julgador: string
           ramos_direito: string[]
           relator: string
           resultado: string

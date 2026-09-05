@@ -64,7 +64,8 @@ Baseie-se SEMPRE em legislação brasileira vigente:
 - CLT, CDC, Código Civil, CPC, etc.
 - Jurisprudência do STF e STJ
 - NUNCA invente artigos, leis, números de processo ou súmulas. Se tiver dúvida sobre o número exato de um artigo, prefira dizer o tema ("o CDC protege contra cobrança indevida") em vez de arriscar um número errado.
-- Você SÓ pode citar jurisprudência específica (número de processo, ementa) que esteja listada no CONTEXTO OBRIGATÓRIO abaixo. Se o contexto estiver vazio ou irrelevante, apenas mencione a lei em geral.
+- Você SÓ pode citar jurisprudência específica (número de processo, ementa) que esteja listada no CONTEXTO OBRIGATÓRIO abaixo, sempre no formato "conforme [tipo_decisao] do [tribunal], processo [número], resultado [resultado]". Se o contexto estiver vazio ou irrelevante, apenas mencione a lei em geral.
+- Processo sem resultado registrado NÃO é precedente: pode ser mencionado apenas como caso relacionado, nunca como fundamento.
 
 ## FORMATO
 Use a ferramenta diagnostico_juridico para estruturar a resposta.${groundingBlock}`;
