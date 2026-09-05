@@ -10,6 +10,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { PetitionResult } from "@/components/PetitionResult";
+import { type CitationReport } from "@/components/CitationCheck";
 import { notifyUsageConsumed } from "@/hooks/useUsage";
 import { ArrowLeft, ArrowRight, ExternalLink, FileSignature, Loader2, Plus, X } from "lucide-react";
 
@@ -156,6 +157,7 @@ export function PeticaoStepperFlow({ tipoAcaoOptions, varaJuizoOptions, initial 
         approved_precedent_ids: precedents.filter((p) => precedentesSelecionados.has(p.id)).map((p) => p.id),
       });
       setGeneratedText(data.generated_text);
+      setCitationReport(data.citation_report ?? null);
       notifyUsageConsumed();
       setStep(5);
       toast({ title: "Petição gerada com sucesso!" });
@@ -168,6 +170,7 @@ export function PeticaoStepperFlow({ tipoAcaoOptions, varaJuizoOptions, initial 
 
   const reset = () => {
     setGeneratedText(null);
+    setCitationReport(null);
     setKeywords([]);
     setNormas([]);
     setNormasSelecionadas(new Set());
@@ -177,7 +180,7 @@ export function PeticaoStepperFlow({ tipoAcaoOptions, varaJuizoOptions, initial 
   };
 
   if (generatedText) {
-    return <PetitionResult text={generatedText} petitionType={tipoAcao} onNewPetition={reset} />;
+    return <PetitionResult text={generatedText} petitionType={tipoAcao} onNewPetition={reset} citationReport={citationReport} />;
   }
 
   return (

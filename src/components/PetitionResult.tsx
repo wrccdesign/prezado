@@ -14,6 +14,7 @@ import {
   hasLetterhead,
   type PetitionBranding,
 } from "@/lib/petitionBranding";
+import { CitationCheck, type CitationReport } from "@/components/CitationCheck";
 
 const EMPTY_BRANDING: PetitionBranding = {
   fullName: null, oabNumber: null, oabState: null, officeName: null,
@@ -25,6 +26,7 @@ interface PetitionResultProps {
   text: string;
   petitionType: string;
   onNewPetition: () => void;
+  citationReport?: CitationReport | null;
 }
 
 type LineType = "header" | "section-title" | "party" | "body" | "closing" | "empty";
@@ -81,7 +83,7 @@ function getFormattedDate() {
   return new Date().toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit", year: "numeric" });
 }
 
-export function PetitionResult({ text, petitionType, onNewPetition }: PetitionResultProps) {
+export function PetitionResult({ text, petitionType, onNewPetition, citationReport }: PetitionResultProps) {
   const { toast } = useToast();
   const { user } = useAuth();
   const { isPro, isEscritorio } = useSubscription();
@@ -376,6 +378,7 @@ export function PetitionResult({ text, petitionType, onNewPetition }: PetitionRe
               📝 Baixar DOCX
             </Button>
           </div>
+          <CitationCheck report={citationReport} />
         </CardContent>
       </Card>
     </div>
