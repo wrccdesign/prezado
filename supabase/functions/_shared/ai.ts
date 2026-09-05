@@ -101,10 +101,18 @@ interface AIRequestOptions extends AIUsageMeta {
 
 const MAX_ATTEMPTS = 3;
 const DEFAULT_TIMEOUT_MS = 60_000;
+/** Espera base entre tentativas (ms), compatível com pico de demanda do Google. */
+const BACKOFF_MS = [1_000, 4_000, 8_000];
+/** Jitter aleatório de até 30% para dessincronizar retentativas simultâneas. */
+function backoffFor(attempt: number): number {
+  const base = BACKOFF_MS[attempt - 1] ?? BACKOFF_MS[BACKOFF_MS.length - 1];
+  return Math.round(base * (1 + Math.random() * 0.3));
+}
 
 function sleep(ms: number) {
   return new Promise((r) => setTimeout(r, ms));
 }
+
 
 async function logUsage(
   meta: AIUsageMeta,
