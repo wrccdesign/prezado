@@ -281,8 +281,8 @@ export async function aiChatStream(opts: AIRequestOptions): Promise<ReadableStre
   if (opts.tool_choice) body.tool_choice = opts.tool_choice;
   if (typeof opts.temperature === "number") body.temperature = opts.temperature;
 
-  // Sem timeout de corte: streaming longo é normal.
-  const res = await postChat(body);
+  // Sem timeout de corte: streaming longo é normal. Fallback de modelo também vale aqui.
+  const { res, model: usedModel } = await postChat(body, undefined, resolveFallbackModel(opts.model ?? "main"));
   const upstream = res.body;
   if (!upstream) throw new AIError(userMessageFor(502), 502);
 
