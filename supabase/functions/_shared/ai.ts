@@ -218,6 +218,8 @@ async function postChat(
   console.warn(
     `[ai] fallback de modelo: ${primaryModel} -> ${fallbackModel} após ${MAX_ATTEMPTS} tentativas com status ${status}`,
   );
+  // Terceira espera da escala (8s + jitter) antes de trocar de modelo.
+  await sleep(backoffFor(3));
   const second = await attemptModel({ ...body, model: fallbackModel }, timeoutMs, `fallback ${fallbackModel}`);
   if (second.res) return { res: second.res, model: fallbackModel! };
 
