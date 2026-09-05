@@ -3,6 +3,7 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { burstLimitMessage, checkRateLimit, extractEnv, monthlyLimitMessage } from "../_shared/rate-limit.ts";
 import { fetchGroundingContext, buildGroundingBlock } from "../_shared/grounding.ts";
 import { aiChatTool, AIError } from "../_shared/ai.ts";
+import { buildCitationReport } from "../_shared/citation-check.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -104,7 +105,7 @@ Use a ferramenta diagnostico_juridico para estruturar a resposta.${groundingBloc
                   },
                   estimativa_custos_ganhos: {
                     type: "string",
-                    description: "Estimativa de quanto pode custar o processo e/ou quanto pode ganhar. Seja honesto sobre incertezas."
+                    description: "Fale APENAS de custos processuais verificáveis: gratuidade no Juizado Especial Cível para causas até 20 salários mínimos, dispensa de advogado até 20 salários mínimos, custas e honorários de sucumbência em caso de derrota, possibilidade de justiça gratuita. PROIBIDO citar qualquer faixa de valor de indenização em reais (ex.: 'entre R$ 5.000,00 e R$ 15.000,00'): esse número não vem de fonte oficial. Sobre quanto a pessoa pode receber, diga explicitamente que o valor depende do caso concreto, das provas e do entendimento do juízo, sem estimar cifras."
                   },
                   onde_entrar: {
                     type: "string",
@@ -143,7 +144,14 @@ Use a ferramenta diagnostico_juridico para estruturar a resposta.${groundingBloc
 
     if (!diagnostico) throw new Error("Não foi possível gerar o diagnóstico");
 
-    return new Response(JSON.stringify({ diagnostico, citations: grounding }), {
+    const citationReport = await buildCitationReport(
+      Object.values(diagnostico ?? {})
+        .map((v) => (Array.isArray(v) ? v.join("\n") : String(v ?? "")))
+        .join("\n"),
+      supabase,
+    );
+
+    return new Response(JSON.stringify({ diagnostico, citations: grounding, citation_report: citationReport }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } catch (e) {
