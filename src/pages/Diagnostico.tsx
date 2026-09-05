@@ -240,12 +240,14 @@ export default function Diagnostico() {
           ? citations
               .map((c, i) => {
                 const linha = formatCitationLine(c) || "Decisão do acervo";
-                const ementa = c.ementa ? `\n${c.ementa.slice(0, 300)}` : "";
-                return `${i + 1}. ${linha}${ementa}`;
+                const texto = citationTexto(c);
+                const nota = citationTextoNota(c);
+                return `${i + 1}. ${citationNatureza(c)}: ${linha}${texto ? `\n${texto.slice(0, 300)}` : ""}${nota ? `\n${nota}` : ""}`;
               })
               .join("\n\n")
           : SEM_FONTES_TEXTO,
     },
+
     {
       heading: "Aviso",
       body:
