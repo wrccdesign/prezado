@@ -216,11 +216,22 @@ export default function Index() {
       notifyUsageConsumed();
       toast({ title: "Análise concluída!" });
     } catch (err: any) {
-      const { message, limitReached, burstLimited } = await readFunctionError(err, "Tente novamente mais tarde.");
+      const { message, limitReached, burstLimited, authRequired } = await readFunctionError(err, "Tente novamente mais tarde.");
       toast({
-        title: burstLimited ? "Muitas requisições" : limitReached ? "Limite mensal atingido" : "Erro na análise",
+        title: authRequired
+          ? "Sessão expirada"
+          : burstLimited
+            ? "Muitas requisições"
+            : limitReached
+              ? "Limite mensal atingido"
+              : "Erro na análise",
         description: message,
         variant: "destructive",
+        action: authRequired ? (
+          <Button variant="outline" size="sm" onClick={() => navigate("/auth")}>
+            Entrar
+          </Button>
+        ) : undefined,
       });
     } finally {
       setLoading(false);
