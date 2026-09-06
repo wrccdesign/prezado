@@ -14,7 +14,10 @@ export type CitationStatus = "verificado" | "nao_encontrado" | "nao_verificavel"
 
 export interface CitationItem {
   tipo: CitationTipo;
+  /** Forma canônica ("art. 927 do CC"); é também a chave de deduplicação. */
   texto: string;
+  /** Trecho original, quando difere da forma canônica. */
+  original?: string;
   /** Só dígitos, para processos. */
   normalizado?: string;
   status?: CitationStatus;
