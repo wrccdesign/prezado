@@ -5,7 +5,8 @@
  * números de processo (CNJ) em um texto gerado pela IA.
  * `verifyCitations` confere apenas os processos contra a tabela `decisions`
  * (o acervo é parcial, por isso nunca dizemos "inexistente" ou "inválido").
- * Súmulas e artigos ficam `nao_verificavel` até a Parte B (tabela `sumulas`).
+ * Súmulas são conferidas contra a tabela `sumulas` (acervo curado, parcial).
+ * Artigos de lei seguem `nao_verificavel`.
  */
 
 export type CitationTipo = "processo" | "sumula" | "artigo";
@@ -74,6 +75,21 @@ type MinimalClient = { from: (table: string) => any };
  * Confere os processos contra `decisions.numero_processo`, normalizando os dois
  * lados para dígitos (o banco tem os dois formatos, pontuado e corrido).
  */
+/** Extrai tribunal, tipo e número do texto de uma súmula citada. */
+export function parseSumula(
+  texto: string,
+): { tribunal: string; tipo: "comum" | "vinculante"; numero: number } | null {
+  const m = texto.match(
+    /S[úu]mula\s+(Vinculante\s+)?(?:n[.º°]?\s*)?(\d+)\s+d[oa]\s+(STF|STJ|TST|TSE|TCU)/i,
+  );
+  if (!m) return null;
+  return {
+    tribunal: m[3].toUpperCase(),
+    tipo: m[1] ? "vinculante" : "comum",
+    numero: Number(m[2]),
+  };
+}
+
 export async function verifyCitations(
   items: CitationItem[],
   supabase: MinimalClient,
@@ -105,7 +121,46 @@ export async function verifyCitations(
     }
   }
 
+  // Súmulas: confere número + tribunal + tipo no acervo curado.
+  const sumulasOk = new Set<string>();
+  const sumulaKeys = new Map<string, string>();
+  const sumulas = items.filter((i) => i.tipo === "sumula");
+  if (sumulas.length > 0) {
+    try {
+      const parsed = sumulas
+        .map((i) => ({ item: i, p: parseSumula(i.texto) }))
+        .filter((x) => x.p);
+      for (const { item, p } of parsed) {
+        sumulaKeys.set(item.texto, `${p!.tribunal}:${p!.tipo}:${p!.numero}`);
+      }
+      const numeros = [...new Set(parsed.map((x) => x.p!.numero))];
+      if (numeros.length > 0) {
+        const { data } = await supabase
+          .from("sumulas")
+          .select("tribunal, tipo, numero")
+          .in("numero", numeros);
+        for (
+          const row of (data ?? []) as Array<
+            { tribunal: string; tipo: string; numero: number }
+          >
+        ) {
+          sumulasOk.add(`${row.tribunal.toUpperCase()}:${row.tipo}:${row.numero}`);
+        }
+      }
+    } catch (e) {
+      console.error("verifyCitations (súmulas) query failed:", e);
+    }
+  }
+
   const result = items.map((item) => {
+    if (item.tipo === "sumula") {
+      const key = sumulaKeys.get(item.texto);
+      if (!key) return { ...item, status: "nao_verificavel" as const };
+      return {
+        ...item,
+        status: (sumulasOk.has(key) ? "verificado" : "nao_encontrado") as CitationStatus,
+      };
+    }
     if (item.tipo !== "processo") return { ...item, status: "nao_verificavel" as const };
     return {
       ...item,
