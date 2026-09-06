@@ -31,6 +31,7 @@ interface Precedent {
   comarca: string | null;
   data_decisao: string | null;
   ementa: string | null;
+  resumo_ia?: string | null;
 }
 
 const STEPS = [
@@ -439,7 +440,20 @@ export function PeticaoStepperFlow({ tipoAcaoOptions, varaJuizoOptions, initial 
                       <p className="text-xs text-muted-foreground">
                         {[p.comarca, p.data_decisao].filter(Boolean).join(" · ")}
                       </p>
-                      {p.ementa && <p className="mt-1 line-clamp-4 text-sm text-muted-foreground">{p.ementa}</p>}
+                      {p.ementa ? (
+                        <p className="mt-1 line-clamp-4 text-sm text-muted-foreground">{p.ementa}</p>
+                      ) : p.resumo_ia ? (
+                        <>
+                          <p className="mt-1 line-clamp-4 text-sm text-muted-foreground">{p.resumo_ia}</p>
+                          <p className="mt-1 text-xs text-muted-foreground">
+                            Resumo gerado a partir dos metadados do CNJ, não é o texto oficial da decisão.
+                          </p>
+                        </>
+                      ) : (
+                        <p className="mt-1 text-sm text-muted-foreground">
+                          Sem teor decisório disponível para esta decisão.
+                        </p>
+                      )}
                     </div>
                   </li>
                 ))}
