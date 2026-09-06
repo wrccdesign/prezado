@@ -1,6 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { requireUser } from "../_shared/auth.ts";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { burstLimitMessage, checkRateLimit, extractEnv, monthlyLimitMessage } from "../_shared/rate-limit.ts";
 import { fetchGroundingContext, buildGroundingBlock, fetchGroundingSumulas, buildSumulasBlock } from "../_shared/grounding.ts";
 import { aiChatStream, AIError } from "../_shared/ai.ts";
@@ -115,23 +114,18 @@ serve(async (req) => {
     const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
     const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 
-    // Optional auth — rate limit only if user is authenticated
-    const authHeader = req.headers.get("Authorization");
-    if (authHeader) {
-      const supa = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
-      const token = authHeader.replace("Bearer ", "");
-      const { data: { user } } = await supa.auth.getUser(token);
-      if (user) {
-        const env = extractEnv(req);
-        const { allowed, used, limit, plan, renewsAt, burstLimited } = await checkRateLimit(user.id, "chat", SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, env);
-        if (!allowed) {
-          return new Response(JSON.stringify({
-            error: burstLimited ? burstLimitMessage() : monthlyLimitMessage("chat", limit, plan),
-            limit_reached: !burstLimited, burst_limit: burstLimited === true, used, limit, plan, renews_at: renewsAt, upgrade_url: "/planos",
-          }), { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } });
-        }
-      }
+    // Toda chamada é autenticada (requireUser acima); a cota vale sempre.
+    const env = extractEnv(req);
+    const { allowed, used, limit, plan, renewsAt, burstLimited } = await checkRateLimit(
+      _userId, "chat", SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, env,
+    );
+    if (!allowed) {
+      return new Response(JSON.stringify({
+        error: burstLimited ? burstLimitMessage() : monthlyLimitMessage("chat", limit, plan),
+        limit_reached: !burstLimited, burst_limit: burstLimited === true, used, limit, plan, renews_at: renewsAt, upgrade_url: "/planos",
+      }), { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
+
 
     const disclaimerInstruction = isLawyer
       ? ""
