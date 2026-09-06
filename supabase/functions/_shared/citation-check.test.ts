@@ -103,3 +103,51 @@ Deno.test("verifyCitations confere súmulas contra o acervo", async () => {
   assertEquals(report.verificados, 1);
   assertEquals(report.nao_encontrados, 1);
 });
+
+const artigos = (t: string) => tipos(extractCitations(t), "artigo").map((i) => i.texto);
+
+Deno.test("10. artigos em série antes de Lei nº X/ANO", () => {
+  assertEquals(
+    artigos("nos termos do art. 186 e do art. 927 da Lei nº 10.406/2002"),
+    ["art. 186 da Lei 10.406/2002", "art. 927 da Lei 10.406/2002"],
+  );
+});
+
+Deno.test("11. nome de código por extenso", () => {
+  assertEquals(artigos("art. 300 do Código de Processo Civil"), ["art. 300 do CPC"]);
+  assertEquals(artigos("art. 5º da Constituição Federal"), ["art. 5 da CF"]);
+  assertEquals(
+    artigos("art. 42 do Código de Defesa do Consumidor"),
+    ["art. 42 do CDC"],
+  );
+  assertEquals(
+    artigos("art. 477 da Consolidação das Leis do Trabalho"),
+    ["art. 477 da CLT"],
+  );
+});
+
+Deno.test("12. plural com nome por extenso e com sigla", () => {
+  assertEquals(
+    artigos("arts. 186 e 927 do Código Civil"),
+    ["art. 186 do CC", "art. 927 do CC"],
+  );
+  assertEquals(
+    artigos("arts. 186, 187 e 927 do CC"),
+    ["art. 186 do CC", "art. 187 do CC", "art. 927 do CC"],
+  );
+});
+
+Deno.test("13. parágrafo e inciso não viram artigo", () => {
+  assertEquals(artigos("art. 43, § 3º, do CDC"), ["art. 43 do CDC"]);
+  assertEquals(
+    artigos("art. 6º, inciso VIII, da Lei nº 8.078/1990"),
+    ["art. 6 da Lei 8.078/1990"],
+  );
+});
+
+Deno.test("14. dedupe entre forma extensa e sigla", () => {
+  assertEquals(
+    artigos("o art. 927 do Código Civil, e ainda o art. 927 do CC"),
+    ["art. 927 do CC"],
+  );
+});

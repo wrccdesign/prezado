@@ -20,8 +20,24 @@ export interface GroundingDecision {
   tipo_decisao: string | null;
   orgao_julgador: string | null;
   source_url: string | null;
-  /** "julgado" quando há resultado registrado; caso contrário é apenas processo relacionado. */
-  natureza: "julgado" | "processo_relacionado";
+  /**
+   * "precedente": tem ementa (50+ caracteres), pode fundamentar tese.
+   * "julgado": tem resultado registrado, sem ementa; só serve como caso análogo.
+   * "relacionado": sem resultado e sem ementa; não pode ser citado.
+   */
+  natureza: NaturezaFonte;
+}
+
+export type NaturezaFonte = "precedente" | "julgado" | "relacionado";
+
+/** Três níveis de fonte, conforme o teor efetivamente disponível. */
+export function classifyNatureza(
+  ementa: string | null | undefined,
+  resultado: string | null | undefined,
+): NaturezaFonte {
+  if ((ementa ?? "").trim().length >= 50) return "precedente";
+  if (resultado) return "julgado";
+  return "relacionado";
 }
 
 function toGroundingDecision(d: Record<string, unknown>): GroundingDecision {
@@ -40,7 +56,7 @@ function toGroundingDecision(d: Record<string, unknown>): GroundingDecision {
     tipo_decisao: (d.tipo_decisao as string | null) ?? null,
     orgao_julgador: (d.orgao_julgador as string | null) ?? null,
     source_url: (d.source_url as string | null) ?? null,
-    natureza: resultado ? "julgado" : "processo_relacionado",
+    natureza: classifyNatureza((d.ementa as string | null) ?? null, resultado),
   };
 }
 
@@ -176,7 +192,13 @@ export function describeDecision(d: GroundingDecision, index: number): string {
       : "SEM TEOR DISPONÍVEL (apenas dados de tramitação).";
 
   return `[${index}] ${meta}
-Natureza: ${d.natureza === "julgado" ? "julgado (há resultado registrado)" : "processo relacionado (sem resultado registrado)"}
+Natureza: ${
+    d.natureza === "precedente"
+      ? "precedente (há ementa oficial; pode fundamentar tese)"
+      : d.natureza === "julgado"
+        ? "julgado sem ementa (só pode ser mencionado como caso análogo)"
+        : "relacionado (sem resultado e sem teor; não pode ser citado)"
+  }
 Resultado: ${resultado}
 Temas: ${temas}
 ${corpo}`;
@@ -184,10 +206,12 @@ ${corpo}`;
 
 const REGRAS_CITACAO = `## REGRAS DE CITAÇÃO
 - Ao citar uma decisão, use o formato exato: "conforme [tipo_decisao] do [tribunal], processo [número], resultado [resultado]".
-- Processo sem resultado registrado NÃO é precedente: pode ser mencionado apenas como caso relacionado, nunca como fundamento.
+- Fonte marcada como "precedente" (tem ementa oficial): pode sustentar tese jurídica.
+- Fonte marcada como "julgado sem ementa": só pode ser mencionada como caso análogo, na forma "em caso análogo, o [tribunal] julgou [resultado] pedido semelhante (processo [número])". É PROIBIDO usá-la para afirmar entendimento consolidado, jurisprudência pacífica, entendimento do tribunal ou qualquer tese atribuída ao tribunal.
+- Fonte marcada como "relacionado": não pode ser citada de forma alguma.
 - Trechos marcados como RESUMO DE METADADOS não são texto oficial da decisão. Não os apresente como ementa nem os cite entre aspas como se fossem transcrição.
 - Legislação (CF, CLT, CDC, CC, CPC, CP): pode citar artigos que você tenha CERTEZA. Se houver dúvida sobre o número exato, cite genericamente ("o CDC protege contra cobrança indevida" em vez de arriscar "art. 42").
-- Súmulas: só cite súmulas do STF ou STJ se tiver CERTEZA absoluta do número e do teor.
+- Súmulas: cite apenas as súmulas listadas no bloco "SÚMULAS DISPONÍVEIS". Se esse bloco não existir nesta conversa, não cite nenhuma súmula por número.
 - Jurisprudência: SOMENTE as decisões do contexto acima.`;
 
 export function buildGroundingBlock(decisions: GroundingDecision[]): string {

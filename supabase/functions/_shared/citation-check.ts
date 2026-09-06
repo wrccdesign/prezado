@@ -14,7 +14,10 @@ export type CitationStatus = "verificado" | "nao_encontrado" | "nao_verificavel"
 
 export interface CitationItem {
   tipo: CitationTipo;
+  /** Forma canônica ("art. 927 do CC"); é também a chave de deduplicação. */
   texto: string;
+  /** Trecho original, quando difere da forma canônica. */
+  original?: string;
   /** Só dígitos, para processos. */
   normalizado?: string;
   status?: CitationStatus;
@@ -27,20 +30,91 @@ export interface CitationReport {
   nao_verificaveis: number;
 }
 
-const CNJ_PONTUADO = /\b\d{7}-\d{2}\.\d{4}\.\d\.\d{2}\.\d{4}\b/g;
-const CNJ_DIGITOS = /(?<![\d.\-])\d{20}(?![\d.\-])/g;
-const SUMULA =
-  /S[úu]mula\s+(?:Vinculante\s+)?(?:n[.º°]?\s*)?\d+\s+d[oa]\s+(?:STF|STJ|TST|TSE|TCU)/gi;
-const ARTIGO_SIGLA =
-  /art(?:igo)?\.?\s*\d+(?:[.\-º°]?[-\w]{0,4})?\s*(?:,\s*[^,.;]{0,40}?)?\s*,?\s*d[oa]s?\s+(?:CLT|CDC|CC|CPC|CF|CP|CPP)\b/gi;
-const ARTIGO_LEI =
-  /art(?:igo)?\.?\s*\d+(?:[.\-º°]?[-\w]{0,4})?\s*(?:,\s*[^,.;]{0,40}?)?\s*,?\s*d[ao]\s+Lei\s+(?:Complementar\s+)?n?[.º°]?\s*[\d.]+\s*\/\s*\d{4}/gi;
-
 const onlyDigits = (s: string) => s.replace(/\D/g, "");
 
 function pushUnique(map: Map<string, CitationItem>, item: CitationItem) {
   const key = `${item.tipo}:${(item.normalizado ?? item.texto).toLowerCase()}`;
   if (!map.has(key)) map.set(key, item);
+}
+
+
+const CNJ_PONTUADO = /\b\d{7}-\d{2}\.\d{4}\.\d\.\d{2}\.\d{4}\b/g;
+const CNJ_DIGITOS = /(?<![\d.\-])\d{20}(?![\d.\-])/g;
+const SUMULA =
+  /S[úu]mula\s+(?:Vinculante\s+)?(?:n[.º°]?\s*)?\d+\s+d[oa]\s+(?:STF|STJ|TST|TSE|TCU)/gi;
+
+/** Nomes por extenso mapeados para sigla — ordenados do mais longo para o mais curto. */
+const DIPLOMAS: Array<[RegExp, string]> = [
+  [/^c[óo]digo\s+de\s+processo\s+civil$/i, "CPC"],
+  [/^c[óo]digo\s+de\s+processo\s+penal$/i, "CPP"],
+  [/^c[óo]digo\s+de\s+defesa\s+do\s+consumidor$/i, "CDC"],
+  [/^consolida[çc][ãa]o\s+das\s+leis\s+do\s+trabalho$/i, "CLT"],
+  [/^constitui[çc][ãa]o\s+federal$/i, "CF"],
+  [/^c[óo]digo\s+civil$/i, "CC"],
+  [/^c[óo]digo\s+penal$/i, "CP"],
+];
+
+const DIPLOMA_ALT = [
+  "C[óo]digo\\s+de\\s+Processo\\s+Civil",
+  "C[óo]digo\\s+de\\s+Processo\\s+Penal",
+  "C[óo]digo\\s+de\\s+Defesa\\s+do\\s+Consumidor",
+  "Consolida[çc][ãa]o\\s+das\\s+Leis\\s+do\\s+Trabalho",
+  "Constitui[çc][ãa]o\\s+Federal",
+  "C[óo]digo\\s+Civil",
+  "C[óo]digo\\s+Penal",
+  "CLT",
+  "CDC",
+  "CPC",
+  "CPP",
+  "CF",
+  "CC",
+  "CP",
+].join("|");
+
+const LEI_ALT =
+  "Lei\\s+(?:Complementar\\s+)?n?[.º°]?\\s*[\\d.]+\\s*\\/\\s*\\d{4}";
+
+const ART_HEAD = "art(?:s|igos?)?\\.?";
+const ITEM_ACESSORIO =
+  "§\\s*\\d+[ºª°]?|par[áa]grafo\\s+[\\wíú]+|inciso\\s+[IVXLCDM]+|al[íi]nea\\s+[a-z]\\)?|caput";
+const NUMERO_ART = "\\d+[ºª°]?(?:-[A-Z])?";
+const LISTA =
+  `${NUMERO_ART}(?:\\s*(?:,|;|\\s+e)\\s*(?:d[oa]s?\\s+)?(?:${ART_HEAD}\\s*)?(?:${ITEM_ACESSORIO}|${NUMERO_ART}))*`;
+
+const ARTIGO_CITACAO = new RegExp(
+  `${ART_HEAD}\\s*(${LISTA})\\s*,?\\s*d[oa]s?\\s+(${DIPLOMA_ALT}|${LEI_ALT})\\b`,
+  "gi",
+);
+
+const TOKEN_LISTA = new RegExp(`${ITEM_ACESSORIO}|${NUMERO_ART}`, "gi");
+
+/** Converte o diploma citado para a forma canônica ("CC", "Lei 8.078/1990"). */
+function canonicalDiploma(raw: string): { nome: string; preposicao: "do" | "da" } {
+  const texto = raw.replace(/\s+/g, " ").trim();
+  const lei = texto.match(/Lei\s+(Complementar\s+)?n?[.º°]?\s*([\d.]+)\s*\/\s*(\d{4})/i);
+  if (lei) {
+    return {
+      nome: `Lei ${lei[1] ? "Complementar " : ""}${lei[2]}/${lei[3]}`,
+      preposicao: "da",
+    };
+  }
+  for (const [re, sigla] of DIPLOMAS) {
+    if (re.test(texto)) {
+      return { nome: sigla, preposicao: sigla === "CF" || sigla === "CLT" ? "da" : "do" };
+    }
+  }
+  const sigla = texto.toUpperCase();
+  return { nome: sigla, preposicao: sigla === "CF" || sigla === "CLT" ? "da" : "do" };
+}
+
+/** Números de artigo de uma lista, ignorando parágrafos, incisos e alíneas. */
+function numerosDaLista(lista: string): string[] {
+  const nums: string[] = [];
+  for (const m of lista.matchAll(TOKEN_LISTA)) {
+    const t = m[0].trim();
+    if (/^\d/.test(t)) nums.push(t.replace(/[ºª°]$/, ""));
+  }
+  return [...new Set(nums)];
 }
 
 /** Extração pura de citações a partir do texto gerado. */
@@ -57,15 +131,20 @@ export function extractCitations(text: string): CitationItem[] {
   for (const m of text.matchAll(SUMULA)) {
     pushUnique(found, { tipo: "sumula", texto: m[0].replace(/\s+/g, " ").trim() });
   }
-  for (const m of text.matchAll(ARTIGO_LEI)) {
-    pushUnique(found, { tipo: "artigo", texto: m[0].replace(/\s+/g, " ").trim() });
-  }
-  for (const m of text.matchAll(ARTIGO_SIGLA)) {
-    pushUnique(found, { tipo: "artigo", texto: m[0].replace(/\s+/g, " ").trim() });
+  for (const m of text.matchAll(ARTIGO_CITACAO)) {
+    const { nome, preposicao } = canonicalDiploma(m[2]);
+    for (const numero of numerosDaLista(m[1])) {
+      pushUnique(found, {
+        tipo: "artigo",
+        texto: `art. ${numero} ${preposicao} ${nome}`,
+        original: m[0].replace(/\s+/g, " ").trim(),
+      });
+    }
   }
 
   return [...found.values()];
 }
+
 
 /** Aceita o client do supabase-js ou um duplo de teste. */
 // deno-lint-ignore no-explicit-any
