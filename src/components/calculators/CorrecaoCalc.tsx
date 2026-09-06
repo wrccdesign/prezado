@@ -427,6 +427,14 @@ export function CorrecaoCalc({ onUsarValor, usarValorLabel = "Usar este valor", 
             <Button variant="outline" size="sm" onClick={() => exportar("docx")}>
               Exportar Word
             </Button>
+            <Button variant="outline" size="sm" onClick={baixarImagem} disabled={gerandoImagem}>
+              {gerandoImagem && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              Baixar imagem para compartilhar
+            </Button>
+            <Button variant="outline" size="sm" onClick={copiarLink}>
+              Copiar link deste cálculo
+            </Button>
+
             {onUsarValor && (
               <Button
                 variant={usarValorVariant}
