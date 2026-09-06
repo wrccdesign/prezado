@@ -9,6 +9,8 @@ export interface LimitErrorInfo {
   limitReached: boolean;
   /** Trava de rajada (muitas chamadas por hora) — não é problema de plano. */
   burstLimited: boolean;
+  /** Sessão ausente ou expirada — o usuário precisa entrar de novo. */
+  authRequired: boolean;
 }
 
 export async function readFunctionError(error: unknown, fallback: string): Promise<LimitErrorInfo> {
@@ -17,15 +19,17 @@ export async function readFunctionError(error: unknown, fallback: string): Promi
     try {
       const body = await context.clone().json();
       const burstLimited = body?.burst_limit === true;
+      const authRequired = context.status === 401 || body?.auth_required === true;
       return {
         message: typeof body?.error === "string" ? body.error : fallback,
-        limitReached: !burstLimited && (context.status === 429 || body?.limit_reached === true),
+        limitReached: !burstLimited && !authRequired && (context.status === 429 || body?.limit_reached === true),
         burstLimited,
+        authRequired,
       };
     } catch {
       // corpo não-JSON — segue para o fallback
     }
   }
   const message = error instanceof Error ? error.message : fallback;
-  return { message, limitReached: false, burstLimited: false };
+  return { message, limitReached: false, burstLimited: false, authRequired: false };
 }
