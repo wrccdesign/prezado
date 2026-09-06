@@ -15,6 +15,8 @@ import { readFunctionError } from "@/lib/usageLimit";
 import { notifyUsageConsumed } from "@/hooks/useUsage";
 import { useGuestExportGate } from "@/components/calculators/shared/GuestExportGate";
 import { generateShareCard, downloadBlob } from "@/lib/shareCard";
+import { formatDateBR } from "@/lib/date";
+
 
 
 
