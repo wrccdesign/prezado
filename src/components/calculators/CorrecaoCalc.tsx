@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -13,6 +14,8 @@ import { exportToPDF, exportToDOCX, slugify, type ExportSection } from "@/lib/ex
 import { readFunctionError } from "@/lib/usageLimit";
 import { notifyUsageConsumed } from "@/hooks/useUsage";
 import { useGuestExportGate } from "@/components/calculators/shared/GuestExportGate";
+import { generateShareCard, downloadBlob } from "@/lib/shareCard";
+
 
 
 interface LinhaMemoria {
