@@ -1,7 +1,7 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { burstLimitMessage, checkRateLimit, extractEnv, monthlyLimitMessage } from "../_shared/rate-limit.ts";
-import { fetchGroundingContext, describeDecision, type GroundingDecision } from "../_shared/grounding.ts";
+import { fetchGroundingContext, describeDecision, fetchGroundingSumulas, buildSumulasBlock, type GroundingDecision } from "../_shared/grounding.ts";
 import { searchLegislation, type NormaResumo } from "../_shared/legislation-search.ts";
 import { aiChatText, AIError } from "../_shared/ai.ts";
 import { buildCitationReport } from "../_shared/citation-check.ts";
