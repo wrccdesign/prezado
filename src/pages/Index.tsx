@@ -1,4 +1,5 @@
 import { useState, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { readFunctionError } from "@/lib/usageLimit";
@@ -17,6 +18,7 @@ import { SEO } from "@/components/SEO";
 import type { LegalAnalysis } from "@/types/analysis";
 
 export default function Index() {
+  const navigate = useNavigate();
   const { user } = useAuth();
   const { toast } = useToast();
   const [text, setText] = useState("");

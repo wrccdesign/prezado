@@ -152,6 +152,20 @@ export default function Diagnostico() {
       const data = await response.json();
 
       if (!response.ok) {
+        if (response.status === 401 || data?.auth_required) {
+          toast({
+            title: "Sessão expirada",
+            description: data?.error || "Entre novamente para continuar.",
+            variant: "destructive",
+            action: (
+              <Button variant="outline" size="sm" onClick={() => navigate("/auth")}>
+                Entrar
+              </Button>
+            ),
+          });
+          setLoading(false);
+          return;
+        }
         if (response.status === 429 && data?.limit_reached) {
           toast({
             title: "Limite diário atingido",
