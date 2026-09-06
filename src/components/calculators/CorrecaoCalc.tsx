@@ -82,29 +82,53 @@ interface CorrecaoCalcProps {
 }
 
 export function CorrecaoCalc({ onUsarValor, usarValorLabel = "Usar este valor", usarValorVariant = "default" }: CorrecaoCalcProps = {}) {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const p = (k: string) => searchParams.get(k) ?? "";
 
-  const [valor, setValor] = useState("");
-  const [dataInicial, setDataInicial] = useState("");
-  const [dataFinal, setDataFinal] = useState("");
-  const [indice, setIndice] = useState("ipca");
-  const [proRata, setProRata] = useState(true);
-  const [manterIndiceContratual, setManterIndiceContratual] = useState(false);
-  const [regimeJuros, setRegimeJuros] = useState("legal_14905");
-  const [tipoJuros, setTipoJuros] = useState("simples");
-  const [taxaFixa, setTaxaFixa] = useState("1");
+  const [valor, setValor] = useState(p("valor"));
+  const [dataInicial, setDataInicial] = useState(p("data_inicial"));
+  const [dataFinal, setDataFinal] = useState(p("data_final"));
+  const [indice, setIndice] = useState(p("indice") || "ipca");
+  const [proRata, setProRata] = useState(p("pro_rata") ? p("pro_rata") === "1" : true);
+  const [manterIndiceContratual, setManterIndiceContratual] = useState(p("manter_indice_contratual") === "1");
+  const [regimeJuros, setRegimeJuros] = useState(p("regime_juros") || "legal_14905");
+  const [tipoJuros, setTipoJuros] = useState(p("tipo_juros") || "simples");
+  const [taxaFixa, setTaxaFixa] = useState(p("taxa_fixa") || "1");
   const [usarDatasJuros, setUsarDatasJuros] = useState(false);
   const [jurosInicio, setJurosInicio] = useState("");
   const [jurosFim, setJurosFim] = useState("");
-  const [multa, setMulta] = useState("");
-  const [multaSobreJuros, setMultaSobreJuros] = useState(false);
-  const [honorarios, setHonorarios] = useState("");
+  const [multa, setMulta] = useState(p("multa"));
+  const [multaSobreJuros, setMultaSobreJuros] = useState(p("multa_sobre_juros") === "1");
+  const [honorarios, setHonorarios] = useState(p("honorarios"));
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<Resultado | null>(null);
   const [memoriaAberta, setMemoriaAberta] = useState(false);
+  const [gerandoImagem, setGerandoImagem] = useState(false);
   const { isAuthenticated, requireAccount } = useGuestExportGate();
+  const autoCalcFeito = useRef(false);
 
+  const syncUrl = useCallback(() => {
+    const params: Record<string, string> = {
+      valor,
+      data_inicial: dataInicial,
+      data_final: dataFinal,
+      indice,
+      pro_rata: proRata ? "1" : "0",
+      regime_juros: regimeJuros,
+      tipo_juros: tipoJuros,
+    };
+    if (manterIndiceContratual) params.manter_indice_contratual = "1";
+    if (regimeJuros === "taxa_fixa") params.taxa_fixa = taxaFixa;
+    if (multa) params.multa = multa;
+    if (multaSobreJuros) params.multa_sobre_juros = "1";
+    if (honorarios) params.honorarios = honorarios;
+    setSearchParams(params, { replace: true });
+  }, [
+    valor, dataInicial, dataFinal, indice, proRata, manterIndiceContratual,
+    regimeJuros, tipoJuros, taxaFixa, multa, multaSobreJuros, honorarios, setSearchParams,
+  ]);
 
-  const calcular = async () => {
+  const calcular = useCallback(async () => {
     if (!valor || !dataInicial || !dataFinal) {
       toast({ title: "Preencha valor e datas", variant: "destructive" });
       return;
@@ -142,6 +166,7 @@ export function CorrecaoCalc({ onUsarValor, usarValorLabel = "Usar este valor", 
       }
       if ((data as { error?: string })?.error) throw new Error((data as { error: string }).error);
       setResult(data as Resultado);
+      syncUrl();
       notifyUsageConsumed();
     } catch (e) {
       const msg = e instanceof Error ? e.message : "Falha ao calcular";
@@ -149,7 +174,52 @@ export function CorrecaoCalc({ onUsarValor, usarValorLabel = "Usar este valor", 
     } finally {
       setLoading(false);
     }
+  }, [
+    valor, dataInicial, dataFinal, indice, proRata, manterIndiceContratual, regimeJuros,
+    tipoJuros, taxaFixa, usarDatasJuros, jurosInicio, jurosFim, multa, multaSobreJuros,
+    honorarios, syncUrl,
+  ]);
+
+  // Link compartilhado: calcula sozinho ao abrir a página já preenchida.
+  useEffect(() => {
+    if (autoCalcFeito.current) return;
+    autoCalcFeito.current = true;
+    if (valor && dataInicial && dataFinal) void calcular();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const copiarLink = async () => {
+    syncUrl();
+    try {
+      await navigator.clipboard.writeText(window.location.href);
+      toast({ title: "Link copiado", description: "Quem abrir o link vê este mesmo cálculo." });
+    } catch {
+      toast({ title: "Não foi possível copiar", description: "Copie o endereço da barra do navegador.", variant: "destructive" });
+    }
   };
+
+  const baixarImagem = async () => {
+    if (!result) return;
+    setGerandoImagem(true);
+    try {
+      const blob = await generateShareCard({
+        titulo: "Correção Monetária",
+        valorOriginal: fmt(result.valor_original),
+        valorFinal: fmt(result.total),
+        periodo: `${formatDateBR(dataInicial)} a ${formatDateBR(dataFinal)}`,
+        indice: INDICES.find(i => i.id === indice)?.label ?? indice,
+        nota: "Calculado com dados oficiais do Banco Central",
+        rodape: "honorifico.com.br/calculadoras/correcao-monetaria-juros-lei-14905",
+      });
+      downloadBlob(blob, `correcao-monetaria-${dataFinal}.png`);
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : "Falha ao gerar a imagem";
+      toast({ title: "Não foi possível gerar a imagem", description: msg, variant: "destructive" });
+    } finally {
+      setGerandoImagem(false);
+    }
+  };
+
 
 
   const buildSections = (r: Resultado): ExportSection[] => [
