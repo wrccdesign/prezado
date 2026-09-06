@@ -715,6 +715,51 @@ export type Database = {
         }
         Relationships: []
       }
+      sumulas: {
+        Row: {
+          area: string | null
+          created_at: string
+          data_aprovacao: string | null
+          embedding: string | null
+          enunciado: string
+          id: string
+          numero: number
+          situacao: string
+          source_url: string | null
+          tipo: string
+          tribunal: string
+          updated_at: string
+        }
+        Insert: {
+          area?: string | null
+          created_at?: string
+          data_aprovacao?: string | null
+          embedding?: string | null
+          enunciado: string
+          id?: string
+          numero: number
+          situacao?: string
+          source_url?: string | null
+          tipo?: string
+          tribunal: string
+          updated_at?: string
+        }
+        Update: {
+          area?: string | null
+          created_at?: string
+          data_aprovacao?: string | null
+          embedding?: string | null
+          enunciado?: string
+          id?: string
+          numero?: number
+          situacao?: string
+          source_url?: string | null
+          tipo?: string
+          tribunal?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       tj_scraping_config: {
         Row: {
           created_at: string | null
@@ -919,6 +964,27 @@ export type Database = {
           uf: string
           upvotes: number
           view_count: number
+        }[]
+      }
+      search_sumulas: {
+        Args: {
+          filter_area?: string
+          filter_tribunal?: string
+          include_nao_vigentes?: boolean
+          result_limit?: number
+          search_query: string
+        }
+        Returns: {
+          area: string
+          data_aprovacao: string
+          enunciado: string
+          id: string
+          numero: number
+          rank: number
+          situacao: string
+          source_url: string
+          tipo: string
+          tribunal: string
         }[]
       }
       unschedule_backfill_embeddings: { Args: never; Returns: boolean }
