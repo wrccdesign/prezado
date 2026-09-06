@@ -1,5 +1,5 @@
 import { assertEquals } from "https://deno.land/std@0.224.0/assert/mod.ts";
-import { extractCitations, verifyCitations, type CitationItem } from "./citation-check.ts";
+import { extractCitations, parseSumula, verifyCitations, type CitationItem } from "./citation-check.ts";
 
 const tipos = (items: CitationItem[], tipo: string) => items.filter((i) => i.tipo === tipo);
 
@@ -71,6 +71,35 @@ Deno.test("9. verifyCitations classifica processos e não verificáveis", async 
   );
   const report = await verifyCitations(items, fake);
   assertEquals(report.verificados, 1);
+  // processo ausente + súmula ausente do acervo curado
+  assertEquals(report.nao_encontrados, 2);
+  // apenas o artigo de lei
+  assertEquals(report.nao_verificaveis, 1);
+});
+
+Deno.test("parseSumula identifica tribunal, tipo e número", () => {
+  const a = parseSumula("Súmula Vinculante 13 do STF");
+  assertEquals(a, { tribunal: "STF", tipo: "vinculante", numero: 13 });
+  const b = parseSumula("Súmula 297 do STJ");
+  assertEquals(b, { tribunal: "STJ", tipo: "comum", numero: 297 });
+  assertEquals(parseSumula("art. 5º da CF"), null);
+});
+
+Deno.test("verifyCitations confere súmulas contra o acervo", async () => {
+  const fake = {
+    from: (table: string) => ({
+      select: () => ({
+        in: () =>
+          Promise.resolve({
+            data: table === "sumulas"
+              ? [{ tribunal: "STJ", tipo: "comum", numero: 297 }]
+              : [],
+          }),
+      }),
+    }),
+  };
+  const items = extractCitations("Aplica-se a Súmula 297 do STJ e a Súmula 999 do STJ.");
+  const report = await verifyCitations(items, fake);
+  assertEquals(report.verificados, 1);
   assertEquals(report.nao_encontrados, 1);
-  assertEquals(report.nao_verificaveis, 2);
 });

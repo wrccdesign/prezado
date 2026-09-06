@@ -1,7 +1,7 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { burstLimitMessage, checkRateLimit, extractEnv, monthlyLimitMessage } from "../_shared/rate-limit.ts";
-import { fetchGroundingContext, describeDecision, type GroundingDecision } from "../_shared/grounding.ts";
+import { fetchGroundingContext, describeDecision, fetchGroundingSumulas, buildSumulasBlock, type GroundingDecision } from "../_shared/grounding.ts";
 import { searchLegislation, type NormaResumo } from "../_shared/legislation-search.ts";
 import { aiChatText, AIError } from "../_shared/ai.ts";
 import { buildCitationReport } from "../_shared/citation-check.ts";
@@ -198,7 +198,10 @@ serve(async (req) => {
 
 
     const legislationContext = buildLegislationContext(normas);
-    const precedentsBlock = buildPrecedentsBlock(precedents);
+    const sumulasDisponiveis = await fetchGroundingSumulas(
+      `${tipo_acao} ${fatos}`.slice(0, 800), supabaseUrl, supabaseKey, 3,
+    );
+    const precedentsBlock = buildPrecedentsBlock(precedents) + buildSumulasBlock(sumulasDisponiveis);
 
 
     const systemPrompt = `Você é Honorífico, especialista em redação de peças processuais e documentos jurídicos brasileiros.
@@ -212,7 +215,7 @@ O advogado NÃO precisa fornecer os fundamentos — isso é trabalho da IA.
 - Sempre que citar um artigo de lei, use o formato: "nos termos do art. X da Lei nº Y/ANO...". Se tiver QUALQUER dúvida sobre o número exato do artigo, prefira redação genérica ("com base nos princípios do CDC sobre cobrança indevida").
 - Precedentes jurisprudenciais: você SÓ pode citar decisões listadas em "PRECEDENTES DISPONÍVEIS" abaixo, sempre no formato "conforme [tipo_decisao] do [tribunal], processo [número], resultado [resultado]". Se nenhum se aplicar, NÃO inclua seção de precedentes.
 - Processo sem resultado registrado NÃO é precedente: pode ser mencionado apenas como caso relacionado, nunca como fundamento.
-- Súmulas: só cite súmulas do STF ou STJ se tiver CERTEZA absoluta do número e teor.
+- Súmulas: cite apenas as listadas em "SÚMULAS DISPONÍVEIS", quando houver. Fora dessa lista, não cite súmula por número.
 - Se não tiver certeza sobre a atualização de uma norma, sinalize: "verifique a redação vigente no Planalto (planalto.gov.br)".
 
 ## ESTRUTURA OBRIGATÓRIA DA PETIÇÃO

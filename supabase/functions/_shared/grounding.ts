@@ -44,6 +44,52 @@ function toGroundingDecision(d: Record<string, unknown>): GroundingDecision {
   };
 }
 
+export interface GroundingSumula {
+  tribunal: string;
+  tipo: string;
+  numero: number;
+  enunciado: string;
+  area: string | null;
+  source_url: string | null;
+}
+
+/** Súmulas vigentes do acervo curado, relevantes para a consulta. */
+export async function fetchGroundingSumulas(
+  query: string,
+  supabaseUrl: string,
+  serviceKey: string,
+  limit = 3,
+): Promise<GroundingSumula[]> {
+  if (!query || query.trim().length < 5) return [];
+  try {
+    const supabase = createClient(supabaseUrl, serviceKey);
+    const { data } = await supabase.rpc("search_sumulas", {
+      search_query: query.slice(0, 200),
+      filter_tribunal: null,
+      filter_area: null,
+      result_limit: limit,
+    });
+    return Array.isArray(data) ? (data as GroundingSumula[]) : [];
+  } catch (e) {
+    console.warn("Súmula grounding failed:", e instanceof Error ? e.message : e);
+    return [];
+  }
+}
+
+export function buildSumulasBlock(sumulas: GroundingSumula[]): string {
+  if (sumulas.length === 0) return "";
+  const linhas = sumulas
+    .map((s) =>
+      `- ${s.tipo === "vinculante" ? "Súmula Vinculante" : "Súmula"} ${s.numero} do ${s.tribunal}${
+        s.area ? ` (${s.area})` : ""
+      }: "${s.enunciado}"`
+    )
+    .join("\n");
+  return `\n\n## SÚMULAS DISPONÍVEIS (texto oficial conferido)
+${linhas}
+Cite súmula APENAS se ela estiver nesta lista. Nenhuma outra súmula pode ser citada por número.`;
+}
+
 export async function fetchGroundingContext(
   query: string,
   supabaseUrl: string,

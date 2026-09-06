@@ -2,7 +2,7 @@ import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { requireUser } from "../_shared/auth.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { burstLimitMessage, checkRateLimit, extractEnv, monthlyLimitMessage } from "../_shared/rate-limit.ts";
-import { fetchGroundingContext, buildGroundingBlock } from "../_shared/grounding.ts";
+import { fetchGroundingContext, buildGroundingBlock, fetchGroundingSumulas, buildSumulasBlock } from "../_shared/grounding.ts";
 import { aiChatStream, AIError } from "../_shared/ai.ts";
 
 const corsHeaders = {
@@ -141,7 +141,8 @@ serve(async (req) => {
     const lastUser = [...messages].reverse().find((m: any) => m.role === "user");
     const groundingQuery = typeof lastUser?.content === "string" ? lastUser.content : "";
     const grounding = await fetchGroundingContext(groundingQuery, SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, 5);
-    const groundingBlock = buildGroundingBlock(grounding);
+    const sumulas = await fetchGroundingSumulas(groundingQuery, SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, 3);
+    const groundingBlock = buildGroundingBlock(grounding) + buildSumulasBlock(sumulas);
 
     const systemContent = SYSTEM_PROMPT + disclaimerInstruction + groundingBlock;
 

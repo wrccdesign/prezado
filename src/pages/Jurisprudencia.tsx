@@ -40,8 +40,19 @@ interface Decision {
   rank: number;
 }
 
+interface Sumula {
+  id: string;
+  tribunal: string;
+  tipo: string;
+  numero: number;
+  enunciado: string;
+  area: string | null;
+  source_url: string | null;
+}
+
 interface SearchResponse {
   results: Decision[];
+  sumulas?: Sumula[];
   ai_expansion: {
     query_expandida: string;
     keywords: string[];
@@ -100,6 +111,7 @@ export default function Jurisprudencia() {
   const [query, setQuery] = useState("");
   const [loading, setLoading] = useState(false);
   const [results, setResults] = useState<Decision[]>([]);
+  const [sumulas, setSumulas] = useState<Sumula[]>([]);
   const [aiExpansion, setAiExpansion] = useState<SearchResponse["ai_expansion"]>(null);
   const [showFilters, setShowFilters] = useState(false);
   const [expandedId, setExpandedId] = useState<string | null>(null);
@@ -188,6 +200,7 @@ if (!res.ok) {
       notifyUsageConsumed();
       setGuestPreview(!!response.guest_preview);
       setResults(response.results || []);
+      setSumulas(response.sumulas || []);
       setAiExpansion(response.ai_expansion);
 
 
@@ -397,6 +410,33 @@ if (!res.ok) {
               <Loader2 className="h-8 w-8 animate-spin text-gold" />
               <p className="text-note text-navy/70">Buscando jurisprudência</p>
             </div>
+          )}
+
+          {!loading && sumulas.length > 0 && (
+            <section aria-labelledby="sumulas-heading" className="mb-10">
+              <h2 id="sumulas-heading" className="text-h3">Súmulas relacionadas</h2>
+              {sumulas.map((s) => (
+                <article key={s.id} className="border-t border-cream-dark pt-4 pb-5 mt-4">
+                  <p className="text-sm font-medium text-navy">
+                    {s.tipo === "vinculante"
+                      ? `Súmula Vinculante ${s.numero} do ${s.tribunal}`
+                      : `Súmula ${s.numero} do ${s.tribunal}`}
+                    {s.area ? `, ${s.area}` : ""}
+                  </p>
+                  <p className="text-body-serif text-navy/80 max-w-[68ch] mt-2">{s.enunciado}</p>
+                  {s.source_url && (
+                    <a
+                      href={s.source_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-note underline underline-offset-4 mt-2 inline-block"
+                    >
+                      Ver no site do tribunal
+                    </a>
+                  )}
+                </article>
+              ))}
+            </section>
           )}
 
           <div>

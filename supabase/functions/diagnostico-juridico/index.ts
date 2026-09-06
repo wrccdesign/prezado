@@ -1,7 +1,7 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { burstLimitMessage, checkRateLimit, extractEnv, monthlyLimitMessage } from "../_shared/rate-limit.ts";
-import { fetchGroundingContext, buildGroundingBlock } from "../_shared/grounding.ts";
+import { fetchGroundingContext, buildGroundingBlock, fetchGroundingSumulas, buildSumulasBlock } from "../_shared/grounding.ts";
 import { aiChatTool, AIError } from "../_shared/ai.ts";
 import { buildCitationReport } from "../_shared/citation-check.ts";
 
@@ -45,7 +45,8 @@ serve(async (req) => {
 
     // Grounding: fetch relevant decisions
     const grounding = await fetchGroundingContext(situacao, supabaseUrl, supabaseKey, 4);
-    const groundingBlock = buildGroundingBlock(grounding);
+    const sumulas = await fetchGroundingSumulas(situacao, supabaseUrl, supabaseKey, 3);
+    const groundingBlock = buildGroundingBlock(grounding) + buildSumulasBlock(sumulas);
 
     const systemPrompt = `Você é um assistente jurídico brasileiro especializado em orientar cidadãos comuns que NÃO têm conhecimento jurídico.
 
