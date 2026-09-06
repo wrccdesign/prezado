@@ -74,3 +74,30 @@ Deno.test("9. verifyCitations classifica processos e não verificáveis", async 
   assertEquals(report.nao_encontrados, 1);
   assertEquals(report.nao_verificaveis, 2);
 });
+
+Deno.test("parseSumula identifica tribunal, tipo e número", () => {
+  const a = parseSumula("Súmula Vinculante 13 do STF");
+  assertEquals(a, { tribunal: "STF", tipo: "vinculante", numero: 13 });
+  const b = parseSumula("Súmula 297 do STJ");
+  assertEquals(b, { tribunal: "STJ", tipo: "comum", numero: 297 });
+  assertEquals(parseSumula("art. 5º da CF"), null);
+});
+
+Deno.test("verifyCitations confere súmulas contra o acervo", async () => {
+  const fake = {
+    from: (table: string) => ({
+      select: () => ({
+        in: () =>
+          Promise.resolve({
+            data: table === "sumulas"
+              ? [{ tribunal: "STJ", tipo: "comum", numero: 297 }]
+              : [],
+          }),
+      }),
+    }),
+  };
+  const items = extractCitations("Aplica-se a Súmula 297 do STJ e a Súmula 999 do STJ.");
+  const report = await verifyCitations(items, fake);
+  assertEquals(report.verificados, 1);
+  assertEquals(report.nao_encontrados, 1);
+});
