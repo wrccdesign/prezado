@@ -1,5 +1,5 @@
 import { assertEquals } from "https://deno.land/std@0.224.0/assert/mod.ts";
-import { extractCitations, verifyCitations, type CitationItem } from "./citation-check.ts";
+import { extractCitations, parseSumula, verifyCitations, type CitationItem } from "./citation-check.ts";
 
 const tipos = (items: CitationItem[], tipo: string) => items.filter((i) => i.tipo === tipo);
 
