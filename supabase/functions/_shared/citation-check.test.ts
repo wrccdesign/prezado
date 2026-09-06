@@ -71,8 +71,10 @@ Deno.test("9. verifyCitations classifica processos e não verificáveis", async 
   );
   const report = await verifyCitations(items, fake);
   assertEquals(report.verificados, 1);
-  assertEquals(report.nao_encontrados, 1);
-  assertEquals(report.nao_verificaveis, 2);
+  // processo ausente + súmula ausente do acervo curado
+  assertEquals(report.nao_encontrados, 2);
+  // apenas o artigo de lei
+  assertEquals(report.nao_verificaveis, 1);
 });
 
 Deno.test("parseSumula identifica tribunal, tipo e número", () => {
