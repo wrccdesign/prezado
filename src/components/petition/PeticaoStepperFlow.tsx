@@ -32,7 +32,15 @@ interface Precedent {
   data_decisao: string | null;
   ementa: string | null;
   resumo_ia?: string | null;
+  resultado?: string | null;
 }
+
+const nivelFonte = (p: Precedent) =>
+  (p.ementa ?? "").trim().length >= 50
+    ? "Precedente, com ementa oficial"
+    : p.resultado
+      ? "Julgado sem ementa, caso análogo"
+      : "Processo relacionado, sem teor";
 
 const STEPS = [
   { n: 1, label: "Caso" },
@@ -438,7 +446,7 @@ export function PeticaoStepperFlow({ tipoAcaoOptions, varaJuizoOptions, initial 
                         {[p.tribunal, p.numero_processo].filter(Boolean).join(" · ") || "Decisão"}
                       </Label>
                       <p className="text-xs text-muted-foreground">
-                        {[p.comarca, p.data_decisao].filter(Boolean).join(" · ")}
+                        {[p.comarca, p.data_decisao, nivelFonte(p)].filter(Boolean).join(" · ")}
                       </p>
                       {p.ementa ? (
                         <p className="mt-1 line-clamp-4 text-sm text-muted-foreground">{p.ementa}</p>

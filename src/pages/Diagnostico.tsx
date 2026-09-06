@@ -44,16 +44,22 @@ interface Citation {
   resumo_ia?: string | null;
   resultado?: string | null;
   tipo_decisao?: string | null;
-  natureza?: "julgado" | "processo_relacionado";
+  natureza?: "precedente" | "julgado" | "relacionado" | "processo_relacionado";
 }
 
 const SEM_FONTES_TEXTO =
   "Nenhuma decisão do nosso acervo foi usada nesta análise. O diagnóstico se apoiou apenas na legislação.";
 
-const citationNatureza = (c: Citation) =>
-  (c.natureza ?? (c.resultado ? "julgado" : "processo_relacionado")) === "julgado"
-    ? "Julgado"
-    : "Processo relacionado";
+const citationNatureza = (c: Citation) => {
+  const nivel = (c.ementa ?? "").trim().length >= 50
+    ? "precedente"
+    : c.resultado
+      ? "julgado"
+      : "relacionado";
+  if (nivel === "precedente") return "Precedente, com ementa oficial";
+  if (nivel === "julgado") return "Julgado sem ementa, caso análogo";
+  return "Processo relacionado, sem teor";
+};
 
 const citationTexto = (c: Citation) => c.ementa || c.resumo_ia || "";
 
