@@ -123,6 +123,14 @@ serve(async (req) => {
       : Promise.resolve([]);
 
 
+    // Step 2b: súmulas (FTS) — acervo curado, sempre disponível
+    const sumulasPromise = supabase.rpc("search_sumulas", {
+      search_query: aiData?.query_expandida?.slice(0, 200) || query,
+      filter_tribunal: null,
+      filter_area: null,
+      result_limit: isGuest ? 2 : 5,
+    });
+
     // Step 2: FTS search
     const ftsPromise = supabase.rpc("search_decisions", {
       search_query: searchQuery,
@@ -279,8 +287,13 @@ serve(async (req) => {
 
     const limited = isGuest ? withLive.slice(0, 3) : withLive;
 
+    const { data: sumulasData, error: sumulasError } = await sumulasPromise;
+    if (sumulasError) console.error("Súmulas search error:", sumulasError.message);
+    const sumulas = sumulasData || [];
+
     return new Response(JSON.stringify({
       results: limited,
+      sumulas,
       ai_expansion: isGuest ? null : aiData,
       query_used: searchQuery,
       total: limited.length,
@@ -290,6 +303,7 @@ serve(async (req) => {
         fts: (ftsResults || []).length,
         vector: vectorResults.length,
         vector_error: vectorError,
+        sumulas: sumulas.length,
         live: liveResults.length,
         live_new: liveNew.length,
         cache_hit: cacheHit,
