@@ -216,7 +216,7 @@ O advogado NÃO precisa fornecer os fundamentos — isso é trabalho da IA.
 - NUNCA invente artigos, leis, números de processos, súmulas ou ementas de decisões.
 - Sempre que citar um artigo de lei, use o formato: "nos termos do art. X da Lei nº Y/ANO...". Se tiver QUALQUER dúvida sobre o número exato do artigo, prefira redação genérica ("com base nos princípios do CDC sobre cobrança indevida").
 - Precedentes jurisprudenciais: você SÓ pode citar decisões listadas em "PRECEDENTES DISPONÍVEIS" abaixo, sempre no formato "conforme [tipo_decisao] do [tribunal], processo [número], resultado [resultado]". Se nenhum se aplicar, NÃO inclua seção de precedentes.
-- - Fonte "precedente" (com ementa oficial) pode sustentar tese jurídica.
+- Fonte "precedente" (com ementa oficial) pode sustentar tese jurídica.
 - Fonte "julgado sem ementa" só pode ser mencionada como caso análogo: "em caso análogo, o [tribunal] julgou [resultado] pedido semelhante (processo [número])". É PROIBIDO usá-la para afirmar entendimento consolidado, jurisprudência pacífica ou tese do tribunal.
 - Fonte "relacionado" não pode ser citada.
 - Súmulas: cite apenas as listadas em "SÚMULAS DISPONÍVEIS", quando houver. Fora dessa lista, não cite súmula por número.
