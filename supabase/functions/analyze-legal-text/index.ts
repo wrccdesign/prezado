@@ -153,16 +153,25 @@ serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   try {
-    const authHeader = req.headers.get("Authorization");
-    if (!authHeader) throw new Error("Missing authorization");
-
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const supabase = createClient(supabaseUrl, supabaseKey);
 
-    const token = authHeader.replace("Bearer ", "");
-    const { data: { user }, error: userError } = await supabase.auth.getUser(token);
-    if (userError || !user) throw new Error("Unauthorized");
+    const authHeader = req.headers.get("Authorization");
+    const token = authHeader?.replace("Bearer ", "").trim();
+    const { data: userData, error: userError } = token
+      ? await supabase.auth.getUser(token)
+      : { data: { user: null }, error: null };
+    const user = userData?.user ?? null;
+    if (!token || userError || !user) {
+      return new Response(
+        JSON.stringify({
+          error: "Sua sessão expirou. Entre novamente para continuar.",
+          auth_required: true,
+        }),
+        { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+      );
+    }
 
     // Esta é a função mais caras do produto (duas chamadas de IA), portanto
     // entra na grade de créditos como ação "analise".
