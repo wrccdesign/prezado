@@ -30,6 +30,14 @@ export interface CitationReport {
   nao_verificaveis: number;
 }
 
+const onlyDigits = (s: string) => s.replace(/\D/g, "");
+
+function pushUnique(map: Map<string, CitationItem>, item: CitationItem) {
+  const key = `${item.tipo}:${(item.normalizado ?? item.texto).toLowerCase()}`;
+  if (!map.has(key)) map.set(key, item);
+}
+
+
 const CNJ_PONTUADO = /\b\d{7}-\d{2}\.\d{4}\.\d\.\d{2}\.\d{4}\b/g;
 const CNJ_DIGITOS = /(?<![\d.\-])\d{20}(?![\d.\-])/g;
 const SUMULA =
