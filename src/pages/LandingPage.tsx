@@ -88,7 +88,7 @@ export default function LandingPage() {
       <AppHeader />
 
       {/* HERO */}
-      <section className="bg-cream text-navy py-12 md:py-20">
+      <section className="bg-cream text-navy py-10 md:py-16">
         <div className="container mx-auto px-4 sm:px-6">
           <div className="grid gap-8 lg:grid-cols-12 lg:items-start">
             <div className="lg:col-span-7">
@@ -186,7 +186,7 @@ export default function LandingPage() {
       </section>
 
       {/* DO FATO AO FUNDAMENTO */}
-      <section id="recursos" className="bg-cream text-navy border-t border-cream-dark py-16 md:py-24">
+      <section id="recursos" className="bg-cream text-navy py-12 md:py-16">
         <div className="container mx-auto px-4 sm:px-6">
           <h2 className="text-h2 text-navy">Do fato ao fundamento</h2>
           <p className="text-navy/80 max-w-[60ch] mt-3">
@@ -217,7 +217,7 @@ export default function LandingPage() {
       </section>
 
       {/* POR QUE A FONTE IMPORTA */}
-      <section id="fonte" className="bg-cream text-navy border-t border-cream-dark py-16 md:py-24">
+      <section id="fonte" className="bg-cream text-navy py-12 md:py-16">
         <div className="container mx-auto px-4 sm:px-6">
           <FonteTable
             title="Por que a fonte importa"
@@ -230,7 +230,7 @@ export default function LandingPage() {
 
 
       {/* MEMÓRIA DE CÁLCULO */}
-      <section id="memoria" className="bg-cream text-navy border-t border-cream-dark py-16 md:py-24">
+      <section id="memoria" className="bg-cream text-navy py-12 md:py-16">
         <div className="container mx-auto px-4 sm:px-6">
           <h2 className="text-h2">A memória de cálculo vai anexada à petição</h2>
           <p className="text-navy/80 max-w-[60ch] mt-3">
@@ -274,7 +274,7 @@ export default function LandingPage() {
       </section>
 
       {/* CALCULADORA */}
-      <section id="calcular" className="bg-cream text-navy border-t border-cream-dark py-16 md:py-24">
+      <section id="calcular" className="bg-cream text-navy py-12 md:py-16">
         <div className="container mx-auto px-4 sm:px-6">
           <h2 className="text-h2">Calcule agora, sem cadastro</h2>
           <p className="mt-3 text-sm text-navy/70 max-w-[60ch]">
@@ -313,7 +313,7 @@ export default function LandingPage() {
       </section>
 
       {/* PLANOS */}
-      <section id="planos" className="bg-navy py-16 md:py-24">
+      <section id="planos" className="bg-navy py-14 md:py-18">
         <div className="container mx-auto px-4 sm:px-6">
           <h2 className="text-h2 text-cream">A assinatura libera a IA</h2>
           <p className="text-cream/72 max-w-[60ch] mt-3">
@@ -357,7 +357,7 @@ export default function LandingPage() {
       </section>
 
       {/* CTA FINAL */}
-      <section className="bg-navy border-t border-gold/12 py-16 md:py-24">
+      <section className="bg-navy border-t border-gold/12 py-14 md:py-18">
         <div className="container mx-auto px-4 sm:px-6 text-center">
           <h2 className="text-h2 text-cream">Comece pelo caso que está na sua mesa agora.</h2>
           <div className="mt-8 flex flex-wrap gap-6 justify-center items-center">
