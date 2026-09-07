@@ -1,0 +1,170 @@
+{
+  "version": 1,
+  "sdk_version": "2.0.3",
+  "path": "/mcp",
+  "auth": {
+    "type": "oauth",
+    "issuer": "https://hfhzkvuoywgxjklpiydq.supabase.co/auth/v1",
+    "accepted_audiences": [
+      "authenticated"
+    ]
+  },
+  "mcp": {
+    "server": {
+      "name": "honorifico",
+      "version": "0.1.0",
+      "title": "Honorífico"
+    },
+    "tools": [
+      {
+        "name": "buscar_jurisprudencia",
+        "title": "Buscar jurisprudência",
+        "description": "Busca decisões judiciais no acervo do Honorífico por texto livre, com filtros opcionais de tribunal, UF e instância. Retorna ementa, órgão julgador e link da fonte.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "consulta": {
+              "type": "string",
+              "minLength": 2,
+              "description": "Termos da busca, por exemplo: dano moral negativação indevida"
+            },
+            "tribunal": {
+              "type": "string",
+              "description": "Sigla do tribunal, por exemplo TJSP"
+            },
+            "uf": {
+              "type": "string",
+              "minLength": 2,
+              "maxLength": 2,
+              "description": "UF de duas letras, por exemplo SP"
+            },
+            "instancia": {
+              "type": "string",
+              "description": "Instância da decisão"
+            },
+            "limite": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 20,
+              "default": 10,
+              "description": "Quantidade de resultados"
+            }
+          },
+          "required": [
+            "consulta"
+          ],
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "ver_decisao",
+        "title": "Ver decisão",
+        "description": "Retorna os dados completos de uma decisão do acervo a partir do seu identificador, incluindo ementa, legislação citada e link da fonte.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string",
+              "format": "uuid",
+              "description": "Identificador da decisão, obtido em buscar_jurisprudencia"
+            }
+          },
+          "required": [
+            "id"
+          ],
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "buscar_sumulas",
+        "title": "Buscar súmulas",
+        "description": "Busca súmulas e enunciados no acervo do Honorífico por texto livre, com filtros opcionais de tribunal e área do direito.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "consulta": {
+              "type": "string",
+              "minLength": 2,
+              "description": "Termos da busca, por exemplo: prescrição consumidor"
+            },
+            "tribunal": {
+              "type": "string",
+              "description": "Sigla do tribunal, por exemplo STJ"
+            },
+            "area": {
+              "type": "string",
+              "description": "Área do direito"
+            },
+            "limite": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 20,
+              "default": 10,
+              "description": "Quantidade de resultados"
+            }
+          },
+          "required": [
+            "consulta"
+          ],
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "meu_historico",
+        "title": "Meu histórico",
+        "description": "Lista os itens salvos na conta de quem está conectado: análises, petições e cálculos, do mais recente para o mais antigo.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "tipo": {
+              "type": "string",
+              "enum": [
+                "analises",
+                "peticoes",
+                "calculos"
+              ],
+              "default": "analises",
+              "description": "Tipo de item do histórico"
+            },
+            "limite": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 50,
+              "default": 10,
+              "description": "Quantidade de itens"
+            }
+          },
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
+        },
+        "outputSchema": null
+      }
+    ]
+  }
+}
