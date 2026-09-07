@@ -61,7 +61,7 @@ const rows: { label: string; cells: string[] }[] = [
   {
     label: "Verificação das citações depois de gerar",
     cells: [
-      "Sim, cada citação é conferida contra o acervo; o que não é localizado aparece dito assim",
+      "Sim, cada citação é conferida contra o acervo; o não localizado aparece explicitamente",
       "Não há checagem depois de gerar",
       "Depende do fluxo",
       "Não se aplica",
