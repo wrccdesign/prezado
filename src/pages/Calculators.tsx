@@ -57,19 +57,25 @@ export default function Calculators() {
         {!active && (
           <section className="mt-10">
             <h2 className="text-h2 text-navy">Escolha uma calculadora</h2>
-            <ul className="mt-6">
-              {mainCalculators.map(c => (
-                <li key={c.id} className="border-t border-cream-dark">
-                  <button
-                    type="button"
-                    onClick={() => setActive(c.id)}
-                    className="flex w-full flex-col gap-1 py-5 text-left transition-colors hover:text-gold"
-                  >
-                    <span className="text-h3 text-navy">{c.title}</span>
-                    <span className="max-w-[68ch] text-sm text-navy/70">{c.desc}</span>
-                  </button>
-                </li>
-              ))}
+            <ul className="mt-6 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+              {mainCalculators.map(c => {
+                const Icon = c.icon;
+                return (
+                  <li key={c.id}>
+                    <button
+                      type="button"
+                      onClick={() => setActive(c.id)}
+                      className="flex h-full w-full flex-col items-start rounded-lg border border-cream-dark bg-white p-5 text-left transition-colors hover:border-gold/60"
+                    >
+                      <span className="inline-flex items-center justify-center rounded-md bg-cream p-2.5 text-gold">
+                        <Icon className="h-6 w-6" strokeWidth={1.5} />
+                      </span>
+                      <span className="mt-4 text-h3 text-navy">{c.title}</span>
+                      <span className="mt-1 text-sm leading-relaxed text-navy/70">{c.desc}</span>
+                    </button>
+                  </li>
+                );
+              })}
             </ul>
           </section>
         )}
