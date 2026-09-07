@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { Check, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { AppHeader } from "@/components/AppHeader";
 import { AppFooter } from "@/components/AppFooter";
