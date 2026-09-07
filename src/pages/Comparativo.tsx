@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { Check, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { AppHeader } from "@/components/AppHeader";
 import { AppFooter } from "@/components/AppFooter";
@@ -95,6 +96,31 @@ export default function Comparativo() {
           <p className="text-body-serif text-navy/80 max-w-[60ch] mt-6">
             Toda IA jurídica gera texto. A diferença está no que acontece depois: a IA escreve, nós conferimos toda citação contra o acervo antes de você protocolar.
           </p>
+
+          <div id="assinatura-marca" className="mt-12 md:mt-16">
+            <p className="font-serif text-h2 text-navy">
+              A IA escreve.{" "}
+              <span className="text-gold">Nós conferimos.</span>
+            </p>
+            <p className="font-sans text-base text-navy/70 mt-3">
+              Toda citação, contra o acervo, antes de você protocolar.
+            </p>
+
+            <div className="flex flex-wrap gap-3 mt-6">
+              <span className="inline-flex items-center gap-2 px-4 py-2 bg-white border border-cream-dark rounded-full text-sm font-sans text-navy/80">
+                <Check className="w-4 h-4 text-gold" strokeWidth={2} />
+                4 de 5 citações verificadas
+              </span>
+              <span className="inline-flex items-center gap-2 px-4 py-2 bg-white border border-cream-dark rounded-full text-sm font-sans text-navy/80">
+                <Search className="w-4 h-4 text-gold" strokeWidth={2} />
+                1 não localizada no acervo
+              </span>
+            </div>
+
+            <p className="text-note text-navy/60 mt-4">
+              Exemplo de como aparece em cada diagnóstico e petição gerados.
+            </p>
+          </div>
 
           <div className="overflow-x-auto mt-10">
             <table className="w-full text-sm text-left min-w-[720px]">
