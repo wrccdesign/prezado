@@ -151,3 +151,13 @@ Deno.test("14. dedupe entre forma extensa e sigla", () => {
     ["art. 927 do CC"],
   );
 });
+
+Deno.test("15. artigo com inciso romano solto antes do diploma", () => {
+  const items = extractCitations("Conforme o art. 5º, II, da CF, ninguém será obrigado.");
+  assertEquals(items.map((i) => i.texto), ["art. 5 da CF"]);
+});
+
+Deno.test("16. artigo com milhar separado por ponto", () => {
+  const items = extractCitations("Nos termos do art. 1.723 do Código Civil.");
+  assertEquals(items.map((i) => i.texto), ["art. 1.723 do CC"]);
+});
