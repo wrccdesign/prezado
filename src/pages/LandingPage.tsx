@@ -193,16 +193,6 @@ export default function LandingPage() {
             Quatro etapas, na ordem em que o trabalho acontece. Cada uma entrega um artefato que você aproveita na seguinte.
           </p>
 
-          <blockquote className="mt-8 border-l-2 border-gold pl-5 max-w-[60ch]">
-            <p className="font-serif text-lg text-navy italic">"Da mihi factum, dabo tibi jus."</p>
-            <p className="text-sm text-navy/70 mt-2">
-              Dá-me o fato, eu te darei o direito. Um princípio antigo do processo civil: cabe à parte narrar os fatos; cabe a quem interpreta a lei qualificá-los juridicamente. É a lógica por trás de cada diagnóstico do Honorífico.
-            </p>
-            <footer className="text-note text-navy/60 mt-3">
-              — Antonio Paulo da Costa Carvalho, juiz aposentado, responsável pela validação jurídica da plataforma
-            </footer>
-          </blockquote>
-
           <ol className="grid gap-8 lg:grid-cols-4 mt-12">
             {etapas.map((e, i) => (
               <li key={e.title} className="border-t border-navy/15 pt-5">
