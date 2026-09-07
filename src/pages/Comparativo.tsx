@@ -97,7 +97,7 @@ export default function Comparativo() {
             Toda IA jurídica gera texto. A diferença está no que acontece depois: a IA escreve, nós conferimos toda citação contra o acervo antes de você protocolar.
           </p>
 
-          <div className="mt-12 md:mt-16">
+          <div id="assinatura-marca" className="mt-12 md:mt-16">
             <p className="font-serif text-h2 text-navy">
               A IA escreve.{" "}
               <span className="text-gold">Nós conferimos.</span>
