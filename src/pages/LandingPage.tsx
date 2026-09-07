@@ -193,7 +193,7 @@ export default function LandingPage() {
             Quatro etapas, na ordem em que o trabalho acontece. Cada uma entrega um artefato que você aproveita na seguinte.
           </p>
 
-          <ol className="grid gap-8 lg:grid-cols-4 mt-12">
+          <ol className="grid gap-6 lg:grid-cols-4 mt-8">
             {etapas.map((e, i) => (
               <li key={e.title} className="border-t border-navy/15 pt-5">
                 <span className="font-serif text-h3 text-gold">{i + 1}</span>
@@ -237,7 +237,7 @@ export default function LandingPage() {
             Mês a mês, com o regime legal de cada período. É o documento que acompanha o pedido.
           </p>
 
-          <div className="mt-10 bg-white rounded-lg border border-cream-dark overflow-hidden">
+          <div className="mt-8 bg-white rounded-lg border border-cream-dark overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full text-left text-sm">
                 <thead>
@@ -281,7 +281,7 @@ export default function LandingPage() {
             O cálculo e a memória de cálculo são livres, sem conta. Baixar em PDF ou Word exige conta grátis.
           </p>
 
-          <div className="mt-8 bg-white rounded-lg border border-cream-dark p-6">
+          <div className="mt-6 bg-white rounded-lg border border-cream-dark p-6">
             <CorrecaoCalc
               usarValorLabel="Gerar petição com este valor"
               usarValorVariant="ghost"
@@ -323,7 +323,7 @@ export default function LandingPage() {
             Conta nova começa com 7 dias no plano Profissional, sem cartão.
           </p>
 
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-12">
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-8">
             {plans.map((p) => (
               <div
                 key={p.name}
