@@ -88,7 +88,7 @@ export default function LandingPage() {
       <AppHeader />
 
       {/* HERO */}
-      <section className="bg-cream text-navy py-12 md:py-20">
+      <section className="bg-cream text-navy py-10 md:py-16">
         <div className="container mx-auto px-4 sm:px-6">
           <div className="grid gap-8 lg:grid-cols-12 lg:items-start">
             <div className="lg:col-span-7">
@@ -186,14 +186,14 @@ export default function LandingPage() {
       </section>
 
       {/* DO FATO AO FUNDAMENTO */}
-      <section id="recursos" className="bg-cream text-navy border-t border-cream-dark py-16 md:py-24">
+      <section id="recursos" className="bg-cream text-navy py-12 md:py-16">
         <div className="container mx-auto px-4 sm:px-6">
           <h2 className="text-h2 text-navy">Do fato ao fundamento</h2>
           <p className="text-navy/80 max-w-[60ch] mt-3">
             Quatro etapas, na ordem em que o trabalho acontece. Cada uma entrega um artefato que você aproveita na seguinte.
           </p>
 
-          <ol className="grid gap-8 lg:grid-cols-4 mt-12">
+          <ol className="grid gap-6 lg:grid-cols-4 mt-8">
             {etapas.map((e, i) => (
               <li key={e.title} className="border-t border-navy/15 pt-5">
                 <span className="font-serif text-h3 text-gold">{i + 1}</span>
@@ -217,7 +217,7 @@ export default function LandingPage() {
       </section>
 
       {/* POR QUE A FONTE IMPORTA */}
-      <section id="fonte" className="bg-cream text-navy border-t border-cream-dark py-16 md:py-24">
+      <section id="fonte" className="bg-cream text-navy py-12 md:py-16">
         <div className="container mx-auto px-4 sm:px-6">
           <FonteTable
             title="Por que a fonte importa"
@@ -230,14 +230,14 @@ export default function LandingPage() {
 
 
       {/* MEMÓRIA DE CÁLCULO */}
-      <section id="memoria" className="bg-cream text-navy border-t border-cream-dark py-16 md:py-24">
+      <section id="memoria" className="bg-cream text-navy py-12 md:py-16">
         <div className="container mx-auto px-4 sm:px-6">
           <h2 className="text-h2">A memória de cálculo vai anexada à petição</h2>
           <p className="text-navy/80 max-w-[60ch] mt-3">
             Mês a mês, com o regime legal de cada período. É o documento que acompanha o pedido.
           </p>
 
-          <div className="mt-10 bg-white rounded-lg border border-cream-dark overflow-hidden">
+          <div className="mt-8 bg-white rounded-lg border border-cream-dark overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full text-left text-sm">
                 <thead>
@@ -274,14 +274,14 @@ export default function LandingPage() {
       </section>
 
       {/* CALCULADORA */}
-      <section id="calcular" className="bg-cream text-navy border-t border-cream-dark py-16 md:py-24">
+      <section id="calcular" className="bg-cream text-navy py-12 md:py-16">
         <div className="container mx-auto px-4 sm:px-6">
           <h2 className="text-h2">Calcule agora, sem cadastro</h2>
           <p className="mt-3 text-sm text-navy/70 max-w-[60ch]">
             O cálculo e a memória de cálculo são livres, sem conta. Baixar em PDF ou Word exige conta grátis.
           </p>
 
-          <div className="mt-8 bg-white rounded-lg border border-cream-dark p-6">
+          <div className="mt-6 bg-white rounded-lg border border-cream-dark p-6">
             <CorrecaoCalc
               usarValorLabel="Gerar petição com este valor"
               usarValorVariant="ghost"
@@ -313,7 +313,7 @@ export default function LandingPage() {
       </section>
 
       {/* PLANOS */}
-      <section id="planos" className="bg-navy py-16 md:py-24">
+      <section id="planos" className="bg-navy py-14 md:py-18">
         <div className="container mx-auto px-4 sm:px-6">
           <h2 className="text-h2 text-cream">A assinatura libera a IA</h2>
           <p className="text-cream/72 max-w-[60ch] mt-3">
@@ -323,7 +323,7 @@ export default function LandingPage() {
             Conta nova começa com 7 dias no plano Profissional, sem cartão.
           </p>
 
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-12">
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-8">
             {plans.map((p) => (
               <div
                 key={p.name}
@@ -357,7 +357,7 @@ export default function LandingPage() {
       </section>
 
       {/* CTA FINAL */}
-      <section className="bg-navy border-t border-gold/12 py-16 md:py-24">
+      <section className="bg-navy border-t border-gold/12 py-14 md:py-18">
         <div className="container mx-auto px-4 sm:px-6 text-center">
           <h2 className="text-h2 text-cream">Comece pelo caso que está na sua mesa agora.</h2>
           <div className="mt-8 flex flex-wrap gap-6 justify-center items-center">
