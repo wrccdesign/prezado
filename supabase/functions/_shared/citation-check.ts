@@ -76,8 +76,8 @@ const LEI_ALT =
 
 const ART_HEAD = "art(?:s|igos?)?\\.?";
 const ITEM_ACESSORIO =
-  "§\\s*\\d+[ºª°]?|par[áa]grafo\\s+[\\wíú]+|inciso\\s+[IVXLCDM]+|al[íi]nea\\s+[a-z]\\)?|caput";
-const NUMERO_ART = "\\d+[ºª°]?(?:-[A-Z])?";
+  "§\\s*\\d+[ºª°]?|par[áa]grafo\\s+[\\wíú]+|inciso\\s+[IVXLCDM]+|al[íi]nea\\s+[a-z]\\)?|caput|[IVXLCDM]{1,7}(?![\\wºª°])|[a-z]\\)";
+const NUMERO_ART = "\\d+(?:\\.\\d{3})*[ºª°]?(?:-[A-Z])?";
 const LISTA =
   `${NUMERO_ART}(?:\\s*(?:,|;|\\s+e)\\s*(?:d[oa]s?\\s+)?(?:${ART_HEAD}\\s*)?(?:${ITEM_ACESSORIO}|${NUMERO_ART}))*`;
 
