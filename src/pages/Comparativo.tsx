@@ -84,7 +84,7 @@ export default function Comparativo() {
         <div className="container mx-auto px-4 sm:px-6">
           <h1 className="text-h1 max-w-[20ch]">Por que a fonte importa mais que a ferramenta</h1>
           <p className="text-body-serif text-navy/80 max-w-[60ch] mt-6">
-            Toda IA jurídica gera texto. A diferença está em de onde vem o precedente e se você consegue conferir antes de protocolar.
+            Toda IA jurídica gera texto. A diferença está no que acontece depois: a IA escreve, nós conferimos toda citação contra o acervo antes de você protocolar.
           </p>
 
           <div className="overflow-x-auto mt-10">
