@@ -10,17 +10,18 @@ import { CpfCnpjCalc } from "@/components/calculators/CpfCnpjCalc";
 import { DateCalc } from "@/components/calculators/DateCalc";
 import { CustasCalc } from "@/components/calculators/CustasCalc";
 import { AppFooter } from "@/components/AppFooter";
+import { Briefcase, HeartHandshake, TrendingUp, CalendarClock, Scale, ShieldCheck, CalendarDays, LucideIcon } from "lucide-react";
 
 type CalculatorType = null | "rescisao" | "pensao" | "prazo" | "correcao" | "cpfcnpj" | "datas" | "custas";
 
 const mainCalculators = [
-  { id: "rescisao" as const, title: "Rescisão trabalhista", desc: "Verbas rescisórias: saldo de salário, férias, 13º, aviso prévio e FGTS." },
-  { id: "pensao" as const, title: "Pensão alimentícia", desc: "Estimativa do valor mensal com base na renda informada." },
-  { id: "correcao" as const, title: "Correção monetária e juros", desc: "Atualização por índices oficiais do Banco Central e juros da Lei 14.905/2024." },
-  { id: "prazo" as const, title: "Prazo processual", desc: "Contagem em dias úteis ou corridos, com feriados oficiais e recesso forense." },
-  { id: "custas" as const, title: "Custas processuais no TJSP", desc: "Taxa judiciária com UFESP, piso, teto e isenções, com base legal." },
-  { id: "cpfcnpj" as const, title: "Validador de CPF e CNPJ", desc: "Conferência dos dígitos verificadores, sem consulta à Receita Federal." },
-  { id: "datas" as const, title: "Operações com datas", desc: "Soma de dias, diferença entre datas e informações sobre a data escolhida." },
+  { id: "rescisao" as const, title: "Rescisão trabalhista", desc: "Verbas rescisórias: saldo de salário, férias, 13º, aviso prévio e FGTS.", icon: Briefcase },
+  { id: "pensao" as const, title: "Pensão alimentícia", desc: "Estimativa do valor mensal com base na renda informada.", icon: HeartHandshake },
+  { id: "correcao" as const, title: "Correção monetária e juros", desc: "Atualização por índices oficiais do Banco Central e juros da Lei 14.905/2024.", icon: TrendingUp },
+  { id: "prazo" as const, title: "Prazo processual", desc: "Contagem em dias úteis ou corridos, com feriados oficiais e recesso forense.", icon: CalendarClock },
+  { id: "custas" as const, title: "Custas processuais no TJSP", desc: "Taxa judiciária com UFESP, piso, teto e isenções, com base legal.", icon: Scale },
+  { id: "cpfcnpj" as const, title: "Validador de CPF e CNPJ", desc: "Conferência dos dígitos verificadores, sem consulta à Receita Federal.", icon: ShieldCheck },
+  { id: "datas" as const, title: "Operações com datas", desc: "Soma de dias, diferença entre datas e informações sobre a data escolhida.", icon: CalendarDays },
 ];
 
 const calcComponents: Record<string, () => JSX.Element> = {
