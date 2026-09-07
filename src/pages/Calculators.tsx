@@ -10,7 +10,7 @@ import { CpfCnpjCalc } from "@/components/calculators/CpfCnpjCalc";
 import { DateCalc } from "@/components/calculators/DateCalc";
 import { CustasCalc } from "@/components/calculators/CustasCalc";
 import { AppFooter } from "@/components/AppFooter";
-import { Briefcase, HeartHandshake, TrendingUp, CalendarClock, Scale, ShieldCheck, CalendarDays, LucideIcon } from "lucide-react";
+import { Briefcase, HeartHandshake, TrendingUp, CalendarClock, Scale, ShieldCheck, CalendarDays } from "lucide-react";
 
 type CalculatorType = null | "rescisao" | "pensao" | "prazo" | "correcao" | "cpfcnpj" | "datas" | "custas";
 
