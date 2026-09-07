@@ -3,6 +3,7 @@ import react from "@vitejs/plugin-react-swc";
 import path from "path";
 import fs from "fs";
 import { componentTagger } from "lovable-tagger";
+import { mcpPlugin } from "@lovable.dev/mcp-js/stacks/supabase/vite";
 import { ROUTE_META, SITE_URL, type RouteMeta } from "./src/seo/routeMeta";
 
 function escapeHtml(value: string) {
@@ -130,6 +131,7 @@ export default defineConfig(({ mode }) => ({
   plugins: [
     react(),
     staticRouteMeta(),
+    mcpPlugin(),
     mode === "development" && componentTagger(),
   ].filter(Boolean),
   resolve: {

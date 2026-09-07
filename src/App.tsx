@@ -37,6 +37,8 @@ import MapaDoSite from "./pages/MapaDoSite";
 import Reembolso from "./pages/Reembolso";
 import Privacidade from "./pages/Privacidade";
 import ResetPassword from "./pages/ResetPassword";
+import OAuthConsent from "./pages/OAuthConsent";
+
 import { PostAuthRedirect } from "@/components/PostAuthRedirect";
 import { ProfileOnboardingDialog } from "@/components/ProfileOnboardingDialog";
 
@@ -81,6 +83,8 @@ const App = () => (
 
               <Route path="/auth" element={<Auth />} />
               <Route path="/reset-password" element={<ResetPassword />} />
+              <Route path="/.lovable/oauth/consent" element={<OAuthConsent />} />
+
               <Route path="/" element={<HomeRoute />} />
               <Route path="/peticao" element={<ProtectedRoute><Petition /></ProtectedRoute>} />
               <Route path="/chat" element={<ProtectedRoute><Chat /></ProtectedRoute>} />

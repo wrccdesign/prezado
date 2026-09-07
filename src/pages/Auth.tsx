@@ -57,13 +57,17 @@ export default function Auth() {
     );
   }
 
-  const requestedPath = typeof location.state === "object" && location.state
-    ? ("redirectTo" in location.state
-        ? String(location.state.redirectTo)
-        : "from" in location.state
-          ? String(location.state.from)
-          : "/")
-    : "/";
+  const nextParam = new URLSearchParams(location.search).get("next");
+  const safeNext = nextParam && nextParam.startsWith("/") && !nextParam.startsWith("//") ? nextParam : null;
+  const requestedPath = safeNext
+    ?? (typeof location.state === "object" && location.state
+      ? ("redirectTo" in location.state
+          ? String(location.state.redirectTo)
+          : "from" in location.state
+            ? String(location.state.from)
+            : "/")
+      : "/");
+
 
   if (user) return <Navigate to={requestedPath} replace />;
 
