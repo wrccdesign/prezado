@@ -5,6 +5,7 @@ import fs from "fs";
 import { componentTagger } from "lovable-tagger";
 import { mcpPlugin } from "@lovable.dev/mcp-js/stacks/supabase/vite";
 import { ROUTE_META, SITE_URL, type RouteMeta } from "./src/seo/routeMeta";
+import { renderRouteContent } from "./src/seo/routeContent";
 
 function escapeHtml(value: string) {
   return value
