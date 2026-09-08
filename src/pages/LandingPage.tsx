@@ -92,8 +92,8 @@ export default function LandingPage() {
         <div className="container mx-auto px-4 sm:px-6">
           <div className="grid gap-8 lg:grid-cols-12 lg:items-start">
             <div className="lg:col-span-7">
-              <h1 className="text-display text-navy max-w-[14ch]">
-                Dê-me os fatos, eu te dou o direito.
+              <h1 className="text-display-hero text-navy max-w-[14ch]">
+                Dê-me os fatos,<br className="hidden md:block" /> eu te dou o <span className="text-gold">direito</span>.
               </h1>
               <p className="text-body-serif text-navy/80 max-w-[60ch] mt-6">
                 Diagnóstico, petição e precedente, sempre com fonte verificável antes de você protocolar.
