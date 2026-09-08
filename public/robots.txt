@@ -10,7 +10,57 @@ Allow: /
 User-agent: facebookexternalhit
 Allow: /
 
+# Robôs de busca e de assistentes de IA
+User-agent: GPTBot
+Allow: /
+
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Perplexity-User
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: Claude-SearchBot
+Allow: /
+
+User-agent: anthropic-ai
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: Applebot
+Allow: /
+
+User-agent: Applebot-Extended
+Allow: /
+
+User-agent: CCBot
+Allow: /
+
+User-agent: Amazonbot
+Allow: /
+
+User-agent: meta-externalagent
+Allow: /
+
+User-agent: cohere-ai
+Allow: /
+
 User-agent: *
 Allow: /
+
+# Resumo do site para modelos de linguagem:
+# https://honorifico.com.br/llms.txt
+# https://honorifico.com.br/llms-full.txt
 
 Sitemap: https://honorifico.com.br/sitemap.xml
