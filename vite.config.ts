@@ -5,6 +5,7 @@ import fs from "fs";
 import { componentTagger } from "lovable-tagger";
 import { mcpPlugin } from "@lovable.dev/mcp-js/stacks/supabase/vite";
 import { ROUTE_META, SITE_URL, type RouteMeta } from "./src/seo/routeMeta";
+import { renderRouteContent } from "./src/seo/routeContent";
 
 function escapeHtml(value: string) {
   return value
@@ -84,6 +85,15 @@ function applyMeta(template: string, meta: RouteMeta) {
     html = html.replace(/<\/head>/i, `    ${pending.join("\n    ")}\n  </head>`);
   }
 
+  // Conteúdo textual da rota dentro de #root: robôs que não executam
+  // JavaScript leem a página; o React substitui tudo ao hidratar.
+  const content = renderRouteContent(meta.path);
+  if (content) {
+    html = html.replace(
+      /<div id="root">\s*<\/div>/i,
+      `<div id="root">${content}</div>`,
+    );
+  }
 
   return html;
 }

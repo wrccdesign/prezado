@@ -2,26 +2,37 @@
 
 > Cálculos e prazos jurídicos com fonte oficial, prontos para anexar à petição: correção monetária pelas séries do Banco Central, prazos com feriados forenses e custas do TJSP, com memória de cálculo em PDF ou Word.
 
-As calculadoras são livres, ilimitadas e funcionam sem cadastro. Os índices vêm das séries do SGS/Banco Central — IPCA (433), INPC (188), IGP-M (189), Selic (4390) e Taxa Legal (29543) — sincronizadas diariamente, e a Lei 14.905/2024 está aplicada, inclusive o mês de transição. Como apoio, a plataforma também oferece consulta processual e de andamentos, petições e análise de documentos com IA.
+As calculadoras são livres, ilimitadas e funcionam sem cadastro. Os índices vêm das séries do SGS/Banco Central — IPCA (433), INPC (188), IGP-M (189), Selic (4390) e Taxa Legal (29543) — sincronizadas diariamente, e a Lei 14.905/2024 está aplicada, inclusive o mês de transição. Como apoio, a plataforma também oferece consulta processual no acervo do CNJ, petições e análise de documentos com IA, sempre com link para a fonte.
+
+Princípio do produto: toda citação de precedente vem do acervo consultável, com link para a fonte oficial. Quando não há decisão localizada, a resposta diz isso, em vez de inventar.
+
+Versão detalhada, com fórmulas, base legal e perguntas respondidas: /llms-full.txt
 
 ## Pages
 
-- [Início](/): Calculadora de correção monetária em funcionamento, origem dos dados e base legal.
-- [Calculadoras Jurídicas](/calculadoras): Correção monetária, prazo processual, custas do TJSP, rescisão, pensão, datas e validador de CPF/CNPJ.
-- [Correção Monetária e Juros](/calculadoras/correcao-monetaria-juros-lei-14905): Atualização com índices do Banco Central e juros da Lei 14.905/2024.
-- [Prazo Processual](/calculadoras/prazo-processual): Dias úteis ou corridos com feriados forenses e art. 220 do CPC.
-- [Custas do TJSP](/calculadoras/custas-tjsp): Taxa judiciária com a UFESP vigente, piso, teto e isenções.
-- [Operações com Datas](/calculadoras/operacoes-datas): Soma de dias, diferenças e informações sobre datas.
-- [Validador CPF/CNPJ](/calculadoras/validador-cpf-cnpj): Verificação dos dígitos verificadores.
-- [Consulta Processual](/jurisprudencia): Consulta de processos e andamentos com dados oficiais do CNJ.
-- [Modelos de Minutas](/modelos-de-minutas): Modelos de petições e minutas.
-- [Planos](/planos): Assinaturas Gratuito, Profissional e Escritório.
+- [Início](/): O que a plataforma faz, calculadora de correção monetária em funcionamento e origem dos dados.
+- [Calculadoras Jurídicas](/calculadoras): Índice das sete calculadoras gratuitas.
+- [Correção Monetária e Juros](/calculadoras/correcao-monetaria-juros-lei-14905): Atualização por IPCA, INPC, IGP-M, Selic e Taxa Legal, com juros da Lei 14.905/2024 (art. 389 e art. 406 do Código Civil).
+- [Prazo Processual](/calculadoras/prazo-processual): Dias úteis ou corridos, feriados forenses, recesso do art. 220 do CPC e regra de publicação do art. 224, §2º.
+- [Custas do TJSP](/calculadoras/custas-tjsp): Taxa judiciária pela Lei estadual 11.608/2003, 1% a 1,5% do valor da causa, UFESP vigente, piso de 5 e teto de 3.000 UFESPs.
+- [Rescisão Trabalhista](/calculadoras/rescisao-trabalhista): Saldo de salário, aviso prévio, 13º e férias proporcionais, FGTS e multa, conforme CLT e art. 484-A.
+- [Pensão Alimentícia](/calculadoras/pensao-alimenticia): Faixa estimada pelo binômio necessidade e possibilidade do art. 1.694 do Código Civil.
+- [Operações com Datas](/calculadoras/operacoes-datas): Soma e subtração de dias úteis e corridos, diferença entre datas.
+- [Validador CPF/CNPJ](/calculadoras/validador-cpf-cnpj): Dígitos verificadores pelo módulo 11, processado no navegador.
+- [Consulta Processual e Jurisprudência](/jurisprudencia): Consulta de processos e andamentos com dados oficiais do CNJ, com link para o tribunal.
+- [Modelos de Minutas](/modelos-de-minutas): Nove minutas editáveis com base legal citada.
+- [Comparativo](/comparativo): Diferenças entre o Honorífico, assistentes de IA generalistas, portais de jurisprudência e sistemas de gestão.
+- [Planos](/planos): Gratuito, Profissional (R$ 49/mês) e Escritório, com 7 dias de teste sem cartão.
+- [Mapa do Site](/mapa-do-site): Todas as páginas públicas.
 
 ## Optional
 
 - [Diagnóstico Jurídico](/diagnostico): Análise estruturada de um caso (requer conta).
-- [Geração de Petições](/peticao): Petições em PDF e DOCX (requer conta).
+- [Geração de Petições](/peticao): Petições em PDF e DOCX, com verificação das citações (requer conta).
 - [Chat Jurídico](/chat): Dúvidas sobre direito brasileiro (requer conta).
 - [Painel do Advogado](/painel-advogado): Gestão de clientes, petições e modelos (requer conta).
 - [Histórico](/historico): Cálculos e análises salvos (requer conta).
 - [Entrar](/auth): Cadastro e login.
+- [Termos de Uso](/termos), [Privacidade](/privacidade), [Reembolso](/reembolso): Documentos legais.
+
+Contato: wrccdesign@gmail.com
