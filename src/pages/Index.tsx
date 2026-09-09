@@ -435,7 +435,7 @@ export default function Index({ embedded = false }: { embedded?: boolean }) {
           </CardContent>
         </Card>
       </main>
-      <AppFooter />
+      {!embedded && <AppFooter />}
     </div>
   );
 }

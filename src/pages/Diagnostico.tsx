@@ -87,7 +87,7 @@ const URGENCIA_CONFIG = {
 
 const TEASER_ACTION = "diagnostico_completo_free";
 
-export default function Diagnostico() {
+export default function Diagnostico({ embedded = false }: { embedded?: boolean }) {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { isPro } = useSubscription();
@@ -309,27 +309,34 @@ export default function Diagnostico() {
   };
 
   return (
-    <div className="flex min-h-screen flex-col bg-background">
-      <AppHeader /><PaymentTestModeBanner />
-      <SEO title="Diagnóstico Jurídico com IA — Honorífico" description="Descreva sua situação em linguagem simples e receba diagnóstico jurídico estruturado: direitos, riscos e próximos passos." path="/diagnostico" />
-      <LegalDisclaimer />
+    <div className={embedded ? "" : "flex min-h-screen flex-col bg-background"}>
+      {!embedded && <AppHeader />}
+      {!embedded && <PaymentTestModeBanner />}
+      {!embedded && (
+        <SEO title="Diagnóstico Jurídico com IA — Honorífico" description="Descreva sua situação em linguagem simples e receba diagnóstico jurídico estruturado: direitos, riscos e próximos passos." path="/diagnostico" />
+      )}
+      {!embedded && <LegalDisclaimer />}
 
-      <main className="flex-1 container py-6 sm:py-8 px-4 sm:px-6 max-w-3xl mx-auto">
+      <main className={embedded ? "py-2" : "flex-1 container py-6 sm:py-8 px-4 sm:px-6 max-w-3xl mx-auto"}>
         {!result ? (
           <div className="space-y-6">
             {/* Header */}
-            <div className="text-center space-y-3">
-              <div className="inline-flex items-center justify-center h-14 w-14 rounded-2xl bg-primary/10 mb-2">
-                <Stethoscope className="h-7 w-7 text-primary" />
-              </div>
-              <h1 className="text-2xl sm:text-3xl font-bold font-serif text-foreground">
-                Diagnóstico Jurídico
-              </h1>
-              <p className="text-base sm:text-lg text-muted-foreground max-w-lg mx-auto leading-relaxed">
-                Descreva sua situação em linguagem simples.
-                <br />
-                <span className="text-sm">Não precisa saber termos jurídicos — eu entendo você.</span>
-              </p>
+            <div className={embedded ? "space-y-3" : "text-center space-y-3"}>
+              {!embedded && (
+                <>
+                  <div className="inline-flex items-center justify-center h-14 w-14 rounded-2xl bg-primary/10 mb-2">
+                    <Stethoscope className="h-7 w-7 text-primary" />
+                  </div>
+                  <h1 className="text-2xl sm:text-3xl font-bold font-serif text-foreground">
+                    Diagnóstico Jurídico
+                  </h1>
+                  <p className="text-base sm:text-lg text-muted-foreground max-w-lg mx-auto leading-relaxed">
+                    Descreva sua situação em linguagem simples.
+                    <br />
+                    <span className="text-sm">Não precisa saber termos jurídicos — eu entendo você.</span>
+                  </p>
+                </>
+              )}
               {!isPro && teaserAvailable && (
                 <div className="inline-flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1.5 text-xs font-medium text-primary">
                   <Sparkles className="h-3.5 w-3.5" />
@@ -337,6 +344,7 @@ export default function Diagnostico() {
                 </div>
               )}
             </div>
+
 
             {/* Input */}
             <Card>
