@@ -165,11 +165,11 @@ export default function Inicio() {
                 <li key={r.id} className={index === 0 ? "md:col-span-1" : undefined}>
                   <Link
                     to={r.para}
-                    className="group flex min-h-[148px] h-full flex-col rounded-lg border border-border bg-card p-5 transition-colors duration-150 hover:border-gold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-cream"
+                    className="group grid min-h-[96px] h-full grid-cols-[auto_1fr] items-center gap-x-4 rounded-lg border border-border bg-card p-4 transition-colors duration-150 hover:border-gold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-cream md:min-h-[148px] md:flex md:flex-col md:items-start md:p-5"
                   >
                     <RecentIcon aria-hidden="true" className="h-5 w-5 text-navy/60 transition-colors duration-150 group-hover:text-gold" strokeWidth={1.75} />
-                    <span className="mt-5 line-clamp-2 text-base font-medium text-navy">{r.titulo}</span>
-                    <span className="mt-auto pt-3 text-note text-navy/55 tabular-nums">{r.tipo}, {formatDateBR(r.data)}</span>
+                    <span className="line-clamp-1 text-base font-medium text-navy md:mt-5 md:line-clamp-2">{r.titulo}</span>
+                    <span className="col-start-2 mt-1 text-note text-navy/55 tabular-nums md:mt-auto md:pt-3">{r.tipo}, {formatDateBR(r.data)}</span>
                   </Link>
                 </li>
               )})}
