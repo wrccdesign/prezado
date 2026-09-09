@@ -607,7 +607,7 @@ export default function Diagnostico({ embedded = false }: { embedded?: boolean }
           </div>
         )}
       </main>
-      <AppFooter />
+      {!embedded && <AppFooter />}
     </div>
   );
 }
