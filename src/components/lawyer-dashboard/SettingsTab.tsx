@@ -7,10 +7,12 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Save, Upload, X } from "lucide-react";
+import { Save } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { PlanGate } from "@/components/PlanGate";
-import { LOGO_ACCEPT, LOGO_BUCKET, LOGO_MAX_BYTES, logoStoragePath } from "@/lib/petitionBranding";
+import { logoStoragePath } from "@/lib/petitionBranding";
+import { LogoUploadField } from "@/components/LogoUploadField";
+
 
 export function SettingsTab() {
   const { user } = useAuth();
