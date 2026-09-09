@@ -35,7 +35,9 @@ const features: PlanFeature[] = [
   { label: "Modelos de minutas e petições", free: "✓", profissional: "✓", escritorio: "✓" },
   { label: "Exportação em PDF e Word", free: "✓", profissional: "✓", escritorio: "✓" },
   { label: "Histórico de consultas", free: "✓", profissional: "✓", escritorio: "✓" },
-  { label: "Painel do advogado (clientes, petições, modelos)", free: "", profissional: "✓", escritorio: "✓" },
+ { label: "Painel do advogado (clientes, petições, modelos)", free: "", profissional: "✓", escritorio: "✓" },
+ { label: "Timbre personalizado nas petições (logo e identificação)", free: "", profissional: "", escritorio: "✓" },
+
 ];
 
 

@@ -8,6 +8,8 @@ import jsPDF from "jspdf";
 import { Document, Packer, Paragraph, TextRun, AlignmentType, Header, Footer, ImageRun } from "docx";
 import { useAuth } from "@/contexts/AuthContext";
 import { useSubscription } from "@/hooks/useSubscription";
+import { useUserProfile } from "@/contexts/UserProfileContext";
+
 import {
   loadPetitionBranding,
   contactLine,
@@ -88,17 +90,21 @@ function brandingNoticeText(
   branding: PetitionBranding,
   isEscritorio: boolean,
   isPro: boolean,
+  isLawyer: boolean,
 ): { message: string; hasLink: boolean } | null {
   if (isEscritorio) {
     if (hasLetterhead(branding)) {
       return { message: "O PDF e o DOCX sairão com o timbre do seu escritório.", hasLink: false };
     }
     return {
-      message: "Adicione o timbre do escritório em Meu Painel para ele aparecer no PDF e no DOCX.",
+      message: isLawyer
+        ? "Adicione o timbre do escritório em Meu Painel para ele aparecer no PDF e no DOCX."
+        : "Adicione o timbre em Minha conta para ele aparecer no PDF e no DOCX.",
       hasLink: true,
     };
   }
-  if (isPro) {
+  // Assinatura com nome e OAB só faz sentido para quem é advogado.
+  if (isPro && isLawyer) {
     if (branding.fullName && branding.oabNumber && branding.oabState) {
       return { message: "A petição sairá assinada com seu nome e OAB.", hasLink: false };
     }
@@ -110,10 +116,13 @@ function brandingNoticeText(
   return null;
 }
 
+
 export function PetitionResult({ text, petitionType, onNewPetition, citationReport }: PetitionResultProps) {
   const { toast } = useToast();
   const { user } = useAuth();
   const { isPro, isEscritorio } = useSubscription();
+  const { isLawyer } = useUserProfile();
+
   const [editedText, setEditedText] = useState(text);
   const [branding, setBranding] = useState<PetitionBranding>(EMPTY_BRANDING);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -132,7 +141,9 @@ export function PetitionResult({ text, petitionType, onNewPetition, citationRepo
     return () => { cancelled = true; };
   }, [user, isPro, isEscritorio]);
 
-  const notice = brandingNoticeText(branding, isEscritorio, isPro);
+  const notice = brandingNoticeText(branding, isEscritorio, isPro, isLawyer);
+  const noticeHref = isLawyer ? "/painel-advogado" : "/conta";
+
 
   const baseFilename = `Peticao_${sanitizeFilename(petitionType)}_${getDateString()}`;
 
@@ -401,9 +412,10 @@ export function PetitionResult({ text, petitionType, onNewPetition, citationRepo
             <p className="text-sm text-muted-foreground">
               {notice.message}{" "}
               {notice.hasLink && (
-                <Link to="/painel-advogado" className="underline hover:text-foreground">
-                  Meu Painel.
+                <Link to={noticeHref} className="underline hover:text-foreground">
+                  {isLawyer ? "Meu Painel." : "Minha conta."}
                 </Link>
+
               )}
             </p>
           )}

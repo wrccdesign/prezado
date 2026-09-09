@@ -49,7 +49,7 @@ export default function Petition() {
   const { toast } = useToast();
   const navigate = useNavigate();
   const { isEscritorio } = useSubscription();
-  const { profileData } = useUserProfile();
+  const { profileData, isLawyer } = useUserProfile();
   const [modo, setModo] = useState<"direto" | "etapas">("direto");
   const [loading, setLoading] = useState(false);
   const [generatedText, setGeneratedText] = useState<string | null>(null);
@@ -164,12 +164,13 @@ export default function Petition() {
           </p>
           {showLetterheadHint && (
             <p className="mt-2 text-sm text-muted-foreground">
-              Seu plano permite adicionar o timbre do escritório (logo, endereço e contato) às petições exportadas.{" "}
-              <Link to="/painel-advogado" className="underline hover:text-foreground">
-                Configurar em Meu Painel.
+              Seu plano permite adicionar o timbre (logo, endereço e contato) às petições exportadas.{" "}
+              <Link to={isLawyer ? "/painel-advogado" : "/conta"} className="underline hover:text-foreground">
+                {isLawyer ? "Configurar em Meu Painel." : "Configurar em Minha conta."}
               </Link>
             </p>
           )}
+
         </div>
 
         <div className="mb-6 inline-flex rounded-lg border p-1" role="tablist" aria-label="Modo de geração">

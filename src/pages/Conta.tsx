@@ -22,7 +22,11 @@ import {
 import { AlertTriangle, ArrowUpCircle, ExternalLink, Loader2, Receipt } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
+import { useUserProfile } from "@/contexts/UserProfileContext";
+import { useSubscription } from "@/hooks/useSubscription";
+import { LetterheadCard } from "@/components/LetterheadCard";
 import { toast } from "sonner";
+
 
 interface Invoice {
   id: string;
@@ -81,6 +85,9 @@ function formatMoney(total: string | null, currency: string | null) {
 
 export default function Conta() {
   const { user } = useAuth();
+  const { isLawyer } = useUserProfile();
+  const { isEscritorio } = useSubscription();
+
   const queryClient = useQueryClient();
   const [busy, setBusy] = useState<string | null>(null);
   const [confirmCancel, setConfirmCancel] = useState(false);
@@ -299,6 +306,21 @@ export default function Conta() {
             </Card>
 
             <UsageSummary />
+
+            {!isLawyer && (
+              isEscritorio ? (
+                <LetterheadCard />
+              ) : (
+                <p className="text-sm text-muted-foreground">
+                  Assinantes do plano Escritório podem personalizar o timbre das petições com logo e
+                  identificação.{" "}
+                  <Link to="/planos" className="underline hover:text-foreground">
+                    Ver planos
+                  </Link>
+                </p>
+              )
+            )}
+
 
             <div className="rounded-lg border border-border bg-muted/40 p-4 text-sm text-muted-foreground">
               <p className="font-medium text-foreground">Mudança nas cotas</p>

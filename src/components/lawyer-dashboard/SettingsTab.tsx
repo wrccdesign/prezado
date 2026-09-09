@@ -7,10 +7,12 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Save, Upload, X } from "lucide-react";
+import { Save } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { PlanGate } from "@/components/PlanGate";
-import { LOGO_ACCEPT, LOGO_BUCKET, LOGO_MAX_BYTES, logoStoragePath } from "@/lib/petitionBranding";
+import { logoStoragePath } from "@/lib/petitionBranding";
+import { LogoUploadField } from "@/components/LogoUploadField";
+
 
 export function SettingsTab() {
   const { user } = useAuth();
@@ -25,9 +27,8 @@ export function SettingsTab() {
   const [oabState, setOabState] = useState("");
   // Caminho do arquivo dentro do bucket privado `office-logos`.
   const [logoPath, setLogoPath] = useState<string | null>(null);
-  const [logoPreview, setLogoPreview] = useState<string | null>(null);
-  const [uploading, setUploading] = useState(false);
   const [saving, setSaving] = useState(false);
+
 
   useEffect(() => {
     if (profileData) {
@@ -51,16 +52,10 @@ export function SettingsTab() {
     setOfficeAddress(row.office_address ?? "");
     setOfficePhone(row.office_phone ?? "");
     setOfficeEmail(row.office_email ?? "");
-    const path = logoStoragePath(row.office_logo_url);
-    setLogoPath(path);
-    if (path) void refreshPreview(path);
+    setLogoPath(logoStoragePath(row.office_logo_url));
   };
 
-  // Bucket privado: a pré-visualização usa URL assinada de curta duração.
-  const refreshPreview = async (path: string) => {
-    const { data } = await supabase.storage.from(LOGO_BUCKET).createSignedUrl(path, 300);
-    setLogoPreview(data?.signedUrl ?? null);
-  };
+
 
   const handleSave = async () => {
     if (!user) return;
@@ -83,40 +78,8 @@ export function SettingsTab() {
     await refreshProfile();
   };
 
-  const handleLogoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    e.target.value = "";
-    if (!file || !user) return;
-    // O jsPDF só desenha PNG e JPEG — SVG quebraria só na hora da exportação.
-    if (!["image/png", "image/jpeg"].includes(file.type)) {
-      toast({
-        title: "Formato não aceito",
-        description: "Envie o logo em PNG ou JPEG. SVG não é suportado na exportação em PDF.",
-        variant: "destructive",
-      });
-      return;
-    }
-    if (file.size > LOGO_MAX_BYTES) {
-      toast({ title: "Arquivo muito grande (máx 2MB)", variant: "destructive" });
-      return;
-    }
-    setUploading(true);
-    const ext = file.type === "image/png" ? "png" : "jpg";
-    const path = `${user.id}/logo.${ext}`;
-    const { error } = await supabase.storage
-      .from(LOGO_BUCKET)
-      .upload(path, file, { upsert: true, contentType: file.type });
-    setUploading(false);
-    if (error) {
-      toast({ title: "Erro no upload", description: error.message, variant: "destructive" });
-      return;
-    }
-    setLogoPath(path);
-    await refreshPreview(path);
-    toast({ title: "Logo enviado", description: "Clique em Salvar Configurações para aplicá-lo às petições." });
-  };
 
-  const removeLogo = () => { setLogoPath(null); setLogoPreview(null); };
+
 
   const UF_OPTIONS = ["AC","AL","AM","AP","BA","CE","DF","ES","GO","MA","MG","MS","MT","PA","PB","PE","PI","PR","RJ","RN","RO","RR","RS","SC","SE","SP","TO"];
 
@@ -160,26 +123,12 @@ export function SettingsTab() {
         <CardHeader>
           <CardTitle className="text-base">Logo do Escritório</CardTitle>
         </CardHeader>
-        <CardContent className="space-y-4">
-          {logoPreview ? (
-            <div className="flex items-center gap-4">
-              <img src={logoPreview} alt="Logo do escritório" className="h-16 w-16 object-contain rounded border" />
-              <Button variant="ghost" size="sm" onClick={removeLogo}><X className="mr-1 h-4 w-4" /> Remover</Button>
-            </div>
-          ) : (
-            <p className="text-sm text-muted-foreground">Nenhum logo enviado.</p>
+        <CardContent>
+          {user && (
+            <LogoUploadField userId={user.id} value={logoPath} onChange={setLogoPath} />
           )}
-          <div>
-            <Label htmlFor="logo-upload" className="cursor-pointer inline-flex items-center gap-2 text-sm text-primary hover:underline">
-              <Upload className="h-4 w-4" /> {uploading ? "Enviando..." : "Enviar logo (PNG ou JPEG, máx 2MB)"}
-            </Label>
-            <input id="logo-upload" type="file" accept={LOGO_ACCEPT} className="hidden" onChange={handleLogoUpload} disabled={uploading} />
-            <p className="mt-2 text-xs text-muted-foreground">
-              Apenas PNG e JPEG. Arquivos SVG não são aceitos porque não podem ser desenhados no PDF.
-              A proporção original é preservada no cabeçalho.
-            </p>
-          </div>
         </CardContent>
+
       </Card>
 
       <Button onClick={handleSave} disabled={saving} className="w-full sm:w-auto">
