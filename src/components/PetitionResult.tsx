@@ -88,17 +88,21 @@ function brandingNoticeText(
   branding: PetitionBranding,
   isEscritorio: boolean,
   isPro: boolean,
+  isLawyer: boolean,
 ): { message: string; hasLink: boolean } | null {
   if (isEscritorio) {
     if (hasLetterhead(branding)) {
       return { message: "O PDF e o DOCX sairão com o timbre do seu escritório.", hasLink: false };
     }
     return {
-      message: "Adicione o timbre do escritório em Meu Painel para ele aparecer no PDF e no DOCX.",
+      message: isLawyer
+        ? "Adicione o timbre do escritório em Meu Painel para ele aparecer no PDF e no DOCX."
+        : "Adicione o timbre em Minha conta para ele aparecer no PDF e no DOCX.",
       hasLink: true,
     };
   }
-  if (isPro) {
+  // Assinatura com nome e OAB só faz sentido para quem é advogado.
+  if (isPro && isLawyer) {
     if (branding.fullName && branding.oabNumber && branding.oabState) {
       return { message: "A petição sairá assinada com seu nome e OAB.", hasLink: false };
     }
@@ -109,6 +113,7 @@ function brandingNoticeText(
   }
   return null;
 }
+
 
 export function PetitionResult({ text, petitionType, onNewPetition, citationReport }: PetitionResultProps) {
   const { toast } = useToast();
