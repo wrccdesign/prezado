@@ -78,40 +78,8 @@ export function SettingsTab() {
     await refreshProfile();
   };
 
-  const handleLogoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    e.target.value = "";
-    if (!file || !user) return;
-    // O jsPDF só desenha PNG e JPEG — SVG quebraria só na hora da exportação.
-    if (!["image/png", "image/jpeg"].includes(file.type)) {
-      toast({
-        title: "Formato não aceito",
-        description: "Envie o logo em PNG ou JPEG. SVG não é suportado na exportação em PDF.",
-        variant: "destructive",
-      });
-      return;
-    }
-    if (file.size > LOGO_MAX_BYTES) {
-      toast({ title: "Arquivo muito grande (máx 2MB)", variant: "destructive" });
-      return;
-    }
-    setUploading(true);
-    const ext = file.type === "image/png" ? "png" : "jpg";
-    const path = `${user.id}/logo.${ext}`;
-    const { error } = await supabase.storage
-      .from(LOGO_BUCKET)
-      .upload(path, file, { upsert: true, contentType: file.type });
-    setUploading(false);
-    if (error) {
-      toast({ title: "Erro no upload", description: error.message, variant: "destructive" });
-      return;
-    }
-    setLogoPath(path);
-    await refreshPreview(path);
-    toast({ title: "Logo enviado", description: "Clique em Salvar Configurações para aplicá-lo às petições." });
-  };
 
-  const removeLogo = () => { setLogoPath(null); setLogoPreview(null); };
+
 
   const UF_OPTIONS = ["AC","AL","AM","AP","BA","CE","DF","ES","GO","MA","MG","MS","MT","PA","PB","PE","PI","PR","RJ","RN","RO","RR","RS","SC","SE","SP","TO"];
 
