@@ -85,6 +85,9 @@ function formatMoney(total: string | null, currency: string | null) {
 
 export default function Conta() {
   const { user } = useAuth();
+  const { isLawyer } = useUserProfile();
+  const { isEscritorio } = useSubscription();
+
   const queryClient = useQueryClient();
   const [busy, setBusy] = useState<string | null>(null);
   const [confirmCancel, setConfirmCancel] = useState(false);
