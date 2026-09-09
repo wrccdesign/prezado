@@ -79,7 +79,7 @@ export function AppHeader() {
   const visible = (items: NavItem[]) =>
     items.filter((i) => !i.lawyerOnly || (isLawyer && !!user));
   const tools = visible([analiseItem, ...toolsNav]);
-  const primaryNav = user ? [analiseItem, ...publicNav] : [...publicNav];
+  const primaryNav = [...publicNav];
   const isActive = (path: string) => location.pathname === path;
   const groupActive = (items: NavItem[]) => items.some((i) => isActive(i.path));
 
