@@ -52,16 +52,10 @@ export function SettingsTab() {
     setOfficeAddress(row.office_address ?? "");
     setOfficePhone(row.office_phone ?? "");
     setOfficeEmail(row.office_email ?? "");
-    const path = logoStoragePath(row.office_logo_url);
-    setLogoPath(path);
-    if (path) void refreshPreview(path);
+    setLogoPath(logoStoragePath(row.office_logo_url));
   };
 
-  // Bucket privado: a pré-visualização usa URL assinada de curta duração.
-  const refreshPreview = async (path: string) => {
-    const { data } = await supabase.storage.from(LOGO_BUCKET).createSignedUrl(path, 300);
-    setLogoPreview(data?.signedUrl ?? null);
-  };
+
 
   const handleSave = async () => {
     if (!user) return;
