@@ -120,6 +120,7 @@ export default function ModelosMinutas() {
           </div>
         </section>
 
+        <h2 className="text-h2 text-foreground">Modelos disponíveis</h2>
         <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {filtered.map((m) => (
             <Card key={m.slug} className="flex flex-col">
