@@ -123,26 +123,12 @@ export function SettingsTab() {
         <CardHeader>
           <CardTitle className="text-base">Logo do Escritório</CardTitle>
         </CardHeader>
-        <CardContent className="space-y-4">
-          {logoPreview ? (
-            <div className="flex items-center gap-4">
-              <img src={logoPreview} alt="Logo do escritório" className="h-16 w-16 object-contain rounded border" />
-              <Button variant="ghost" size="sm" onClick={removeLogo}><X className="mr-1 h-4 w-4" /> Remover</Button>
-            </div>
-          ) : (
-            <p className="text-sm text-muted-foreground">Nenhum logo enviado.</p>
+        <CardContent>
+          {user && (
+            <LogoUploadField userId={user.id} value={logoPath} onChange={setLogoPath} />
           )}
-          <div>
-            <Label htmlFor="logo-upload" className="cursor-pointer inline-flex items-center gap-2 text-sm text-primary hover:underline">
-              <Upload className="h-4 w-4" /> {uploading ? "Enviando..." : "Enviar logo (PNG ou JPEG, máx 2MB)"}
-            </Label>
-            <input id="logo-upload" type="file" accept={LOGO_ACCEPT} className="hidden" onChange={handleLogoUpload} disabled={uploading} />
-            <p className="mt-2 text-xs text-muted-foreground">
-              Apenas PNG e JPEG. Arquivos SVG não são aceitos porque não podem ser desenhados no PDF.
-              A proporção original é preservada no cabeçalho.
-            </p>
-          </div>
         </CardContent>
+
       </Card>
 
       <Button onClick={handleSave} disabled={saving} className="w-full sm:w-auto">
