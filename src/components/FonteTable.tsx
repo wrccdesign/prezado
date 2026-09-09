@@ -28,25 +28,27 @@ export function FonteTable({
       <h2 className="text-h2">{title}</h2>
       {intro ? <p className="text-body-serif text-navy/80 max-w-[60ch] mt-3">{intro}</p> : null}
 
-      <div className="overflow-x-auto">
-        <table className="mt-10 w-full text-sm text-left">
+      <div className="mt-8 overflow-hidden rounded-lg border border-cream-dark bg-white">
+        <div className="overflow-x-auto">
+        <table className="w-full text-sm text-left">
           <thead>
-            <tr className="border-b border-cream-dark font-medium">
-              <th scope="col" className="py-3 pr-4"></th>
-              <th scope="col" className="py-3 pr-4">Sem fonte verificável</th>
-              <th scope="col" className="py-3">No Honorífico</th>
+            <tr className="border-b border-cream-dark bg-cream-dark/45 font-medium">
+              <th scope="col" className="px-5 py-4"></th>
+              <th scope="col" className="px-5 py-4 text-navy/60">Sem fonte verificável</th>
+              <th scope="col" className="border-l border-gold/20 px-5 py-4 text-navy">No Honorífico</th>
             </tr>
           </thead>
           <tbody>
             {fonteRows.map((r) => (
-              <tr key={r.label} className="border-b border-cream-dark">
-                <th scope="row" className="py-3 pr-4 font-medium align-top">{r.label}</th>
-                <td className="py-3 pr-4 text-navy/70 align-top">{r.sem}</td>
-                <td className="py-3 align-top">{r.com}</td>
+              <tr key={r.label} className="border-b border-cream-dark last:border-b-0">
+                <th scope="row" className="px-5 py-4 font-medium align-top">{r.label}</th>
+                <td className="px-5 py-4 text-navy/60 align-top">{r.sem}</td>
+                <td className="border-l border-gold/20 px-5 py-4 align-top">{r.com}</td>
               </tr>
             ))}
           </tbody>
         </table>
+        </div>
       </div>
 
       {note ? <p className="text-note text-navy/60 mt-4">{note}</p> : null}
