@@ -8,6 +8,8 @@ import jsPDF from "jspdf";
 import { Document, Packer, Paragraph, TextRun, AlignmentType, Header, Footer, ImageRun } from "docx";
 import { useAuth } from "@/contexts/AuthContext";
 import { useSubscription } from "@/hooks/useSubscription";
+import { useUserProfile } from "@/contexts/UserProfileContext";
+
 import {
   loadPetitionBranding,
   contactLine,
@@ -119,6 +121,8 @@ export function PetitionResult({ text, petitionType, onNewPetition, citationRepo
   const { toast } = useToast();
   const { user } = useAuth();
   const { isPro, isEscritorio } = useSubscription();
+  const { isLawyer } = useUserProfile();
+
   const [editedText, setEditedText] = useState(text);
   const [branding, setBranding] = useState<PetitionBranding>(EMPTY_BRANDING);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -137,7 +141,9 @@ export function PetitionResult({ text, petitionType, onNewPetition, citationRepo
     return () => { cancelled = true; };
   }, [user, isPro, isEscritorio]);
 
-  const notice = brandingNoticeText(branding, isEscritorio, isPro);
+  const notice = brandingNoticeText(branding, isEscritorio, isPro, isLawyer);
+  const noticeHref = isLawyer ? "/painel-advogado" : "/conta";
+
 
   const baseFilename = `Peticao_${sanitizeFilename(petitionType)}_${getDateString()}`;
 
