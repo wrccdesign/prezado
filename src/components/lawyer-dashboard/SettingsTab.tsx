@@ -60,7 +60,10 @@ export function SettingsTab() {
   const handleSave = async () => {
     if (!user) return;
     setSaving(true);
-    const { error } = await supabase.from("profiles").update({
+    // Upsert para não falhar em silêncio caso a linha de perfil não exista.
+    // `profile_type` fica de fora do payload de propósito.
+    const { error } = await supabase.from("profiles").upsert({
+      user_id: user.id,
       full_name: fullName.trim() || null,
       office_name: officeName.trim() || null,
       oab_number: oabNumber.trim() || null,
@@ -70,7 +73,7 @@ export function SettingsTab() {
       office_email: officeEmail.trim() || null,
       office_logo_url: logoPath,
       updated_at: new Date().toISOString(),
-    } as never).eq("user_id", user.id);
+    } as never, { onConflict: "user_id" });
 
     setSaving(false);
     if (error) { toast({ title: "Erro ao salvar", variant: "destructive" }); return; }

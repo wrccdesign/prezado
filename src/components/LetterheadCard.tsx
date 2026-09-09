@@ -48,14 +48,19 @@ export function LetterheadCard() {
   const handleSave = async () => {
     if (!user) return;
     setSaving(true);
-    const { error } = await supabase.from("profiles").update({
+    // Upsert: contas antigas podem não ter linha em `profiles`, e um UPDATE
+    // nesse caso afetaria zero linhas sem retornar erro (salvamento silencioso).
+    // `profile_type` fica de fora: a coluna tem default 'cidadao' e não deve
+    // sobrescrever um valor existente.
+    const { error } = await supabase.from("profiles").upsert({
+      user_id: user.id,
       office_name: displayName.trim() || null,
       office_address: address.trim() || null,
       office_phone: phone.trim() || null,
       office_email: email.trim() || null,
       office_logo_url: logoPath,
       updated_at: new Date().toISOString(),
-    } as never).eq("user_id", user.id);
+    } as never, { onConflict: "user_id" });
     setSaving(false);
     if (error) { toast({ title: "Erro ao salvar", variant: "destructive" }); return; }
     toast({ title: "Timbre salvo" });
