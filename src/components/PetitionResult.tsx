@@ -412,9 +412,10 @@ export function PetitionResult({ text, petitionType, onNewPetition, citationRepo
             <p className="text-sm text-muted-foreground">
               {notice.message}{" "}
               {notice.hasLink && (
-                <Link to="/painel-advogado" className="underline hover:text-foreground">
-                  Meu Painel.
+                <Link to={noticeHref} className="underline hover:text-foreground">
+                  {isLawyer ? "Meu Painel." : "Minha conta."}
                 </Link>
+
               )}
             </p>
           )}
