@@ -61,8 +61,14 @@ export default function MeuCaso() {
           {tab("situacao", "Vou descrever a situação", "Conte com suas palavras o que aconteceu, sem termo técnico.")}
         </div>
 
+        {/* Ambas as abas ficam montadas: alternar não pode apagar texto, arquivo ou resultado já gerado. */}
         <div className="mt-6">
-          {aba === "documento" ? <Index embedded /> : <Diagnostico embedded />}
+          <div hidden={aba !== "documento"}>
+            <Index embedded />
+          </div>
+          <div hidden={aba !== "situacao"}>
+            <Diagnostico embedded />
+          </div>
         </div>
       </main>
       <AppFooter />
