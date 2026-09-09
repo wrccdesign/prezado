@@ -60,7 +60,10 @@ export function SettingsTab() {
   const handleSave = async () => {
     if (!user) return;
     setSaving(true);
-    const { error } = await supabase.from("profiles").update({
+    // Upsert para não falhar em silêncio caso a linha de perfil não exista.
+    // `profile_type` fica de fora do payload de propósito.
+    const { error } = await supabase.from("profiles").upsert({
+      user_id: user.id,
       full_name: fullName.trim() || null,
       office_name: officeName.trim() || null,
       oab_number: oabNumber.trim() || null,
