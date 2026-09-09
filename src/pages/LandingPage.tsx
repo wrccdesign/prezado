@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Check, FileDown } from "lucide-react";
+import { Calculator, Check, FileDown, FileSignature, MessageSquareText, Scale } from "lucide-react";
 import { AppHeader } from "@/components/AppHeader";
 import { AppFooter } from "@/components/AppFooter";
 import { SEO } from "@/components/SEO";
@@ -52,6 +52,29 @@ const etapas = [
     body: "Informe fatos e pedidos; a peça sai montada, com a fundamentação inferida a partir do que você descreveu.",
     cta: "Gerar uma petição",
     href: "/peticao",
+  },
+];
+
+const heroShortcuts = [
+  {
+    label: "Consultar um processo",
+    href: "/jurisprudencia",
+    icon: Scale,
+  },
+  {
+    label: "Calcular correção e juros",
+    href: "#calcular",
+    icon: Calculator,
+  },
+  {
+    label: "Descrever um caso",
+    href: "/diagnostico",
+    icon: MessageSquareText,
+  },
+  {
+    label: "Gerar uma petição",
+    href: "/peticao",
+    icon: FileSignature,
   },
 ];
 
@@ -121,31 +144,27 @@ export default function LandingPage() {
                   Buscar
                 </Button>
               </form>
-              <div className="mt-5 flex flex-wrap gap-x-5 gap-y-2">
-                <Link
-                  to="/jurisprudencia"
-                  className="inline-flex border-b border-navy/25 py-1 text-sm text-navy/80 hover:border-navy hover:text-navy transition-colors"
-                >
-                  Consultar um processo
-                </Link>
-                <a
-                  href="#calcular"
-                  className="inline-flex border-b border-navy/25 py-1 text-sm text-navy/80 hover:border-navy hover:text-navy transition-colors"
-                >
-                  Calcular correção e juros
-                </a>
-                <Link
-                  to="/diagnostico"
-                  className="inline-flex border-b border-navy/25 py-1 text-sm text-navy/80 hover:border-navy hover:text-navy transition-colors"
-                >
-                  Descrever um caso
-                </Link>
-                <Link
-                  to="/peticao"
-                  className="inline-flex border-b border-navy/25 py-1 text-sm text-navy/80 hover:border-navy hover:text-navy transition-colors"
-                >
-                  Gerar uma petição
-                </Link>
+              <div className="mt-5 grid max-w-[580px] grid-cols-2 gap-2 sm:grid-cols-4">
+                {heroShortcuts.map(({ label, href, icon: Icon }) => {
+                  const shortcutClassName =
+                    "group flex min-h-[88px] flex-col justify-between gap-3 rounded-lg border border-cream-dark bg-white p-3 text-sm font-medium leading-snug text-navy transition-colors duration-150 hover:border-gold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 focus-visible:ring-offset-cream";
+                  const content = (
+                    <>
+                      <Icon aria-hidden="true" className="h-5 w-5 text-navy/70 transition-colors duration-150 group-hover:text-gold" strokeWidth={1.75} />
+                      <span>{label}</span>
+                    </>
+                  );
+
+                  return href.startsWith("#") ? (
+                    <a key={href} href={href} className={shortcutClassName}>
+                      {content}
+                    </a>
+                  ) : (
+                    <Link key={href} to={href} className={shortcutClassName}>
+                      {content}
+                    </Link>
+                  );
+                })}
               </div>
               <p className="text-note text-navy/60 mt-5 max-w-[60ch]">
                 Print de conversa, foto de documento ou PDF: lemos o texto e devolvemos a análise.
