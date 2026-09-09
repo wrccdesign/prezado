@@ -20,6 +20,8 @@ import RescisaoTrabalhistaLanding from "./pages/calculators/RescisaoTrabalhistaL
 import PensaoAlimenticiaLanding from "./pages/calculators/PensaoAlimenticiaLanding";
 import LawyerDashboard from "./pages/LawyerDashboard";
 import Diagnostico from "./pages/Diagnostico";
+import MeuCaso from "./pages/MeuCaso";
+import Inicio from "./pages/Inicio";
 import DiagnosticoLanding from "./pages/DiagnosticoLanding";
 
 import Jurisprudencia from "./pages/Jurisprudencia";
@@ -58,14 +60,14 @@ function HomeRoute() {
   const { user, loading } = useAuth();
   if (loading) return <div className="flex min-h-screen items-center justify-center"><div className="animate-pulse text-muted-foreground">Carregando...</div></div>;
   if (!user) return <LandingPage />;
-  return <Index />;
+  return <Inicio />;
 }
 
 function DiagnosticoRoute() {
   const { user, loading } = useAuth();
   if (loading) return <div className="flex min-h-screen items-center justify-center"><div className="animate-pulse text-muted-foreground">Carregando...</div></div>;
   if (!user) return <DiagnosticoLanding />;
-  return <Diagnostico />;
+  return <MeuCaso />;
 }
 
 
@@ -86,6 +88,7 @@ const App = () => (
               <Route path="/.lovable/oauth/consent" element={<OAuthConsent />} />
 
               <Route path="/" element={<HomeRoute />} />
+              <Route path="/analise" element={<ProtectedRoute><MeuCaso /></ProtectedRoute>} />
               <Route path="/peticao" element={<ProtectedRoute><Petition /></ProtectedRoute>} />
               <Route path="/chat" element={<ProtectedRoute><Chat /></ProtectedRoute>} />
               <Route path="/historico" element={<ProtectedRoute><History /></ProtectedRoute>} />
