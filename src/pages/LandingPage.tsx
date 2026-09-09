@@ -282,12 +282,12 @@ export default function LandingPage() {
                 </tbody>
               </table>
             </div>
-            <div aria-hidden className="flex flex-wrap items-center gap-3 border-t border-cream-dark px-4 py-3 text-note text-navy/60">
-              <span className="inline-flex items-center gap-2 rounded-md border border-cream-dark px-3 py-1.5 font-medium text-navy">
-                <FileDown className="h-3.5 w-3.5" /> Exportar PDF
+            <div className="flex flex-wrap items-center gap-3 border-t border-cream-dark px-4 py-3 text-note text-navy/60">
+              <span aria-label="Exportar memória de cálculo em PDF" className="inline-flex items-center gap-2 rounded-md border border-cream-dark px-3 py-1.5 font-medium text-navy">
+                <FileDown className="h-3.5 w-3.5" aria-hidden="true" /> Exportar PDF
               </span>
-              <span className="inline-flex items-center gap-2 rounded-md border border-cream-dark px-3 py-1.5 font-medium text-navy">
-                <FileDown className="h-3.5 w-3.5" /> Exportar Word
+              <span aria-label="Exportar memória de cálculo em Word" className="inline-flex items-center gap-2 rounded-md border border-cream-dark px-3 py-1.5 font-medium text-navy">
+                <FileDown className="h-3.5 w-3.5" aria-hidden="true" /> Exportar Word
               </span>
               <span>Fonte e base legal impressas no rodapé do arquivo.</span>
             </div>
