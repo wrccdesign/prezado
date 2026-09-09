@@ -69,7 +69,7 @@ export default function Inicio() {
     const carregar = async () => {
       const [analyses, petitions] = await Promise.all([
         supabase.from("analyses").select("id, file_name, created_at").order("created_at", { ascending: false }).limit(3),
-        supabase.from("petitions").select("id, tipo, created_at").order("created_at", { ascending: false }).limit(3),
+        supabase.from("petitions").select("id, petition_type, created_at").order("created_at", { ascending: false }).limit(3),
       ]);
 
       const itens: Recente[] = [
@@ -82,7 +82,7 @@ export default function Inicio() {
         })),
         ...(petitions.data ?? []).map((p) => ({
           id: `p-${p.id}`,
-          titulo: p.tipo || "Petição",
+          titulo: p.petition_type || "Petição",
           tipo: "Petição",
           data: p.created_at,
           para: "/historico",
