@@ -1,4 +1,5 @@
 import { useEffect, useState, useRef } from "react";
+import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
@@ -83,6 +84,32 @@ function getFormattedDate() {
   return new Date().toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit", year: "numeric" });
 }
 
+function brandingNoticeText(
+  branding: PetitionBranding,
+  isEscritorio: boolean,
+  isPro: boolean,
+): { message: string; hasLink: boolean } | null {
+  if (isEscritorio) {
+    if (hasLetterhead(branding)) {
+      return { message: "O PDF e o DOCX sairão com o timbre do seu escritório.", hasLink: false };
+    }
+    return {
+      message: "Adicione o timbre do escritório em Meu Painel para ele aparecer no PDF e no DOCX.",
+      hasLink: true,
+    };
+  }
+  if (isPro) {
+    if (branding.fullName && branding.oabNumber && branding.oabState) {
+      return { message: "A petição sairá assinada com seu nome e OAB.", hasLink: false };
+    }
+    return {
+      message: "Adicione seu nome e OAB em Meu Painel para constarem na assinatura.",
+      hasLink: true,
+    };
+  }
+  return null;
+}
+
 export function PetitionResult({ text, petitionType, onNewPetition, citationReport }: PetitionResultProps) {
   const { toast } = useToast();
   const { user } = useAuth();
@@ -104,6 +131,8 @@ export function PetitionResult({ text, petitionType, onNewPetition, citationRepo
     });
     return () => { cancelled = true; };
   }, [user, isPro, isEscritorio]);
+
+  const notice = brandingNoticeText(branding, isEscritorio, isPro);
 
   const baseFilename = `Peticao_${sanitizeFilename(petitionType)}_${getDateString()}`;
 
@@ -368,6 +397,16 @@ export function PetitionResult({ text, petitionType, onNewPetition, citationRepo
             className="w-full min-h-[600px] resize-y rounded-md border border-input bg-background px-4 py-3 text-sm leading-relaxed font-sans focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
             style={{ whiteSpace: "pre-wrap" }}
           />
+          {notice && (
+            <p className="text-sm text-muted-foreground">
+              {notice.message}{" "}
+              {notice.hasLink && (
+                <Link to="/painel-advogado" className="underline hover:text-foreground">
+                  Meu Painel.
+                </Link>
+              )}
+            </p>
+          )}
           <div className="flex flex-wrap gap-3">
             <Button onClick={handleDownloadPDF} className="bg-[hsl(220,60%,30%)] hover:bg-[hsl(220,60%,25%)] text-white" size="lg">
               <FileText className="mr-2 h-5 w-5" />

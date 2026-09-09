@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { consumePeticaoPrefill, prefillLinha } from "@/lib/peticaoPrefill";
 
 import { supabase } from "@/integrations/supabase/client";
@@ -20,6 +20,8 @@ import { useToast } from "@/hooks/use-toast";
 import { Loader2, FileSignature } from "lucide-react";
 import { AppFooter } from "@/components/AppFooter";
 import { notifyUsageConsumed } from "@/hooks/useUsage";
+import { useSubscription } from "@/hooks/useSubscription";
+import { useUserProfile } from "@/contexts/UserProfileContext";
 
 const TIPO_ACAO = [
   "Indenização por danos morais e/ou materiais",
@@ -46,6 +48,8 @@ const VARA_JUIZO = [
 export default function Petition() {
   const { toast } = useToast();
   const navigate = useNavigate();
+  const { isEscritorio } = useSubscription();
+  const { profileData } = useUserProfile();
   const [modo, setModo] = useState<"direto" | "etapas">("direto");
   const [loading, setLoading] = useState(false);
   const [generatedText, setGeneratedText] = useState<string | null>(null);
@@ -55,6 +59,11 @@ export default function Petition() {
   const [varaJuizo, setVaraJuizo] = useState("");
   const [fatos, setFatos] = useState("");
   const [pedidos, setPedidos] = useState("");
+
+  const showLetterheadHint =
+    isEscritorio &&
+    !profileData?.office_logo_url &&
+    !profileData?.office_name;
 
   // Ponte vinda da calculadora de correção monetária: pré-preenche o valor
   // atualizado no campo de pedidos, sem alterar o restante do formulário.
@@ -153,6 +162,14 @@ export default function Petition() {
           <p className="mt-1 text-muted-foreground">
             Descreva os fatos do caso e a IA vai gerar a petição com fundamentação jurídica completa.
           </p>
+          {showLetterheadHint && (
+            <p className="mt-2 text-sm text-muted-foreground">
+              Seu plano permite adicionar o timbre do escritório (logo, endereço e contato) às petições exportadas.{" "}
+              <Link to="/painel-advogado" className="underline hover:text-foreground">
+                Configurar em Meu Painel.
+              </Link>
+            </p>
+          )}
         </div>
 
         <div className="mb-6 inline-flex rounded-lg border p-1" role="tablist" aria-label="Modo de geração">
