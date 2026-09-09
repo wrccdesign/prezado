@@ -27,9 +27,8 @@ export function SettingsTab() {
   const [oabState, setOabState] = useState("");
   // Caminho do arquivo dentro do bucket privado `office-logos`.
   const [logoPath, setLogoPath] = useState<string | null>(null);
-  const [logoPreview, setLogoPreview] = useState<string | null>(null);
-  const [uploading, setUploading] = useState(false);
   const [saving, setSaving] = useState(false);
+
 
   useEffect(() => {
     if (profileData) {
