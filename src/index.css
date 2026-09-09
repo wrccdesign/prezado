@@ -157,21 +157,21 @@
   }
 
   .text-display-hero {
-    font-size: 3rem;
-    line-height: 1.05;
+    font-size: 3.25rem;
+    line-height: 1;
     font-family: 'Source Serif 4', Georgia, serif;
     font-weight: 500;
   }
 
   @media (min-width: 768px) {
     .text-display-hero {
-      font-size: 3.75rem;
+      font-size: 4.25rem;
     }
   }
 
   @media (min-width: 1024px) {
     .text-display-hero {
-      font-size: 4.5rem;
+      font-size: 5rem;
     }
   }
 
