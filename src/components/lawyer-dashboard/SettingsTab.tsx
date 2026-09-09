@@ -73,7 +73,7 @@ export function SettingsTab() {
       office_email: officeEmail.trim() || null,
       office_logo_url: logoPath,
       updated_at: new Date().toISOString(),
-    } as never).eq("user_id", user.id);
+    } as never, { onConflict: "user_id" });
 
     setSaving(false);
     if (error) { toast({ title: "Erro ao salvar", variant: "destructive" }); return; }
