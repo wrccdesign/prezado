@@ -17,7 +17,7 @@ import { AppFooter } from "@/components/AppFooter";
 import { SEO } from "@/components/SEO";
 import type { LegalAnalysis } from "@/types/analysis";
 
-export default function Index() {
+export default function Index({ embedded = false }: { embedded?: boolean }) {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { toast } = useToast();
@@ -269,42 +269,53 @@ export default function Index() {
   };
 
   if (result) {
+    const resultado = (
+      <main className={embedded ? "py-2" : "container max-w-3xl py-8 sm:py-12 px-4 sm:px-6"}>
+        {!embedded && (
+          <h1 className="mb-6 sm:mb-8 text-2xl sm:text-3xl lg:text-4xl font-bold text-foreground">Resultado da Análise</h1>
+        )}
+        <AnalysisResult
+          result={result}
+          onNewAnalysis={handleNewAnalysis}
+          onSave={user ? handleSaveAnalysis : undefined}
+          saveState={saveState}
+        />
+      </main>
+    );
+    if (embedded) return resultado;
     return (
       <div className="min-h-screen bg-background">
         <AppHeader />
         <LegalDisclaimer />
-        <main className="container max-w-3xl py-8 sm:py-12 px-4 sm:px-6">
-          <h1 className="mb-6 sm:mb-8 text-2xl sm:text-3xl lg:text-4xl font-bold text-foreground">Resultado da Análise</h1>
-          <AnalysisResult
-            result={result}
-            onNewAnalysis={handleNewAnalysis}
-            onSave={user ? handleSaveAnalysis : undefined}
-            saveState={saveState}
-          />
-        </main>
+        {resultado}
         <AppFooter />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <AppHeader />
-      <LegalDisclaimer />
-      <SEO
-        title="Análise Jurídica com IA — Honorífico"
-        description="Envie um documento ou cole um texto e receba análise jurídica estruturada com direitos, riscos e próximos passos."
-        path="/"
-        image="/og/home.jpg"
-        imageAlt="Honorífico — IA jurídica brasileira"
-      />
-      <main className="container max-w-3xl py-8 sm:py-12 px-4 sm:px-6">
-        <div className="mb-6 sm:mb-8 animate-fade-in">
-          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold leading-tight text-foreground">Análise Jurídica com Inteligência Artificial</h1>
-          <p className="mt-2 sm:mt-3 max-w-2xl text-sm sm:text-base leading-relaxed text-muted-foreground">
-            Insira o texto ou faça upload de um documento para receber uma análise estruturada pela Honorífico.
-          </p>
-        </div>
+    <div className={embedded ? "" : "min-h-screen bg-background"}>
+      {!embedded && <AppHeader />}
+      {!embedded && <LegalDisclaimer />}
+      {!embedded && (
+        <SEO
+          title="Análise de documento com IA — Honorífico"
+          description="Envie um documento ou cole um texto e receba análise jurídica estruturada com direitos, riscos e próximos passos."
+          path="/analise"
+          image="/og/home.jpg"
+          imageAlt="Honorífico — IA jurídica brasileira"
+        />
+      )}
+      <main className={embedded ? "py-2" : "container max-w-3xl py-8 sm:py-12 px-4 sm:px-6"}>
+        {!embedded && (
+          <div className="mb-6 sm:mb-8">
+            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold leading-tight text-foreground">Analisar um documento</h1>
+            <p className="mt-2 sm:mt-3 max-w-2xl text-sm sm:text-base leading-relaxed text-muted-foreground">
+              Envie o arquivo ou cole o texto. A resposta traz o que o documento diz, os riscos e os próximos passos.
+            </p>
+          </div>
+        )}
+
 
         <Card className="animate-fade-in">
           <CardHeader className="pb-4 space-y-1.5">
@@ -424,7 +435,7 @@ export default function Index() {
           </CardContent>
         </Card>
       </main>
-      <AppFooter />
+      {!embedded && <AppFooter />}
     </div>
   );
 }

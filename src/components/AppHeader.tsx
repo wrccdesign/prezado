@@ -11,7 +11,7 @@ import {
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import {
   History, Plus, FileSignature, MessageCircle, Briefcase, User, Calculator,
-  LayoutDashboard, Menu, Stethoscope, Scale, Crown, FileText, ChevronDown, Lock,
+  LayoutDashboard, Menu, Scale, Crown, FileText, ChevronDown, Lock,
 } from "lucide-react";
 import Logo from "@/components/Logo";
 import { UsageSummaryCompact } from "@/components/UsageSummary";
@@ -25,23 +25,23 @@ interface NavItem {
   icon: React.ComponentType<{ className?: string }>;
   lawyerOnly?: boolean;
   requiresAuth?: boolean;
+  hint?: string;
 }
 
 // Menu único: os mesmos rótulos com e sem login. Itens que exigem conta ficam
 // visíveis com cadeado e levam ao cadastro preservando o destino.
-const analiseItem: NavItem = { path: "/", label: "Análise", icon: Plus, requiresAuth: true };
+const analiseItem: NavItem = { path: "/analise", label: "Meu caso", icon: Plus, requiresAuth: true, hint: "Documento ou situação descrita, com direitos e próximos passos." };
 
 const publicNav: NavItem[] = [
-  { path: "/calculadoras", label: "Calculadoras", icon: Calculator },
-  { path: "/jurisprudencia", label: "Jurisprudência", icon: Scale },
+  { path: "/calculadoras", label: "Calculadoras", icon: Calculator, hint: "Correção, prazos, rescisão, pensão e custas." },
+  { path: "/jurisprudencia", label: "Jurisprudência", icon: Scale, hint: "Decisões com link para a fonte no tribunal." },
 ];
 
 const toolsNav: NavItem[] = [
-  { path: "/diagnostico", label: "Diagnóstico", icon: Stethoscope, requiresAuth: true },
-  { path: "/peticao", label: "Petição", icon: FileSignature, requiresAuth: true },
-  { path: "/chat", label: "Chat Jurídico", icon: MessageCircle, requiresAuth: true },
-  { path: "/modelos-de-minutas", label: "Modelos de Minutas", icon: FileText },
-  { path: "/painel-advogado", label: "Painel do Advogado", icon: LayoutDashboard, lawyerOnly: true, requiresAuth: true },
+  { path: "/peticao", label: "Petição", icon: FileSignature, requiresAuth: true, hint: "Monte a peça em etapas, com a fundamentação conferida." },
+  { path: "/chat", label: "Chat Jurídico", icon: MessageCircle, requiresAuth: true, hint: "Tire dúvidas sobre um caso já analisado." },
+  { path: "/modelos-de-minutas", label: "Modelos de Minutas", icon: FileText, hint: "Pontos de partida prontos para editar." },
+  { path: "/painel-advogado", label: "Painel do Advogado", icon: LayoutDashboard, lawyerOnly: true, requiresAuth: true, hint: "Clientes, petições e modelos do escritório." },
 ];
 
 const planosItem: NavItem = { path: "/planos", label: "Planos", icon: Crown };
@@ -78,8 +78,8 @@ export function AppHeader() {
 
   const visible = (items: NavItem[]) =>
     items.filter((i) => !i.lawyerOnly || (isLawyer && !!user));
-  const tools = visible(user ? toolsNav : [analiseItem, ...toolsNav]);
-  const primaryNav = user ? [analiseItem, ...publicNav] : [...publicNav];
+  const tools = visible([analiseItem, ...toolsNav]);
+  const primaryNav = [...publicNav];
   const isActive = (path: string) => location.pathname === path;
   const groupActive = (items: NavItem[]) => items.some((i) => isActive(i.path));
 
@@ -132,9 +132,12 @@ export function AppHeader() {
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className={dropdownContent}>
         {tools.map((item) => (
-          <DropdownMenuItem key={item.path} className={dropdownItem} onClick={() => go(item)}>
-            <span className="flex-1">{item.label}</span>
-            {isLocked(item) && <Lock className="h-3 w-3 opacity-50" />}
+          <DropdownMenuItem key={item.path} className={`${dropdownItem} items-start`} onClick={() => go(item)}>
+            <span className="flex-1">
+              <span className="block">{item.label}</span>
+              {item.hint && <span className="mt-0.5 block text-xs text-cream/50">{item.hint}</span>}
+            </span>
+            {isLocked(item) && <Lock className="h-3 w-3 shrink-0 opacity-50" />}
           </DropdownMenuItem>
         ))}
       </DropdownMenuContent>
@@ -201,12 +204,17 @@ export function AppHeader() {
         <button
           key={item.path}
           onClick={() => { go(item); setSheetOpen(false); }}
-          className={`flex items-center gap-3 w-full px-3 py-2.5 rounded-md text-sm font-medium transition-colors ${
+          className={`flex items-start gap-3 w-full px-3 py-2.5 rounded-md text-sm font-medium transition-colors ${
             isActive(item.path) ? "bg-cream/10 text-cream" : "text-cream/72 hover:text-cream hover:bg-cream/5"
           }`}
         >
-          <span className="flex-1 text-left">{item.label}</span>
-          {isLocked(item) && <Lock className="h-3.5 w-3.5 opacity-50" />}
+          <span className="flex-1 text-left">
+            <span className="block">{item.label}</span>
+            {item.hint && (
+              <span className="mt-0.5 block text-xs font-normal leading-snug text-cream/50">{item.hint}</span>
+            )}
+          </span>
+          {isLocked(item) && <Lock className="h-3.5 w-3.5 shrink-0 opacity-50" />}
         </button>
       ))}
     </>
