@@ -3,9 +3,8 @@ import {
   type AsaasEnv,
   getPayment,
   getSubscription,
-  getWebhookToken,
+  matchWebhookEnv,
   planFromPriceId,
-  resolveAsaasEnv,
 } from "../_shared/asaas.ts";
 
 let _supabase: ReturnType<typeof createClient> | null = null;
@@ -25,7 +24,20 @@ function isoDate(date?: string | null): string | null {
   return isNaN(parsed.getTime()) ? null : parsed.toISOString();
 }
 
-async function logEvent(event: any, env: AsaasEnv, eventId: string): Promise<boolean> {
+/**
+ * Extrai o priceId de um externalReference, que pode vir como
+ * `priceId` (cobrança direta) ou `${userId}:${priceId}` (checkout).
+ */
+function parsePriceRef(ref?: string | null): { userId?: string; priceId?: string } {
+  if (!ref) return {};
+  const parts = ref.split(":");
+  if (parts.length === 2) return { userId: parts[0], priceId: parts[1] };
+  return { priceId: ref };
+}
+
+type LogResult = "new" | "duplicate";
+
+async function logEvent(event: any, env: AsaasEnv, eventId: string): Promise<LogResult> {
   const { error } = await getSupabase().from("payment_events").insert({
     event_id: eventId,
     event_type: event.event || "unknown",
@@ -36,10 +48,14 @@ async function logEvent(event: any, env: AsaasEnv, eventId: string): Promise<boo
     payload: event as unknown as Record<string, unknown>,
   });
   if (error) {
-    console.log("Event already processed or log failed:", eventId, error.message);
-    return false;
+    if ((error as { code?: string }).code === "23505") {
+      console.log("Duplicate Asaas event ignored:", eventId);
+      return "duplicate";
+    }
+    console.error("Failed to log Asaas event:", eventId, error.message);
+    throw new Error(`log failed: ${error.message}`);
   }
-  return true;
+  return "new";
 }
 
 async function activateRecurringSubscription(
@@ -48,10 +64,11 @@ async function activateRecurringSubscription(
   payment?: any,
 ) {
   const sub = await getSubscription(env, subscriptionId);
-  const priceId = sub.externalReference;
+  const ref = parsePriceRef(sub.externalReference);
+  const priceId = ref.priceId;
   const planId = planFromPriceId(priceId);
 
-  // Localiza user_id pelo customer
+  // Localiza user_id pelo externalReference do checkout ou pelo customer
   const { data: rows } = await getSupabase()
     .from("subscriptions")
     .select("user_id")
@@ -59,7 +76,7 @@ async function activateRecurringSubscription(
     .eq("provider", "asaas")
     .eq("environment", env)
     .limit(1);
-  const userId = rows?.[0]?.user_id as string | undefined;
+  const userId = ref.userId || (rows?.[0]?.user_id as string | undefined);
   if (!userId) {
     console.error("No user_id found for Asaas customer", sub.customer);
     return;
@@ -89,7 +106,8 @@ async function activateRecurringSubscription(
 
 async function activateOneTimePayment(paymentId: string, env: AsaasEnv) {
   const payment = await getPayment(env, paymentId);
-  const priceId = payment.externalReference;
+  const ref = parsePriceRef(payment.externalReference);
+  const priceId = ref.priceId;
   const planId = planFromPriceId(priceId);
 
   const { data: rows } = await getSupabase()
@@ -99,7 +117,7 @@ async function activateOneTimePayment(paymentId: string, env: AsaasEnv) {
     .eq("provider", "asaas")
     .eq("environment", env)
     .limit(1);
-  const userId = rows?.[0]?.user_id as string | undefined;
+  const userId = ref.userId || (rows?.[0]?.user_id as string | undefined);
   if (!userId) {
     console.error("No user_id found for Asaas customer", payment.customer);
     return;
@@ -167,11 +185,10 @@ async function renewSubscription(subscriptionId: string, env: AsaasEnv) {
     .eq("environment", env);
 }
 
-async function handleWebhook(req: Request, env: AsaasEnv) {
-  const event = await req.json().catch(() => ({}));
-  const eventId = event.id || crypto.randomUUID();
-  const fresh = await logEvent(event, env, eventId);
-  if (!fresh) return;
+async function handleWebhook(event: any, env: AsaasEnv) {
+  const eventId = `asaas_${event.id}`;
+  const result = await logEvent(event, env, eventId);
+  if (result === "duplicate") return;
 
   const eventType = event.event as string | undefined;
   const payment = event.payment as any;
@@ -214,36 +231,38 @@ async function handleWebhook(req: Request, env: AsaasEnv) {
   }
 }
 
+const jsonResponse = (body: unknown, status: number) =>
+  new Response(JSON.stringify(body), {
+    status,
+    headers: { "Content-Type": "application/json" },
+  });
+
 Deno.serve(async (req) => {
   if (req.method !== "POST") {
     return new Response("Method not allowed", { status: 405 });
   }
 
-  const url = new URL(req.url);
-  const rawEnv = url.searchParams.get("env");
-  if (rawEnv !== "sandbox" && rawEnv !== "live") {
-    return new Response(JSON.stringify({ received: true, ignored: "invalid env" }), {
-      status: 200,
-      headers: { "Content-Type": "application/json" },
-    });
+  // O ambiente vem do token, nunca da URL.
+  const token = req.headers.get("asaas-access-token") || "";
+  const env = await matchWebhookEnv(token);
+  if (!env) {
+    return jsonResponse({ received: false, error: "unauthorized" }, 401);
   }
 
-  const token = url.searchParams.get("token") || req.headers.get("X-Asaas-Token") || "";
-  if (token !== getWebhookToken()) {
-    return new Response(JSON.stringify({ received: false, error: "unauthorized" }), {
-      status: 401,
-      headers: { "Content-Type": "application/json" },
-    });
+  const event = await req.json().catch(() => null);
+  if (!event || typeof event !== "object") {
+    return jsonResponse({ received: false, error: "invalid payload" }, 400);
+  }
+  if (!event.id || typeof event.id !== "string") {
+    console.error("Asaas event without id:", JSON.stringify(event).slice(0, 300));
+    return jsonResponse({ received: false, error: "missing event id" }, 500);
   }
 
   try {
-    await handleWebhook(req, rawEnv);
-    return new Response(JSON.stringify({ received: true }), {
-      status: 200,
-      headers: { "Content-Type": "application/json" },
-    });
+    await handleWebhook(event, env);
+    return jsonResponse({ received: true }, 200);
   } catch (e) {
     console.error("asaas-webhook error:", e);
-    return new Response("Webhook error", { status: 400 });
+    return jsonResponse({ received: false, error: "processing failed" }, 500);
   }
 });

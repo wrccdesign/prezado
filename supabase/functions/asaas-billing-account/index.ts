@@ -178,6 +178,19 @@ async function cancelLocalSubscription(userId: string, env: AsaasEnv, subscripti
   return { ok: true };
 }
 
+async function userOwnsSubscription(userId: string, env: AsaasEnv, subscriptionId: string) {
+  const { data } = await getSupabase()
+    .from("subscriptions")
+    .select("id")
+    .eq("user_id", userId)
+    .eq("environment", env)
+    .eq("provider", "asaas")
+    .eq("provider_subscription_id", subscriptionId)
+    .limit(1)
+    .maybeSingle();
+  return Boolean(data?.id);
+}
+
 async function estimateCredit(subscriptionId: string, env: AsaasEnv, newPriceId: PriceId) {
   const sub = await getSubscription(env, subscriptionId);
   const newValue = PLAN_CONFIG[newPriceId].valueCents / 100;
@@ -250,11 +263,19 @@ Deno.serve(async (req) => {
         if (!body?.subscriptionId || !body?.newPriceId) {
           return json({ error: "subscriptionId e newPriceId são obrigatórios" }, 400);
         }
+        if (!PLAN_CONFIG[body.newPriceId as PriceId]) {
+          return json({ error: "newPriceId inválido" }, 400);
+        }
+        if (!(await userOwnsSubscription(user.id, env, body.subscriptionId))) {
+          return json({ error: "Assinatura não pertence a este usuário" }, 403);
+        }
         const result = await estimateCredit(body.subscriptionId, env, body.newPriceId);
         return json(result);
       }
       case "change-plan": {
-        if (!body?.newPriceId) return json({ error: "newPriceId é obrigatório" }, 400);
+        if (!body?.newPriceId || !PLAN_CONFIG[body.newPriceId as PriceId]) {
+          return json({ error: "newPriceId inválido" }, 400);
+        }
         const result = await changePlan(user.id, env, body.newPriceId);
         return json(result);
       }
