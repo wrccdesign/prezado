@@ -365,7 +365,7 @@ export async function createCheckoutSession(
   const nextDueDateStr = nextDueDate.toISOString().split("T")[0];
 
   const body: Record<string, unknown> = {
-    billingTypes: options.billingTypes ?? ["PIX", "CREDIT_CARD"],
+    billingTypes: options.billingTypes ?? (recurring ? ["CREDIT_CARD"] : ["PIX", "CREDIT_CARD"]),
     chargeTypes: [recurring ? "RECURRENT" : "DETACHED"],
     minutesToExpire: 60,
     externalReference: `${options.userId}:${options.priceId}`,
