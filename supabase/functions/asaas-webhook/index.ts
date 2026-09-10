@@ -185,11 +185,10 @@ async function renewSubscription(subscriptionId: string, env: AsaasEnv) {
     .eq("environment", env);
 }
 
-async function handleWebhook(req: Request, env: AsaasEnv) {
-  const event = await req.json().catch(() => ({}));
-  const eventId = event.id || crypto.randomUUID();
-  const fresh = await logEvent(event, env, eventId);
-  if (!fresh) return;
+async function handleWebhook(event: any, env: AsaasEnv) {
+  const eventId = `asaas_${event.id}`;
+  const result = await logEvent(event, env, eventId);
+  if (result === "duplicate") return;
 
   const eventType = event.event as string | undefined;
   const payment = event.payment as any;
