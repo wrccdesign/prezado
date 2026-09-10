@@ -64,7 +64,6 @@ Deno.serve(async (req) => {
     const recurring = isRecurringPrice(priceId);
 
     const session = await createCheckoutSession(env, {
-      customerId: customer.id,
       priceId: priceId as PriceId,
       userId: user.id,
       successUrl: `${origin}/planos?checkout=success`,
