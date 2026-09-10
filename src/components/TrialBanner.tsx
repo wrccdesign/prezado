@@ -79,7 +79,8 @@ export function TrialBanner() {
                 : "Faltam 3 dias do seu teste Profissional"}
             </p>
             <p className="mt-1 text-sm text-muted-foreground">
-              Ao voltar para o plano gratuito, você perde:
+              Nada será cobrado. {endLabel ? `Em ${endLabel} a conta` : "A conta"} volta ao plano
+              gratuito e você perde:
             </p>
             <ul className="mt-2 space-y-1 text-sm text-foreground">
               {PERDAS.map((p) => (
