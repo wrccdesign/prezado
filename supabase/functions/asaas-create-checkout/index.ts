@@ -2,6 +2,7 @@ import { corsHeaders } from "npm:@supabase/supabase-js@2/cors";
 import { createClient } from "npm:@supabase/supabase-js@2";
 import {
   type AsaasEnv,
+  isPixKeyMissingError,
   checkoutSessionUrl,
   createCheckoutSession,
   createSubscription,
@@ -71,13 +72,28 @@ Deno.serve(async (req) => {
     }
 
     if (requestedBillingType === "PIX") {
-      const subscription = await createSubscription(
-        env,
-        customer.id,
-        priceId as PriceId,
-        user.id,
-        "PIX",
-      );
+      let subscription;
+      try {
+        subscription = await createSubscription(
+          env,
+          customer.id,
+          priceId as PriceId,
+          user.id,
+          "PIX",
+        );
+      } catch (error) {
+        if (isPixKeyMissingError(error)) {
+          return json(
+            {
+              error:
+                "O Pix ainda não está disponível para esta conta. Escolha pagamento no cartão para continuar.",
+              pixUnavailable: true,
+            },
+            400,
+          );
+        }
+        throw error;
+      }
       const payments = await listCustomerPayments(env, customer.id);
       const firstPayment = payments.find((payment) => payment.subscription === subscription.id);
       if (!firstPayment?.invoiceUrl) {
@@ -101,13 +117,26 @@ Deno.serve(async (req) => {
       return json({ checkoutUrl: firstPayment.invoiceUrl, billingType: "PIX" });
     }
 
-    const session = await createCheckoutSession(env, {
+    const sessionOptions = {
       priceId: priceId as PriceId,
       userId: user.id,
       successUrl: `${origin}/planos?checkout=success`,
       cancelUrl: `${origin}/planos?checkout=cancelled`,
       expiredUrl: `${origin}/planos?checkout=expired`,
-    });
+    };
+
+    let session;
+    try {
+      session = await createCheckoutSession(env, sessionOptions);
+    } catch (error) {
+      if (!isPixKeyMissingError(error)) throw error;
+      // Conta sem chave Pix cadastrada: refaz o checkout apenas com cartão.
+      console.warn("Asaas sem chave Pix; refazendo checkout apenas com cartão.");
+      session = await createCheckoutSession(env, {
+        ...sessionOptions,
+        billingTypes: ["CREDIT_CARD"],
+      });
+    }
 
     // Registra a intenção; o webhook confirma o pagamento.
     const intent = {

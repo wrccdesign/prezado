@@ -196,7 +196,16 @@ export default function Planos() {
           returnUrl: `${window.location.origin}/planos?checkout=success`,
         },
       });
-      if (error) throw new Error(error.message);
+      if (error) {
+        // A função devolve a mensagem legível no corpo da resposta.
+        let detail = "";
+        const context = (error as { context?: Response }).context;
+        if (context && typeof context.json === "function") {
+          const body = await context.json().catch(() => null);
+          detail = (body as { error?: string } | null)?.error ?? "";
+        }
+        throw new Error(detail || error.message);
+      }
       if ((data as { error?: string })?.error) throw new Error((data as { error: string }).error);
       const checkoutUrl = (data as { checkoutUrl?: string }).checkoutUrl;
       if (!checkoutUrl) throw new Error("URL de checkout não retornada");
@@ -213,8 +222,17 @@ export default function Planos() {
       }
       setIsCheckoutLoading(false);
     } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : "Erro desconhecido";
-      toast.error("Erro ao iniciar checkout: " + message);
+      const message = err instanceof Error ? err.message : "";
+      if (message.toLowerCase().includes("pix")) {
+        setMonthlyBillingType("CREDIT_CARD");
+        toast.error(message);
+      } else {
+        toast.error(
+          message
+            ? "Não foi possível iniciar o pagamento: " + message
+            : "Não foi possível iniciar o pagamento. Tente novamente em instantes.",
+        );
+      }
       setIsCheckoutLoading(false);
     }
 
