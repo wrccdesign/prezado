@@ -41,6 +41,7 @@ interface AccessInfo {
   id: string;
   status: string;
   planId: string;
+  pendingPlanId?: string | null;
   accessType?: "recurring" | "one_time";
   accessExpiresAt?: string | null;
   currentPeriodEnd: string | null;
