@@ -17,8 +17,42 @@ export function getApiKey(env: AsaasEnv): string {
   return env === "sandbox" ? getEnv("ASAAS_SANDBOX_API_KEY") : getEnv("ASAAS_LIVE_API_KEY");
 }
 
-export function getWebhookToken(): string {
-  return getEnv("ASAAS_WEBHOOK_TOKEN");
+const CHECKOUT_HOST = {
+  sandbox: "https://sandbox.asaas.com",
+  live: "https://asaas.com",
+} as const;
+
+async function sha256(value: string): Promise<Uint8Array> {
+  const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(value));
+  return new Uint8Array(digest);
+}
+
+function constantTimeEqual(a: Uint8Array, b: Uint8Array): boolean {
+  if (a.length !== b.length) return false;
+  let diff = 0;
+  for (let i = 0; i < a.length; i++) diff |= a[i] ^ b[i];
+  return diff === 0;
+}
+
+/**
+ * Descobre o ambiente a partir do token recebido no webhook.
+ * Nunca confia em parâmetro de URL. Comparação de tempo constante.
+ */
+export async function matchWebhookEnv(received: string): Promise<AsaasEnv | null> {
+  if (!received) return null;
+  const receivedHash = await sha256(received);
+  let matched: AsaasEnv | null = null;
+
+  for (const env of ["sandbox", "live"] as const) {
+    const expected = Deno.env.get(
+      env === "sandbox" ? "ASAAS_WEBHOOK_TOKEN_SANDBOX" : "ASAAS_WEBHOOK_TOKEN_LIVE",
+    );
+    if (!expected) continue;
+    const ok = constantTimeEqual(receivedHash, await sha256(expected));
+    if (ok && matched === null) matched = env;
+  }
+
+  return matched;
 }
 
 export function asaasBaseUrl(env: AsaasEnv): string {
