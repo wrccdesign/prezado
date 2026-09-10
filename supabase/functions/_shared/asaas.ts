@@ -323,3 +323,72 @@ export async function updateSubscriptionValue(
     body: { value: valueCents / 100 },
   });
 }
+
+export interface AsaasCheckoutSession {
+  id: string;
+  link?: string;
+  status?: string;
+}
+
+export function checkoutSessionUrl(env: AsaasEnv, sessionId: string): string {
+  return `${CHECKOUT_HOST[env]}/checkoutSession/show?id=${encodeURIComponent(sessionId)}`;
+}
+
+/**
+ * Cria uma sessão de checkout hospedada do Asaas.
+ * Mensal: cobrança recorrente. Anual: cobrança avulsa.
+ */
+export async function createCheckoutSession(
+  env: AsaasEnv,
+  options: {
+    customerId: string;
+    priceId: PriceId;
+    userId: string;
+    successUrl: string;
+    cancelUrl: string;
+    expiredUrl: string;
+    billingTypes?: string[];
+  },
+): Promise<AsaasCheckoutSession> {
+  const config = PLAN_CONFIG[options.priceId];
+  const recurring = config.cycle === "MONTHLY";
+  const value = config.valueCents / 100;
+
+  const nextDueDate = new Date();
+  nextDueDate.setDate(nextDueDate.getDate() + 1);
+  const nextDueDateStr = nextDueDate.toISOString().split("T")[0];
+
+  const body: Record<string, unknown> = {
+    billingTypes: options.billingTypes ?? (recurring ? ["CREDIT_CARD"] : ["PIX", "CREDIT_CARD"]),
+    chargeTypes: [recurring ? "RECURRENT" : "DETACHED"],
+    minutesToExpire: 60,
+    externalReference: `${options.userId}:${options.priceId}`,
+    callback: {
+      successUrl: options.successUrl,
+      cancelUrl: options.cancelUrl,
+      expiredUrl: options.expiredUrl,
+    },
+    items: [
+      {
+        name: config.description,
+        description: config.description,
+        quantity: 1,
+        value,
+      },
+    ],
+    customerData: { },
+    customer: options.customerId,
+  };
+
+  if (recurring) {
+    body.subscription = {
+      cycle: "MONTHLY",
+      nextDueDate: nextDueDateStr,
+    };
+  }
+
+  return asaasRequest<AsaasCheckoutSession>(env, "/checkouts", {
+    method: "POST",
+    body,
+  });
+}
