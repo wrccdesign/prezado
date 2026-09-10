@@ -200,12 +200,24 @@ export default function Planos() {
       if ((data as { error?: string })?.error) throw new Error((data as { error: string }).error);
       const checkoutUrl = (data as { checkoutUrl?: string }).checkoutUrl;
       if (!checkoutUrl) throw new Error("URL de checkout não retornada");
-      window.location.href = checkoutUrl;
+      const opened = window.open(checkoutUrl, "_blank", "noopener,noreferrer");
+      if (!opened) {
+        toast.error("Seu navegador bloqueou a janela de pagamento.", {
+          description: "Toque em abrir para continuar.",
+          action: {
+            label: "Abrir pagamento",
+            onClick: () => window.open(checkoutUrl, "_blank", "noopener,noreferrer"),
+          },
+          duration: 15000,
+        });
+      }
+      setIsCheckoutLoading(false);
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : "Erro desconhecido";
       toast.error("Erro ao iniciar checkout: " + message);
       setIsCheckoutLoading(false);
     }
+
   };
 
 
