@@ -54,7 +54,7 @@ export function TrialBanner() {
           <Sparkles className="h-4 w-4 text-gold" />
           <span className="font-medium">Teste Profissional — {label}.</span>
           <span className="text-muted-foreground">
-            Assine para não perder os limites ampliados.
+            Nada será cobrado: a conta volta sozinha ao plano Gratuito.
           </span>
           <Link to="/planos" className="font-semibold text-gold hover:underline">
             Ver planos
