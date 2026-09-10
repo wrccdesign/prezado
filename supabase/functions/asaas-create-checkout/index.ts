@@ -78,7 +78,14 @@ Deno.serve(async (req) => {
         updated_at: new Date().toISOString(),
       }, { onConflict: "provider_subscription_id,provider,environment" });
 
-      return json({ checkoutUrl: `${returnUrl}&subscription_id=${sub.id}` });
+      // A primeira cobrança da assinatura é gerada automaticamente.
+      const payments = await listCustomerPayments(env, customer.id);
+      const firstPayment = payments
+        .filter((p) => p.subscription === sub.id)
+        .sort((a, b) => (b.dueDate || "").localeCompare(a.dueDate || ""))[0];
+      const checkoutUrl = firstPayment?.invoiceUrl || `${returnUrl}&subscription_id=${sub.id}`;
+
+      return json({ checkoutUrl });
     }
 
     // Anual à vista
