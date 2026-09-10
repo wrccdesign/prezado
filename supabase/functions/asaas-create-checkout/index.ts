@@ -72,13 +72,28 @@ Deno.serve(async (req) => {
     }
 
     if (requestedBillingType === "PIX") {
-      const subscription = await createSubscription(
-        env,
-        customer.id,
-        priceId as PriceId,
-        user.id,
-        "PIX",
-      );
+      let subscription;
+      try {
+        subscription = await createSubscription(
+          env,
+          customer.id,
+          priceId as PriceId,
+          user.id,
+          "PIX",
+        );
+      } catch (error) {
+        if (isPixKeyMissingError(error)) {
+          return json(
+            {
+              error:
+                "O Pix ainda não está disponível para esta conta. Escolha pagamento no cartão para continuar.",
+              pixUnavailable: true,
+            },
+            400,
+          );
+        }
+        throw error;
+      }
       const payments = await listCustomerPayments(env, customer.id);
       const firstPayment = payments.find((payment) => payment.subscription === subscription.id);
       if (!firstPayment?.invoiceUrl) {
