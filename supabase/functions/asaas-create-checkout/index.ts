@@ -6,6 +6,7 @@ import {
   createSubscription,
   findOrCreateCustomer,
   isRecurringPrice,
+  listCustomerPayments,
   planFromPriceId,
   resolveAsaasEnv,
   type PriceId,
