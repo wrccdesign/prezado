@@ -64,10 +64,11 @@ async function activateRecurringSubscription(
   payment?: any,
 ) {
   const sub = await getSubscription(env, subscriptionId);
-  const priceId = sub.externalReference;
+  const ref = parsePriceRef(sub.externalReference);
+  const priceId = ref.priceId;
   const planId = planFromPriceId(priceId);
 
-  // Localiza user_id pelo customer
+  // Localiza user_id pelo externalReference do checkout ou pelo customer
   const { data: rows } = await getSupabase()
     .from("subscriptions")
     .select("user_id")
@@ -75,7 +76,7 @@ async function activateRecurringSubscription(
     .eq("provider", "asaas")
     .eq("environment", env)
     .limit(1);
-  const userId = rows?.[0]?.user_id as string | undefined;
+  const userId = ref.userId || (rows?.[0]?.user_id as string | undefined);
   if (!userId) {
     console.error("No user_id found for Asaas customer", sub.customer);
     return;
