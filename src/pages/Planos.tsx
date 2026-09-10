@@ -443,6 +443,43 @@ export default function Planos() {
 
         <FaqSection items={faqItems} className="mt-14 max-w-3xl" />
 
+        <Dialog open={!!pendingPriceId} onOpenChange={(open) => { if (!open) { setPendingPriceId(null); setCpfCnpj(""); } }}>
+          <DialogContent className="bg-cream text-navy border-cream-dark">
+            <DialogHeader>
+              <DialogTitle>Informe o CPF ou CNPJ</DialogTitle>
+              <DialogDescription>
+                O Asaas exige o CPF/CNPJ do responsável pelo pagamento para gerar a cobrança.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-4 py-2">
+              <div className="space-y-2">
+                <Label htmlFor="cpfCnpj">CPF ou CNPJ</Label>
+                <Input
+                  id="cpfCnpj"
+                  value={cpfCnpj}
+                  onChange={(e) => setCpfCnpj(e.target.value)}
+                  placeholder="000.000.000-00"
+                  inputMode="numeric"
+                  className="bg-white border-cream-dark"
+                />
+              </div>
+            </div>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => { setPendingPriceId(null); setCpfCnpj(""); }}>
+                Cancelar
+              </Button>
+              <Button
+                onClick={startCheckout}
+                disabled={isCheckoutLoading}
+                className="bg-gold text-navy hover:bg-gold-light"
+              >
+                {isCheckoutLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+                Continuar para pagamento
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
       </main>
 
 
