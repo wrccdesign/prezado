@@ -117,6 +117,7 @@ export default function Planos() {
   const [creditCents, setCreditCents] = useState<number | null>(null);
   const [pendingPriceId, setPendingPriceId] = useState<string | null>(null);
   const [cpfCnpj, setCpfCnpj] = useState("");
+  const [phone, setPhone] = useState("");
   const [isCheckoutLoading, setIsCheckoutLoading] = useState(false);
   const isPastDue = subscription?.status === "past_due";
 
@@ -180,12 +181,18 @@ export default function Planos() {
       toast.error("Informe um CPF ou CNPJ válido.");
       return;
     }
+    const phoneDigits = phone.replace(/\D/g, "");
+    if (phoneDigits.length < 10 || phoneDigits.length > 11) {
+      toast.error("Informe um telefone com DDD.");
+      return;
+    }
     setIsCheckoutLoading(true);
     try {
       const { data, error } = await supabase.functions.invoke("asaas-create-checkout", {
         body: {
           priceId: pendingPriceId,
           cpfCnpj: digits,
+          phone: phoneDigits,
           returnUrl: `${window.location.origin}/planos?checkout=success`,
         },
       });
@@ -357,8 +364,8 @@ export default function Planos() {
                 )}
                 {plan.priceId && (
                   <p className="mt-2 text-note text-navy/60">
-                    Cobrança em reais (BRL), processada no Brasil. Você pode pagar por cartão, Pix
-                    ou boleto.
+                    Cobrança em reais (BRL), processada no Brasil. Assinatura mensal no cartão de
+                    crédito. No plano anual você também pode pagar por Pix.
                   </p>
                 )}
 
@@ -443,12 +450,12 @@ export default function Planos() {
 
         <FaqSection items={faqItems} className="mt-14 max-w-3xl" />
 
-        <Dialog open={!!pendingPriceId} onOpenChange={(open) => { if (!open) { setPendingPriceId(null); setCpfCnpj(""); } }}>
+        <Dialog open={!!pendingPriceId} onOpenChange={(open) => { if (!open) { setPendingPriceId(null); setCpfCnpj(""); setPhone(""); } }}>
           <DialogContent className="bg-cream text-navy border-cream-dark">
             <DialogHeader>
-              <DialogTitle>Informe o CPF ou CNPJ</DialogTitle>
+              <DialogTitle>Dados para a cobrança</DialogTitle>
               <DialogDescription>
-                O Asaas exige o CPF/CNPJ do responsável pelo pagamento para gerar a cobrança.
+                Precisamos do CPF/CNPJ e do telefone do responsável pelo pagamento.
               </DialogDescription>
             </DialogHeader>
             <div className="space-y-4 py-2">
@@ -463,9 +470,20 @@ export default function Planos() {
                   className="bg-white border-cream-dark"
                 />
               </div>
+              <div className="space-y-2">
+                <Label htmlFor="phone">Telefone com DDD</Label>
+                <Input
+                  id="phone"
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                  placeholder="(11) 99999-9999"
+                  inputMode="tel"
+                  className="bg-white border-cream-dark"
+                />
+              </div>
             </div>
             <DialogFooter>
-              <Button variant="outline" onClick={() => { setPendingPriceId(null); setCpfCnpj(""); }}>
+              <Button variant="outline" onClick={() => { setPendingPriceId(null); setCpfCnpj(""); setPhone(""); }}>
                 Cancelar
               </Button>
               <Button
