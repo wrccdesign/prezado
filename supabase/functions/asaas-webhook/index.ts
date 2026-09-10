@@ -3,9 +3,8 @@ import {
   type AsaasEnv,
   getPayment,
   getSubscription,
-  getWebhookToken,
+  matchWebhookEnv,
   planFromPriceId,
-  resolveAsaasEnv,
 } from "../_shared/asaas.ts";
 
 let _supabase: ReturnType<typeof createClient> | null = null;
