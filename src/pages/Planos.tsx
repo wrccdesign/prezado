@@ -112,8 +112,12 @@ export default function Planos() {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const { planId, isLoading, subscription } = useSubscription();
-  const hasPaidPlan = planId !== "free";
+  const { planId, isLoading, subscription, isTrial, trialEndsAt } = useSubscription();
+  // Teste grátis não é assinatura: não permite troca de plano, só contratação.
+  const hasPaidPlan = planId !== "free" && !isTrial;
+  const trialEndLabel = trialEndsAt
+    ? new Date(trialEndsAt).toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit" })
+    : null;
   const [changingPlan, setChangingPlan] = useState<PlanId | null>(null);
   const [cycle, setCycle] = useState<BillingCycle>("mensal");
   
