@@ -29,7 +29,12 @@ export function TrialBanner() {
   if (!isTrial) return null;
 
   const urgent = trialDaysLeft <= 3;
-  const label = trialDaysLeft <= 1 ? "termina hoje" : `${trialDaysLeft} dias restantes`;
+  const endLabel = trialEndsAt
+    ? new Date(trialEndsAt).toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit" })
+    : null;
+  const label = trialDaysLeft <= 1
+    ? "termina hoje"
+    : `termina em ${endLabel ?? `${trialDaysLeft} dias`}`;
 
   const dismiss = () => {
     if (storageKey) localStorage.setItem(storageKey, "1");
