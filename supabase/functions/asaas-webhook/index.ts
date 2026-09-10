@@ -231,36 +231,38 @@ async function handleWebhook(event: any, env: AsaasEnv) {
   }
 }
 
+const jsonResponse = (body: unknown, status: number) =>
+  new Response(JSON.stringify(body), {
+    status,
+    headers: { "Content-Type": "application/json" },
+  });
+
 Deno.serve(async (req) => {
   if (req.method !== "POST") {
     return new Response("Method not allowed", { status: 405 });
   }
 
-  const url = new URL(req.url);
-  const rawEnv = url.searchParams.get("env");
-  if (rawEnv !== "sandbox" && rawEnv !== "live") {
-    return new Response(JSON.stringify({ received: true, ignored: "invalid env" }), {
-      status: 200,
-      headers: { "Content-Type": "application/json" },
-    });
+  // O ambiente vem do token, nunca da URL.
+  const token = req.headers.get("asaas-access-token") || "";
+  const env = await matchWebhookEnv(token);
+  if (!env) {
+    return jsonResponse({ received: false, error: "unauthorized" }, 401);
   }
 
-  const token = url.searchParams.get("token") || req.headers.get("X-Asaas-Token") || "";
-  if (token !== getWebhookToken()) {
-    return new Response(JSON.stringify({ received: false, error: "unauthorized" }), {
-      status: 401,
-      headers: { "Content-Type": "application/json" },
-    });
+  const event = await req.json().catch(() => null);
+  if (!event || typeof event !== "object") {
+    return jsonResponse({ received: false, error: "invalid payload" }, 400);
+  }
+  if (!event.id || typeof event.id !== "string") {
+    console.error("Asaas event without id:", JSON.stringify(event).slice(0, 300));
+    return jsonResponse({ received: false, error: "missing event id" }, 500);
   }
 
   try {
-    await handleWebhook(req, rawEnv);
-    return new Response(JSON.stringify({ received: true }), {
-      status: 200,
-      headers: { "Content-Type": "application/json" },
-    });
+    await handleWebhook(event, env);
+    return jsonResponse({ received: true }, 200);
   } catch (e) {
     console.error("asaas-webhook error:", e);
-    return new Response("Webhook error", { status: 400 });
+    return jsonResponse({ received: false, error: "processing failed" }, 500);
   }
 });
