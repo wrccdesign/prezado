@@ -273,7 +273,9 @@ Deno.serve(async (req) => {
         return json(result);
       }
       case "change-plan": {
-        if (!body?.newPriceId) return json({ error: "newPriceId é obrigatório" }, 400);
+        if (!body?.newPriceId || !PLAN_CONFIG[body.newPriceId as PriceId]) {
+          return json({ error: "newPriceId inválido" }, 400);
+        }
         const result = await changePlan(user.id, env, body.newPriceId);
         return json(result);
       }
