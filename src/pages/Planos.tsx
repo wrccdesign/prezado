@@ -385,7 +385,15 @@ export default function Planos() {
                 <div className="flex items-baseline justify-between gap-2">
                   <h2 className="text-h3 text-navy">{plan.name}</h2>
                   {plan.popular && <span className="text-note text-gold">Mais escolhido</span>}
-                  {isCurrent && <span className="text-note text-navy/60">Seu plano</span>}
+                  {isCurrent && (
+                    <span className="text-note text-navy/60">
+                      {isTrial
+                        ? trialEndLabel
+                          ? `Teste grátis, termina em ${trialEndLabel}`
+                          : "Teste grátis"
+                        : "Seu plano"}
+                    </span>
+                  )}
                 </div>
                 <p className="mt-1 text-sm text-navy/70">{plan.description}</p>
 
