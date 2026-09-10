@@ -59,6 +59,29 @@ export function asaasBaseUrl(env: AsaasEnv): string {
   return ASAAS_BASE[env];
 }
 
+/** Erro devolvido pela API do Asaas, com código e descrição preservados. */
+export class AsaasError extends Error {
+  status: number;
+  code?: string;
+
+  constructor(message: string, status: number, code?: string) {
+    super(message);
+    this.name = "AsaasError";
+    this.status = status;
+    this.code = code;
+  }
+}
+
+/** Detecta a recusa "é necessário criar uma chave Pix no Asaas". */
+export function isPixKeyMissingError(error: unknown): boolean {
+  const message = error instanceof Error ? error.message : String(error ?? "");
+  const normalized = message
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase();
+  return normalized.includes("chave pix");
+}
+
 export function resolveAsaasEnv(req: Request): AsaasEnv {
   return resolvePaymentEnv(req);
 }
