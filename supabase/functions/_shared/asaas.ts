@@ -68,6 +68,7 @@ export interface AsaasCustomer {
   name?: string;
   email?: string;
   cpfCnpj?: string;
+  mobilePhone?: string;
   externalReference?: string;
 }
 
@@ -233,6 +234,7 @@ export async function findOrCreateCustomer(
       name: options.name || options.email || "Honorífico",
       email: options.email,
       cpfCnpj: options.cpfCnpj,
+      mobilePhone: options.phone,
       externalReference: options.userId,
     },
   });
