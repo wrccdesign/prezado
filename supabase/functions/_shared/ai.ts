@@ -145,22 +145,30 @@ async function logUsage(
   }
 }
 
-/** Uma rodada de MAX_ATTEMPTS tentativas em um único modelo. */
+/**
+ * Uma rodada de até MAX_ATTEMPTS tentativas em um único modelo, respeitando o
+ * prazo total (`deadline`): nenhuma tentativa começa sem tempo útil sobrando e
+ * cada chamada é cortada no menor valor entre o timeout e o tempo restante.
+ */
 async function attemptModel(
   body: Record<string, unknown>,
   timeoutMs: number | undefined,
   label: string,
+  deadline: number,
 ): Promise<{ res: Response } | { res: null; status: number }> {
   const apiKey = getApiKey();
-  let lastStatus = 500;
+  let lastStatus = 503;
 
   for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
-    let controller: AbortController | undefined;
-    let timer: number | undefined;
-    if (timeoutMs) {
-      controller = new AbortController();
-      timer = setTimeout(() => controller!.abort(), timeoutMs) as unknown as number;
+    const remaining = deadline - Date.now();
+    if (remaining <= 2_000) {
+      console.error(`[ai] orçamento de tempo esgotado (${label}, tentativa ${attempt}/${MAX_ATTEMPTS})`);
+      break;
     }
+
+    const effectiveTimeout = Math.min(timeoutMs ?? remaining, remaining);
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), effectiveTimeout) as unknown as number;
 
     try {
       const res = await fetch(GOOGLE_OPENAI_BASE, {
@@ -170,9 +178,9 @@ async function attemptModel(
           "Content-Type": "application/json",
         },
         body: JSON.stringify(body),
-        signal: controller?.signal,
+        signal: controller.signal,
       });
-      if (timer) clearTimeout(timer);
+      clearTimeout(timer);
 
       if (res.ok) return { res };
 
@@ -188,7 +196,7 @@ async function attemptModel(
         throw new AIError(userMessageFor(res.status), res.status);
       }
     } catch (e) {
-      if (timer) clearTimeout(timer);
+      clearTimeout(timer);
       if (e instanceof AIError) throw e;
       console.error(
         `[ai] erro de rede (${label}, tentativa ${attempt}/${MAX_ATTEMPTS}):`,
@@ -206,18 +214,24 @@ async function attemptModel(
  * POST cru com retry em 429/5xx e, se o modelo primário ficar indisponível
  * (429 ou 503 persistentes), uma rodada extra no modelo de fallback — mesma
  * `GEMINI_API_KEY`. Devolve também o modelo realmente usado, para o logUsage.
+ *
+ * Todo o conjunto cabe em TOTAL_BUDGET_MS: é melhor devolver 503 com mensagem
+ * clara do que deixar a função estourar o limite de parede e virar 504.
  */
 async function postChat(
   body: Record<string, unknown>,
   timeoutMs?: number,
   fallbackModel?: string,
 ): Promise<{ res: Response; model: string }> {
+  const deadline = Date.now() + TOTAL_BUDGET_MS;
   const primaryModel = String(body.model ?? "");
-  const first = await attemptModel(body, timeoutMs, primaryModel);
+  const first = await attemptModel(body, timeoutMs, primaryModel, deadline);
   if (first.res) return { res: first.res, model: primaryModel };
 
   const status = first.status;
-  const canFallback = fallbackModel && fallbackModel !== primaryModel && (status === 429 || status === 503);
+  const timeLeft = deadline - Date.now();
+  const canFallback = fallbackModel && fallbackModel !== primaryModel &&
+    (status === 429 || status >= 500) && timeLeft > 5_000;
   if (!canFallback) {
     throw new AIError(userMessageFor(status), status >= 500 ? 503 : status);
   }
@@ -225,14 +239,20 @@ async function postChat(
   console.warn(
     `[ai] fallback de modelo: ${primaryModel} -> ${fallbackModel} após ${MAX_ATTEMPTS} tentativas com status ${status}`,
   );
-  // Terceira espera da escala (8s + jitter) antes de trocar de modelo.
-  await sleep(backoffFor(3));
-  const second = await attemptModel({ ...body, model: fallbackModel }, timeoutMs, `fallback ${fallbackModel}`);
+  // Espera curta antes de trocar de modelo — o tempo restante é do usuário.
+  await sleep(backoffFor(1));
+  const second = await attemptModel(
+    { ...body, model: fallbackModel },
+    timeoutMs,
+    `fallback ${fallbackModel}`,
+    deadline,
+  );
   if (second.res) return { res: second.res, model: fallbackModel! };
 
   const finalStatus = second.status;
   throw new AIError(userMessageFor(finalStatus), finalStatus >= 500 ? 503 : finalStatus);
 }
+
 
 /** Chamada não-streaming. Retorna o JSON no formato OpenAI (choices/message/tool_calls). */
 export async function aiChat(opts: AIRequestOptions): Promise<any> {
