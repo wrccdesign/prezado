@@ -376,7 +376,6 @@ export async function createCheckoutSession(
         value,
       },
     ],
-    customerData: { },
     customer: options.customerId,
   };
 
