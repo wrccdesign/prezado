@@ -175,7 +175,7 @@ export async function asaasRequest<T>(
   if (!res.ok) {
     console.error("Asaas request failed:", url, res.status, text.slice(0, 500));
     const message = json.errors?.[0]?.description || json.message || `Asaas ${res.status}`;
-    throw new Error(message);
+    throw new AsaasError(message, res.status, json.errors?.[0]?.code);
   }
 
   return json as T;
