@@ -353,6 +353,13 @@ export default function Planos() {
               Pagamento único de 12 meses, à vista no cartão. Sem renovação automática.
             </p>
           )}
+          {isTrial && (
+            <p className="text-note text-navy/70">
+              Você está no teste grátis do Profissional
+              {trialEndLabel ? `. Ele termina em ${trialEndLabel}` : ""} e depois a conta volta
+              para o plano Gratuito. Nada foi cobrado.
+            </p>
+          )}
           {hasPaidPlan && cycle === "mensal" && (
             <p className="text-note text-navy/70">
               Ao trocar de plano, a alteração passa a valer na próxima cobrança. Não há cobrança
