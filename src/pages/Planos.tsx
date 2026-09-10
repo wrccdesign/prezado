@@ -170,9 +170,24 @@ export default function Planos() {
       return;
     }
 
+    setPendingPriceId(priceId);
+  };
+
+  const startCheckout = async () => {
+    if (!pendingPriceId) return;
+    const digits = cpfCnpj.replace(/\D/g, "");
+    if (digits.length !== 11 && digits.length !== 14) {
+      toast.error("Informe um CPF ou CNPJ válido.");
+      return;
+    }
+    setIsCheckoutLoading(true);
     try {
       const { data, error } = await supabase.functions.invoke("asaas-create-checkout", {
-        body: { priceId, returnUrl: `${window.location.origin}/planos?checkout=success` },
+        body: {
+          priceId: pendingPriceId,
+          cpfCnpj: digits,
+          returnUrl: `${window.location.origin}/planos?checkout=success`,
+        },
       });
       if (error) throw new Error(error.message);
       if ((data as { error?: string })?.error) throw new Error((data as { error: string }).error);
@@ -182,6 +197,7 @@ export default function Planos() {
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : "Erro desconhecido";
       toast.error("Erro ao iniciar checkout: " + message);
+      setIsCheckoutLoading(false);
     }
   };
 
