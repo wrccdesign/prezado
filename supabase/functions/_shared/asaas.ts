@@ -68,6 +68,7 @@ export interface AsaasCustomer {
   name?: string;
   email?: string;
   cpfCnpj?: string;
+  mobilePhone?: string;
   externalReference?: string;
 }
 
@@ -182,7 +183,7 @@ export async function asaasRequest<T>(
 
 export async function findOrCreateCustomer(
   env: AsaasEnv,
-  options: { email?: string; userId?: string; name?: string; cpfCnpj?: string },
+  options: { email?: string; userId?: string; name?: string; cpfCnpj?: string; phone?: string },
 ): Promise<AsaasCustomer> {
   if (options.userId) {
     const existing = await asaasRequest<{ data: AsaasCustomer[] }>(
@@ -191,12 +192,15 @@ export async function findOrCreateCustomer(
     );
     if (existing.data.length) {
       const customer = existing.data[0];
-      if (options.cpfCnpj && customer.cpfCnpj !== options.cpfCnpj) {
+      const updates: Record<string, string> = {};
+      if (options.cpfCnpj && customer.cpfCnpj !== options.cpfCnpj) updates.cpfCnpj = options.cpfCnpj;
+      if (options.phone && customer.mobilePhone !== options.phone) updates.mobilePhone = options.phone;
+      if (Object.keys(updates).length) {
         await asaasRequest<AsaasCustomer>(env, `/customers/${customer.id}`, {
           method: "PUT",
-          body: { cpfCnpj: options.cpfCnpj },
+          body: updates,
         });
-        customer.cpfCnpj = options.cpfCnpj;
+        Object.assign(customer, updates);
       }
       return customer;
     }
@@ -212,6 +216,7 @@ export async function findOrCreateCustomer(
       const updates: Record<string, string> = {};
       if (options.userId && customer.externalReference !== options.userId) updates.externalReference = options.userId;
       if (options.cpfCnpj && customer.cpfCnpj !== options.cpfCnpj) updates.cpfCnpj = options.cpfCnpj;
+      if (options.phone && customer.mobilePhone !== options.phone) updates.mobilePhone = options.phone;
       if (Object.keys(updates).length) {
         await asaasRequest<AsaasCustomer>(env, `/customers/${customer.id}`, {
           method: "PUT",
@@ -229,6 +234,7 @@ export async function findOrCreateCustomer(
       name: options.name || options.email || "Honorífico",
       email: options.email,
       cpfCnpj: options.cpfCnpj,
+      mobilePhone: options.phone,
       externalReference: options.userId,
     },
   });
@@ -341,7 +347,7 @@ export function checkoutSessionUrl(env: AsaasEnv, sessionId: string): string {
 export async function createCheckoutSession(
   env: AsaasEnv,
   options: {
-    customerId: string;
+    customerId?: string;
     priceId: PriceId;
     userId: string;
     successUrl: string;
@@ -370,14 +376,15 @@ export async function createCheckoutSession(
     },
     items: [
       {
-        name: config.description,
+        name: config.description.replace("Honorífico - Plano ", "").slice(0, 30),
         description: config.description,
         quantity: 1,
         value,
       },
     ],
-    customer: options.customerId,
   };
+
+  if (options.customerId) body.customer = options.customerId;
 
   if (recurring) {
     body.subscription = {

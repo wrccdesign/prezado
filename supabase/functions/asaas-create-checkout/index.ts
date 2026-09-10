@@ -47,18 +47,23 @@ Deno.serve(async (req) => {
       return json({ error: "Informe um CPF ou CNPJ válido para o pagamento." }, 400);
     }
 
+    const phone = typeof body?.phone === "string" ? body.phone.replace(/\D/g, "") : "";
+    if (phone.length < 10 || phone.length > 11) {
+      return json({ error: "Informe um telefone com DDD para o pagamento." }, 400);
+    }
+
     const customer = await findOrCreateCustomer(env, {
       email: user.email ?? undefined,
       userId: user.id,
       name: user.user_metadata?.full_name as string | undefined,
       cpfCnpj,
+      phone,
     });
 
     const planId = planFromPriceId(priceId);
     const recurring = isRecurringPrice(priceId);
 
     const session = await createCheckoutSession(env, {
-      customerId: customer.id,
       priceId: priceId as PriceId,
       userId: user.id,
       successUrl: `${origin}/planos?checkout=success`,
