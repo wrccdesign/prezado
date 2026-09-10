@@ -192,29 +192,6 @@ async function cancelLocalSubscription(userId: string, env: AsaasEnv, subscripti
   return { ok: true };
 }
 
-async function userOwnsSubscription(userId: string, env: AsaasEnv, subscriptionId: string) {
-  const { data } = await getSupabase()
-    .from("subscriptions")
-    .select("id")
-    .eq("user_id", userId)
-    .eq("environment", env)
-    .eq("provider", "asaas")
-    .eq("provider_subscription_id", subscriptionId)
-    .limit(1)
-    .maybeSingle();
-  return Boolean(data?.id);
-}
-
-async function estimateCredit(subscriptionId: string, env: AsaasEnv, newPriceId: PriceId) {
-  const sub = await getSubscription(env, subscriptionId);
-  const newValue = PLAN_CONFIG[newPriceId].valueCents / 100;
-  const currentValue = sub.value || 0;
-  const remainingRatio = 0.5; // simplificação; idealmente calcular dias restantes
-  const credit = Math.max(0, currentValue * remainingRatio);
-  const chargeNow = Math.max(0, newValue - credit);
-  return { credit: Math.round(credit * 100) / 100, chargeNow: Math.round(chargeNow * 100) / 100 };
-}
-
 async function changePlan(
   userId: string,
   env: AsaasEnv,
@@ -222,7 +199,7 @@ async function changePlan(
 ) {
   const { data } = await getSupabase()
     .from("subscriptions")
-    .select("provider_subscription_id, provider_customer_id, id")
+    .select("provider_subscription_id, provider_customer_id, id, plan_id")
     .eq("user_id", userId)
     .eq("environment", env)
     .eq("provider", "asaas")
@@ -234,19 +211,27 @@ async function changePlan(
     return { error: "Nenhuma assinatura ativa para alterar" };
   }
 
+  const newPlanId = planFromPriceId(newPriceId);
   const newValue = PLAN_CONFIG[newPriceId].valueCents;
   await updateSubscriptionValue(env, data.provider_subscription_id, newValue);
 
-  await getSupabase()
+  // O plano em vigor não muda agora: só quando a próxima cobrança for paga.
+  const { error } = await getSupabase()
     .from("subscriptions")
     .update({
-      plan_id: planFromPriceId(newPriceId),
       price_id: newPriceId,
+      pending_plan_id: newPlanId === data.plan_id ? null : newPlanId,
       updated_at: new Date().toISOString(),
     })
     .eq("id", data.id);
+  if (error) return { error: "Não foi possível registrar a troca de plano" };
 
-  return { ok: true };
+  return {
+    ok: true,
+    pendingPlanId: newPlanId === data.plan_id ? null : newPlanId,
+    message:
+      "Alteração registrada. Ela passa a valer na próxima cobrança, sem cobrança nem crédito proporcional agora.",
+  };
 }
 
 Deno.serve(async (req) => {
