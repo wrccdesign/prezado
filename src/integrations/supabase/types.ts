@@ -675,6 +675,7 @@ export type Database = {
           environment: string
           id: string
           payment_provider_ref: string | null
+          pending_plan_id: string | null
           plan_id: string
           price_id: string | null
           product_id: string | null
@@ -695,6 +696,7 @@ export type Database = {
           environment?: string
           id?: string
           payment_provider_ref?: string | null
+          pending_plan_id?: string | null
           plan_id?: string
           price_id?: string | null
           product_id?: string | null
@@ -715,6 +717,7 @@ export type Database = {
           environment?: string
           id?: string
           payment_provider_ref?: string | null
+          pending_plan_id?: string | null
           plan_id?: string
           price_id?: string | null
           product_id?: string | null
