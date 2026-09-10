@@ -34,6 +34,7 @@ function json(body: unknown, status = 200) {
 interface SubscriptionSummary {
   id: string;
   planId: string;
+  pendingPlanId: string | null;
   status: string;
   environment: string;
   provider: string;
@@ -45,10 +46,26 @@ interface SubscriptionSummary {
   nextPaymentUrl?: string;
 }
 
+const PENDING_PAYMENT_STATUS = new Set([
+  "PENDING",
+  "AWAITING_RISK_ANALYSIS",
+  "OVERDUE",
+  "AWAITING_CHARGEBACK_REVERSAL",
+]);
+
+/** Invoice URL da próxima cobrança em aberto da assinatura, se existir. */
+async function nextInvoiceUrl(env: AsaasEnv, subscriptionId: string): Promise<string | undefined> {
+  const payments = await listSubscriptionPayments(env, subscriptionId);
+  const pending = payments
+    .filter((p) => PENDING_PAYMENT_STATUS.has(p.status) && p.invoiceUrl)
+    .sort((a, b) => (a.dueDate || "").localeCompare(b.dueDate || ""));
+  return pending[0]?.invoiceUrl || undefined;
+}
+
 async function getSummary(userId: string, env: AsaasEnv): Promise<SubscriptionSummary[]> {
   const { data } = await getSupabase()
     .from("subscriptions")
-    .select("id, plan_id, status, environment, provider, current_period_end, cancel_at_period_end, access_type, access_expires_at, price_id, provider_subscription_id, payment_provider_ref, provider_customer_id")
+    .select("id, plan_id, pending_plan_id, status, environment, provider, current_period_end, cancel_at_period_end, access_type, access_expires_at, price_id, provider_subscription_id, payment_provider_ref, provider_customer_id")
     .eq("user_id", userId)
     .eq("environment", env)
     .order("created_at", { ascending: false });
@@ -61,22 +78,20 @@ async function getSummary(userId: string, env: AsaasEnv): Promise<SubscriptionSu
     if (row.provider === "asaas") {
       try {
         if (row.provider_subscription_id) {
-          const sub = await getSubscription(env, row.provider_subscription_id);
-          nextPaymentUrl = sub.nextDueDate
-            ? `https://${env === "sandbox" ? "sandbox." : ""}asaas.com/i/${row.provider_subscription_id}`
-            : undefined;
+          nextPaymentUrl = await nextInvoiceUrl(env, row.provider_subscription_id as string);
         } else if (row.payment_provider_ref) {
           const payment = await getPayment(env, row.payment_provider_ref);
           nextPaymentUrl = payment.invoiceUrl || undefined;
         }
       } catch {
-        // ignore
+        // sem cobrança acessível: não expomos link algum
       }
     }
 
     summaries.push({
       id: row.id as string,
       planId: row.plan_id as string,
+      pendingPlanId: (row.pending_plan_id as string | null) ?? null,
       status: row.status as string,
       environment: row.environment as string,
       provider: row.provider as string,
