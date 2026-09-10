@@ -263,6 +263,12 @@ Deno.serve(async (req) => {
         if (!body?.subscriptionId || !body?.newPriceId) {
           return json({ error: "subscriptionId e newPriceId são obrigatórios" }, 400);
         }
+        if (!PLAN_CONFIG[body.newPriceId as PriceId]) {
+          return json({ error: "newPriceId inválido" }, 400);
+        }
+        if (!(await userOwnsSubscription(user.id, env, body.subscriptionId))) {
+          return json({ error: "Assinatura não pertence a este usuário" }, 403);
+        }
         const result = await estimateCredit(body.subscriptionId, env, body.newPriceId);
         return json(result);
       }
