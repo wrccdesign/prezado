@@ -106,7 +106,8 @@ async function activateRecurringSubscription(
 
 async function activateOneTimePayment(paymentId: string, env: AsaasEnv) {
   const payment = await getPayment(env, paymentId);
-  const priceId = payment.externalReference;
+  const ref = parsePriceRef(payment.externalReference);
+  const priceId = ref.priceId;
   const planId = planFromPriceId(priceId);
 
   const { data: rows } = await getSupabase()
@@ -116,7 +117,7 @@ async function activateOneTimePayment(paymentId: string, env: AsaasEnv) {
     .eq("provider", "asaas")
     .eq("environment", env)
     .limit(1);
-  const userId = rows?.[0]?.user_id as string | undefined;
+  const userId = ref.userId || (rows?.[0]?.user_id as string | undefined);
   if (!userId) {
     console.error("No user_id found for Asaas customer", payment.customer);
     return;
