@@ -173,6 +173,22 @@ export default function Conta() {
           </div>
         ) : (
           <div className="mt-8 space-y-6">
+            {isTrial && (
+              <div className="rounded-lg border border-gold/40 bg-gold/10 p-4 text-sm">
+                <p className="font-heading text-base font-semibold text-foreground">
+                  Teste grátis do Profissional
+                  {trialEndLabel ? ` — termina em ${trialEndLabel}` : ""}
+                </p>
+                <p className="mt-1 text-muted-foreground">
+                  Nada será cobrado: não há cartão cadastrado e, quando o teste terminar, a conta
+                  volta sozinha ao plano Gratuito.
+                </p>
+                <Button size="sm" variant="outline" className="mt-3" asChild>
+                  <Link to="/planos">Ver planos</Link>
+                </Button>
+              </div>
+            )}
+
             {isPastDue && (
               <div className="flex items-start gap-3 rounded-lg border border-destructive/40 bg-destructive/10 p-4">
                 <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0 text-destructive" />
