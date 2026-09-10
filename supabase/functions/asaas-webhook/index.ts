@@ -24,7 +24,20 @@ function isoDate(date?: string | null): string | null {
   return isNaN(parsed.getTime()) ? null : parsed.toISOString();
 }
 
-async function logEvent(event: any, env: AsaasEnv, eventId: string): Promise<boolean> {
+/**
+ * Extrai o priceId de um externalReference, que pode vir como
+ * `priceId` (cobrança direta) ou `${userId}:${priceId}` (checkout).
+ */
+function parsePriceRef(ref?: string | null): { userId?: string; priceId?: string } {
+  if (!ref) return {};
+  const parts = ref.split(":");
+  if (parts.length === 2) return { userId: parts[0], priceId: parts[1] };
+  return { priceId: ref };
+}
+
+type LogResult = "new" | "duplicate";
+
+async function logEvent(event: any, env: AsaasEnv, eventId: string): Promise<LogResult> {
   const { error } = await getSupabase().from("payment_events").insert({
     event_id: eventId,
     event_type: event.event || "unknown",
@@ -35,10 +48,14 @@ async function logEvent(event: any, env: AsaasEnv, eventId: string): Promise<boo
     payload: event as unknown as Record<string, unknown>,
   });
   if (error) {
-    console.log("Event already processed or log failed:", eventId, error.message);
-    return false;
+    if ((error as { code?: string }).code === "23505") {
+      console.log("Duplicate Asaas event ignored:", eventId);
+      return "duplicate";
+    }
+    console.error("Failed to log Asaas event:", eventId, error.message);
+    throw new Error(`log failed: ${error.message}`);
   }
-  return true;
+  return "new";
 }
 
 async function activateRecurringSubscription(
