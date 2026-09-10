@@ -265,7 +265,7 @@ export default function Conta() {
                           ) : (
                             <ArrowUpCircle className="mr-2 h-4 w-4" />
                           )}
-                          Fazer upgrade para Escritório
+                          Mudar para Escritório na próxima cobrança
                         </Button>
                       )}
                       {planId === "escritorio" && (
@@ -274,7 +274,7 @@ export default function Conta() {
                           onClick={() => run("change-plan", { newPriceId: "profissional_mensal" })}
                           disabled={busy !== null}
                         >
-                          Mudar para Profissional na renovação
+                          Mudar para Profissional na próxima cobrança
                         </Button>
                       )}
                       {sub.cancelAtPeriodEnd ? (
@@ -295,6 +295,11 @@ export default function Conta() {
                         </Button>
                       )}
                     </div>
+
+                    <p className="text-xs text-muted-foreground">
+                      A troca de plano passa a valer na próxima cobrança. Não há cobrança nem
+                      crédito proporcional agora.
+                    </p>
                   </>
                 ) : (
 
