@@ -10,6 +10,7 @@ import { PaymentTestModeBanner } from "@/components/PaymentTestModeBanner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import {
   Dialog,
   DialogContent,
@@ -51,6 +52,7 @@ const features: PlanFeature[] = [
 
 
 type BillingCycle = "mensal" | "anual";
+type MonthlyBillingType = "CREDIT_CARD" | "PIX";
 
 const plans: {
   id: PlanId;
@@ -118,6 +120,7 @@ export default function Planos() {
   const [pendingPriceId, setPendingPriceId] = useState<string | null>(null);
   const [cpfCnpj, setCpfCnpj] = useState("");
   const [phone, setPhone] = useState("");
+  const [monthlyBillingType, setMonthlyBillingType] = useState<MonthlyBillingType>("CREDIT_CARD");
   const [isCheckoutLoading, setIsCheckoutLoading] = useState(false);
   const isPastDue = subscription?.status === "past_due";
 
@@ -193,6 +196,7 @@ export default function Planos() {
           priceId: pendingPriceId,
           cpfCnpj: digits,
           phone: phoneDigits,
+          billingType: pendingPriceId.endsWith("_mensal") ? monthlyBillingType : undefined,
           returnUrl: `${window.location.origin}/planos?checkout=success`,
         },
       });
@@ -364,8 +368,8 @@ export default function Planos() {
                 )}
                 {plan.priceId && (
                   <p className="mt-2 text-note text-navy/60">
-                    Cobrança em reais (BRL), processada no Brasil. Assinatura mensal no cartão de
-                    crédito. No plano anual você também pode pagar por Pix.
+                    Cobrança em reais (BRL), processada no Brasil. No mensal, escolha cartão com
+                    cobrança automática ou Pix com pagamento manual a cada mês. O anual aceita Pix e cartão.
                   </p>
                 )}
 
@@ -450,7 +454,7 @@ export default function Planos() {
 
         <FaqSection items={faqItems} className="mt-14 max-w-3xl" />
 
-        <Dialog open={!!pendingPriceId} onOpenChange={(open) => { if (!open) { setPendingPriceId(null); setCpfCnpj(""); setPhone(""); } }}>
+        <Dialog open={!!pendingPriceId} onOpenChange={(open) => { if (!open) { setPendingPriceId(null); setCpfCnpj(""); setPhone(""); setMonthlyBillingType("CREDIT_CARD"); } }}>
           <DialogContent className="bg-cream text-navy border-cream-dark">
             <DialogHeader>
               <DialogTitle>Dados para a cobrança</DialogTitle>
@@ -459,6 +463,31 @@ export default function Planos() {
               </DialogDescription>
             </DialogHeader>
             <div className="space-y-4 py-2">
+              {pendingPriceId?.endsWith("_mensal") && (
+                <div className="space-y-2">
+                  <Label>Forma de pagamento mensal</Label>
+                  <RadioGroup
+                    value={monthlyBillingType}
+                    onValueChange={(value) => setMonthlyBillingType(value as MonthlyBillingType)}
+                    className="gap-3"
+                  >
+                    <label className="flex cursor-pointer items-start gap-3 rounded border border-cream-dark bg-white p-3">
+                      <RadioGroupItem value="CREDIT_CARD" id="billing-card" className="mt-0.5" />
+                      <span>
+                        <span className="block text-sm text-navy">Cartão de crédito</span>
+                        <span className="block text-note text-navy/60">Cobrança automática todo mês.</span>
+                      </span>
+                    </label>
+                    <label className="flex cursor-pointer items-start gap-3 rounded border border-cream-dark bg-white p-3">
+                      <RadioGroupItem value="PIX" id="billing-pix" className="mt-0.5" />
+                      <span>
+                        <span className="block text-sm text-navy">Pix</span>
+                        <span className="block text-note text-navy/60">Pagamento manual da nova cobrança a cada mês.</span>
+                      </span>
+                    </label>
+                  </RadioGroup>
+                </div>
+              )}
               <div className="space-y-2">
                 <Label htmlFor="cpfCnpj">CPF ou CNPJ</Label>
                 <Input
@@ -483,7 +512,7 @@ export default function Planos() {
               </div>
             </div>
             <DialogFooter>
-              <Button variant="outline" onClick={() => { setPendingPriceId(null); setCpfCnpj(""); setPhone(""); }}>
+              <Button variant="outline" onClick={() => { setPendingPriceId(null); setCpfCnpj(""); setPhone(""); setMonthlyBillingType("CREDIT_CARD"); }}>
                 Cancelar
               </Button>
               <Button

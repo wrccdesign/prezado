@@ -49,13 +49,38 @@ async function logEvent(event: any, env: AsaasEnv, eventId: string): Promise<Log
   });
   if (error) {
     if ((error as { code?: string }).code === "23505") {
-      console.log("Duplicate Asaas event ignored:", eventId);
-      return "duplicate";
+      const { data: existing, error: readError } = await getSupabase()
+        .from("payment_events")
+        .select("processed_at")
+        .eq("event_id", eventId)
+        .maybeSingle();
+      if (readError) {
+        console.error("Failed to inspect Asaas event:", eventId, readError.message);
+        throw new Error(`event lookup failed: ${readError.message}`);
+      }
+      if (existing?.processed_at) {
+        console.log("Processed Asaas event ignored:", eventId);
+        return "duplicate";
+      }
+      console.log("Retrying unprocessed Asaas event:", eventId);
+      return "new";
     }
     console.error("Failed to log Asaas event:", eventId, error.message);
     throw new Error(`log failed: ${error.message}`);
   }
   return "new";
+}
+
+async function markEventProcessed(eventId: string): Promise<void> {
+  const { error } = await getSupabase()
+    .from("payment_events")
+    .update({ processed_at: new Date().toISOString() })
+    .eq("event_id", eventId)
+    .is("processed_at", null);
+  if (error) {
+    console.error("Failed to mark Asaas event processed:", eventId, error.message);
+    throw new Error(`event completion failed: ${error.message}`);
+  }
 }
 
 async function activateRecurringSubscription(
@@ -78,8 +103,7 @@ async function activateRecurringSubscription(
     .limit(1);
   const userId = ref.userId || (rows?.[0]?.user_id as string | undefined);
   if (!userId) {
-    console.error("No user_id found for Asaas customer", sub.customer);
-    return;
+    throw new Error(`No user_id found for Asaas customer ${sub.customer}`);
   }
 
   const start = new Date().toISOString();
@@ -87,7 +111,7 @@ async function activateRecurringSubscription(
     ? new Date(sub.nextDueDate + "T23:59:59").toISOString()
     : new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString();
 
-  await getSupabase().from("subscriptions").upsert({
+  const { error } = await getSupabase().from("subscriptions").upsert({
     user_id: userId,
     provider: "asaas",
     provider_customer_id: sub.customer,
@@ -102,6 +126,7 @@ async function activateRecurringSubscription(
     environment: env,
     updated_at: new Date().toISOString(),
   }, { onConflict: "provider_subscription_id,provider,environment" });
+  if (error) throw new Error(`recurring subscription update failed: ${error.message}`);
 }
 
 async function activateOneTimePayment(paymentId: string, env: AsaasEnv) {
@@ -119,14 +144,13 @@ async function activateOneTimePayment(paymentId: string, env: AsaasEnv) {
     .limit(1);
   const userId = ref.userId || (rows?.[0]?.user_id as string | undefined);
   if (!userId) {
-    console.error("No user_id found for Asaas customer", payment.customer);
-    return;
+    throw new Error(`No user_id found for Asaas customer ${payment.customer}`);
   }
 
   const start = new Date().toISOString();
   const end = new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString();
 
-  await getSupabase().from("subscriptions").upsert({
+  const { error } = await getSupabase().from("subscriptions").upsert({
     user_id: userId,
     provider: "asaas",
     provider_customer_id: payment.customer,
@@ -142,6 +166,7 @@ async function activateOneTimePayment(paymentId: string, env: AsaasEnv) {
     environment: env,
     updated_at: new Date().toISOString(),
   }, { onConflict: "payment_provider_ref,environment" });
+  if (error) throw new Error(`one-time subscription update failed: ${error.message}`);
 }
 
 async function markSubscriptionCanceled(subscriptionId: string, env: AsaasEnv) {
@@ -229,6 +254,8 @@ async function handleWebhook(event: any, env: AsaasEnv) {
     default:
       console.log("Unhandled Asaas event:", eventType);
   }
+
+  await markEventProcessed(eventId);
 }
 
 const jsonResponse = (body: unknown, status: number) =>

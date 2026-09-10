@@ -4,8 +4,10 @@ import {
   type AsaasEnv,
   checkoutSessionUrl,
   createCheckoutSession,
+  createSubscription,
   findOrCreateCustomer,
   isRecurringPrice,
+  listCustomerPayments,
   planFromPriceId,
   resolveAsaasEnv,
   type PriceId,
@@ -62,6 +64,42 @@ Deno.serve(async (req) => {
 
     const planId = planFromPriceId(priceId);
     const recurring = isRecurringPrice(priceId);
+
+    const requestedBillingType = body?.billingType === "PIX" ? "PIX" : "CREDIT_CARD";
+    if (requestedBillingType === "PIX" && !recurring) {
+      return json({ error: "O Pix mensal só está disponível para assinaturas mensais." }, 400);
+    }
+
+    if (requestedBillingType === "PIX") {
+      const subscription = await createSubscription(
+        env,
+        customer.id,
+        priceId as PriceId,
+        user.id,
+        "PIX",
+      );
+      const payments = await listCustomerPayments(env, customer.id);
+      const firstPayment = payments.find((payment) => payment.subscription === subscription.id);
+      if (!firstPayment?.invoiceUrl) {
+        throw new Error("O Asaas não retornou a cobrança Pix da assinatura.");
+      }
+
+      const { error: intentError } = await supabase.from("subscriptions").insert({
+        user_id: user.id,
+        provider: "asaas",
+        provider_customer_id: customer.id,
+        provider_subscription_id: subscription.id,
+        plan_id: planId,
+        price_id: priceId,
+        status: "incomplete",
+        access_type: "recurring",
+        environment: env,
+        updated_at: new Date().toISOString(),
+      });
+      if (intentError) throw new Error(`Erro ao registrar assinatura: ${intentError.message}`);
+
+      return json({ checkoutUrl: firstPayment.invoiceUrl, billingType: "PIX" });
+    }
 
     const session = await createCheckoutSession(env, {
       priceId: priceId as PriceId,
