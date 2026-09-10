@@ -76,6 +76,11 @@ function formatDate(value: string | null | undefined) {
   return new Date(value).toLocaleDateString("pt-BR", { day: "2-digit", month: "long", year: "numeric" });
 }
 
+function formatShortDate(value: string | null | undefined) {
+  if (!value) return "—";
+  return new Date(value).toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit" });
+}
+
 function formatMoney(value: number) {
   return new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(value);
 }
@@ -128,6 +133,7 @@ export default function Conta() {
     ? Math.ceil((new Date(sub.accessExpiresAt).getTime() - Date.now()) / 86400000)
     : null;
   const expiryWarning = daysLeft !== null && daysLeft <= 30;
+  const pendingPlanLabel = sub?.pendingPlanId ? PLAN_LABEL[sub.pendingPlanId] ?? null : null;
 
 
   return (
@@ -191,6 +197,12 @@ export default function Conta() {
                     <CardDescription>
                       {sub ? STATUS_LABEL[sub.status] || sub.status : "Sem assinatura paga"}
                     </CardDescription>
+                    {pendingPlanLabel && (
+                      <p className="mt-1 text-sm text-muted-foreground">
+                        Muda para {pendingPlanLabel}
+                        {sub?.currentPeriodEnd ? ` em ${formatShortDate(sub.currentPeriodEnd)}` : ""}.
+                      </p>
+                    )}
                   </div>
                   {sub?.cancelAtPeriodEnd && <Badge variant="secondary">Cancelamento agendado</Badge>}
                 </div>
