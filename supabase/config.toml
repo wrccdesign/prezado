@@ -45,9 +45,6 @@ verify_jwt = false
 [functions.ingest-datajud]
 verify_jwt = false
 
-[functions.payments-webhook]
-verify_jwt = false
-
 [functions.sync-indices]
 verify_jwt = false
 
@@ -60,11 +57,11 @@ verify_jwt = false
 [functions.calcular-custas]
 verify_jwt = false
 
-[functions.create-checkout]
+[functions.asaas-create-checkout]
 verify_jwt = false
 
-[functions.create-portal-session]
+[functions.asaas-billing-account]
 verify_jwt = false
 
-[functions.billing-account]
+[functions.asaas-webhook]
 verify_jwt = false
