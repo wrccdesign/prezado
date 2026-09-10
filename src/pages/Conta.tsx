@@ -30,30 +30,28 @@ import { toast } from "sonner";
 
 interface Invoice {
   id: string;
-  invoice_number: string | null;
+  value: number;
   status: string;
-  billed_at: string | null;
-  currency: string | null;
-  total: string | null;
+  date: string | null;
+  url?: string;
+  billingType?: string;
 }
 
 interface AccessInfo {
   id: string;
   status: string;
-  plan_id: string;
-  access_type?: "recurring" | "one_time";
-  access_expires_at?: string | null;
-  current_period_start: string | null;
-  current_period_end: string | null;
-  next_billed_at: string | null;
-  cancel_at_period_end: boolean;
+  planId: string;
+  accessType?: "recurring" | "one_time";
+  accessExpiresAt?: string | null;
+  currentPeriodEnd: string | null;
+  currentPeriodStart: string | null;
+  nextPaymentUrl?: string;
+  cancelAtPeriodEnd: boolean;
 }
 
 interface Summary {
   environment: "sandbox" | "live";
-  plan_id: "free" | "profissional" | "escritorio";
-  subscription: AccessInfo | null;
-  recurring_subscription?: AccessInfo | null;
+  subscriptions: AccessInfo[];
   invoices: Invoice[];
 }
 
@@ -77,10 +75,8 @@ function formatDate(value: string | null | undefined) {
   return new Date(value).toLocaleDateString("pt-BR", { day: "2-digit", month: "long", year: "numeric" });
 }
 
-function formatMoney(total: string | null, currency: string | null) {
-  if (!total) return "—";
-  const value = Number(total) / 100;
-  return new Intl.NumberFormat("pt-BR", { style: "currency", currency: currency || "BRL" }).format(value);
+function formatMoney(value: number) {
+  return new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(value);
 }
 
 export default function Conta() {
@@ -96,7 +92,7 @@ export default function Conta() {
     queryKey: ["account-summary", user?.id],
     enabled: !!user,
     queryFn: async () => {
-      const { data, error } = await supabase.functions.invoke("billing-account", {
+      const { data, error } = await supabase.functions.invoke("asaas-billing-account", {
         body: { action: "summary" },
       });
       if (error) throw new Error(error.message);
@@ -107,7 +103,7 @@ export default function Conta() {
   const run = async (action: string, payload: Record<string, unknown> = {}) => {
     setBusy(action);
     try {
-      const { data, error } = await supabase.functions.invoke("billing-account", {
+      const { data, error } = await supabase.functions.invoke("asaas-billing-account", {
         body: { action, ...payload },
       });
       if (error) throw new Error(error.message);
@@ -122,25 +118,13 @@ export default function Conta() {
     }
   };
 
-  const openPortal = async () => {
-    setBusy("portal");
-    try {
-      const { data, error } = await supabase.functions.invoke("create-portal-session", { body: {} });
-      if (error || !data?.url) throw new Error(data?.error || "Portal indisponível");
-      window.open(data.url, "_blank", "noopener");
-    } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Erro ao abrir portal");
-    } finally {
-      setBusy(null);
-    }
-  };
-
-  const sub = data?.subscription ?? null;
-  const planId = data?.plan_id ?? "free";
-  const isOneTime = sub?.access_type === "one_time";
+  const activeSubs = data?.subscriptions ?? [];
+  const sub = activeSubs[0] ?? null;
+  const planId = sub?.planId ?? "free";
+  const isOneTime = sub?.accessType === "one_time";
   const isPastDue = sub?.status === "past_due";
-  const daysLeft = isOneTime && sub?.access_expires_at
-    ? Math.ceil((new Date(sub.access_expires_at).getTime() - Date.now()) / 86400000)
+  const daysLeft = isOneTime && sub?.accessExpiresAt
+    ? Math.ceil((new Date(sub.accessExpiresAt).getTime() - Date.now()) / 86400000)
     : null;
   const expiryWarning = daysLeft !== null && daysLeft <= 30;
 
@@ -185,11 +169,15 @@ export default function Conta() {
                 <div className="text-sm">
                   <p className="font-semibold text-destructive">Pagamento pendente</p>
                   <p className="mt-1 text-muted-foreground">
-                    Não conseguimos processar sua última cobrança. Atualize o meio de pagamento para não perder o acesso.
+                    Não conseguimos processar sua última cobrança. Acesse a fatura para pagar por Pix, boleto ou cartão.
                   </p>
-                  <Button size="sm" variant="outline" className="mt-3" onClick={openPortal} disabled={busy === "portal"}>
-                    Atualizar pagamento
-                  </Button>
+                  {sub?.nextPaymentUrl ? (
+                    <Button size="sm" variant="outline" className="mt-3" asChild>
+                      <a href={sub.nextPaymentUrl} target="_blank" rel="noopener noreferrer">
+                        Pagar fatura
+                      </a>
+                    </Button>
+                  ) : null}
                 </div>
               </div>
             )}
@@ -203,7 +191,7 @@ export default function Conta() {
                       {sub ? STATUS_LABEL[sub.status] || sub.status : "Sem assinatura paga"}
                     </CardDescription>
                   </div>
-                  {sub?.cancel_at_period_end && <Badge variant="secondary">Cancelamento agendado</Badge>}
+                  {sub?.cancelAtPeriodEnd && <Badge variant="secondary">Cancelamento agendado</Badge>}
                 </div>
               </CardHeader>
               <CardContent className="space-y-4">
@@ -216,7 +204,7 @@ export default function Conta() {
                       </div>
                       <div>
                         <dt className="text-muted-foreground">Acesso ativo até</dt>
-                        <dd className="font-medium text-foreground">{formatDate(sub.access_expires_at)}</dd>
+                        <dd className="font-medium text-foreground">{formatDate(sub.accessExpiresAt)}</dd>
                       </div>
                     </dl>
                     {expiryWarning && (
@@ -240,15 +228,15 @@ export default function Conta() {
                       <div>
                         <dt className="text-muted-foreground">Período atual</dt>
                         <dd className="font-medium text-foreground">
-                          {formatDate(sub.current_period_start)} → {formatDate(sub.current_period_end)}
+                          {formatDate(sub.currentPeriodStart)} → {formatDate(sub.currentPeriodEnd)}
                         </dd>
                       </div>
                       <div>
                         <dt className="text-muted-foreground">
-                          {sub.cancel_at_period_end ? "Acesso até" : "Próxima cobrança"}
+                          {sub.cancelAtPeriodEnd ? "Acesso até" : "Próxima cobrança"}
                         </dt>
                         <dd className="font-medium text-foreground">
-                          {formatDate(sub.cancel_at_period_end ? sub.current_period_end : sub.next_billed_at)}
+                          {formatDate(sub.cancelAtPeriodEnd ? sub.currentPeriodEnd : sub.currentPeriodEnd)}
                         </dd>
                       </div>
                     </dl>
@@ -256,7 +244,7 @@ export default function Conta() {
                     <div className="flex flex-wrap gap-2 pt-2">
                       {planId === "profissional" && (
                         <Button
-                          onClick={() => run("change-plan", { priceId: "escritorio_mensal" })}
+                          onClick={() => run("change-plan", { newPriceId: "escritorio_mensal" })}
                           disabled={busy !== null}
                         >
                           {busy === "change-plan" ? (
@@ -270,13 +258,13 @@ export default function Conta() {
                       {planId === "escritorio" && (
                         <Button
                           variant="outline"
-                          onClick={() => run("change-plan", { priceId: "profissional_mensal" })}
+                          onClick={() => run("change-plan", { newPriceId: "profissional_mensal" })}
                           disabled={busy !== null}
                         >
                           Mudar para Profissional na renovação
                         </Button>
                       )}
-                      {sub.cancel_at_period_end ? (
+                      {sub.cancelAtPeriodEnd ? (
                         <Button variant="outline" onClick={() => run("resume")} disabled={busy !== null}>
                           Reativar assinatura
                         </Button>
@@ -285,10 +273,14 @@ export default function Conta() {
                           Cancelar assinatura
                         </Button>
                       )}
-                      <Button variant="ghost" onClick={openPortal} disabled={busy !== null}>
-                        <ExternalLink className="mr-2 h-4 w-4" />
-                        Portal de pagamento
-                      </Button>
+                      {sub.nextPaymentUrl && (
+                        <Button variant="ghost" asChild disabled={busy !== null}>
+                          <a href={sub.nextPaymentUrl} target="_blank" rel="noopener noreferrer">
+                            <ExternalLink className="mr-2 h-4 w-4" />
+                            Pagar fatura
+                          </a>
+                        </Button>
+                      )}
                     </div>
                   </>
                 ) : (
@@ -349,12 +341,22 @@ export default function Conta() {
                     {data.invoices.map((inv) => (
                       <li key={inv.id} className="flex items-center justify-between py-3 text-sm">
                         <div>
-                          <p className="font-medium text-foreground">{inv.invoice_number || inv.id.slice(0, 16)}</p>
-                          <p className="text-muted-foreground">{formatDate(inv.billed_at)}</p>
+                          <p className="font-medium text-foreground">{inv.id.slice(0, 16)}</p>
+                          <p className="text-muted-foreground">{formatDate(inv.date)}</p>
                         </div>
                         <div className="text-right">
-                          <p className="font-medium text-foreground">{formatMoney(inv.total, inv.currency)}</p>
+                          <p className="font-medium text-foreground">{formatMoney(inv.value)}</p>
                           <p className="text-muted-foreground">{STATUS_LABEL[inv.status] || inv.status}</p>
+                          {inv.url && (
+                            <a
+                              href={inv.url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-xs underline"
+                            >
+                              Ver boleto/Pix
+                            </a>
+                          )}
                         </div>
                       </li>
                     ))}
@@ -373,7 +375,7 @@ export default function Conta() {
           <AlertDialogHeader>
             <AlertDialogTitle>Cancelar assinatura?</AlertDialogTitle>
             <AlertDialogDescription>
-              Você continua com acesso completo até {formatDate(sub?.current_period_end)}. Depois disso, sua conta volta
+              Você continua com acesso completo até {formatDate(sub?.currentPeriodEnd)}. Depois disso, sua conta volta
               para o plano gratuito. Você pode reativar a qualquer momento antes dessa data.
             </AlertDialogDescription>
           </AlertDialogHeader>

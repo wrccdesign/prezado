@@ -8,11 +8,19 @@ import { buildFaqJsonLd, FAQ_PLANOS } from "@/seo/faqData";
 import { PaymentTestModeBanner } from "@/components/PaymentTestModeBanner";
 
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Loader2, Crown, Building2, User } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useSubscription, type PlanId } from "@/hooks/useSubscription";
-import { useStripeCheckout } from "@/hooks/useStripeCheckout";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -103,7 +111,6 @@ export default function Planos() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { planId, isLoading, subscription } = useSubscription();
-  const { openCheckout, closeCheckout, isOpen, checkoutElement } = useStripeCheckout();
   const hasPaidPlan = planId !== "free";
   const [changingPlan, setChangingPlan] = useState<PlanId | null>(null);
   const [cycle, setCycle] = useState<BillingCycle>("mensal");
@@ -125,22 +132,10 @@ export default function Planos() {
     }
   }, [searchParams, user?.id]);
 
-  // Estimate the pro-rata credit from an active monthly subscription.
+  // Asaas: crédito proporcional não é calculado automaticamente no checkout.
+  // O usuário paga o valor integral do plano anual e cancela a mensalidade atual.
   useEffect(() => {
-    if (!user || cycle !== "anual" || !hasPaidPlan) {
-      setCreditCents(null);
-      return;
-    }
-    let cancelled = false;
-    supabase.functions
-      .invoke("billing-account", { body: { action: "credit-estimate", priceId: "profissional_anual" } })
-      .then(({ data }) => {
-        if (!cancelled) setCreditCents((data as { credit_cents?: number })?.credit_cents ?? 0);
-      })
-      .catch(() => setCreditCents(null));
-    return () => {
-      cancelled = true;
-    };
+    setCreditCents(null);
   }, [user, cycle, hasPaidPlan]);
 
   const handleSubscribe = async (plan: typeof plans[number]) => {
@@ -157,8 +152,8 @@ export default function Planos() {
     if (hasPaidPlan && !annual) {
       setChangingPlan(plan.id);
       try {
-        const { data, error } = await supabase.functions.invoke("billing-account", {
-          body: { action: "change-plan", priceId },
+        const { data, error } = await supabase.functions.invoke("asaas-billing-account", {
+          body: { action: "change-plan", newPriceId: priceId },
         });
         if (error) throw new Error(error.message);
         if ((data as { error?: string })?.error) throw new Error((data as { error: string }).error);
@@ -173,10 +168,14 @@ export default function Planos() {
     }
 
     try {
-      openCheckout({
-        priceId,
-        returnUrl: `${window.location.origin}/planos?checkout=success&session_id={CHECKOUT_SESSION_ID}`,
+      const { data, error } = await supabase.functions.invoke("asaas-create-checkout", {
+        body: { priceId, returnUrl: `${window.location.origin}/planos?checkout=success` },
       });
+      if (error) throw new Error(error.message);
+      if ((data as { error?: string })?.error) throw new Error((data as { error: string }).error);
+      const checkoutUrl = (data as { checkoutUrl?: string }).checkoutUrl;
+      if (!checkoutUrl) throw new Error("URL de checkout não retornada");
+      window.location.href = checkoutUrl;
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : "Erro desconhecido";
       toast.error("Erro ao iniciar checkout: " + message);
@@ -339,8 +338,8 @@ export default function Planos() {
                 )}
                 {plan.priceId && (
                   <p className="mt-2 text-note text-navy/60">
-                    Cobrança em reais (BRL). O processamento é internacional, portanto o seu banco
-                    pode aplicar IOF sobre a compra.
+                    Cobrança em reais (BRL), processada no Brasil. Você pode pagar por cartão, Pix
+                    ou boleto.
                   </p>
                 )}
 
@@ -427,15 +426,6 @@ export default function Planos() {
 
       </main>
 
-
-      <Dialog open={isOpen} onOpenChange={(open) => !open && closeCheckout()}>
-        <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle >Finalizar assinatura</DialogTitle>
-          </DialogHeader>
-          {checkoutElement}
-        </DialogContent>
-      </Dialog>
 
       <AppFooter />
     </div>

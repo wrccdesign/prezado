@@ -2,7 +2,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
-import { getPaymentEnvironmentSafe } from "@/lib/stripe";
+import { getPaymentEnvironmentSafe, type PaymentEnv } from "@/lib/payment-env";
 
 export type PlanId = "free" | "profissional" | "escritorio";
 export type AccessType = "recurring" | "one_time" | "trial";
@@ -36,7 +36,7 @@ function isActiveRow(row: Subscription): boolean {
 
 export function useSubscription() {
   const { user } = useAuth();
-  const env = getPaymentEnvironmentSafe();
+  const env = getPaymentEnvironmentSafe() as PaymentEnv;
   const queryClient = useQueryClient();
 
   const { data: rows, isLoading } = useQuery({

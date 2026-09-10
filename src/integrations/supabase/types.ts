@@ -479,6 +479,8 @@ export type Database = {
           occurred_at: string | null
           paddle_subscription_id: string | null
           payload: Json | null
+          provider: string
+          provider_subscription_id: string | null
         }
         Insert: {
           created_at?: string
@@ -488,6 +490,8 @@ export type Database = {
           occurred_at?: string | null
           paddle_subscription_id?: string | null
           payload?: Json | null
+          provider?: string
+          provider_subscription_id?: string | null
         }
         Update: {
           created_at?: string
@@ -497,6 +501,8 @@ export type Database = {
           occurred_at?: string | null
           paddle_subscription_id?: string | null
           payload?: Json | null
+          provider?: string
+          provider_subscription_id?: string | null
         }
         Relationships: []
       }
@@ -669,9 +675,10 @@ export type Database = {
           plan_id: string
           price_id: string | null
           product_id: string | null
+          provider: string
+          provider_customer_id: string | null
+          provider_subscription_id: string | null
           status: string
-          stripe_customer_id: string | null
-          stripe_subscription_id: string | null
           updated_at: string | null
           user_id: string
         }
@@ -688,9 +695,10 @@ export type Database = {
           plan_id?: string
           price_id?: string | null
           product_id?: string | null
+          provider?: string
+          provider_customer_id?: string | null
+          provider_subscription_id?: string | null
           status?: string
-          stripe_customer_id?: string | null
-          stripe_subscription_id?: string | null
           updated_at?: string | null
           user_id: string
         }
@@ -707,9 +715,10 @@ export type Database = {
           plan_id?: string
           price_id?: string | null
           product_id?: string | null
+          provider?: string
+          provider_customer_id?: string | null
+          provider_subscription_id?: string | null
           status?: string
-          stripe_customer_id?: string | null
-          stripe_subscription_id?: string | null
           updated_at?: string | null
           user_id?: string
         }
