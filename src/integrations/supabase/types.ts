@@ -479,6 +479,7 @@ export type Database = {
           occurred_at: string | null
           paddle_subscription_id: string | null
           payload: Json | null
+          processed_at: string | null
           provider: string
           provider_subscription_id: string | null
         }
@@ -490,6 +491,7 @@ export type Database = {
           occurred_at?: string | null
           paddle_subscription_id?: string | null
           payload?: Json | null
+          processed_at?: string | null
           provider?: string
           provider_subscription_id?: string | null
         }
@@ -501,6 +503,7 @@ export type Database = {
           occurred_at?: string | null
           paddle_subscription_id?: string | null
           payload?: Json | null
+          processed_at?: string | null
           provider?: string
           provider_subscription_id?: string | null
         }
