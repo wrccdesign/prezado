@@ -88,7 +88,10 @@ function formatMoney(value: number) {
 export default function Conta() {
   const { user } = useAuth();
   const { isLawyer } = useUserProfile();
-  const { isEscritorio } = useSubscription();
+  const { isEscritorio, isTrial, trialEndsAt } = useSubscription();
+  const trialEndLabel = trialEndsAt
+    ? new Date(trialEndsAt).toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit" })
+    : null;
 
   const queryClient = useQueryClient();
   const [busy, setBusy] = useState<string | null>(null);
