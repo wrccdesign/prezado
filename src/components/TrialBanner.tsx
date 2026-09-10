@@ -18,7 +18,7 @@ const PERDAS = [
  * o que se perde ao voltar para o gratuito.
  */
 export function TrialBanner() {
-  const { isTrial, trialDaysLeft } = useSubscription();
+  const { isTrial, trialDaysLeft, trialEndsAt } = useSubscription();
   // Marcos: 5º dia do teste (3 dias restantes) e último dia.
   const milestone = trialDaysLeft <= 1 ? "final" : trialDaysLeft === 3 ? "dia5" : null;
   const storageKey = milestone ? `trial-milestone-dismissed:${milestone}` : "";
@@ -29,7 +29,12 @@ export function TrialBanner() {
   if (!isTrial) return null;
 
   const urgent = trialDaysLeft <= 3;
-  const label = trialDaysLeft <= 1 ? "termina hoje" : `${trialDaysLeft} dias restantes`;
+  const endLabel = trialEndsAt
+    ? new Date(trialEndsAt).toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit" })
+    : null;
+  const label = trialDaysLeft <= 1
+    ? "termina hoje"
+    : `termina em ${endLabel ?? `${trialDaysLeft} dias`}`;
 
   const dismiss = () => {
     if (storageKey) localStorage.setItem(storageKey, "1");
@@ -49,7 +54,7 @@ export function TrialBanner() {
           <Sparkles className="h-4 w-4 text-gold" />
           <span className="font-medium">Teste Profissional — {label}.</span>
           <span className="text-muted-foreground">
-            Assine para não perder os limites ampliados.
+            Nada será cobrado: a conta volta sozinha ao plano Gratuito.
           </span>
           <Link to="/planos" className="font-semibold text-gold hover:underline">
             Ver planos
@@ -74,7 +79,8 @@ export function TrialBanner() {
                 : "Faltam 3 dias do seu teste Profissional"}
             </p>
             <p className="mt-1 text-sm text-muted-foreground">
-              Ao voltar para o plano gratuito, você perde:
+              Nada será cobrado. {endLabel ? `Em ${endLabel} a conta` : "A conta"} volta ao plano
+              gratuito e você perde:
             </p>
             <ul className="mt-2 space-y-1 text-sm text-foreground">
               {PERDAS.map((p) => (
