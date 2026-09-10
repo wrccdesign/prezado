@@ -435,7 +435,15 @@ export default function Planos() {
                     disabled={isLoading}
                     onClick={() => handleSubscribe(plan)}
                   >
-                    {isCurrent ? "Migrar para o anual" : `Assinar ${plan.name} anual`}
+                    {isCurrent && !isTrial ? "Migrar para o anual" : `Assinar ${plan.name} anual`}
+                  </Button>
+                ) : isTrial ? (
+                  <Button
+                    className={`w-full ${plan.popular ? "bg-gold text-navy hover:bg-gold-light" : ""}`}
+                    disabled={isLoading}
+                    onClick={() => handleSubscribe(plan)}
+                  >
+                    {`Assinar ${plan.name}`}
                   </Button>
                 ) : isCurrent ? (
                   <Button variant="outline" className="w-full" onClick={() => navigate("/conta")}>
