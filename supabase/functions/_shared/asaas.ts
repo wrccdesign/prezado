@@ -4,7 +4,7 @@ export type AsaasEnv = "sandbox" | "live";
 
 const ASAAS_BASE = {
   sandbox: "https://sandbox.asaas.com/api/v3",
-  live: "https://api.asaas.com/api/v3",
+  live: "https://api.asaas.com/v3",
 } as const;
 
 const getEnv = (key: string): string => {
