@@ -115,6 +115,9 @@ export default function Planos() {
   const [changingPlan, setChangingPlan] = useState<PlanId | null>(null);
   const [cycle, setCycle] = useState<BillingCycle>("mensal");
   const [creditCents, setCreditCents] = useState<number | null>(null);
+  const [pendingPriceId, setPendingPriceId] = useState<string | null>(null);
+  const [cpfCnpj, setCpfCnpj] = useState("");
+  const [isCheckoutLoading, setIsCheckoutLoading] = useState(false);
   const isPastDue = subscription?.status === "past_due";
 
 
