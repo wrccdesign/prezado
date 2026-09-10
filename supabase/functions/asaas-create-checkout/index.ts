@@ -67,7 +67,7 @@ Deno.serve(async (req) => {
     });
 
     // Registra a intenção; o webhook confirma o pagamento.
-    await supabase.from("subscriptions").upsert({
+    const intent = {
       user_id: user.id,
       provider: "asaas",
       provider_customer_id: customer.id,
@@ -77,7 +77,23 @@ Deno.serve(async (req) => {
       access_type: recurring ? "recurring" : "one_time",
       environment: env,
       updated_at: new Date().toISOString(),
-    }, { onConflict: "user_id,environment,provider" });
+    };
+
+    const { data: existing } = await supabase
+      .from("subscriptions")
+      .select("id")
+      .eq("user_id", user.id)
+      .eq("environment", env)
+      .eq("provider", "asaas")
+      .eq("status", "incomplete")
+      .limit(1)
+      .maybeSingle();
+
+    if (existing?.id) {
+      await supabase.from("subscriptions").update(intent).eq("id", existing.id);
+    } else {
+      await supabase.from("subscriptions").insert(intent);
+    }
 
     return json({ checkoutUrl: session.link || checkoutSessionUrl(env, session.id) });
   } catch (error) {
