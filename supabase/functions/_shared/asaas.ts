@@ -347,7 +347,7 @@ export function checkoutSessionUrl(env: AsaasEnv, sessionId: string): string {
 export async function createCheckoutSession(
   env: AsaasEnv,
   options: {
-    customerId: string;
+    customerId?: string;
     priceId: PriceId;
     userId: string;
     successUrl: string;
@@ -382,8 +382,9 @@ export async function createCheckoutSession(
         value,
       },
     ],
-    customer: options.customerId,
   };
+
+  if (options.customerId) body.customer = options.customerId;
 
   if (recurring) {
     body.subscription = {
