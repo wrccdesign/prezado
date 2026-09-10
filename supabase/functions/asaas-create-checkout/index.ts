@@ -117,13 +117,26 @@ Deno.serve(async (req) => {
       return json({ checkoutUrl: firstPayment.invoiceUrl, billingType: "PIX" });
     }
 
-    const session = await createCheckoutSession(env, {
+    const sessionOptions = {
       priceId: priceId as PriceId,
       userId: user.id,
       successUrl: `${origin}/planos?checkout=success`,
       cancelUrl: `${origin}/planos?checkout=cancelled`,
       expiredUrl: `${origin}/planos?checkout=expired`,
-    });
+    };
+
+    let session;
+    try {
+      session = await createCheckoutSession(env, sessionOptions);
+    } catch (error) {
+      if (!isPixKeyMissingError(error)) throw error;
+      // Conta sem chave Pix cadastrada: refaz o checkout apenas com cartão.
+      console.warn("Asaas sem chave Pix; refazendo checkout apenas com cartão.");
+      session = await createCheckoutSession(env, {
+        ...sessionOptions,
+        billingTypes: ["CREDIT_CARD"],
+      });
+    }
 
     // Registra a intenção; o webhook confirma o pagamento.
     const intent = {
