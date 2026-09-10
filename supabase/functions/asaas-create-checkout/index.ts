@@ -2,11 +2,10 @@ import { corsHeaders } from "npm:@supabase/supabase-js@2/cors";
 import { createClient } from "npm:@supabase/supabase-js@2";
 import {
   type AsaasEnv,
-  createAnnualCharge,
-  createSubscription,
+  checkoutSessionUrl,
+  createCheckoutSession,
   findOrCreateCustomer,
   isRecurringPrice,
-  listCustomerPayments,
   planFromPriceId,
   resolveAsaasEnv,
   type PriceId,
@@ -42,9 +41,6 @@ Deno.serve(async (req) => {
 
     const env: AsaasEnv = resolveAsaasEnv(req);
     const origin = req.headers.get("origin") || "https://honorifico.com.br";
-    const returnUrl = typeof body?.returnUrl === "string" && body.returnUrl.startsWith(origin)
-      ? body.returnUrl
-      : `${origin}/planos?checkout=success`;
 
     const cpfCnpj = typeof body?.cpfCnpj === "string" ? body.cpfCnpj.replace(/\D/g, "") : "";
     if (!cpfCnpj || (cpfCnpj.length !== 11 && cpfCnpj.length !== 14)) {
@@ -61,50 +57,29 @@ Deno.serve(async (req) => {
     const planId = planFromPriceId(priceId);
     const recurring = isRecurringPrice(priceId);
 
-    if (recurring) {
-      const sub = await createSubscription(env, customer.id, priceId as PriceId);
+    const session = await createCheckoutSession(env, {
+      customerId: customer.id,
+      priceId: priceId as PriceId,
+      userId: user.id,
+      successUrl: `${origin}/planos?checkout=success`,
+      cancelUrl: `${origin}/planos?checkout=cancelled`,
+      expiredUrl: `${origin}/planos?checkout=expired`,
+    });
 
-      // Registra linha provisória; webhook confirmará o pagamento.
-      await supabase.from("subscriptions").upsert({
-        user_id: user.id,
-        provider: "asaas",
-        provider_customer_id: customer.id,
-        provider_subscription_id: sub.id,
-        plan_id: planId,
-        price_id: priceId,
-        status: "incomplete",
-        access_type: "recurring",
-        environment: env,
-        updated_at: new Date().toISOString(),
-      }, { onConflict: "provider_subscription_id,provider,environment" });
-
-      // A primeira cobrança da assinatura é gerada automaticamente.
-      const payments = await listCustomerPayments(env, customer.id);
-      const firstPayment = payments
-        .filter((p) => p.subscription === sub.id)
-        .sort((a, b) => (b.dueDate || "").localeCompare(a.dueDate || ""))[0];
-      const checkoutUrl = firstPayment?.invoiceUrl || `${returnUrl}&subscription_id=${sub.id}`;
-
-      return json({ checkoutUrl });
-    }
-
-    // Anual à vista
-    const payment = await createAnnualCharge(env, customer.id, priceId as PriceId);
-
+    // Registra a intenção; o webhook confirma o pagamento.
     await supabase.from("subscriptions").upsert({
       user_id: user.id,
       provider: "asaas",
       provider_customer_id: customer.id,
-      payment_provider_ref: payment.id,
       plan_id: planId,
       price_id: priceId,
       status: "incomplete",
-      access_type: "one_time",
+      access_type: recurring ? "recurring" : "one_time",
       environment: env,
       updated_at: new Date().toISOString(),
-    }, { onConflict: "payment_provider_ref,environment" });
+    }, { onConflict: "user_id,environment,provider" });
 
-    return json({ checkoutUrl: payment.invoiceUrl || `${returnUrl}&payment_id=${payment.id}` });
+    return json({ checkoutUrl: session.link || checkoutSessionUrl(env, session.id) });
   } catch (error) {
     console.error("asaas-create-checkout error:", error);
     return json({ error: error instanceof Error ? error.message : "Erro ao iniciar checkout" }, 400);
