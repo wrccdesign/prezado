@@ -370,7 +370,7 @@ export async function createCheckoutSession(
     },
     items: [
       {
-        name: config.description,
+        name: config.description.replace("Honorífico - Plano ", "").slice(0, 30),
         description: config.description,
         quantity: 1,
         value,
