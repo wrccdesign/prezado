@@ -178,6 +178,19 @@ async function cancelLocalSubscription(userId: string, env: AsaasEnv, subscripti
   return { ok: true };
 }
 
+async function userOwnsSubscription(userId: string, env: AsaasEnv, subscriptionId: string) {
+  const { data } = await getSupabase()
+    .from("subscriptions")
+    .select("id")
+    .eq("user_id", userId)
+    .eq("environment", env)
+    .eq("provider", "asaas")
+    .eq("provider_subscription_id", subscriptionId)
+    .limit(1)
+    .maybeSingle();
+  return Boolean(data?.id);
+}
+
 async function estimateCredit(subscriptionId: string, env: AsaasEnv, newPriceId: PriceId) {
   const sub = await getSubscription(env, subscriptionId);
   const newValue = PLAN_CONFIG[newPriceId].valueCents / 100;
