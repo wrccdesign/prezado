@@ -182,7 +182,7 @@ export async function asaasRequest<T>(
 
 export async function findOrCreateCustomer(
   env: AsaasEnv,
-  options: { email?: string; userId?: string; name?: string; cpfCnpj?: string },
+  options: { email?: string; userId?: string; name?: string; cpfCnpj?: string; phone?: string },
 ): Promise<AsaasCustomer> {
   if (options.userId) {
     const existing = await asaasRequest<{ data: AsaasCustomer[] }>(
@@ -191,12 +191,15 @@ export async function findOrCreateCustomer(
     );
     if (existing.data.length) {
       const customer = existing.data[0];
-      if (options.cpfCnpj && customer.cpfCnpj !== options.cpfCnpj) {
+      const updates: Record<string, string> = {};
+      if (options.cpfCnpj && customer.cpfCnpj !== options.cpfCnpj) updates.cpfCnpj = options.cpfCnpj;
+      if (options.phone && customer.mobilePhone !== options.phone) updates.mobilePhone = options.phone;
+      if (Object.keys(updates).length) {
         await asaasRequest<AsaasCustomer>(env, `/customers/${customer.id}`, {
           method: "PUT",
-          body: { cpfCnpj: options.cpfCnpj },
+          body: updates,
         });
-        customer.cpfCnpj = options.cpfCnpj;
+        Object.assign(customer, updates);
       }
       return customer;
     }
@@ -212,6 +215,7 @@ export async function findOrCreateCustomer(
       const updates: Record<string, string> = {};
       if (options.userId && customer.externalReference !== options.userId) updates.externalReference = options.userId;
       if (options.cpfCnpj && customer.cpfCnpj !== options.cpfCnpj) updates.cpfCnpj = options.cpfCnpj;
+      if (options.phone && customer.mobilePhone !== options.phone) updates.mobilePhone = options.phone;
       if (Object.keys(updates).length) {
         await asaasRequest<AsaasCustomer>(env, `/customers/${customer.id}`, {
           method: "PUT",
