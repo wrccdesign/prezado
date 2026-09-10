@@ -18,7 +18,7 @@ const PERDAS = [
  * o que se perde ao voltar para o gratuito.
  */
 export function TrialBanner() {
-  const { isTrial, trialDaysLeft } = useSubscription();
+  const { isTrial, trialDaysLeft, trialEndsAt } = useSubscription();
   // Marcos: 5º dia do teste (3 dias restantes) e último dia.
   const milestone = trialDaysLeft <= 1 ? "final" : trialDaysLeft === 3 ? "dia5" : null;
   const storageKey = milestone ? `trial-milestone-dismissed:${milestone}` : "";
