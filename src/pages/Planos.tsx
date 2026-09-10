@@ -112,8 +112,12 @@ export default function Planos() {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const { planId, isLoading, subscription } = useSubscription();
-  const hasPaidPlan = planId !== "free";
+  const { planId, isLoading, subscription, isTrial, trialEndsAt } = useSubscription();
+  // Teste grátis não é assinatura: não permite troca de plano, só contratação.
+  const hasPaidPlan = planId !== "free" && !isTrial;
+  const trialEndLabel = trialEndsAt
+    ? new Date(trialEndsAt).toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit" })
+    : null;
   const [changingPlan, setChangingPlan] = useState<PlanId | null>(null);
   const [cycle, setCycle] = useState<BillingCycle>("mensal");
   
@@ -349,6 +353,13 @@ export default function Planos() {
               Pagamento único de 12 meses, à vista no cartão. Sem renovação automática.
             </p>
           )}
+          {isTrial && (
+            <p className="text-note text-navy/70">
+              Você está no teste grátis do Profissional
+              {trialEndLabel ? `. Ele termina em ${trialEndLabel}` : ""} e depois a conta volta
+              para o plano Gratuito. Nada foi cobrado.
+            </p>
+          )}
           {hasPaidPlan && cycle === "mensal" && (
             <p className="text-note text-navy/70">
               Ao trocar de plano, a alteração passa a valer na próxima cobrança. Não há cobrança
@@ -374,7 +385,15 @@ export default function Planos() {
                 <div className="flex items-baseline justify-between gap-2">
                   <h2 className="text-h3 text-navy">{plan.name}</h2>
                   {plan.popular && <span className="text-note text-gold">Mais escolhido</span>}
-                  {isCurrent && <span className="text-note text-navy/60">Seu plano</span>}
+                  {isCurrent && (
+                    <span className="text-note text-navy/60">
+                      {isTrial
+                        ? trialEndLabel
+                          ? `Teste grátis, termina em ${trialEndLabel}`
+                          : "Teste grátis"
+                        : "Seu plano"}
+                    </span>
+                  )}
                 </div>
                 <p className="mt-1 text-sm text-navy/70">{plan.description}</p>
 
@@ -416,7 +435,15 @@ export default function Planos() {
                     disabled={isLoading}
                     onClick={() => handleSubscribe(plan)}
                   >
-                    {isCurrent ? "Migrar para o anual" : `Assinar ${plan.name} anual`}
+                    {isCurrent && !isTrial ? "Migrar para o anual" : `Assinar ${plan.name} anual`}
+                  </Button>
+                ) : isTrial ? (
+                  <Button
+                    className={`w-full ${plan.popular ? "bg-gold text-navy hover:bg-gold-light" : ""}`}
+                    disabled={isLoading}
+                    onClick={() => handleSubscribe(plan)}
+                  >
+                    {`Assinar ${plan.name}`}
                   </Button>
                 ) : isCurrent ? (
                   <Button variant="outline" className="w-full" onClick={() => navigate("/conta")}>
