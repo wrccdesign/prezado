@@ -244,17 +244,22 @@ export async function createSubscription(
   env: AsaasEnv,
   customerId: string,
   priceId: PriceId,
+  userId: string,
+  billingType: "PIX" | "CREDIT_CARD" = "PIX",
 ): Promise<AsaasSubscription> {
   const config = PLAN_CONFIG[priceId];
+  const nextDueDate = new Date();
+  nextDueDate.setDate(nextDueDate.getDate() + 1);
   return asaasRequest<AsaasSubscription>(env, "/subscriptions", {
     method: "POST",
     body: {
       customer: customerId,
-      billingType: "UNDEFINED",
+      billingType,
       value: config.valueCents / 100,
       cycle: config.cycle,
+      nextDueDate: nextDueDate.toISOString().split("T")[0],
       description: config.description,
-      externalReference: priceId,
+      externalReference: `${userId}:${priceId}`,
     },
   });
 }
