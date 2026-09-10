@@ -4,9 +4,8 @@ import {
   type AsaasEnv,
   cancelSubscription,
   getPayment,
-  getSubscription,
   listCustomerPayments,
-  listCustomerSubscriptions,
+  listSubscriptionPayments,
   planFromPriceId,
   resolveAsaasEnv,
   updateSubscriptionValue,
@@ -35,6 +34,7 @@ function json(body: unknown, status = 200) {
 interface SubscriptionSummary {
   id: string;
   planId: string;
+  pendingPlanId: string | null;
   status: string;
   environment: string;
   provider: string;
@@ -46,10 +46,26 @@ interface SubscriptionSummary {
   nextPaymentUrl?: string;
 }
 
+const PENDING_PAYMENT_STATUS = new Set([
+  "PENDING",
+  "AWAITING_RISK_ANALYSIS",
+  "OVERDUE",
+  "AWAITING_CHARGEBACK_REVERSAL",
+]);
+
+/** Invoice URL da próxima cobrança em aberto da assinatura, se existir. */
+async function nextInvoiceUrl(env: AsaasEnv, subscriptionId: string): Promise<string | undefined> {
+  const payments = await listSubscriptionPayments(env, subscriptionId);
+  const pending = payments
+    .filter((p) => PENDING_PAYMENT_STATUS.has(p.status) && p.invoiceUrl)
+    .sort((a, b) => (a.dueDate || "").localeCompare(b.dueDate || ""));
+  return pending[0]?.invoiceUrl || undefined;
+}
+
 async function getSummary(userId: string, env: AsaasEnv): Promise<SubscriptionSummary[]> {
   const { data } = await getSupabase()
     .from("subscriptions")
-    .select("id, plan_id, status, environment, provider, current_period_end, cancel_at_period_end, access_type, access_expires_at, price_id, provider_subscription_id, payment_provider_ref, provider_customer_id")
+    .select("id, plan_id, pending_plan_id, status, environment, provider, current_period_end, cancel_at_period_end, access_type, access_expires_at, price_id, provider_subscription_id, payment_provider_ref, provider_customer_id")
     .eq("user_id", userId)
     .eq("environment", env)
     .order("created_at", { ascending: false });
@@ -62,22 +78,20 @@ async function getSummary(userId: string, env: AsaasEnv): Promise<SubscriptionSu
     if (row.provider === "asaas") {
       try {
         if (row.provider_subscription_id) {
-          const sub = await getSubscription(env, row.provider_subscription_id);
-          nextPaymentUrl = sub.nextDueDate
-            ? `https://${env === "sandbox" ? "sandbox." : ""}asaas.com/i/${row.provider_subscription_id}`
-            : undefined;
+          nextPaymentUrl = await nextInvoiceUrl(env, row.provider_subscription_id as string);
         } else if (row.payment_provider_ref) {
           const payment = await getPayment(env, row.payment_provider_ref);
           nextPaymentUrl = payment.invoiceUrl || undefined;
         }
       } catch {
-        // ignore
+        // sem cobrança acessível: não expomos link algum
       }
     }
 
     summaries.push({
       id: row.id as string,
       planId: row.plan_id as string,
+      pendingPlanId: (row.pending_plan_id as string | null) ?? null,
       status: row.status as string,
       environment: row.environment as string,
       provider: row.provider as string,
@@ -178,29 +192,6 @@ async function cancelLocalSubscription(userId: string, env: AsaasEnv, subscripti
   return { ok: true };
 }
 
-async function userOwnsSubscription(userId: string, env: AsaasEnv, subscriptionId: string) {
-  const { data } = await getSupabase()
-    .from("subscriptions")
-    .select("id")
-    .eq("user_id", userId)
-    .eq("environment", env)
-    .eq("provider", "asaas")
-    .eq("provider_subscription_id", subscriptionId)
-    .limit(1)
-    .maybeSingle();
-  return Boolean(data?.id);
-}
-
-async function estimateCredit(subscriptionId: string, env: AsaasEnv, newPriceId: PriceId) {
-  const sub = await getSubscription(env, subscriptionId);
-  const newValue = PLAN_CONFIG[newPriceId].valueCents / 100;
-  const currentValue = sub.value || 0;
-  const remainingRatio = 0.5; // simplificação; idealmente calcular dias restantes
-  const credit = Math.max(0, currentValue * remainingRatio);
-  const chargeNow = Math.max(0, newValue - credit);
-  return { credit: Math.round(credit * 100) / 100, chargeNow: Math.round(chargeNow * 100) / 100 };
-}
-
 async function changePlan(
   userId: string,
   env: AsaasEnv,
@@ -208,7 +199,7 @@ async function changePlan(
 ) {
   const { data } = await getSupabase()
     .from("subscriptions")
-    .select("provider_subscription_id, provider_customer_id, id")
+    .select("provider_subscription_id, provider_customer_id, id, plan_id")
     .eq("user_id", userId)
     .eq("environment", env)
     .eq("provider", "asaas")
@@ -220,19 +211,27 @@ async function changePlan(
     return { error: "Nenhuma assinatura ativa para alterar" };
   }
 
+  const newPlanId = planFromPriceId(newPriceId);
   const newValue = PLAN_CONFIG[newPriceId].valueCents;
   await updateSubscriptionValue(env, data.provider_subscription_id, newValue);
 
-  await getSupabase()
+  // O plano em vigor não muda agora: só quando a próxima cobrança for paga.
+  const { error } = await getSupabase()
     .from("subscriptions")
     .update({
-      plan_id: planFromPriceId(newPriceId),
       price_id: newPriceId,
+      pending_plan_id: newPlanId === data.plan_id ? null : newPlanId,
       updated_at: new Date().toISOString(),
     })
     .eq("id", data.id);
+  if (error) return { error: "Não foi possível registrar a troca de plano" };
 
-  return { ok: true };
+  return {
+    ok: true,
+    pendingPlanId: newPlanId === data.plan_id ? null : newPlanId,
+    message:
+      "Alteração registrada. Ela passa a valer na próxima cobrança, sem cobrança nem crédito proporcional agora.",
+  };
 }
 
 Deno.serve(async (req) => {
@@ -257,19 +256,6 @@ Deno.serve(async (req) => {
       }
       case "cancel": {
         const result = await cancelLocalSubscription(user.id, env, body?.subscriptionId);
-        return json(result);
-      }
-      case "estimate-credit": {
-        if (!body?.subscriptionId || !body?.newPriceId) {
-          return json({ error: "subscriptionId e newPriceId são obrigatórios" }, 400);
-        }
-        if (!PLAN_CONFIG[body.newPriceId as PriceId]) {
-          return json({ error: "newPriceId inválido" }, 400);
-        }
-        if (!(await userOwnsSubscription(user.id, env, body.subscriptionId))) {
-          return json({ error: "Assinatura não pertence a este usuário" }, 403);
-        }
-        const result = await estimateCredit(body.subscriptionId, env, body.newPriceId);
         return json(result);
       }
       case "change-plan": {

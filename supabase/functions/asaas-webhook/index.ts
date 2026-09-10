@@ -93,18 +93,36 @@ async function activateRecurringSubscription(
   const priceId = ref.priceId;
   const planId = planFromPriceId(priceId);
 
-  // Localiza user_id pelo externalReference do checkout ou pelo customer
-  const { data: rows } = await getSupabase()
+  // Localiza a linha local pela assinatura e, na falta dela, pelo cliente.
+  const { data: bySub } = await getSupabase()
     .from("subscriptions")
-    .select("user_id")
-    .eq("provider_customer_id", sub.customer)
+    .select("user_id, pending_plan_id, price_id")
+    .eq("provider_subscription_id", sub.id)
     .eq("provider", "asaas")
     .eq("environment", env)
     .limit(1);
-  const userId = ref.userId || (rows?.[0]?.user_id as string | undefined);
+  let local = bySub?.[0];
+  if (!local) {
+    const { data: byCustomer } = await getSupabase()
+      .from("subscriptions")
+      .select("user_id, pending_plan_id, price_id")
+      .eq("provider_customer_id", sub.customer)
+      .eq("provider", "asaas")
+      .eq("environment", env)
+      .limit(1);
+    local = byCustomer?.[0];
+  }
+  const userId = ref.userId || (local?.user_id as string | undefined);
   if (!userId) {
     throw new Error(`No user_id found for Asaas customer ${sub.customer}`);
   }
+
+  // Troca de plano pendente: só vale quando o pagamento seguinte é confirmado.
+  const pendingPlan = local?.pending_plan_id as string | null | undefined;
+  const finalPlanId = pendingPlan || planId;
+  const finalPriceId = pendingPlan
+    ? ((local?.price_id as string | null) ?? priceId ?? null)
+    : (priceId ?? null);
 
   const start = new Date().toISOString();
   const end = sub.nextDueDate
@@ -116,8 +134,9 @@ async function activateRecurringSubscription(
     provider: "asaas",
     provider_customer_id: sub.customer,
     provider_subscription_id: sub.id,
-    plan_id: planId,
-    price_id: priceId,
+    plan_id: finalPlanId,
+    price_id: finalPriceId,
+    pending_plan_id: null,
     status: sub.status === "ACTIVE" ? "active" : "incomplete",
     access_type: "recurring",
     current_period_start: start,

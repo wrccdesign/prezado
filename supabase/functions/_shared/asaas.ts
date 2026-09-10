@@ -304,6 +304,17 @@ export async function listCustomerPayments(
   return res.data;
 }
 
+export async function listSubscriptionPayments(
+  env: AsaasEnv,
+  subscriptionId: string,
+): Promise<AsaasPayment[]> {
+  const res = await asaasRequest<{ data: AsaasPayment[] }>(
+    env,
+    `/subscriptions/${encodeURIComponent(subscriptionId)}/payments?limit=100`,
+  );
+  return res.data ?? [];
+}
+
 export async function listCustomerSubscriptions(
   env: AsaasEnv,
   customerId: string,

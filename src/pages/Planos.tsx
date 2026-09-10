@@ -116,7 +116,7 @@ export default function Planos() {
   const hasPaidPlan = planId !== "free";
   const [changingPlan, setChangingPlan] = useState<PlanId | null>(null);
   const [cycle, setCycle] = useState<BillingCycle>("mensal");
-  const [creditCents, setCreditCents] = useState<number | null>(null);
+  
   const [pendingPriceId, setPendingPriceId] = useState<string | null>(null);
   const [cpfCnpj, setCpfCnpj] = useState("");
   const [phone, setPhone] = useState("");
@@ -139,11 +139,7 @@ export default function Planos() {
     }
   }, [searchParams, user?.id]);
 
-  // Asaas: crédito proporcional não é calculado automaticamente no checkout.
-  // O usuário paga o valor integral do plano anual e cancela a mensalidade atual.
-  useEffect(() => {
-    setCreditCents(null);
-  }, [user, cycle, hasPaidPlan]);
+  // Asaas não faz rateio proporcional: alterações valem na cobrança seguinte.
 
   const handleSubscribe = async (plan: typeof plans[number]) => {
     if (!user) {
@@ -323,10 +319,10 @@ export default function Planos() {
               Pagamento único de 12 meses, à vista no cartão. Sem renovação automática.
             </p>
           )}
-          {cycle === "anual" && creditCents !== null && creditCents > 0 && (
+          {hasPaidPlan && cycle === "mensal" && (
             <p className="text-note text-navy/70">
-              Crédito de {(creditCents / 100).toLocaleString("pt-BR", { style: "currency", currency: "BRL" })} pelo
-              período não usado da sua assinatura mensal será aplicado no checkout.
+              Ao trocar de plano, a alteração passa a valer na próxima cobrança. Não há cobrança
+              nem crédito proporcional agora.
             </p>
           )}
         </div>
