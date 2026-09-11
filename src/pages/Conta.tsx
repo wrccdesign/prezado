@@ -416,7 +416,8 @@ export default function Conta() {
             <AlertDialogTitle>Cancelar assinatura?</AlertDialogTitle>
             <AlertDialogDescription>
               Você continua com acesso completo até {formatDate(sub?.currentPeriodEnd)}. Depois disso, sua conta volta
-              para o plano gratuito. Você pode reativar a qualquer momento antes dessa data.
+              para o plano gratuito. O cancelamento é definitivo: para continuar depois dessa data,
+              será preciso assinar novamente.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
