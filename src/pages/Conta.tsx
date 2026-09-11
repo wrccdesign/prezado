@@ -297,8 +297,8 @@ export default function Conta() {
                         </Button>
                       )}
                       {sub.cancelAtPeriodEnd ? (
-                        <Button variant="outline" onClick={() => run("resume")} disabled={busy !== null}>
-                          Reativar assinatura
+                        <Button variant="outline" asChild disabled={busy !== null}>
+                          <Link to="/planos">Assinar novamente</Link>
                         </Button>
                       ) : (
                         <Button variant="outline" onClick={() => setConfirmCancel(true)} disabled={busy !== null}>
