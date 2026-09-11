@@ -318,6 +318,9 @@ export default function Conta() {
                     <p className="text-xs text-muted-foreground">
                       A troca de plano passa a valer na próxima cobrança. Não há cobrança nem
                       crédito proporcional agora.
+                      {sub.cancelAtPeriodEnd
+                        ? " O cancelamento já foi feito: o acesso continua até a data acima e, para seguir depois disso, é preciso assinar novamente."
+                        : ""}
                     </p>
                   </>
                 ) : (
