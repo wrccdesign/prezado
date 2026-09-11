@@ -72,8 +72,17 @@ async function getSummary(userId: string, env: AsaasEnv): Promise<SubscriptionSu
 
   if (!data) return [];
 
+  // Só linhas que representam acesso pago real: sem plano gratuito, sem teste
+  // grátis e sem checkout abandonado (status "incomplete").
+  const paidRows = data.filter((row) => {
+    if (row.plan_id === "free") return false;
+    if (row.access_type === "trial") return false;
+    if (row.status === "incomplete") return false;
+    return true;
+  });
+
   const summaries: SubscriptionSummary[] = [];
-  for (const row of data) {
+  for (const row of paidRows) {
     let nextPaymentUrl: string | undefined;
     if (row.provider === "asaas") {
       try {
