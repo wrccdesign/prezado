@@ -297,8 +297,8 @@ export default function Conta() {
                         </Button>
                       )}
                       {sub.cancelAtPeriodEnd ? (
-                        <Button variant="outline" onClick={() => run("resume")} disabled={busy !== null}>
-                          Reativar assinatura
+                        <Button variant="outline" asChild disabled={busy !== null}>
+                          <Link to="/planos">Assinar novamente</Link>
                         </Button>
                       ) : (
                         <Button variant="outline" onClick={() => setConfirmCancel(true)} disabled={busy !== null}>
@@ -318,6 +318,9 @@ export default function Conta() {
                     <p className="text-xs text-muted-foreground">
                       A troca de plano passa a valer na próxima cobrança. Não há cobrança nem
                       crédito proporcional agora.
+                      {sub.cancelAtPeriodEnd
+                        ? " O cancelamento já foi feito: o acesso continua até a data acima e, para seguir depois disso, é preciso assinar novamente."
+                        : ""}
                     </p>
                   </>
                 ) : (
@@ -413,7 +416,8 @@ export default function Conta() {
             <AlertDialogTitle>Cancelar assinatura?</AlertDialogTitle>
             <AlertDialogDescription>
               Você continua com acesso completo até {formatDate(sub?.currentPeriodEnd)}. Depois disso, sua conta volta
-              para o plano gratuito. Você pode reativar a qualquer momento antes dessa data.
+              para o plano gratuito. O cancelamento é definitivo: para continuar depois dessa data,
+              será preciso assinar novamente.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
