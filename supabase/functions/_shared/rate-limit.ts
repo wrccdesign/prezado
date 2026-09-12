@@ -180,6 +180,13 @@ export async function checkRateLimit(
     return { allowed: false, used: 0, limit, plan, renewsAt, burstLimited: true };
   }
 
+  // Refinamento incluído no plano: libera sem debitar a cota mensal. O registro
+  // com sufixo "_refino" só alimenta a trava de rajada.
+  if (!unmetered && options?.skipMeteringFor?.(plan)) {
+    await supabase.from("usage_tracking").insert({ user_id: userId, action: `${action}_refino` });
+    return { allowed: true, used: 0, limit, plan, renewsAt, metered: false };
+  }
+
   // Ação ilimitada: registra o uso (alimenta a trava de rajada) e libera.
   if (unmetered) {
     await supabase.from("usage_tracking").insert({ user_id: userId, action });
@@ -203,7 +210,8 @@ export async function checkRateLimit(
 
   await supabase.from("usage_tracking").insert({ user_id: userId, action });
 
-  return { allowed: true, used: used + 1, limit, plan, renewsAt };
+  return { allowed: true, used: used + 1, limit, plan, renewsAt, metered: true };
+
 }
 
 const ACTION_NOUNS: Record<string, string> = {
