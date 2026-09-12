@@ -35,6 +35,8 @@ export default function Index({ embedded = false }: { embedded?: boolean }) {
   const [saveState, setSaveState] = useState<"idle" | "saving" | "saved">("idle");
   const [showPreview, setShowPreview] = useState(false);
   const [partialExtraction, setPartialExtraction] = useState(false);
+  const [pagesRead, setPagesRead] = useState<number | null>(null);
+  const [pagesTotal, setPagesTotal] = useState<number | null>(null);
   const [dragging, setDragging] = useState(false);
   const [rodada, setRodada] = useState(1);
   const [rodadasIncluidas, setRodadasIncluidas] = useState<number | null>(null);
@@ -179,15 +181,23 @@ export default function Index({ embedded = false }: { embedded?: boolean }) {
       
       if (data.partial) {
         setPartialExtraction(true);
+      } else {
+        setPartialExtraction(false);
       }
-      
+      setPagesRead(typeof data.pages_read === "number" ? data.pages_read : null);
+      setPagesTotal(typeof data.pages_total === "number" ? data.pages_total : null);
+
       setParseProgress(100);
       setParseStage("Concluído!");
       setText(extracted);
       setShowPreview(true);
       notifyUsageConsumed();
       const ocrNote = data.ocr && !isImage ? " (via OCR — documento escaneado)" : "";
-      const partialNote = data.partial ? " ⚠️ Extração parcial — PDF muito grande, apenas parte do texto foi extraída." : "";
+      const partialNote = data.partial
+        ? typeof data.pages_read === "number" && typeof data.pages_total === "number"
+          ? ` Leitura parcial: ${data.pages_read} de ${data.pages_total} páginas.`
+          : " Leitura parcial: parte do texto ficou de fora."
+        : "";
       toast({
         title: isImage ? "Imagem lida!" : "Documento processado!",
         description: `Texto extraído de ${file.name}${ocrNote}.${partialNote}`,
