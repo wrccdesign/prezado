@@ -1,55 +1,121 @@
-# Etapa 1: corrigir a leitura de PDF
+# Etapa 2: legibilidade e tamanho de fonte
 
-O relato do advogado tem causa técnica confirmada: o texto que sai de um PDF hoje não é o mesmo texto que ele cola. A leitura atual é um parser feito à mão que apaga repetições, perde parágrafos e ignora a parte comprimida do arquivo, que é onde mora quase todo o texto de uma petição.
+## Diagnóstico
 
-## A) Os 6 pontos, item a item
+O contraste já está adequado e não será alterado. O problema confirmado é tipográfico: conteúdo jurídico que exige leitura contínua aparece repetidamente em 12px e 14px.
 
-1. **Deduplicação destrutiva — confirmado.** `extractPdfText` mantém um `Set seen` e só empurra o fragmento se `!seen.has(t)`. Todo trecho idêntico repetido (mesmo valor, mesmo artigo, mesmo nome de parte, cabeçalho recorrente) desaparece a partir da segunda ocorrência. É o suspeito mais grave para valores monetários.
-2. **Estrutura perdida — confirmado.** `parts.join(" ")` produz uma linha única. Não há quebra de parágrafo, título ou separação entre fatos e pedidos.
-3. **Conteúdo comprimido ignorado — confirmado.** `raw.replace(/stream[\r\n][\s\S]*?endstream/gi, " ")` apaga todos os streams antes de procurar operadores `Tj`/`TJ`. Em PDF gerado por Word, PJe ou e-SAJ o texto está dentro desses streams (FlateDecode), então sobra pouco ou nada e o fluxo cai no OCR — que é mais lento, mais caro e menos fiel.
-4. **Truncamento corrompe o arquivo — confirmado.** `processLargePdfOcr` faz `bytes.subarray(0, OCR_CHUNK_SIZE)` acima de 2MB. Um PDF cortado no meio não tem tabela xref nem trailer: é binário inválido, não "as primeiras páginas". E o resultado ainda é rotulado `partial: true`, dando ao usuário a impressão de extração parcial legítima.
-5. **Filtros que apagam conteúdo — confirmado, com ressalva.** `isReadableText` exige 60% de caracteres da lista permitida; ela inclui dígitos, `.,;:()/-` e `R$` não entra, então uma linha com muitos cifrões ou símbolos pode ficar abaixo do corte. A regra `^\s*\d+\s*$` em `sanitizeText` apaga qualquer linha só de dígitos: remove número de página, mas também remove número de artigo ou valor isolado em linha própria. Também confirmo duas regras vizinhas problemáticas: `\.{5,}` e `_{5,}` viram espaço (some a linha pontilhada de assinatura, tudo bem) e `^\s+$` limpa linhas em branco.
-6. **Acentuação — confirmado.** Decodificação `latin1` fixa, `\\(.)` que transforma `\351` em `351`, nenhum tratamento de `ToUnicode`/CID. Português sai corrompido em boa parte dos PDFs.
+A busca em `src/` encontrou:
 
-Nenhum dos seis está errado.
+| Classe | Tamanho atual | Ocorrências |
+|---|---:|---:|
+| `text-xs` | 12px | 112 |
+| `text-sm` | 14px | 303 |
+| **Total** |  | **415, em 82 arquivos** |
 
-## B) Biblioteca: `unpdf`
+A contagem considera cada classe encontrada. Uma expressão responsiva como `text-xs sm:text-sm` entra uma vez em cada linha correspondente.
 
-Testei no runtime Deno, importando de esm.sh, com um PDF de duas páginas contendo o mesmo valor repetido:
+## Classificação por contexto
 
-- importou e executou sem dependência nativa;
-- devolveu o texto por página, com `\n` entre linhas;
-- **as duas ocorrências de `R$ 4.800,00` vieram**, e `Art. 1.723` chegou íntegro.
+### A. Conteúdo que precisa ser lido
 
-`unpdf` é o build serverless do pdf.js, sem canvas nem worker de Node, então descomprime Flate, resolve `ToUnicode` e entrega acentuação correta. É a escolha. `pdf.js` cru via esm.sh exigiria desligar worker e polyfills manualmente, sem ganho. Não precisamos de `DecompressionStream` manual.
+São os usos prioritários. Devem ficar em 16px, com altura de linha entre 1.6 e 1.7 quando houver texto contínuo.
 
-Custo: o bundle é da ordem de centenas de KB e a leitura é síncrona em memória; com o teto de 5MB por PDF que já existe, cabe no orçamento de tempo e memória da função.
+Os arquivos com maior concentração confirmada são:
 
-## C) Sanitização depois da extração
+| Prioridade | Arquivo | Ocorrências pequenas no arquivo | Conteúdo afetado |
+|---:|---|---:|---|
+| 1 | `src/components/AnalysisResult.tsx` | 29 | resumo da análise, pontos, riscos, motivos, próximos passos e avisos jurídicos |
+| 2 | `src/pages/Diagnostico.tsx` | 22 | explicação do caso, direito aplicável, custos, competência, urgência e citações |
+| 3 | `src/components/petition/PeticaoStepperFlow.tsx` | 13 | ementas, resumos de precedentes e prévia da petição |
+| 4 | `src/pages/Index.tsx` | 14 | texto extraído do documento, instruções e erros relevantes; a prévia está em 12px |
+| 5 | `src/pages/MinutaDetalhe.tsx` | 6 | o corpo inteiro da minuta está em 14px |
+| 6 | `src/pages/Jurisprudencia.tsx` | 9 | resumos de decisões e mensagens importantes |
+| 7 | `src/pages/DecisaoDetalhe.tsx` | 8 | conversa sobre a decisão e metadados; ementa e resumo principal já usam 18px |
+| 8 | `src/components/PetitionResult.tsx` | 2 | o corpo editável da petição está em 14px |
 
-Nova ordem: extrair por página com `unpdf` → juntar páginas com linha em branco → limpeza mínima.
+Outros casos relevantes aparecem em `History.tsx`, `CustasCalc.tsx`, `Conta.tsx` e `AdminIngestao.tsx`. Exemplos confirmados incluem texto integral de documento em 12px, justificativa de isenção em 14px e mensagens de erro em 12px.
 
-Ficam: remoção de caracteres de controle, colapso de espaços e tabs na mesma linha, colapso de 3+ quebras em 2.
+### B. Rótulos e metadados secundários
 
-Saem: a deduplicação inteira, a regra que apaga linhas só com dígitos, e o `isReadableText` por fragmento. Fica só uma verificação global do resultado, para decidir se vale acionar OCR.
+A maior parte das 415 ocorrências pertence a este grupo: badges, datas, contadores, nomes de abas, legendas curtas, navegação, rodapé e controles. Aqui 14px continua aceitável, mas `.text-note` passará a 15px para melhorar a leitura geral. Os componentes compartilhados de botão, tabela, menu e badge não serão aumentados indiscriminadamente na primeira passagem, pois têm impacto amplo.
 
-## D) PDF grande
+### C. Micro-labels onde 12px é defensável
 
-Corte de bytes sai. No lugar, limite por página, que é o que o formato permite: lê todas as páginas até um teto (proposta: 60 páginas), e se o documento passar disso, devolve o texto das primeiras com `partial: true` e uma mensagem que diz quantas páginas foram lidas de quantas. Rasterizar página a página não é viável sem canvas no runtime. O OCR continua existindo apenas como plano B para PDF escaneado, e nesse caso, se o arquivo exceder o limite, a resposta passa a ser uma recusa explicando o motivo, em vez de mandar binário quebrado para o modelo.
+`text-xs` permanece apenas quando o texto é curto, auxiliar e não contém informação jurídica que precise ser lida em sequência. Casos aceitáveis:
 
-## E) Conferir o texto antes de analisar
+- número dentro de marcador circular;
+- artigo de lei dentro de badge;
+- selo curto, como estado ou destaque do plano;
+- contador compacto;
+- copyright e nota legal breve;
+- comando auxiliar curto, como “ver mais”.
 
-Vale, e é barato: a tela de Meu caso já mostra o texto extraído num campo editável (`showPreview`). O que falta é o usuário entender que aquilo é o que a IA vai ler. Proposta mínima nesta etapa: rótulo claro acima do campo ("este é o texto que será analisado, confira antes de continuar") e o aviso de leitura parcial dizendo quantas páginas entraram. Sem componente novo.
+O rótulo de etapa em `PeticaoStepperFlow.tsx` hoje usa até 11px. Embora compacto, ele orienta o fluxo e não é micro-label puro. Deve subir para pelo menos 13px no padrão e ser verificado no celular.
 
-## F) Regressão
+## Escala tipográfica proposta
 
-`parse-document` é chamada de um único lugar: `src/pages/Index.tsx`, que atende tanto `/analise` quanto a aba "Tenho um documento" de Meu caso. O contrato `{ text, ocr, partial, ocr_timeout }` e a resposta de erro `{ error }` ficam exatamente iguais; só o conteúdo de `text` melhora. Cota, autenticação e limites não mudam.
+O projeto usa a escala padrão do navegador, com raiz de 16px. `text-xs` corresponde a 12px, `text-sm` a 14px e `text-base` a 16px. A escala editorial própria já mantém ementas e corpo serifado em 18px.
 
-Riscos: PDF protegido por senha passa a dar erro específico em vez de cair no OCR (melhor, mas é comportamento novo); texto agora vem maior, podendo bater no teto de 50.000 caracteres com mais frequência — mantenho o teto e o corte passa a avisar.
+| Papel | Antes | Depois | Altura de linha | Regra de uso |
+|---|---:|---:|---:|---|
+| Micro-label | 11–12px | 12–13px | 1.35–1.4 | somente marcador, badge, contador e nota mínima |
+| Nota e metadado | 14px | 15px | 1.5 | `.text-note`, legenda e metadado que precisa ser compreendido |
+| Conteúdo curto | frequentemente 14px | 16px | 1.55–1.6 | descrição, item de análise, erro relevante e instrução |
+| Conteúdo longo sans | 14–16px | 16px | 1.65 | diagnóstico, análise, petição editável e texto extraído |
+| Conteúdo longo serif | 18px / 1.6 | 18px / 1.65 | 1.65 | ementa, decisão, fundamentação e leitura editorial |
+| Título de bloco | frequentemente 16px | 18px | 1.3–1.35 | sobe junto para não empatar com o corpo de 16px |
+| H3 | 20px / 1.3 | 20px / 1.3 | 1.3 | mantém distinção sobre títulos de bloco |
+| H2 | 28–32px / 1.15 | 28–32px / 1.2 | 1.2 | mantém tamanho; abre levemente a entrelinha |
+| H1 | 36–44px / 1.1 | 36–44px / 1.1 | 1.1 | mantém |
+| Display da home | 40–56px | 40–56px | 1.05 | mantém |
 
-## Arquivos e ordem de execução
+A mudança principal não é aumentar tudo. É separar conteúdo de interface: conteúdo passa ao piso de 16px; notas passam a 15px; apenas micro-labels permanecem em 12–13px. Títulos de bloco que hoje têm 16px sobem para 18px, evitando que o novo corpo de 16px elimine a hierarquia.
 
-1. `supabase/functions/parse-document/index.ts` — trocar `extractPdfText` por `unpdf`, remover dedup e o truncamento de bytes, enxugar `sanitizeText`, limite por páginas, OCR só como plano B. Publicar.
-2. Teste de extração com PDF real de petição: conferir valor repetido, acentuação, parágrafos e número de artigo.
-3. `src/pages/Index.tsx` — rótulo de conferência do texto e mensagem de leitura parcial por páginas.
-4. `bunx tsgo --noEmit`, `bun run build`, e uma passada de ponta a ponta pelo upload.
+## Controle A / A / A
+
+**Recomendação: vale implementar nesta etapa.** Para advogados e magistrados mais velhos, o benefício é direto e maior que tentar encontrar um único tamanho ideal para todos.
+
+A implementação é viável sem refatorar toda a aplicação porque quase toda a tipografia e o espaçamento usam `rem`. O controle pode aplicar uma classe no elemento `html`, persistida em `localStorage`:
+
+| Nível | Raiz | Equivalência do corpo de 16px |
+|---|---:|---:|
+| Padrão | 100% | 16px |
+| Grande | 106.25% | 17px |
+| Maior | 112.5% | 18px |
+
+O nível salvo deve ser aplicado antes da primeira renderização para evitar mudança visível ao abrir a página. O controle global pode ficar no menu de acessibilidade do cabeçalho, com três opções claramente nomeadas e estado selecionado acessível por teclado e leitor de tela.
+
+**Esforço estimado:** pequeno para o mecanismo, cerca de meio a um dia; de um a dois dias adicionais para revisão visual das telas prioritárias nos três níveis e em celular/desktop. O trabalho total da etapa tende a 2–3 dias.
+
+**Limite técnico:** alterar a raiz amplia também medidas em `rem`, como espaços, alturas e ícones. Isso ajuda a interface a acompanhar o texto, mas exige revisão visual. Valores literais em pixels, como o rótulo de 11px do stepper e a lateral fixa de 380px da decisão, não acompanham a escala e precisam de tratamento pontual. PDF e DOCX exportados não mudam, pois usam medidas próprias de documento.
+
+## Ordem de aplicação por impacto
+
+1. **Base tipográfica:** elevar `.text-note`, criar a altura de linha de leitura longa e preparar o controle A / A / A.
+2. **Análise:** `Index.tsx` e `AnalysisResult.tsx`. Corrigir resultado, texto extraído, campos de esclarecimento e erros relevantes.
+3. **Diagnóstico:** elevar todos os blocos narrativos e as citações, preservando badges como metadados.
+4. **Petição:** `PetitionResult.tsx`, `PeticaoStepperFlow.tsx` e `MinutaDetalhe.tsx`. Priorizar o texto editável, a minuta e as ementas usadas na geração.
+5. **Jurisprudência:** `Jurisprudencia.tsx` e `DecisaoDetalhe.tsx`. Manter o corpo serifado de 18px, elevar notas necessárias e revisar o painel de conversa.
+6. **Passagem secundária:** histórico, calculadoras, conta e mensagens operacionais relevantes.
+7. **Componentes compartilhados:** somente depois da revisão das telas, ajustar defaults de botão, tabela ou badge se ainda houver problema. Isso evita alterações globais sem necessidade.
+
+## Verificação visual obrigatória
+
+Testar cada tela prioritária em Padrão, Grande e Maior, no celular e no desktop.
+
+- **Tabelas:** confirmar rolagem horizontal controlada, cabeçalhos legíveis, valores monetários inteiros e nenhuma coluna sobreposta.
+- **Badges:** verificar quebra de linha, altura, textos jurídicos longos e alinhamento com ícones.
+- **Botões:** conferir rótulos sem corte ou transbordamento, especialmente “Baixar PDF”, “Baixar DOCX” e ações de reanálise.
+- **Stepper:** conferir nomes das etapas, círculos, conectores, estado ativo e uso em telas estreitas.
+- **Ementas e resumos:** revisar `line-clamp-3` e `line-clamp-4`, pois a fonte maior mostra menos conteúdo antes das reticências.
+- **Texto extraído:** conferir a prévia com documentos extensos, nomes longos e rolagem interna.
+- **Petição e minuta:** confirmar largura de leitura, altura do campo, rolagem e ausência de linhas excessivamente longas.
+- **Análise e Diagnóstico:** verificar listas, avisos, cartões lado a lado e títulos de bloco após o corpo subir para 16px.
+- **Decisão:** conferir a lateral fixa de 380px no desktop e o painel de 75vh no celular.
+- **Navegação:** verificar cabeçalho, menus, abas e rodapé nos três níveis.
+- **Foco em 200%:** confirmar navegação por teclado, foco visível e ausência de conteúdo encoberto ou inacessível.
+- **Persistência:** selecionar cada nível, recarregar, trocar de rota e confirmar que a escolha permanece sem salto visual.
+
+## Escopo da implementação futura
+
+A etapa altera apenas tipografia, altura de linha, controle de tamanho e correções de layout diretamente causadas pelo aumento. Não muda cores, conteúdo jurídico, documentos exportados, regras de negócio ou estrutura das telas.
