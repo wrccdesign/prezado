@@ -123,6 +123,14 @@ export async function checkRateLimit(
   supabaseUrl: string,
   supabaseServiceKey: string,
   env: PaymentEnv = "live",
+  options?: {
+    /**
+     * Decide, já sabendo o plano, se esta chamada deve debitar cota. Retornando
+     * true, a chamada é liberada sem consumir o mês (a trava de rajada continua
+     * valendo). Usado pelos refinamentos incluídos na análise.
+     */
+    skipMeteringFor?: (plan: string) => boolean;
+  },
 ): Promise<{
   allowed: boolean;
   used: number;
@@ -131,7 +139,10 @@ export async function checkRateLimit(
   renewsAt: string;
   unknownAction?: boolean;
   burstLimited?: boolean;
+  /** false quando a chamada foi liberada sem debitar cota. */
+  metered?: boolean;
 }> {
+
   const supabase = createClient(supabaseUrl, supabaseServiceKey);
   const renewsAt = saoPauloMonthEnd().toISOString();
 
