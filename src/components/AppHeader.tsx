@@ -269,6 +269,7 @@ export function AppHeader() {
           ))}
           {toolsMenu}
           {!user && <NavButton item={planosItem} active={isActive(planosItem.path)} onClick={() => navigate(planosItem.path)} />}
+          {!user && fontScaleControl}
           <div className="w-px h-6 bg-cream/10 mx-1" />
           {user ? accountMenu : guestActions}
         </nav>
@@ -280,6 +281,7 @@ export function AppHeader() {
           ))}
           {toolsMenu}
           {!user && <NavButton item={planosItem} active={isActive(planosItem.path)} onClick={() => navigate(planosItem.path)} />}
+          {!user && fontScaleControl}
           <div className="w-px h-6 bg-cream/10 mx-1" />
           {user ? accountMenu : guestActions}
 
