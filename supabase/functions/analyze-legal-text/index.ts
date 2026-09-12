@@ -149,8 +149,107 @@ function buildLegislationContext(normas: NormaResumo[]): string {
   return `\n\nLEGISLAÇÃO RELACIONADA (referência para consulta):\n${items}\n\nConsidere estas normas como referência quando pertinente na análise.`;
 }
 
+interface EsclarecimentoInput {
+  item_original: string;
+  esclarecimento: string;
+}
+
+interface AnalisePrevia {
+  riscos_processuais: string[];
+  pontos_fracos: string[];
+  tipo_de_causa?: string;
+}
+
+function clampText(value: unknown, max: number): string | null {
+  if (typeof value !== "string") return null;
+  const trimmed = value.trim();
+  if (!trimmed) return null;
+  return trimmed.slice(0, max);
+}
+
+function sanitizeRodada(value: unknown): number {
+  const n = typeof value === "number" ? Math.floor(value) : NaN;
+  if (!Number.isFinite(n) || n < 1) return 1;
+  return Math.min(n, 10);
+}
+
+function sanitizeStringList(value: unknown, max: number): string[] {
+  if (!Array.isArray(value)) return [];
+  return value
+    .map((v) => clampText(v, 600))
+    .filter((v): v is string => !!v)
+    .slice(0, max);
+}
+
+function sanitizeAnalisePrevia(value: unknown): AnalisePrevia | null {
+  if (!value || typeof value !== "object") return null;
+  const raw = value as Record<string, unknown>;
+  const riscos = sanitizeStringList(raw.riscos_processuais, 20);
+  const fracos = sanitizeStringList(raw.pontos_fracos, 20);
+  if (riscos.length === 0 && fracos.length === 0) return null;
+  return {
+    riscos_processuais: riscos,
+    pontos_fracos: fracos,
+    tipo_de_causa: clampText(raw.tipo_de_causa, 200) ?? undefined,
+  };
+}
+
+function sanitizeEsclarecimentos(value: unknown): EsclarecimentoInput[] {
+  if (!Array.isArray(value)) return [];
+  const out: EsclarecimentoInput[] = [];
+  for (const entry of value) {
+    if (!entry || typeof entry !== "object") continue;
+    const raw = entry as Record<string, unknown>;
+    const item = clampText(raw.item_original, 600);
+    const esclarecimento = clampText(raw.esclarecimento, 1500);
+    if (!item || !esclarecimento) continue;
+    out.push({ item_original: item, esclarecimento });
+    if (out.length >= 20) break;
+  }
+  return out;
+}
+
+function buildIterationBlock(
+  anterior: AnalisePrevia,
+  esclarecimentos: EsclarecimentoInput[],
+  textoAlterado: boolean,
+  rodada: number,
+): string {
+  const findEsclarecimento = (item: string) =>
+    esclarecimentos.find((e) => e.item_original === item)?.esclarecimento;
+
+  const render = (titulo: string, itens: string[]) => {
+    if (itens.length === 0) return "";
+    const linhas = itens
+      .map((item, i) => {
+        const e = findEsclarecimento(item);
+        return `${i + 1}. ${item}\n   ESCLARECIMENTO DO USUÁRIO: ${e ?? "(nenhum esclarecimento foi dado para este item)"}`;
+      })
+      .join("\n");
+    return `\n${titulo}\n${linhas}\n`;
+  };
+
+  return `
+
+## ANÁLISE ANTERIOR (RODADA ${rodada - 1}) E ESCLARECIMENTOS DO USUÁRIO
+Este é um REFINAMENTO. O usuário revisou o material e respondeu aos apontamentos abaixo.
+${render("RISCOS PROCESSUAIS APONTADOS ANTES:", anterior.riscos_processuais)}${render("PONTOS FRACOS APONTADOS ANTES:", anterior.pontos_fracos)}
+${textoAlterado
+      ? "O TEXTO FOI EDITADO desde a rodada anterior. Confira no texto atual se o ponto foi de fato corrigido; não confie apenas na alegação do usuário."
+      : "O texto NÃO foi editado: avalie apenas se o esclarecimento supre a lacuna apontada."}
+
+## REGRA OBRIGATÓRIA DESTA RODADA
+Para CADA item listado acima você DEVE decidir explicitamente:
+- RESOLVER: o esclarecimento (ou a edição do texto) sana o ponto. Não repita o item em riscos_processuais/pontos_fracos e registre-o em "itens_resolvidos" com o motivo do aceite.
+- MANTER: o ponto continua de pé. Mantenha o item na lista correspondente E registre-o em "itens_mantidos" explicando por que o esclarecimento não resolve.
+É PROIBIDO repetir um item da rodada anterior sem se posicionar sobre o esclarecimento correspondente.
+Em "itens_resolvidos" e "itens_mantidos", repita o texto do item EXATAMENTE como aparece acima.
+Itens NOVOS, que não estavam na rodada anterior, podem ser incluídos normalmente nas listas e não entram nesses dois campos.`;
+}
+
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
+
 
   try {
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
@@ -200,10 +299,21 @@ serve(async (req) => {
       );
     }
 
-    const { text, file_name } = await req.json();
+    const body = await req.json();
+    const { text, file_name } = body;
     if (!text || typeof text !== "string" || text.trim().length < 20) {
       throw new Error("Texto muito curto para análise");
     }
+
+    // --- Iteração (opcional). Sem estes campos, o comportamento é idêntico ao anterior. ---
+    const rodada = sanitizeRodada(body?.rodada);
+    const anterior = sanitizeAnalisePrevia(body?.analise_anterior);
+    const esclarecimentos = sanitizeEsclarecimentos(body?.esclarecimentos);
+    const textoAlterado = body?.texto_alterado === true;
+    const iterationBlock = anterior
+      ? buildIterationBlock(anterior, esclarecimentos, textoAlterado, rodada)
+      : "";
+
 
 
     // Step 1: Extract keywords using AI
