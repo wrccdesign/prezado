@@ -103,6 +103,8 @@ export function AnalysisResult({
   const clarifications = esclarecimentos ?? {};
   const canClarify = !!onEsclarecimentoChange && !!onReanalyze;
   const filledCount = Object.values(clarifications).filter((v) => v.trim().length > 0).length;
+  const refinamentosUsados = Math.max(0, rodada - 1);
+
 
   const toggleItem = (item: string) =>
     setOpenItems((prev) => ({ ...prev, [item]: !prev[item] }));
@@ -482,6 +484,14 @@ export function AnalysisResult({
               ? `${filledCount} ponto${filledCount > 1 ? "s" : ""} esclarecido${filledCount > 1 ? "s" : ""}. A nova análise vai dizer o que foi aceito e o que continua de pé.`
               : "Discorda de algum ponto acima? Escreva seu esclarecimento no item e peça uma nova análise."}
           </p>
+          {typeof rodadasIncluidas === "number" && (
+            <p className="mt-1 text-sm text-muted-foreground">
+              {refinamentosUsados < rodadasIncluidas
+                ? `Refinamentos deste caso: ${refinamentosUsados} de ${rodadasIncluidas} incluídos.`
+                : "Você usou os refinamentos incluídos neste caso. As próximas reanálises contam como uma nova análise."}
+            </p>
+          )}
+
           <div className="mt-3 flex flex-wrap gap-3">
             <Button onClick={() => onReanalyze?.()} disabled={filledCount === 0 || reanalyzing}>
               {reanalyzing ? (
