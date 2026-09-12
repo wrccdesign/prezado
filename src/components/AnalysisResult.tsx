@@ -250,6 +250,12 @@ export function AnalysisResult({
               <Clock className="mr-1.5 h-3.5 w-3.5" />
               {result.prazo_estimado}
             </Badge>
+            {rodada > 1 && (
+              <Badge variant="outline" className="px-3 py-1.5 text-sm">
+                Rodada {rodada}
+              </Badge>
+            )}
+
           </div>
         </div>
       </div>
@@ -309,11 +315,15 @@ export function AnalysisResult({
             >
               <div className="space-y-2">
                 {result.pontos_fracos.map((ponto, i) => (
-                  <div key={i} className="flex items-start gap-3 rounded-lg border border-rose-200 dark:border-rose-800/30 bg-rose-50 dark:bg-rose-950/20 p-3">
-                    <AlertTriangle className="h-4 w-4 shrink-0 text-rose-500 mt-0.5" />
-                    <p className="text-sm text-foreground">{ponto}</p>
+                  <div key={i} className="rounded-lg border border-rose-200 dark:border-rose-800/30 bg-rose-50 dark:bg-rose-950/20 p-3">
+                    <div className="flex items-start gap-3">
+                      <AlertTriangle className="h-4 w-4 shrink-0 text-rose-500 mt-0.5" />
+                      <p className="text-sm text-foreground">{ponto}</p>
+                    </div>
+                    {renderClarifyField(ponto)}
                   </div>
                 ))}
+
               </div>
             </SectionCard>
           </div>
@@ -330,11 +340,15 @@ export function AnalysisResult({
             >
               <div className="space-y-2">
                 {result.riscos_processuais.map((risco, i) => (
-                  <div key={i} className="flex items-start gap-3 rounded-lg border border-amber-200 dark:border-amber-800/30 bg-amber-50 dark:bg-amber-950/20 p-3">
-                    <AlertCircle className="h-4 w-4 shrink-0 text-amber-500 mt-0.5" />
-                    <p className="text-sm text-foreground">{risco}</p>
+                  <div key={i} className="rounded-lg border border-amber-200 dark:border-amber-800/30 bg-amber-50 dark:bg-amber-950/20 p-3">
+                    <div className="flex items-start gap-3">
+                      <AlertCircle className="h-4 w-4 shrink-0 text-amber-500 mt-0.5" />
+                      <p className="text-sm text-foreground">{risco}</p>
+                    </div>
+                    {renderClarifyField(risco)}
                   </div>
                 ))}
+
               </div>
             </SectionCard>
           </div>
@@ -456,8 +470,36 @@ export function AnalysisResult({
         </div>
       </div>
 
+      {/* Reanálise com esclarecimentos */}
+      {canClarify && (
+        <div className="rounded-lg border border-border bg-muted/30 p-4">
+          <p className="text-sm text-foreground">
+            {filledCount > 0
+              ? `${filledCount} ponto${filledCount > 1 ? "s" : ""} esclarecido${filledCount > 1 ? "s" : ""}. A nova análise vai dizer o que foi aceito e o que continua de pé.`
+              : "Discorda de algum ponto acima? Escreva seu esclarecimento no item e peça uma nova análise."}
+          </p>
+          <div className="mt-3 flex flex-wrap gap-3">
+            <Button onClick={() => onReanalyze?.()} disabled={filledCount === 0 || reanalyzing}>
+              {reanalyzing ? (
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              ) : (
+                <RefreshCw className="mr-2 h-4 w-4" />
+              )}
+              {reanalyzing ? "Reanalisando..." : "Reanalisar com meus esclarecimentos"}
+            </Button>
+            {onEditText && (
+              <Button variant="outline" onClick={onEditText} disabled={reanalyzing}>
+                <Pencil className="mr-2 h-4 w-4" />
+                Editar o texto antes de reanalisar
+              </Button>
+            )}
+          </div>
+        </div>
+      )}
+
       {/* Actions */}
       <Separator />
+
       {onSave && saveState !== "saved" && (
         <p className="text-sm text-muted-foreground">
           Esta análise não fica salva a menos que você clique em "Salvar no histórico".
