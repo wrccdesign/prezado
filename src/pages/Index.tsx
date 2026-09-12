@@ -366,7 +366,7 @@ export default function Index({ embedded = false }: { embedded?: boolean }) {
     toast({ title: "Salvo no histórico" });
   };
 
-  if (result) {
+  if (result && !editingText) {
     const resultado = (
       <main className={embedded ? "py-2" : "container max-w-3xl py-8 sm:py-12 px-4 sm:px-6"}>
         {!embedded && (
@@ -377,9 +377,16 @@ export default function Index({ embedded = false }: { embedded?: boolean }) {
           onNewAnalysis={handleNewAnalysis}
           onSave={user ? handleSaveAnalysis : undefined}
           saveState={saveState}
+          rodada={rodada}
+          esclarecimentos={esclarecimentos}
+          onEsclarecimentoChange={handleEsclarecimentoChange}
+          onReanalyze={() => void handleAnalyze({ refine: true })}
+          onEditText={handleEditText}
+          reanalyzing={loading}
         />
       </main>
     );
+
     if (embedded) return resultado;
     return (
       <div className="min-h-screen bg-background">
