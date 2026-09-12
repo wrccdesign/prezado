@@ -294,6 +294,8 @@ export default function Index({ embedded = false }: { embedded?: boolean }) {
       setAnalyzedText((data.input_text as string) ?? currentText);
       setResult(data.result as LegalAnalysis);
       setRodada((data.rodada as number) ?? (refine ? rodada + 1 : 1));
+      if (typeof data.rodadas_incluidas === "number") setRodadasIncluidas(data.rodadas_incluidas);
+
       setEditingText(false);
       if (refine) setEsclarecimentos({});
       notifyUsageConsumed();
@@ -380,6 +382,8 @@ export default function Index({ embedded = false }: { embedded?: boolean }) {
           onSave={user ? handleSaveAnalysis : undefined}
           saveState={saveState}
           rodada={rodada}
+          rodadasIncluidas={rodadasIncluidas ?? undefined}
+
           esclarecimentos={esclarecimentos}
           onEsclarecimentoChange={handleEsclarecimentoChange}
           onReanalyze={() => void handleAnalyze({ refine: true })}
