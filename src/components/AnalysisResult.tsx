@@ -75,6 +75,7 @@ export function AnalysisResult({
   onSave,
   saveState,
   rodada = 1,
+  rodadasIncluidas,
   esclarecimentos,
   onEsclarecimentoChange,
   onReanalyze,
@@ -87,12 +88,15 @@ export function AnalysisResult({
   saveState?: "idle" | "saving" | "saved";
   /** Número da rodada de análise (1 = primeira). */
   rodada?: number;
+  /** Refinamentos incluídos no plano para cada análise. */
+  rodadasIncluidas?: number;
   /** Esclarecimentos escritos pelo usuário, indexados pelo texto do item. */
   esclarecimentos?: Record<string, string>;
   onEsclarecimentoChange?: (item: string, value: string) => void;
   onReanalyze?: () => void;
   onEditText?: () => void;
   reanalyzing?: boolean;
+
 }) {
   const { toast } = useToast();
   const [openItems, setOpenItems] = useState<Record<string, boolean>>({});
