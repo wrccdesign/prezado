@@ -1,4 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { getDocumentProxy } from "https://esm.sh/unpdf@0.12.1";
 import { requireQuota } from "../_shared/calculo-guard.ts";
 import { aiChatText } from "../_shared/ai.ts";
 
@@ -9,7 +10,8 @@ const corsHeaders = {
 
 const MAX_PDF_SIZE = 5 * 1024 * 1024;   // 5MB for PDFs
 const MAX_OTHER_SIZE = 10 * 1024 * 1024; // 10MB for TXT/DOCX
-const OCR_CHUNK_SIZE = 2 * 1024 * 1024;  // 2MB chunks for OCR
+const MAX_OCR_SIZE = 2 * 1024 * 1024;    // acima disso, OCR não é seguro: recusamos
+const MAX_PDF_PAGES = 60;                // teto de páginas lidas por documento
 const OCR_TIMEOUT_MS = 55000;
 const MAX_TEXT_LENGTH = 50000;
 
@@ -22,67 +24,67 @@ const IMAGE_MIME: Record<string, string> = {
   ".heif": "image/heif",
 };
 
+/**
+ * Limpeza mínima: nada aqui pode apagar conteúdo do documento.
+ * Sem deduplicação, sem remover linhas só com dígitos (artigo ou valor em
+ * linha própria é conteúdo legítimo numa petição).
+ */
 function sanitizeText(raw: string): string {
-  let text = raw.replace(/[^\x20-\x7E\xA0-\xFF\u00C0-\u024F\n\r\t]/g, " ");
-  text = text.replace(/\.{5,}/g, " ");
-  text = text.replace(/_{5,}/g, " ");
-  text = text.replace(/\s*-{5,}\s*/g, "\n");
-  text = text.replace(/^\s*\d+\s*$/gm, "");
-  text = text.replace(/^\s*Página\s+\d+\s*(de\s+\d+)?\s*$/gim, "");
-  text = text.replace(/[ \t]+/g, " ");
+  let text = raw.replace(/\r\n?/g, "\n");
+  // caracteres de controle, menos quebra de linha e tabulação
+  text = text.replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F]/g, "");
+  text = text.replace(/[ \t\u00A0]+/g, " ");
+  text = text.replace(/[ \t]+\n/g, "\n");
   text = text.replace(/\n{3,}/g, "\n\n");
-  text = text.replace(/^\s+$/gm, "");
   return text.trim();
 }
 
-function isReadableText(text: string): boolean {
-  if (!text || text.length < 5) return false;
-  const printable = text.match(/[a-zA-ZÀ-ÿ0-9\s.,;:!?()'"\/\-]/g);
-  const ratio = (printable?.length || 0) / text.length;
-  return ratio > 0.6;
+/** Verificação global: o texto extraído tem cara de texto de verdade? */
+function looksLikeText(text: string): boolean {
+  if (!text || text.trim().length < 50) return false;
+  const letters = text.match(/[a-zA-ZÀ-ÿ]/g)?.length ?? 0;
+  return letters / text.length > 0.35;
 }
 
-function extractPdfText(bytes: Uint8Array): string {
+type PdfExtraction = {
+  text: string;
+  pagesRead: number;
+  pagesTotal: number;
+  encrypted?: boolean;
+};
+
+/**
+ * Extração real via unpdf (build serverless do pdf.js): descomprime os streams,
+ * resolve ToUnicode (acentuação correta) e preserva quebras de linha.
+ */
+async function extractPdfText(bytes: Uint8Array): Promise<PdfExtraction> {
   try {
-    const raw = new TextDecoder("latin1").decode(bytes);
-    const cleaned = raw.replace(/stream[\r\n][\s\S]*?endstream/gi, " ");
-    const parts: string[] = [];
-    const seen = new Set<string>();
-    const MAX_ITERATIONS = 50000;
-    let iterations = 0;
+    const doc = await getDocumentProxy(bytes);
+    const pagesTotal = doc.numPages;
+    const pagesRead = Math.min(pagesTotal, MAX_PDF_PAGES);
+    const pages: string[] = [];
 
-    const tjRegex = /\(([^)]{1,500})\)\s*Tj/gi;
-    let match;
-    while ((match = tjRegex.exec(cleaned)) !== null && iterations < MAX_ITERATIONS) {
-      iterations++;
-      const t = match[1].replace(/\\[nrt]/g, " ").replace(/\\(.)/g, "$1").trim();
-      if (t.length > 1 && isReadableText(t) && !seen.has(t)) {
-        seen.add(t);
-        parts.push(t);
+    for (let i = 1; i <= pagesRead; i++) {
+      const page = await doc.getPage(i);
+      const content = await page.getTextContent();
+      let pageText = "";
+      for (const item of content.items as Array<{ str?: string; hasEOL?: boolean }>) {
+        if (typeof item.str !== "string") continue;
+        pageText += item.str;
+        if (item.hasEOL) pageText += "\n";
       }
+      pages.push(pageText.trim());
     }
 
-    const arrayRegex = /\[([^\]]{1,5000})\]\s*TJ/gi;
-    while ((match = arrayRegex.exec(cleaned)) !== null && iterations < MAX_ITERATIONS) {
-      iterations++;
-      const innerRegex = /\(([^)]*)\)/g;
-      let inner;
-      const lineParts: string[] = [];
-      while ((inner = innerRegex.exec(match[1])) !== null) {
-        const t = inner[1].replace(/\\[nrt]/g, " ").replace(/\\(.)/g, "$1");
-        if (t.trim()) lineParts.push(t);
-      }
-      const line = lineParts.join("").trim();
-      if (line.length > 1 && isReadableText(line) && !seen.has(line)) {
-        seen.add(line);
-        parts.push(line);
-      }
-    }
-
-    return parts.join(" ");
+    return { text: pages.join("\n\n"), pagesRead, pagesTotal };
   } catch (e) {
-    console.error("extractPdfText failed:", e);
-    return "";
+    const name = (e as { name?: string })?.name ?? "";
+    const message = e instanceof Error ? e.message : String(e);
+    if (name === "PasswordException" || /password/i.test(message)) {
+      return { text: "", pagesRead: 0, pagesTotal: 0, encrypted: true };
+    }
+    console.error("extractPdfText failed:", message);
+    return { text: "", pagesRead: 0, pagesTotal: 0 };
   }
 }
 
@@ -153,30 +155,12 @@ async function ocrWithVision(
   return { text: "", timedOut: false };
 }
 
-
-async function processLargePdfOcr(
-  bytes: Uint8Array,
-  fileName: string
-): Promise<{ text: string; timedOut: boolean; partial: boolean }> {
-  if (bytes.length <= OCR_CHUNK_SIZE) {
-    const result = await ocrWithVision(bytes, fileName, 1);
-    return { ...result, partial: false };
-  }
-
-  // Truncate to first OCR_CHUNK_SIZE bytes for OCR
-  console.log(`PDF is ${(bytes.length / 1024 / 1024).toFixed(1)}MB, truncating to ${(OCR_CHUNK_SIZE / 1024 / 1024).toFixed(1)}MB for OCR...`);
-  const truncated = bytes.subarray(0, OCR_CHUNK_SIZE);
-  const result = await ocrWithVision(truncated, fileName, 1);
-  return { ...result, partial: result.text.length > 20 };
-}
-
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   const auth = await requireQuota(req, "documento", corsHeaders);
   if (auth instanceof Response) return auth;
   const _userId = auth.userId;
-
 
   try {
     const contentType = req.headers.get("content-type") || "";
@@ -200,39 +184,59 @@ serve(async (req) => {
     let extractedText = "";
     let usedOcr = false;
     let partialExtraction = false;
+    let pagesRead: number | undefined;
+    let pagesTotal: number | undefined;
 
     if (fileName.endsWith(".txt")) {
-      extractedText = await file.text();
+      extractedText = sanitizeText(await file.text());
     } else {
       const buffer = await file.arrayBuffer();
       const bytes = new Uint8Array(buffer);
 
       if (isPdf) {
-        // Step 1: regex extraction
-        extractedText = extractPdfText(bytes);
-        extractedText = sanitizeText(extractedText);
+        const extraction = await extractPdfText(bytes);
 
-        if (extractedText && extractedText.length >= 50 && !isReadableText(extractedText)) {
-          console.log(`Extracted text failed readability check (${extractedText.length} chars), falling back to OCR...`);
-          extractedText = "";
+        if (extraction.encrypted) {
+          return new Response(
+            JSON.stringify({
+              error: "Este PDF está protegido por senha. Remova a proteção e envie de novo, ou cole o texto manualmente.",
+            }),
+            { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+          );
         }
 
-        // Step 2: OCR fallback with chunking
-        if (!extractedText || extractedText.length < 50) {
-          console.log(`Regex extraction yielded ${extractedText.length} chars, falling back to OCR...`);
-          const ocrResult = await processLargePdfOcr(bytes, file.name);
+        extractedText = sanitizeText(extraction.text);
+        pagesRead = extraction.pagesRead || undefined;
+        pagesTotal = extraction.pagesTotal || undefined;
+        if (extraction.pagesTotal > extraction.pagesRead) partialExtraction = true;
 
-          if (ocrResult.timedOut && (!extractedText || extractedText.length < 20)) {
+        // Plano B: PDF escaneado, sem camada de texto.
+        if (!looksLikeText(extractedText)) {
+          if (bytes.length > MAX_OCR_SIZE) {
+            return new Response(
+              JSON.stringify({
+                error: `Este PDF não tem texto selecionável (parece digitalizado) e é grande demais para leitura por imagem (máximo ${Math.round(MAX_OCR_SIZE / 1024 / 1024)}MB). Envie um arquivo menor ou cole o texto manualmente.`,
+              }),
+              { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+            );
+          }
+
+          console.log(`Camada de texto ausente ou insuficiente (${extractedText.length} chars), acionando OCR...`);
+          const ocrResult = await ocrWithVision(bytes, file.name, 1, _userId);
+
+          if (ocrResult.timedOut && extractedText.length < 20) {
             return new Response(
               JSON.stringify({ text: "", ocr: false, ocr_timeout: true }),
-              { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+              { headers: { ...corsHeaders, "Content-Type": "application/json" } },
             );
           }
 
           if (ocrResult.text && ocrResult.text.length > 20) {
-            extractedText = ocrResult.text;
+            extractedText = sanitizeText(ocrResult.text);
             usedOcr = true;
-            partialExtraction = ocrResult.partial;
+            pagesRead = undefined;
+            pagesTotal = undefined;
+            partialExtraction = false;
           }
         }
 
@@ -258,7 +262,7 @@ serve(async (req) => {
         if (ocrResult.timedOut) {
           return new Response(
             JSON.stringify({ text: "", ocr: false, ocr_timeout: true }),
-            { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+            { headers: { ...corsHeaders, "Content-Type": "application/json" } },
           );
         }
 
@@ -273,19 +277,25 @@ serve(async (req) => {
       }
     }
 
+    // Corte por caractere também é leitura parcial.
+    const truncated = extractedText.length > MAX_TEXT_LENGTH;
+    if (truncated) partialExtraction = true;
+
     return new Response(
       JSON.stringify({
         text: extractedText.slice(0, MAX_TEXT_LENGTH),
         ocr: usedOcr,
         partial: partialExtraction,
+        ...(pagesRead ? { pages_read: pagesRead } : {}),
+        ...(pagesTotal ? { pages_total: pagesTotal } : {}),
       }),
-      { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      { headers: { ...corsHeaders, "Content-Type": "application/json" } },
     );
   } catch (e) {
     console.error("parse-document error:", e);
     return new Response(
       JSON.stringify({ error: e instanceof Error ? e.message : "Erro desconhecido" }),
-      { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } },
     );
   }
 });

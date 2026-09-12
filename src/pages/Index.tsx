@@ -35,6 +35,8 @@ export default function Index({ embedded = false }: { embedded?: boolean }) {
   const [saveState, setSaveState] = useState<"idle" | "saving" | "saved">("idle");
   const [showPreview, setShowPreview] = useState(false);
   const [partialExtraction, setPartialExtraction] = useState(false);
+  const [pagesRead, setPagesRead] = useState<number | null>(null);
+  const [pagesTotal, setPagesTotal] = useState<number | null>(null);
   const [dragging, setDragging] = useState(false);
   const [rodada, setRodada] = useState(1);
   const [rodadasIncluidas, setRodadasIncluidas] = useState<number | null>(null);
@@ -179,15 +181,23 @@ export default function Index({ embedded = false }: { embedded?: boolean }) {
       
       if (data.partial) {
         setPartialExtraction(true);
+      } else {
+        setPartialExtraction(false);
       }
-      
+      setPagesRead(typeof data.pages_read === "number" ? data.pages_read : null);
+      setPagesTotal(typeof data.pages_total === "number" ? data.pages_total : null);
+
       setParseProgress(100);
       setParseStage("Concluído!");
       setText(extracted);
       setShowPreview(true);
       notifyUsageConsumed();
       const ocrNote = data.ocr && !isImage ? " (via OCR — documento escaneado)" : "";
-      const partialNote = data.partial ? " ⚠️ Extração parcial — PDF muito grande, apenas parte do texto foi extraída." : "";
+      const partialNote = data.partial
+        ? typeof data.pages_read === "number" && typeof data.pages_total === "number"
+          ? ` Leitura parcial: ${data.pages_read} de ${data.pages_total} páginas.`
+          : " Leitura parcial: parte do texto ficou de fora."
+        : "";
       toast({
         title: isImage ? "Imagem lida!" : "Documento processado!",
         description: `Texto extraído de ${file.name}${ocrNote}.${partialNote}`,
@@ -441,6 +451,12 @@ export default function Index({ embedded = false }: { embedded?: boolean }) {
             onDrop={handleDrop}
           >
 
+            {fileName && text && (
+              <p className="text-sm leading-relaxed text-muted-foreground">
+                Este é o texto que será analisado. Confira antes de continuar.
+              </p>
+            )}
+
             <Textarea
               placeholder="Cole aqui o texto jurídico que deseja analisar..."
               className="min-h-[180px] sm:min-h-[240px] resize-y font-sans text-sm sm:text-base leading-relaxed"
@@ -477,7 +493,9 @@ export default function Index({ embedded = false }: { embedded?: boolean }) {
                 )}
                 {partialExtraction && !text.startsWith("[Não foi possível") && (
                   <p className="mt-3 text-xs leading-relaxed text-amber-600 dark:text-amber-400">
-                    ⚠️ Extração parcial — o PDF é grande e apenas parte do texto foi processada via OCR. Para melhores resultados, use um PDF menor ou cole o texto manualmente.
+                    {pagesRead && pagesTotal
+                      ? `Leitura parcial: ${pagesRead} de ${pagesTotal} páginas. Para o documento inteiro, envie em partes ou cole o texto restante.`
+                      : "Leitura parcial: parte do texto ficou de fora. Confira o conteúdo acima e complete o que faltar."}
                   </p>
                 )}
               </div>
