@@ -520,11 +520,9 @@ Responda sempre em português brasileiro.${legislationContext}${iterationBlock}`
         rodadas_usadas: Math.max(0, rodada - 1),
         cobrou_cota: metered !== false,
       }),
-      {
+      { headers: { ...corsHeaders, "Content-Type": "application/json" } },
+    );
 
-
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
   } catch (e) {
     console.error("analyze-legal-text error:", e);
     const status = e instanceof AIError ? e.status : 500;
