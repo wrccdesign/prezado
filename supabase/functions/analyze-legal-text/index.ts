@@ -1,6 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-import { burstLimitMessage, checkRateLimit, extractEnv, monthlyLimitMessage } from "../_shared/rate-limit.ts";
+import { analiseFreeRounds, burstLimitMessage, checkRateLimit, extractEnv, monthlyLimitMessage } from "../_shared/rate-limit.ts";
 import { aiChatText, aiChatTool, AIError } from "../_shared/ai.ts";
 
 
@@ -510,7 +510,18 @@ Responda sempre em português brasileiro.${legislationContext}${iterationBlock}`
       delete result.itens_mantidos;
     }
 
-    return new Response(JSON.stringify({ result, input_text: text.trim().slice(0, 50000), rodada }), {
+    return new Response(
+      JSON.stringify({
+        result,
+        input_text: text.trim().slice(0, 50000),
+        rodada,
+        rodadas_incluidas: rodadasIncluidas,
+        // rodadas de refino já usadas neste caso (a rodada 1 é a análise original)
+        rodadas_usadas: Math.max(0, rodada - 1),
+        cobrou_cota: metered !== false,
+      }),
+      {
+
 
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
