@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
@@ -17,6 +17,9 @@ import { AppFooter } from "@/components/AppFooter";
 import { SEO } from "@/components/SEO";
 import type { LegalAnalysis } from "@/types/analysis";
 
+const SESSION_KEY = "honorifico:analise-em-andamento";
+
+
 export default function Index({ embedded = false }: { embedded?: boolean }) {
   const navigate = useNavigate();
   const { user } = useAuth();
@@ -33,7 +36,54 @@ export default function Index({ embedded = false }: { embedded?: boolean }) {
   const [showPreview, setShowPreview] = useState(false);
   const [partialExtraction, setPartialExtraction] = useState(false);
   const [dragging, setDragging] = useState(false);
+  const [rodada, setRodada] = useState(1);
+  const [esclarecimentos, setEsclarecimentos] = useState<Record<string, string>>({});
+  const [editingText, setEditingText] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
+  const restored = useRef(false);
+
+  // Espelho em sessionStorage: sobrevive a recarregar a página e a trocar de aba.
+  useEffect(() => {
+    if (restored.current) return;
+    restored.current = true;
+    try {
+      const raw = sessionStorage.getItem(SESSION_KEY);
+      if (!raw) return;
+      const saved = JSON.parse(raw) as {
+        text?: string;
+        fileName?: string | null;
+        analyzedText?: string;
+        result?: LegalAnalysis | null;
+        rodada?: number;
+        esclarecimentos?: Record<string, string>;
+      };
+      if (saved.result) setResult(saved.result);
+      if (saved.text) setText(saved.text);
+      if (saved.analyzedText) setAnalyzedText(saved.analyzedText);
+      if (saved.fileName !== undefined) setFileName(saved.fileName);
+      if (saved.rodada) setRodada(saved.rodada);
+      if (saved.esclarecimentos) setEsclarecimentos(saved.esclarecimentos);
+    } catch {
+      // estado corrompido: começa limpo
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!restored.current) return;
+    try {
+      if (!result && !text) {
+        sessionStorage.removeItem(SESSION_KEY);
+        return;
+      }
+      sessionStorage.setItem(
+        SESSION_KEY,
+        JSON.stringify({ text, fileName, analyzedText, result, rodada, esclarecimentos }),
+      );
+    } catch {
+      // quota cheia: seguir sem espelho
+    }
+  }, [text, fileName, analyzedText, result, rodada, esclarecimentos]);
+
 
   const processFile = async (file: File) => {
     if (!file) return;
