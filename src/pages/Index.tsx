@@ -37,6 +37,8 @@ export default function Index({ embedded = false }: { embedded?: boolean }) {
   const [partialExtraction, setPartialExtraction] = useState(false);
   const [dragging, setDragging] = useState(false);
   const [rodada, setRodada] = useState(1);
+  const [rodadasIncluidas, setRodadasIncluidas] = useState<number | null>(null);
+
   const [esclarecimentos, setEsclarecimentos] = useState<Record<string, string>>({});
   const [editingText, setEditingText] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
