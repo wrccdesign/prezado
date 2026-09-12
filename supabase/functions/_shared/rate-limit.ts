@@ -53,6 +53,22 @@ export const PLAN_LIMITS: Record<string, Record<string, number>> = {
  */
 export const UNMETERED_ACTIONS = new Set(["calculo", "peticao_preview"]);
 
+/**
+ * Refinamentos incluídos em CADA análise: reanalisar o mesmo caso depois de
+ * esclarecer um apontamento é a mesma tarefa, não uma análise nova. Passando
+ * deste número, a rodada seguinte debita uma unidade de "analise".
+ */
+export const ANALISE_FREE_ROUNDS: Record<string, number> = {
+  free: 1,
+  profissional: 5,
+  escritorio: 10,
+};
+
+export function analiseFreeRounds(plan: string): number {
+  return ANALISE_FREE_ROUNDS[plan] ?? ANALISE_FREE_ROUNDS.free;
+}
+
+
 
 /** Sentinela de limite para ações ilimitadas. */
 export const UNLIMITED = -1;
