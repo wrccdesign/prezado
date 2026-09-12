@@ -1,6 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-import { burstLimitMessage, checkRateLimit, extractEnv, monthlyLimitMessage } from "../_shared/rate-limit.ts";
+import { analiseFreeRounds, burstLimitMessage, checkRateLimit, extractEnv, monthlyLimitMessage } from "../_shared/rate-limit.ts";
 import { aiChatText, aiChatTool, AIError } from "../_shared/ai.ts";
 
 
@@ -272,15 +272,36 @@ serve(async (req) => {
       );
     }
 
-    // Esta é a função mais caras do produto (duas chamadas de IA), portanto
-    // entra na grade de créditos como ação "analise".
+    const body = await req.json();
+    const { text, file_name } = body;
+    if (!text || typeof text !== "string" || text.trim().length < 20) {
+      throw new Error("Texto muito curto para análise");
+    }
+
+    // --- Iteração (opcional). Sem estes campos, o comportamento é idêntico ao anterior. ---
+    const rodada = sanitizeRodada(body?.rodada);
+    const anterior = sanitizeAnalisePrevia(body?.analise_anterior);
+    const esclarecimentos = sanitizeEsclarecimentos(body?.esclarecimentos);
+    const textoAlterado = body?.texto_alterado === true;
+    const iterationBlock = anterior
+      ? buildIterationBlock(anterior, esclarecimentos, textoAlterado, rodada)
+      : "";
+
+    // Esta é a função mais cara do produto (duas chamadas de IA), portanto
+    // entra na grade de créditos como ação "analise". Refinamentos do MESMO
+    // caso (rodada > 1, com análise anterior) são incluídos até o teto do
+    // plano: discordar de um apontamento nosso não pode custar uma análise.
     const env = extractEnv(req);
-    const { allowed, used, limit, plan, renewsAt, burstLimited } = await checkRateLimit(
+    const isRefino = !!anterior && rodada > 1;
+    const { allowed, used, limit, plan, renewsAt, burstLimited, metered } = await checkRateLimit(
       user.id,
       "analise",
       supabaseUrl,
       supabaseKey,
       env,
+      isRefino
+        ? { skipMeteringFor: (p) => rodada <= 1 + analiseFreeRounds(p) }
+        : undefined,
     );
     if (!allowed) {
       return new Response(
@@ -298,21 +319,8 @@ serve(async (req) => {
         { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } },
       );
     }
+    const rodadasIncluidas = analiseFreeRounds(plan);
 
-    const body = await req.json();
-    const { text, file_name } = body;
-    if (!text || typeof text !== "string" || text.trim().length < 20) {
-      throw new Error("Texto muito curto para análise");
-    }
-
-    // --- Iteração (opcional). Sem estes campos, o comportamento é idêntico ao anterior. ---
-    const rodada = sanitizeRodada(body?.rodada);
-    const anterior = sanitizeAnalisePrevia(body?.analise_anterior);
-    const esclarecimentos = sanitizeEsclarecimentos(body?.esclarecimentos);
-    const textoAlterado = body?.texto_alterado === true;
-    const iterationBlock = anterior
-      ? buildIterationBlock(anterior, esclarecimentos, textoAlterado, rodada)
-      : "";
 
 
 
@@ -502,10 +510,19 @@ Responda sempre em português brasileiro.${legislationContext}${iterationBlock}`
       delete result.itens_mantidos;
     }
 
-    return new Response(JSON.stringify({ result, input_text: text.trim().slice(0, 50000), rodada }), {
+    return new Response(
+      JSON.stringify({
+        result,
+        input_text: text.trim().slice(0, 50000),
+        rodada,
+        rodadas_incluidas: rodadasIncluidas,
+        // rodadas de refino já usadas neste caso (a rodada 1 é a análise original)
+        rodadas_usadas: Math.max(0, rodada - 1),
+        cobrou_cota: metered !== false,
+      }),
+      { headers: { ...corsHeaders, "Content-Type": "application/json" } },
+    );
 
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
   } catch (e) {
     console.error("analyze-legal-text error:", e);
     const status = e instanceof AIError ? e.status : 500;

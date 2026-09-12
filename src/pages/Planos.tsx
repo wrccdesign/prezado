@@ -37,6 +37,8 @@ const features: PlanFeature[] = [
   { label: "Mensagens no Chat / mês", free: 10, profissional: 200, escritorio: 800 },
   { label: "Diagnósticos jurídicos / mês", free: 1, profissional: 60, escritorio: 200 },
   { label: "Análises de documentos / mês", free: 3, profissional: 40, escritorio: 150 },
+  { label: "Reanálises incluídas em cada análise (sem consumir cota)", free: 1, profissional: 5, escritorio: 10 },
+
   { label: "Leituras/OCR de documentos / mês", free: 5, profissional: 80, escritorio: 300 },
   { label: "Calculadoras (correção, prazo, custas TJSP, rescisão, pensão, datas, CPF/CNPJ)", free: "Ilimitado", profissional: "Ilimitado", escritorio: "Ilimitado" },
   { label: "Petições geradas / mês", free: 0, profissional: 60, escritorio: 200 },
