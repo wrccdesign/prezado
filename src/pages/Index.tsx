@@ -451,6 +451,12 @@ export default function Index({ embedded = false }: { embedded?: boolean }) {
             onDrop={handleDrop}
           >
 
+            {fileName && text && (
+              <p className="text-sm leading-relaxed text-muted-foreground">
+                Este é o texto que será analisado. Confira antes de continuar.
+              </p>
+            )}
+
             <Textarea
               placeholder="Cole aqui o texto jurídico que deseja analisar..."
               className="min-h-[180px] sm:min-h-[240px] resize-y font-sans text-sm sm:text-base leading-relaxed"
@@ -487,7 +493,9 @@ export default function Index({ embedded = false }: { embedded?: boolean }) {
                 )}
                 {partialExtraction && !text.startsWith("[Não foi possível") && (
                   <p className="mt-3 text-xs leading-relaxed text-amber-600 dark:text-amber-400">
-                    ⚠️ Extração parcial — o PDF é grande e apenas parte do texto foi processada via OCR. Para melhores resultados, use um PDF menor ou cole o texto manualmente.
+                    {pagesRead && pagesTotal
+                      ? `Leitura parcial: ${pagesRead} de ${pagesTotal} páginas. Para o documento inteiro, envie em partes ou cole o texto restante.`
+                      : "Leitura parcial: parte do texto ficou de fora. Confira o conteúdo acima e complete o que faltar."}
                   </p>
                 )}
               </div>
