@@ -1,16 +1,20 @@
+import { useState } from "react";
 import type { LegalAnalysis } from "@/types/analysis";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
 import { Separator } from "@/components/ui/separator";
 import {
   Scale, AlertTriangle, Clock, ExternalLink, Copy, ChevronRight,
   BookOpen, MapPin, ListOrdered, Globe, FileDown, FileText,
-  AlertCircle, Gavel, CheckCircle2, ShieldAlert, BookMarked, Save
+  AlertCircle, Gavel, CheckCircle2, ShieldAlert, BookMarked, Save,
+  MessageSquarePlus, Loader2, RefreshCw, Pencil
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { exportToPDF, exportToDOCX, slugify, type ExportSection } from "@/lib/exportDocument";
 import { format } from "date-fns";
+
 
 const complexityConfig = {
   simples: { label: "Simples", className: "bg-emerald-500/10 text-emerald-600 border-emerald-500/20", icon: CheckCircle2 },
@@ -70,13 +74,62 @@ export function AnalysisResult({
   onNewAnalysis,
   onSave,
   saveState,
+  rodada = 1,
+  esclarecimentos,
+  onEsclarecimentoChange,
+  onReanalyze,
+  onEditText,
+  reanalyzing = false,
 }: {
   result: LegalAnalysis;
   onNewAnalysis?: () => void;
   onSave?: () => void | Promise<void>;
   saveState?: "idle" | "saving" | "saved";
+  /** Número da rodada de análise (1 = primeira). */
+  rodada?: number;
+  /** Esclarecimentos escritos pelo usuário, indexados pelo texto do item. */
+  esclarecimentos?: Record<string, string>;
+  onEsclarecimentoChange?: (item: string, value: string) => void;
+  onReanalyze?: () => void;
+  onEditText?: () => void;
+  reanalyzing?: boolean;
 }) {
   const { toast } = useToast();
+  const [openItems, setOpenItems] = useState<Record<string, boolean>>({});
+  const clarifications = esclarecimentos ?? {};
+  const canClarify = !!onEsclarecimentoChange && !!onReanalyze;
+  const filledCount = Object.values(clarifications).filter((v) => v.trim().length > 0).length;
+
+  const toggleItem = (item: string) =>
+    setOpenItems((prev) => ({ ...prev, [item]: !prev[item] }));
+
+  const renderClarifyField = (item: string) => {
+    if (!canClarify) return null;
+    const open = openItems[item] || (clarifications[item]?.length ?? 0) > 0;
+    return (
+      <div className="mt-2">
+        {!open ? (
+          <button
+            type="button"
+            onClick={() => toggleItem(item)}
+            className="inline-flex items-center gap-1.5 text-xs font-medium text-muted-foreground underline-offset-4 hover:text-foreground hover:underline"
+          >
+            <MessageSquarePlus className="h-3.5 w-3.5" />
+            Esclarecer este ponto
+          </button>
+        ) : (
+          <Textarea
+            value={clarifications[item] ?? ""}
+            onChange={(e) => onEsclarecimentoChange?.(item, e.target.value)}
+            placeholder="Explique por que este ponto já está resolvido ou não se aplica ao caso."
+            className="min-h-[72px] text-sm"
+            maxLength={1500}
+          />
+        )}
+      </div>
+    );
+  };
+
 
   const copyJson = () => {
     navigator.clipboard.writeText(JSON.stringify(result, null, 2));
@@ -197,11 +250,52 @@ export function AnalysisResult({
               <Clock className="mr-1.5 h-3.5 w-3.5" />
               {result.prazo_estimado}
             </Badge>
+            {rodada > 1 && (
+              <Badge variant="outline" className="px-3 py-1.5 text-sm">
+                Rodada {rodada}
+              </Badge>
+            )}
+
           </div>
         </div>
       </div>
 
+      {/* Pontos esclarecidos pelo usuário (a partir da 2ª rodada) */}
+      {((result.itens_resolvidos?.length ?? 0) > 0 || (result.itens_mantidos?.length ?? 0) > 0) && (
+        <SectionCard
+          icon={MessageSquarePlus}
+          title="Pontos que você esclareceu"
+          description={`Resposta a esta rodada de revisão (rodada ${rodada}).`}
+        >
+          <div className="space-y-4">
+            {(result.itens_resolvidos?.length ?? 0) > 0 && (
+              <div className="space-y-2">
+                <p className="text-sm font-medium text-foreground">Resolvidos com o seu esclarecimento</p>
+                {result.itens_resolvidos!.map((r, i) => (
+                  <div key={i} className="rounded-lg border border-emerald-200 dark:border-emerald-800/30 bg-emerald-50 dark:bg-emerald-950/20 p-3">
+                    <p className="text-sm text-foreground line-through decoration-emerald-600/60">{r.item}</p>
+                    <p className="mt-1 text-sm text-muted-foreground">{r.motivo}</p>
+                  </div>
+                ))}
+              </div>
+            )}
+            {(result.itens_mantidos?.length ?? 0) > 0 && (
+              <div className="space-y-2">
+                <p className="text-sm font-medium text-foreground">Mantidos, com o motivo</p>
+                {result.itens_mantidos!.map((r, i) => (
+                  <div key={i} className="rounded-lg border border-amber-200 dark:border-amber-800/30 bg-amber-50 dark:bg-amber-950/20 p-3">
+                    <p className="text-sm text-foreground">{r.item}</p>
+                    <p className="mt-1 text-sm text-muted-foreground">{r.motivo}</p>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </SectionCard>
+      )}
+
       {/* Grid de Cards Principais */}
+
       <div className="grid gap-4 md:grid-cols-2">
         {/* Resumo - Full width */}
         <div className="md:col-span-2">
@@ -221,11 +315,15 @@ export function AnalysisResult({
             >
               <div className="space-y-2">
                 {result.pontos_fracos.map((ponto, i) => (
-                  <div key={i} className="flex items-start gap-3 rounded-lg border border-rose-200 dark:border-rose-800/30 bg-rose-50 dark:bg-rose-950/20 p-3">
-                    <AlertTriangle className="h-4 w-4 shrink-0 text-rose-500 mt-0.5" />
-                    <p className="text-sm text-foreground">{ponto}</p>
+                  <div key={i} className="rounded-lg border border-rose-200 dark:border-rose-800/30 bg-rose-50 dark:bg-rose-950/20 p-3">
+                    <div className="flex items-start gap-3">
+                      <AlertTriangle className="h-4 w-4 shrink-0 text-rose-500 mt-0.5" />
+                      <p className="text-sm text-foreground">{ponto}</p>
+                    </div>
+                    {renderClarifyField(ponto)}
                   </div>
                 ))}
+
               </div>
             </SectionCard>
           </div>
@@ -242,11 +340,15 @@ export function AnalysisResult({
             >
               <div className="space-y-2">
                 {result.riscos_processuais.map((risco, i) => (
-                  <div key={i} className="flex items-start gap-3 rounded-lg border border-amber-200 dark:border-amber-800/30 bg-amber-50 dark:bg-amber-950/20 p-3">
-                    <AlertCircle className="h-4 w-4 shrink-0 text-amber-500 mt-0.5" />
-                    <p className="text-sm text-foreground">{risco}</p>
+                  <div key={i} className="rounded-lg border border-amber-200 dark:border-amber-800/30 bg-amber-50 dark:bg-amber-950/20 p-3">
+                    <div className="flex items-start gap-3">
+                      <AlertCircle className="h-4 w-4 shrink-0 text-amber-500 mt-0.5" />
+                      <p className="text-sm text-foreground">{risco}</p>
+                    </div>
+                    {renderClarifyField(risco)}
                   </div>
                 ))}
+
               </div>
             </SectionCard>
           </div>
@@ -368,8 +470,36 @@ export function AnalysisResult({
         </div>
       </div>
 
+      {/* Reanálise com esclarecimentos */}
+      {canClarify && (
+        <div className="rounded-lg border border-border bg-muted/30 p-4">
+          <p className="text-sm text-foreground">
+            {filledCount > 0
+              ? `${filledCount} ponto${filledCount > 1 ? "s" : ""} esclarecido${filledCount > 1 ? "s" : ""}. A nova análise vai dizer o que foi aceito e o que continua de pé.`
+              : "Discorda de algum ponto acima? Escreva seu esclarecimento no item e peça uma nova análise."}
+          </p>
+          <div className="mt-3 flex flex-wrap gap-3">
+            <Button onClick={() => onReanalyze?.()} disabled={filledCount === 0 || reanalyzing}>
+              {reanalyzing ? (
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              ) : (
+                <RefreshCw className="mr-2 h-4 w-4" />
+              )}
+              {reanalyzing ? "Reanalisando..." : "Reanalisar com meus esclarecimentos"}
+            </Button>
+            {onEditText && (
+              <Button variant="outline" onClick={onEditText} disabled={reanalyzing}>
+                <Pencil className="mr-2 h-4 w-4" />
+                Editar o texto antes de reanalisar
+              </Button>
+            )}
+          </div>
+        </div>
+      )}
+
       {/* Actions */}
       <Separator />
+
       {onSave && saveState !== "saved" && (
         <p className="text-sm text-muted-foreground">
           Esta análise não fica salva a menos que você clique em "Salvar no histórico".

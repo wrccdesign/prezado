@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
@@ -17,6 +17,9 @@ import { AppFooter } from "@/components/AppFooter";
 import { SEO } from "@/components/SEO";
 import type { LegalAnalysis } from "@/types/analysis";
 
+const SESSION_KEY = "honorifico:analise-em-andamento";
+
+
 export default function Index({ embedded = false }: { embedded?: boolean }) {
   const navigate = useNavigate();
   const { user } = useAuth();
@@ -33,7 +36,54 @@ export default function Index({ embedded = false }: { embedded?: boolean }) {
   const [showPreview, setShowPreview] = useState(false);
   const [partialExtraction, setPartialExtraction] = useState(false);
   const [dragging, setDragging] = useState(false);
+  const [rodada, setRodada] = useState(1);
+  const [esclarecimentos, setEsclarecimentos] = useState<Record<string, string>>({});
+  const [editingText, setEditingText] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
+  const restored = useRef(false);
+
+  // Espelho em sessionStorage: sobrevive a recarregar a página e a trocar de aba.
+  useEffect(() => {
+    if (restored.current) return;
+    restored.current = true;
+    try {
+      const raw = sessionStorage.getItem(SESSION_KEY);
+      if (!raw) return;
+      const saved = JSON.parse(raw) as {
+        text?: string;
+        fileName?: string | null;
+        analyzedText?: string;
+        result?: LegalAnalysis | null;
+        rodada?: number;
+        esclarecimentos?: Record<string, string>;
+      };
+      if (saved.result) setResult(saved.result);
+      if (saved.text) setText(saved.text);
+      if (saved.analyzedText) setAnalyzedText(saved.analyzedText);
+      if (saved.fileName !== undefined) setFileName(saved.fileName);
+      if (saved.rodada) setRodada(saved.rodada);
+      if (saved.esclarecimentos) setEsclarecimentos(saved.esclarecimentos);
+    } catch {
+      // estado corrompido: começa limpo
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!restored.current) return;
+    try {
+      if (!result && !text) {
+        sessionStorage.removeItem(SESSION_KEY);
+        return;
+      }
+      sessionStorage.setItem(
+        SESSION_KEY,
+        JSON.stringify({ text, fileName, analyzedText, result, rodada, esclarecimentos }),
+      );
+    } catch {
+      // quota cheia: seguir sem espelho
+    }
+  }, [text, fileName, analyzedText, result, rodada, esclarecimentos]);
+
 
   const processFile = async (file: File) => {
     if (!file) return;
@@ -195,30 +245,60 @@ export default function Index({ embedded = false }: { embedded?: boolean }) {
 
 
 
-  const handleAnalyze = async () => {
+  const handleAnalyze = async (options?: { refine?: boolean }) => {
     if (!text.trim()) {
       toast({ title: "Texto vazio", description: "Insira um texto jurídico para análise.", variant: "destructive" });
       return;
     }
 
+    const refine = options?.refine === true && !!result;
+    const currentText = text.trim().slice(0, 15000);
+    const previous = result;
+
     setLoading(true);
-    setResult(null);
     setSaveState("idle");
+    if (!refine) {
+      setResult(null);
+      setEsclarecimentos({});
+    }
 
     try {
+      const esclarecimentosPayload = refine
+        ? Object.entries(esclarecimentos)
+            .filter(([, v]) => v.trim().length > 0)
+            .map(([item_original, esclarecimento]) => ({ item_original, esclarecimento: esclarecimento.trim() }))
+        : [];
+
       const { data, error } = await supabase.functions.invoke("analyze-legal-text", {
-        body: { text: text.trim().slice(0, 15000), file_name: fileName },
+        body: refine
+          ? {
+              text: currentText,
+              file_name: fileName,
+              rodada: rodada + 1,
+              texto_alterado: currentText !== analyzedText,
+              analise_anterior: {
+                tipo_de_causa: previous?.tipo_de_causa,
+                riscos_processuais: previous?.riscos_processuais ?? [],
+                pontos_fracos: previous?.pontos_fracos ?? [],
+              },
+              esclarecimentos: esclarecimentosPayload,
+            }
+          : { text: currentText, file_name: fileName },
       });
 
       if (error) throw error;
       if (data?.error) throw new Error(data.error);
 
-      setAnalyzedText((data.input_text as string) ?? text.trim().slice(0, 15000));
+      setAnalyzedText((data.input_text as string) ?? currentText);
       setResult(data.result as LegalAnalysis);
+      setRodada((data.rodada as number) ?? (refine ? rodada + 1 : 1));
+      setEditingText(false);
+      if (refine) setEsclarecimentos({});
       notifyUsageConsumed();
-      toast({ title: "Análise concluída!" });
+      toast({ title: refine ? "Nova análise concluída!" : "Análise concluída!" });
     } catch (err: any) {
       const { message, limitReached, burstLimited, authRequired } = await readFunctionError(err, "Tente novamente mais tarde.");
+      if (refine) setResult(previous);
       toast({
         title: authRequired
           ? "Sessão expirada"
@@ -240,6 +320,15 @@ export default function Index({ embedded = false }: { embedded?: boolean }) {
     }
   };
 
+  const handleEsclarecimentoChange = (item: string, value: string) => {
+    setEsclarecimentos((prev) => ({ ...prev, [item]: value }));
+  };
+
+  const handleEditText = () => {
+    setText(analyzedText || text);
+    setEditingText(true);
+  };
+
   const handleNewAnalysis = () => {
     setText("");
     setFileName(null);
@@ -248,6 +337,15 @@ export default function Index({ embedded = false }: { embedded?: boolean }) {
     setSaveState("idle");
     setShowPreview(false);
     setPartialExtraction(false);
+    setRodada(1);
+    setEsclarecimentos({});
+    setEditingText(false);
+    try {
+      sessionStorage.removeItem(SESSION_KEY);
+    } catch {
+      // ignorar
+    }
+
   };
 
   const handleSaveAnalysis = async () => {
@@ -268,7 +366,7 @@ export default function Index({ embedded = false }: { embedded?: boolean }) {
     toast({ title: "Salvo no histórico" });
   };
 
-  if (result) {
+  if (result && !editingText) {
     const resultado = (
       <main className={embedded ? "py-2" : "container max-w-3xl py-8 sm:py-12 px-4 sm:px-6"}>
         {!embedded && (
@@ -279,9 +377,16 @@ export default function Index({ embedded = false }: { embedded?: boolean }) {
           onNewAnalysis={handleNewAnalysis}
           onSave={user ? handleSaveAnalysis : undefined}
           saveState={saveState}
+          rodada={rodada}
+          esclarecimentos={esclarecimentos}
+          onEsclarecimentoChange={handleEsclarecimentoChange}
+          onReanalyze={() => void handleAnalyze({ refine: true })}
+          onEditText={handleEditText}
+          reanalyzing={loading}
         />
       </main>
     );
+
     if (embedded) return resultado;
     return (
       <div className="min-h-screen bg-background">
@@ -418,10 +523,16 @@ export default function Index({ embedded = false }: { embedded?: boolean }) {
               )}
             </div>
 
+            {editingText && result && (
+              <p className="text-sm text-muted-foreground">
+                Você está revisando o texto da rodada {rodada}. A nova análise vai considerar as suas edições e os esclarecimentos escritos.
+              </p>
+            )}
+
             <Button
               className="w-full h-12 text-base font-semibold"
               size="lg"
-              onClick={handleAnalyze}
+              onClick={() => void handleAnalyze({ refine: editingText && !!result })}
               disabled={loading || !text.trim()}
             >
               {loading ? (
@@ -429,8 +540,18 @@ export default function Index({ embedded = false }: { embedded?: boolean }) {
               ) : (
                 <Search className="mr-2 h-5 w-5" />
               )}
-              {loading ? "Analisando..." : "Analisar Texto"}
+              {loading
+                ? "Analisando..."
+                : editingText && result
+                  ? "Reanalisar com as minhas edições"
+                  : "Analisar Texto"}
             </Button>
+            {editingText && result && (
+              <Button variant="ghost" className="w-full" onClick={() => setEditingText(false)} disabled={loading}>
+                Voltar para o resultado
+              </Button>
+            )}
+
 
           </CardContent>
         </Card>

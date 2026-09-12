@@ -1,3 +1,13 @@
+export interface ItemPosicionado {
+  item: string;
+  motivo: string;
+}
+
+export interface Esclarecimento {
+  item_original: string;
+  esclarecimento: string;
+}
+
 export interface LegalAnalysis {
   tipo_de_causa: string;
   resumo: string;
@@ -11,7 +21,10 @@ export interface LegalAnalysis {
   complexidade: "simples" | "moderado" | "complexo";
   urgencia: boolean;
   prazo_estimado: string;
+  itens_resolvidos?: ItemPosicionado[];
+  itens_mantidos?: ItemPosicionado[];
 }
+
 
 export interface AnalysisRecord {
   id: string;
