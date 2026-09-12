@@ -375,7 +375,7 @@ Baseie suas respostas SEMPRE em:
 - NUNCA gere URLs dinâmicas. Use apenas os portais fixos de consulta.
 - NUNCA repita simplesmente o que já está no texto.
 
-Responda sempre em português brasileiro.${legislationContext}`;
+Responda sempre em português brasileiro.${legislationContext}${iterationBlock}`;
 
     const result = await aiChatTool<any>({
       model: "main",
@@ -441,6 +441,33 @@ Responda sempre em português brasileiro.${legislationContext}`;
                   complexidade: { type: "string", enum: ["simples", "moderado", "complexo"] },
                   urgencia: { type: "boolean", description: "Se o caso requer atenção urgente" },
                   prazo_estimado: { type: "string", description: "Prazo estimado para resolução" },
+                  itens_resolvidos: {
+                    type: "array",
+                    description: "Somente em rodadas de refinamento: itens da análise anterior que o esclarecimento do usuário sanou. Vazio na primeira análise.",
+                    items: {
+                      type: "object",
+                      properties: {
+                        item: { type: "string", description: "Texto do item da rodada anterior, repetido exatamente" },
+                        motivo: { type: "string", description: "Por que o esclarecimento resolve o ponto" },
+                      },
+                      required: ["item", "motivo"],
+                      additionalProperties: false,
+                    },
+                  },
+                  itens_mantidos: {
+                    type: "array",
+                    description: "Somente em rodadas de refinamento: itens da análise anterior que permanecem, apesar do esclarecimento. Vazio na primeira análise.",
+                    items: {
+                      type: "object",
+                      properties: {
+                        item: { type: "string", description: "Texto do item da rodada anterior, repetido exatamente" },
+                        motivo: { type: "string", description: "Por que o esclarecimento não resolve o ponto" },
+                      },
+                      required: ["item", "motivo"],
+                      additionalProperties: false,
+                    },
+                  },
+
                 },
                 required: [
                   "tipo_de_causa", "resumo", "pontos_fracos", "fundamentacao_sugerida",
@@ -469,7 +496,14 @@ Responda sempre em português brasileiro.${legislationContext}`;
 
     // Não gravamos mais automaticamente: o usuário decide salvar no histórico
     // a partir do cliente (tabela `analyses`, RLS por auth.uid()).
-    return new Response(JSON.stringify({ result, input_text: text.trim().slice(0, 50000) }), {
+    if (!anterior) {
+      // Primeira rodada nunca traz posicionamento sobre itens anteriores.
+      delete result.itens_resolvidos;
+      delete result.itens_mantidos;
+    }
+
+    return new Response(JSON.stringify({ result, input_text: text.trim().slice(0, 50000), rodada }), {
+
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } catch (e) {
