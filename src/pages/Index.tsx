@@ -523,10 +523,16 @@ export default function Index({ embedded = false }: { embedded?: boolean }) {
               )}
             </div>
 
+            {editingText && result && (
+              <p className="text-sm text-muted-foreground">
+                Você está revisando o texto da rodada {rodada}. A nova análise vai considerar as suas edições e os esclarecimentos escritos.
+              </p>
+            )}
+
             <Button
               className="w-full h-12 text-base font-semibold"
               size="lg"
-              onClick={handleAnalyze}
+              onClick={() => void handleAnalyze({ refine: editingText && !!result })}
               disabled={loading || !text.trim()}
             >
               {loading ? (
@@ -534,8 +540,18 @@ export default function Index({ embedded = false }: { embedded?: boolean }) {
               ) : (
                 <Search className="mr-2 h-5 w-5" />
               )}
-              {loading ? "Analisando..." : "Analisar Texto"}
+              {loading
+                ? "Analisando..."
+                : editingText && result
+                  ? "Reanalisar com as minhas edições"
+                  : "Analisar Texto"}
             </Button>
+            {editingText && result && (
+              <Button variant="ghost" className="w-full" onClick={() => setEditingText(false)} disabled={loading}>
+                Voltar para o resultado
+              </Button>
+            )}
+
 
           </CardContent>
         </Card>
