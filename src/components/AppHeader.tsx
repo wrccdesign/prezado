@@ -85,7 +85,9 @@ export function AppHeader() {
     { value: "larger", label: "Texto maior", sample: "A" },
   ];
 
-  const fontScaleControl = (
+  const currentFontScaleLabel = fontScaleOptions.find((option) => option.value === scale)?.label ?? "Tamanho padrão";
+
+  const fontScaleOptionsControl = (
     <div className="flex items-center gap-1" role="group" aria-label="Tamanho do texto">
       {fontScaleOptions.map((option, index) => (
         <Button
@@ -105,6 +107,44 @@ export function AppHeader() {
         </Button>
       ))}
     </div>
+  );
+
+  const fontScaleMenu = (mobile = false) => (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        {mobile ? (
+          <Button
+            type="button"
+            variant="ghost"
+            className="min-h-11 w-full justify-between px-2 text-cream/72 hover:bg-cream/5 hover:text-cream"
+            aria-label={`Ajustar tamanho do texto. Seleção atual: ${currentFontScaleLabel}`}
+          >
+            <span>Tamanho do texto</span>
+            <span className="flex items-center gap-2 text-note text-cream/50">
+              {currentFontScaleLabel.replace("Tamanho ", "")}
+              <ChevronDown className="h-4 w-4" />
+            </span>
+          </Button>
+        ) : (
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            className="min-h-11 min-w-11 text-base font-medium text-cream/72 hover:bg-cream/5 hover:text-cream"
+            aria-label={`Ajustar tamanho do texto. Seleção atual: ${currentFontScaleLabel}`}
+            title="Ajustar tamanho do texto"
+          >
+            Aa
+          </Button>
+        )}
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end" className="w-48 bg-navy border border-gold/12 text-cream/72">
+        <p className="px-3 py-2 text-note text-cream/50">Tamanho do texto</p>
+        <div className="flex items-center gap-1 px-2 pb-2">
+          {fontScaleOptionsControl}
+        </div>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 
   const visible = (items: NavItem[]) =>
@@ -195,7 +235,6 @@ export function AppHeader() {
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className={dropdownContent}>
         <div className="px-2 py-2">{profileBadge("full")}</div>
-        <div className="px-2 pb-2">{fontScaleControl}</div>
         <DropdownMenuSeparator className="bg-cream/10" />
         <UsageSummaryCompact />
         <DropdownMenuSeparator className="bg-cream/10" />
@@ -269,7 +308,7 @@ export function AppHeader() {
           ))}
           {toolsMenu}
           {!user && <NavButton item={planosItem} active={isActive(planosItem.path)} onClick={() => navigate(planosItem.path)} />}
-          {!user && fontScaleControl}
+          {fontScaleMenu()}
           <div className="w-px h-6 bg-cream/10 mx-1" />
           {user ? accountMenu : guestActions}
         </nav>
@@ -281,7 +320,7 @@ export function AppHeader() {
           ))}
           {toolsMenu}
           {!user && <NavButton item={planosItem} active={isActive(planosItem.path)} onClick={() => navigate(planosItem.path)} />}
-          {!user && fontScaleControl}
+          {fontScaleMenu()}
           <div className="w-px h-6 bg-cream/10 mx-1" />
           {user ? accountMenu : guestActions}
 
@@ -305,9 +344,8 @@ export function AppHeader() {
                 </SheetTitle>
               </SheetHeader>
               <div className="mt-4">{profileBadge("full")}</div>
-              <div className="mt-4 border-y border-cream/10 py-2">
-                <p className="px-2 text-note text-cream/50">Tamanho do texto</p>
-                {fontScaleControl}
+              <div className="mt-4 border-y border-cream/10 py-1">
+                {fontScaleMenu(true)}
               </div>
               {user && (
                 <div className="mt-3 rounded-md bg-cream/5">
