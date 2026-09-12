@@ -5,6 +5,18 @@
 @tailwind utilities;
 
 @layer base {
+  html.font-scale-default {
+    font-size: 100%;
+  }
+
+  html.font-scale-large {
+    font-size: 106.25%;
+  }
+
+  html.font-scale-larger {
+    font-size: 112.5%;
+  }
+
   :root {
     --background: 36 33% 95%;
     --foreground: 218 56% 10%;
@@ -206,16 +218,21 @@
 
   .text-body-serif {
     font-size: 1.125rem;
-    line-height: 1.6;
+    line-height: 1.65;
     font-family: 'Source Serif 4', Georgia, serif;
     font-weight: 400;
   }
 
   .text-note {
-    font-size: 0.875rem;
-    line-height: 1.45;
+    font-size: 0.9375rem;
+    line-height: 1.5;
     font-family: 'Source Sans 3', system-ui, sans-serif;
     font-weight: 400;
+  }
+
+  .text-reading {
+    font-size: 1rem;
+    line-height: 1.65;
   }
 }
 

@@ -45,14 +45,14 @@ function SectionCard({
   return (
     <Card className={`overflow-hidden transition-all hover:shadow-md ${variantClasses[variant]}`}>
       <CardHeader className="pb-3 space-y-1">
-        <CardTitle className="flex items-center gap-2.5 text-base font-semibold">
+        <CardTitle className="flex items-center gap-2.5 text-lg font-semibold">
           <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10">
             <Icon className="h-4 w-4 text-primary" />
           </div>
           {title}
         </CardTitle>
         {description && (
-          <CardDescription className="text-sm">{description}</CardDescription>
+          <CardDescription className="text-[0.9375rem] leading-relaxed">{description}</CardDescription>
         )}
       </CardHeader>
       <CardContent>{children}</CardContent>
@@ -128,7 +128,7 @@ export function AnalysisResult({
             value={clarifications[item] ?? ""}
             onChange={(e) => onEsclarecimentoChange?.(item, e.target.value)}
             placeholder="Explique por que este ponto já está resolvido ou não se aplica ao caso."
-            className="min-h-[72px] text-sm"
+            className="min-h-[72px] text-base leading-relaxed"
             maxLength={1500}
           />
         )}
@@ -276,22 +276,22 @@ export function AnalysisResult({
           <div className="space-y-4">
             {(result.itens_resolvidos?.length ?? 0) > 0 && (
               <div className="space-y-2">
-                <p className="text-sm font-medium text-foreground">Resolvidos com o seu esclarecimento</p>
+                <p className="text-base font-medium text-foreground">Resolvidos com o seu esclarecimento</p>
                 {result.itens_resolvidos!.map((r, i) => (
                   <div key={i} className="rounded-lg border border-emerald-200 dark:border-emerald-800/30 bg-emerald-50 dark:bg-emerald-950/20 p-3">
-                    <p className="text-sm text-foreground line-through decoration-emerald-600/60">{r.item}</p>
-                    <p className="mt-1 text-sm text-muted-foreground">{r.motivo}</p>
+                    <p className="text-reading text-foreground line-through decoration-emerald-600/60">{r.item}</p>
+                    <p className="mt-1 text-reading text-muted-foreground">{r.motivo}</p>
                   </div>
                 ))}
               </div>
             )}
             {(result.itens_mantidos?.length ?? 0) > 0 && (
               <div className="space-y-2">
-                <p className="text-sm font-medium text-foreground">Mantidos, com o motivo</p>
+                <p className="text-base font-medium text-foreground">Mantidos, com o motivo</p>
                 {result.itens_mantidos!.map((r, i) => (
                   <div key={i} className="rounded-lg border border-amber-200 dark:border-amber-800/30 bg-amber-50 dark:bg-amber-950/20 p-3">
-                    <p className="text-sm text-foreground">{r.item}</p>
-                    <p className="mt-1 text-sm text-muted-foreground">{r.motivo}</p>
+                    <p className="text-reading text-foreground">{r.item}</p>
+                    <p className="mt-1 text-reading text-muted-foreground">{r.motivo}</p>
                   </div>
                 ))}
               </div>
@@ -306,7 +306,7 @@ export function AnalysisResult({
         {/* Resumo - Full width */}
         <div className="md:col-span-2">
           <SectionCard icon={BookOpen} title="Resumo da Análise" variant="highlight">
-            <p className="leading-relaxed text-foreground text-sm">{result.resumo}</p>
+            <p className="text-reading text-foreground">{result.resumo}</p>
           </SectionCard>
         </div>
 
@@ -324,7 +324,7 @@ export function AnalysisResult({
                   <div key={i} className="rounded-lg border border-rose-200 dark:border-rose-800/30 bg-rose-50 dark:bg-rose-950/20 p-3">
                     <div className="flex items-start gap-3">
                       <AlertTriangle className="h-4 w-4 shrink-0 text-rose-500 mt-0.5" />
-                      <p className="text-sm text-foreground">{ponto}</p>
+                      <p className="text-reading text-foreground">{ponto}</p>
                     </div>
                     {renderClarifyField(ponto)}
                   </div>
@@ -349,7 +349,7 @@ export function AnalysisResult({
                   <div key={i} className="rounded-lg border border-amber-200 dark:border-amber-800/30 bg-amber-50 dark:bg-amber-950/20 p-3">
                     <div className="flex items-start gap-3">
                       <AlertCircle className="h-4 w-4 shrink-0 text-amber-500 mt-0.5" />
-                      <p className="text-sm text-foreground">{risco}</p>
+                      <p className="text-reading text-foreground">{risco}</p>
                     </div>
                     {renderClarifyField(risco)}
                   </div>
@@ -370,7 +370,7 @@ export function AnalysisResult({
             <div className="space-y-3">
               {result.fundamentacao_sugerida.map((leg, i) => (
                 <div key={i} className="rounded-lg border bg-emerald-50 dark:bg-emerald-950/20 border-emerald-200 dark:border-emerald-800/30 p-3">
-                  <p className="font-medium text-sm text-foreground">{leg.lei}</p>
+                  <p className="font-medium text-base text-foreground">{leg.lei}</p>
                   <div className="mt-2 flex flex-wrap gap-1.5">
                     {leg.artigos.map((art, j) => (
                       <Badge key={j} variant="secondary" className="text-xs font-mono bg-emerald-100 dark:bg-emerald-900/30">
@@ -393,7 +393,7 @@ export function AnalysisResult({
           <div className="space-y-3">
             {result.legislacao_aplicavel.map((leg, i) => (
               <div key={i} className="rounded-lg border bg-muted/30 p-3">
-                <p className="font-medium text-sm text-foreground">{leg.lei}</p>
+                <p className="font-medium text-base text-foreground">{leg.lei}</p>
                 <div className="mt-2 flex flex-wrap gap-1.5">
                   {leg.artigos.map((art, j) => (
                     <Badge key={j} variant="secondary" className="text-xs font-mono">
@@ -416,7 +416,7 @@ export function AnalysisResult({
             <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary/10">
               <MapPin className="h-5 w-5 text-primary" />
             </div>
-            <p className="text-sm font-medium text-foreground">{result.jurisdicao_competente}</p>
+            <p className="text-base font-medium text-foreground">{result.jurisdicao_competente}</p>
           </div>
         </SectionCard>
       </div>
@@ -433,7 +433,7 @@ export function AnalysisResult({
               <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-primary text-xs font-bold text-primary-foreground">
                 {i + 1}
               </span>
-              <p className="text-sm text-foreground pt-0.5">{step}</p>
+              <p className="text-reading text-foreground pt-0.5">{step}</p>
             </div>
           ))}
         </div>
@@ -469,7 +469,7 @@ export function AnalysisResult({
       <div className="rounded-lg border border-amber-500/30 bg-amber-500/5 p-4">
         <div className="flex gap-3">
           <AlertCircle className="h-5 w-5 shrink-0 text-amber-600" />
-          <p className="text-sm text-amber-800 dark:text-amber-200">
+          <p className="text-reading text-amber-800 dark:text-amber-200">
             <strong>Aviso:</strong> Esta análise é informativa e foi gerada por inteligência artificial. 
             Consulte um advogado para orientação específica sobre seu caso.
           </p>
@@ -479,13 +479,13 @@ export function AnalysisResult({
       {/* Reanálise com esclarecimentos */}
       {canClarify && (
         <div className="rounded-lg border border-border bg-muted/30 p-4">
-          <p className="text-sm text-foreground">
+          <p className="text-base leading-relaxed text-foreground">
             {filledCount > 0
               ? `${filledCount} ponto${filledCount > 1 ? "s" : ""} esclarecido${filledCount > 1 ? "s" : ""}. A nova análise vai dizer o que foi aceito e o que continua de pé.`
               : "Discorda de algum ponto acima? Escreva seu esclarecimento no item e peça uma nova análise."}
           </p>
           {typeof rodadasIncluidas === "number" && (
-            <p className="mt-1 text-sm text-muted-foreground">
+            <p className="mt-1 text-[0.9375rem] leading-relaxed text-muted-foreground">
               {refinamentosUsados < rodadasIncluidas
                 ? `Refinamentos deste caso: ${refinamentosUsados} de ${rodadasIncluidas} incluídos.`
                 : "Você usou os refinamentos incluídos neste caso. As próximas reanálises contam como uma nova análise."}
@@ -515,7 +515,7 @@ export function AnalysisResult({
       <Separator />
 
       {onSave && saveState !== "saved" && (
-        <p className="text-sm text-muted-foreground">
+        <p className="text-base leading-relaxed text-muted-foreground">
           Esta análise não fica salva a menos que você clique em "Salvar no histórico".
         </p>
       )}
