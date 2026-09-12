@@ -315,7 +315,7 @@ export default function Conta() {
                       )}
                     </div>
 
-                    <p className="text-xs text-muted-foreground">
+                      <p className="text-[0.9375rem] leading-relaxed text-muted-foreground">
                       A troca de plano passa a valer na próxima cobrança. Não há cobrança nem
                       crédito proporcional agora.
                       {sub.cancelAtPeriodEnd

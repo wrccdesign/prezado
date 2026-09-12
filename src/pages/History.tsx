@@ -166,7 +166,7 @@ export default function History() {
                 </Button>
               </div>
               {showInputText && (
-                <div className="max-h-[320px] overflow-y-auto border-t bg-background p-3 font-mono text-xs leading-relaxed whitespace-pre-wrap break-words text-muted-foreground">
+                <div className="max-h-[320px] overflow-y-auto border-t bg-background p-3 font-mono text-base leading-[1.65] whitespace-pre-wrap break-words text-muted-foreground">
                   {selectedAnalysis.input_text}
                 </div>
               )}

@@ -359,12 +359,12 @@ export default function AdminIngestao() {
                       </p>
                     )}
                     {r.status === "error" && (
-                      <p className="text-xs text-destructive mt-0.5">{r.errorMessage}</p>
+                      <p className="text-base leading-relaxed text-destructive mt-0.5">{r.errorMessage}</p>
                     )}
                     {r.errors.length > 0 && r.status === "done" && (
                       <div className="mt-1 space-y-0.5">
                         {r.errors.map((err, j) => (
-                          <p key={j} className="text-xs text-amber-600 dark:text-amber-400 flex items-start gap-1">
+                          <p key={j} className="text-base leading-relaxed text-amber-600 dark:text-amber-400 flex items-start gap-1">
                             <AlertTriangle className="h-3 w-3 flex-shrink-0 mt-0.5" />
                             {err}
                           </p>

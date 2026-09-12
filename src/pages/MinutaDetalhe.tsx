@@ -119,10 +119,10 @@ export default function MinutaDetalhe() {
             {minuta.sections.map((s) => (
               <Card key={s.heading}>
                 <CardHeader>
-                  <CardTitle className="text-base">{s.heading}</CardTitle>
+                  <CardTitle className="text-lg">{s.heading}</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <pre className="whitespace-pre-wrap font-sans text-sm leading-relaxed text-foreground">
+                  <pre className="whitespace-pre-wrap font-sans text-base leading-[1.65] text-foreground">
                     {s.body}
                   </pre>
                 </CardContent>
@@ -137,7 +137,7 @@ export default function MinutaDetalhe() {
               </CardHeader>
               <CardContent className="space-y-2">
                 {minuta.baseLegal.map((b) => (
-                  <p key={b} className="text-sm text-muted-foreground">
+                  <p key={b} className="text-base leading-relaxed text-muted-foreground">
                     {b}
                   </p>
                 ))}
@@ -152,7 +152,7 @@ export default function MinutaDetalhe() {
                 {minuta.checklist.map((c) => (
                   <div key={c} className="flex items-start gap-2">
                     <CheckCircle className="h-4 w-4 text-primary shrink-0 mt-0.5" />
-                    <span className="text-sm text-muted-foreground">{c}</span>
+                    <span className="text-base leading-relaxed text-muted-foreground">{c}</span>
                   </div>
                 ))}
               </CardContent>
@@ -179,7 +179,7 @@ export default function MinutaDetalhe() {
           </aside>
         </div>
 
-        <p className="text-xs text-muted-foreground max-w-3xl">
+        <p className="text-[0.9375rem] leading-relaxed text-muted-foreground max-w-3xl">
           Conteúdo informativo. Os campos entre colchetes devem ser preenchidos com os dados do caso
           concreto, e a peça deve ser revisada por advogado(a) habilitado(a) antes do protocolo.
         </p>
