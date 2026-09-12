@@ -245,30 +245,60 @@ export default function Index({ embedded = false }: { embedded?: boolean }) {
 
 
 
-  const handleAnalyze = async () => {
+  const handleAnalyze = async (options?: { refine?: boolean }) => {
     if (!text.trim()) {
       toast({ title: "Texto vazio", description: "Insira um texto jurídico para análise.", variant: "destructive" });
       return;
     }
 
+    const refine = options?.refine === true && !!result;
+    const currentText = text.trim().slice(0, 15000);
+    const previous = result;
+
     setLoading(true);
-    setResult(null);
     setSaveState("idle");
+    if (!refine) {
+      setResult(null);
+      setEsclarecimentos({});
+    }
 
     try {
+      const esclarecimentosPayload = refine
+        ? Object.entries(esclarecimentos)
+            .filter(([, v]) => v.trim().length > 0)
+            .map(([item_original, esclarecimento]) => ({ item_original, esclarecimento: esclarecimento.trim() }))
+        : [];
+
       const { data, error } = await supabase.functions.invoke("analyze-legal-text", {
-        body: { text: text.trim().slice(0, 15000), file_name: fileName },
+        body: refine
+          ? {
+              text: currentText,
+              file_name: fileName,
+              rodada: rodada + 1,
+              texto_alterado: currentText !== analyzedText,
+              analise_anterior: {
+                tipo_de_causa: previous?.tipo_de_causa,
+                riscos_processuais: previous?.riscos_processuais ?? [],
+                pontos_fracos: previous?.pontos_fracos ?? [],
+              },
+              esclarecimentos: esclarecimentosPayload,
+            }
+          : { text: currentText, file_name: fileName },
       });
 
       if (error) throw error;
       if (data?.error) throw new Error(data.error);
 
-      setAnalyzedText((data.input_text as string) ?? text.trim().slice(0, 15000));
+      setAnalyzedText((data.input_text as string) ?? currentText);
       setResult(data.result as LegalAnalysis);
+      setRodada((data.rodada as number) ?? (refine ? rodada + 1 : 1));
+      setEditingText(false);
+      if (refine) setEsclarecimentos({});
       notifyUsageConsumed();
-      toast({ title: "Análise concluída!" });
+      toast({ title: refine ? "Nova análise concluída!" : "Análise concluída!" });
     } catch (err: any) {
       const { message, limitReached, burstLimited, authRequired } = await readFunctionError(err, "Tente novamente mais tarde.");
+      if (refine) setResult(previous);
       toast({
         title: authRequired
           ? "Sessão expirada"
@@ -290,6 +320,15 @@ export default function Index({ embedded = false }: { embedded?: boolean }) {
     }
   };
 
+  const handleEsclarecimentoChange = (item: string, value: string) => {
+    setEsclarecimentos((prev) => ({ ...prev, [item]: value }));
+  };
+
+  const handleEditText = () => {
+    setText(analyzedText || text);
+    setEditingText(true);
+  };
+
   const handleNewAnalysis = () => {
     setText("");
     setFileName(null);
@@ -298,6 +337,15 @@ export default function Index({ embedded = false }: { embedded?: boolean }) {
     setSaveState("idle");
     setShowPreview(false);
     setPartialExtraction(false);
+    setRodada(1);
+    setEsclarecimentos({});
+    setEditingText(false);
+    try {
+      sessionStorage.removeItem(SESSION_KEY);
+    } catch {
+      // ignorar
+    }
+
   };
 
   const handleSaveAnalysis = async () => {
