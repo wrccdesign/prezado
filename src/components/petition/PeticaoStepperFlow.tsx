@@ -218,7 +218,7 @@ export function PeticaoStepperFlow({ tipoAcaoOptions, varaJuizoOptions, initial 
               >
                 {s.n}
               </span>
-              <span className={`mt-2 text-[11px] sm:text-xs ${active ? "font-semibold text-foreground" : "text-muted-foreground"}`}>
+              <span className={`mt-2 text-[0.8125rem] leading-snug ${active ? "font-semibold text-foreground" : "text-muted-foreground"}`}>
                 {s.label}
               </span>
             </li>
@@ -297,7 +297,7 @@ export function PeticaoStepperFlow({ tipoAcaoOptions, varaJuizoOptions, initial 
           <CardContent className="space-y-5">
             <div className="flex flex-wrap gap-2">
               {keywords.length === 0 && (
-                <p className="text-sm text-muted-foreground">Nenhum termo identificado. Adicione manualmente abaixo.</p>
+                <p className="text-base leading-relaxed text-muted-foreground">Nenhum termo identificado. Adicione manualmente abaixo.</p>
               )}
               {keywords.map((k) => (
                 <span
@@ -367,7 +367,7 @@ export function PeticaoStepperFlow({ tipoAcaoOptions, varaJuizoOptions, initial 
           </CardHeader>
           <CardContent className="space-y-5">
             {normas.length === 0 && (
-              <p className="text-sm text-muted-foreground">Nenhuma norma retornada para estes termos. Você pode seguir sem legislação anexada.</p>
+              <p className="text-base leading-relaxed text-muted-foreground">Nenhuma norma retornada para estes termos. Você pode seguir sem legislação anexada.</p>
             )}
             <ul className="space-y-3">
               {normas.map((n, i) => (
@@ -387,7 +387,7 @@ export function PeticaoStepperFlow({ tipoAcaoOptions, varaJuizoOptions, initial 
                     <Label htmlFor={`norma-${i}`} className="cursor-pointer font-medium">
                       {[n.tipoNorma, n.numero && `nº ${n.numero}`, n.ano && `/${n.ano}`].filter(Boolean).join(" ")}
                     </Label>
-                    <p className="mt-1 text-sm text-muted-foreground">{n.ementa}</p>
+                    <p className="mt-1 text-reading text-muted-foreground">{n.ementa}</p>
                     {n.url && (
                       <a href={n.url} target="_blank" rel="noopener noreferrer" className="mt-1 inline-flex items-center gap-1 text-xs text-primary hover:underline">
                         Ver a norma na fonte <ExternalLink className="h-3 w-3" />
@@ -421,7 +421,7 @@ export function PeticaoStepperFlow({ tipoAcaoOptions, varaJuizoOptions, initial 
           <CardContent className="space-y-5">
             {precedents.length === 0 ? (
               <div className="rounded-lg border p-4" style={{ borderColor: "hsl(var(--gold) / 0.4)", backgroundColor: "hsl(var(--gold) / 0.06)" }}>
-                <p className="text-sm text-foreground">
+                <p className="text-reading text-foreground">
                   Não encontramos decisões no nosso banco para este caso. A petição será fundamentada apenas na legislação
                   aprovada — a IA nunca inventa um precedente para preencher esta etapa.
                 </p>
@@ -449,16 +449,16 @@ export function PeticaoStepperFlow({ tipoAcaoOptions, varaJuizoOptions, initial 
                         {[p.comarca, p.data_decisao, nivelFonte(p)].filter(Boolean).join(" · ")}
                       </p>
                       {p.ementa ? (
-                        <p className="mt-1 line-clamp-4 text-sm text-muted-foreground">{p.ementa}</p>
+                        <p className="mt-1 line-clamp-4 text-reading text-muted-foreground">{p.ementa}</p>
                       ) : p.resumo_ia ? (
                         <>
-                          <p className="mt-1 line-clamp-4 text-sm text-muted-foreground">{p.resumo_ia}</p>
-                          <p className="mt-1 text-xs text-muted-foreground">
+                          <p className="mt-1 line-clamp-4 text-reading text-muted-foreground">{p.resumo_ia}</p>
+                          <p className="mt-1 text-[0.9375rem] leading-relaxed text-muted-foreground">
                             Resumo gerado a partir dos metadados do CNJ, não é o texto oficial da decisão.
                           </p>
                         </>
                       ) : (
-                        <p className="mt-1 text-sm text-muted-foreground">
+                        <p className="mt-1 text-base leading-relaxed text-muted-foreground">
                           Sem teor decisório disponível para esta decisão.
                         </p>
                       )}
@@ -477,7 +477,7 @@ export function PeticaoStepperFlow({ tipoAcaoOptions, varaJuizoOptions, initial 
                 {loading ? "Gerando Petição..." : "Gerar Petição"}
               </Button>
             </div>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-[0.9375rem] leading-relaxed text-muted-foreground">
               As etapas de revisão não consomem sua cota de petições — só a geração final consome.
             </p>
           </CardContent>

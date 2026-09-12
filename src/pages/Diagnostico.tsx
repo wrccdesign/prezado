@@ -333,7 +333,7 @@ export default function Diagnostico({ embedded = false }: { embedded?: boolean }
                   <p className="text-base sm:text-lg text-muted-foreground max-w-lg mx-auto leading-relaxed">
                     Descreva sua situação em linguagem simples.
                     <br />
-                    <span className="text-sm">Não precisa saber termos jurídicos — eu entendo você.</span>
+                    <span className="text-base">Não precisa saber termos jurídicos — eu entendo você.</span>
                   </p>
                 </>
               )}
@@ -413,7 +413,7 @@ export default function Diagnostico({ embedded = false }: { embedded?: boolean }
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-sm leading-relaxed">{result.o_que_esta_acontecendo}</p>
+                <p className="text-reading">{result.o_que_esta_acontecendo}</p>
               </CardContent>
             </Card>
 
@@ -425,7 +425,7 @@ export default function Diagnostico({ embedded = false }: { embedded?: boolean }
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-sm leading-relaxed">{result.qual_seu_direito}</p>
+                <p className="text-reading">{result.qual_seu_direito}</p>
               </CardContent>
             </Card>
 
@@ -441,7 +441,7 @@ export default function Diagnostico({ embedded = false }: { embedded?: boolean }
                 <CardContent>
                   <ol className="space-y-2">
                     {result.o_que_voce_pode_fazer.map((step, i) => (
-                      <li key={i} className="flex gap-3 text-sm">
+                      <li key={i} className="flex gap-3 text-base">
                         <span className="flex-shrink-0 flex items-center justify-center h-6 w-6 rounded-full bg-primary/10 text-primary text-xs font-bold">
                           {i + 1}
                         </span>
@@ -462,7 +462,7 @@ export default function Diagnostico({ embedded = false }: { embedded?: boolean }
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-sm leading-relaxed">{result.estimativa_custos_ganhos}</p>
+                  <p className="text-reading">{result.estimativa_custos_ganhos}</p>
                 </CardContent>
               </Card>
             </PaywallBlur>
@@ -476,7 +476,7 @@ export default function Diagnostico({ embedded = false }: { embedded?: boolean }
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-sm leading-relaxed">{result.onde_entrar}</p>
+                  <p className="text-reading">{result.onde_entrar}</p>
                 </CardContent>
               </Card>
             </PaywallBlur>
@@ -490,7 +490,7 @@ export default function Diagnostico({ embedded = false }: { embedded?: boolean }
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-sm leading-relaxed">{result.explicacao_urgencia}</p>
+                  <p className="text-reading">{result.explicacao_urgencia}</p>
                 </CardContent>
               </Card>
             </PaywallBlur>
@@ -505,7 +505,7 @@ export default function Diagnostico({ embedded = false }: { embedded?: boolean }
                   <h3 className="text-base font-semibold text-foreground">
                     Desbloqueie o diagnóstico completo
                   </h3>
-                  <p className="text-sm text-muted-foreground max-w-md mx-auto leading-relaxed">
+                  <p className="text-reading text-muted-foreground max-w-md mx-auto">
                     Veja o passo a passo, estimativa de custos, onde buscar ajuda, gere petições e converse com o chat jurídico ilimitado.
                   </p>
                   <Button size="lg" onClick={() => navigate("/planos")} className="mt-2">
@@ -561,24 +561,24 @@ export default function Diagnostico({ embedded = false }: { embedded?: boolean }
               </CardHeader>
               <CardContent>
                 {citations.length === 0 ? (
-                  <p className="text-sm text-muted-foreground leading-relaxed">
+                  <p className="text-reading text-muted-foreground">
                     {SEM_FONTES_TEXTO}
                   </p>
                 ) : (
                   <ul className="space-y-4">
                     {citations.map((c) => (
                       <li key={c.id} className="space-y-1">
-                        <p className="text-xs text-muted-foreground">{citationNatureza(c)}</p>
-                        <p className="text-sm font-medium text-foreground">
+                        <p className="text-[0.9375rem] text-muted-foreground">{citationNatureza(c)}</p>
+                        <p className="text-base font-medium text-foreground">
                           {formatCitationLine(c) || "Decisão do acervo"}
                         </p>
                         {citationTexto(c) && (
-                          <p className="text-xs text-muted-foreground leading-relaxed line-clamp-3">
+                          <p className="text-reading text-muted-foreground line-clamp-3">
                             {citationTexto(c)}
                           </p>
                         )}
                         {citationTextoNota(c) && (
-                          <p className="text-xs text-muted-foreground">{citationTextoNota(c)}</p>
+                          <p className="text-[0.9375rem] leading-relaxed text-muted-foreground">{citationTextoNota(c)}</p>
                         )}
 
                         {c.id && (
@@ -600,7 +600,7 @@ export default function Diagnostico({ embedded = false }: { embedded?: boolean }
             </Card>
 
 
-            <p className="text-xs text-muted-foreground text-center leading-relaxed">
+            <p className="text-[0.9375rem] text-muted-foreground text-center leading-relaxed">
               ⚠️ Este diagnóstico é uma orientação inicial gerada por inteligência artificial.
               Não substitui a consulta com um advogado. Para casos urgentes, procure assistência jurídica presencial.
             </p>

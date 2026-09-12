@@ -357,7 +357,7 @@ if (!res.ok) {
         <div className="container px-4 max-w-3xl mx-auto py-10 border-t border-cream-dark">
           {aiExpansion && (
             <section className="mb-8" aria-labelledby="secao-ia">
-              <h2 id="secao-ia" className="text-sm font-medium text-navy">
+              <h2 id="secao-ia" className="text-lg font-medium text-navy">
                 Busca expandida por IA
               </h2>
 
@@ -395,7 +395,7 @@ if (!res.ok) {
             <div className="mb-8 border border-cream-dark bg-white rounded-lg p-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
               <div>
                 <p className="text-sm font-medium text-navy">Você está vendo uma prévia limitada</p>
-                <p className="text-sm text-navy/70">
+                <p className="text-base leading-relaxed text-navy/70">
                   Crie sua conta grátis para ver todos os resultados, usar a expansão de busca com IA e filtros avançados.
                 </p>
               </div>
@@ -455,7 +455,7 @@ if (!res.ok) {
                 <Link to={`/decisao/${d.id}`} className="block mt-2 group">
                   {(d.ementa || d.resumo_ia) ? (
                     <>
-                      <p className={`font-serif text-base leading-relaxed text-navy group-hover:text-gold ${expandedId === d.id ? "" : "line-clamp-3"}`}>
+                       <p className={`font-serif text-lg leading-[1.65] text-navy group-hover:text-gold ${expandedId === d.id ? "" : "line-clamp-3"}`}>
                         {d.ementa || d.resumo_ia}
                       </p>
                       {!d.ementa && (
@@ -490,7 +490,7 @@ if (!res.ok) {
                 {d.resumo_ia && expandedId === d.id && (
                   <div className="mt-3 border-l-2 border-cream-dark pl-4">
                     <p className="text-note text-navy/70">Resumo por IA</p>
-                    <p className="text-sm text-navy/80 mt-1">{d.resumo_ia}</p>
+                    <p className="text-base leading-[1.65] text-navy/80 mt-1">{d.resumo_ia}</p>
                   </div>
                 )}
 

@@ -500,21 +500,21 @@ export function CustasCalc() {
           notes={
             <>
               {result.isento && result.motivo_isencao && (
-                <p className="pt-2 text-sm text-foreground">{result.motivo_isencao}</p>
+                <p className="pt-2 text-base leading-relaxed text-foreground">{result.motivo_isencao}</p>
               )}
               {result.piso_aplicado && (
-                <p className="pt-2 text-sm text-foreground">
+                <p className="pt-2 text-base leading-relaxed text-foreground">
                   Piso legal aplicado: o percentual resultaria em {fmt(result.valor_bruto)}.
                 </p>
               )}
               {!isAuthenticated && (
-                <p className="pt-2 text-sm text-navy/70">
+                <p className="pt-2 text-base leading-relaxed text-navy/70">
                   O cálculo e a memória são livres, sem conta. Para exportar em PDF/Word ou
                   salvar no histórico, crie sua conta grátis.
                 </p>
               )}
               {result.teto_aplicado && (
-                <p className="pt-2 text-sm text-foreground">
+                <p className="pt-2 text-base leading-relaxed text-foreground">
                   Teto legal aplicado: o percentual resultaria em {fmt(result.valor_bruto)}.
                 </p>
               )}

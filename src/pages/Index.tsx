@@ -441,7 +441,7 @@ export default function Index({ embedded = false }: { embedded?: boolean }) {
         <Card className="animate-fade-in">
           <CardHeader className="pb-4 space-y-1.5">
             <CardTitle className="text-lg sm:text-xl font-semibold">Texto para Análise</CardTitle>
-            <CardDescription className="text-xs sm:text-sm leading-relaxed">Print de conversa, foto de documento, PDF, Word ou texto. Lemos o texto da imagem.</CardDescription>
+            <CardDescription className="text-[0.9375rem] leading-relaxed">Print de conversa, foto de documento, PDF, Word ou texto. Lemos o texto da imagem.</CardDescription>
           </CardHeader>
           <CardContent
             className="space-y-5"
@@ -452,14 +452,14 @@ export default function Index({ embedded = false }: { embedded?: boolean }) {
           >
 
             {fileName && text && (
-              <p className="text-sm leading-relaxed text-muted-foreground">
+              <p className="text-reading text-muted-foreground">
                 Este é o texto que será analisado. Confira antes de continuar.
               </p>
             )}
 
             <Textarea
               placeholder="Cole aqui o texto jurídico que deseja analisar..."
-              className="min-h-[180px] sm:min-h-[240px] resize-y font-sans text-sm sm:text-base leading-relaxed"
+              className="min-h-[180px] sm:min-h-[240px] resize-y font-sans text-base leading-[1.65]"
               value={text}
               onChange={(e) => setText(e.target.value)}
               disabled={loading || parsing}
@@ -477,7 +477,7 @@ export default function Index({ embedded = false }: { embedded?: boolean }) {
                   {showPreview ? <ChevronUp className="h-4 w-4 ml-auto shrink-0" /> : <ChevronDown className="h-4 w-4 ml-auto shrink-0" />}
                 </button>
                 {showPreview && (
-                  <div className="mt-3 max-h-[240px] sm:max-h-[320px] overflow-y-auto rounded-md border bg-background p-3 text-xs leading-relaxed font-mono whitespace-pre-wrap break-words text-muted-foreground">
+                  <div className="mt-3 max-h-[240px] sm:max-h-[320px] overflow-y-auto rounded-md border bg-background p-3 text-base leading-[1.65] font-mono whitespace-pre-wrap break-words text-muted-foreground">
                     {text.slice(0, 3000)}
                     {text.length > 3000 && (
                       <p className="mt-2 text-primary font-sans font-medium">
@@ -487,12 +487,12 @@ export default function Index({ embedded = false }: { embedded?: boolean }) {
                   </div>
                 )}
                 {text.startsWith("[Não foi possível") && (
-                  <p className="mt-3 text-xs leading-relaxed text-destructive">
+                  <p className="mt-3 text-base leading-relaxed text-destructive">
                     ⚠️ A extração pode ter falhado. Tente copiar e colar o texto manualmente.
                   </p>
                 )}
                 {partialExtraction && !text.startsWith("[Não foi possível") && (
-                  <p className="mt-3 text-xs leading-relaxed text-amber-600 dark:text-amber-400">
+                  <p className="mt-3 text-base leading-relaxed text-amber-600 dark:text-amber-400">
                     {pagesRead && pagesTotal
                       ? `Leitura parcial: ${pagesRead} de ${pagesTotal} páginas. Para o documento inteiro, envie em partes ou cole o texto restante.`
                       : "Leitura parcial: parte do texto ficou de fora. Confira o conteúdo acima e complete o que faltar."}
@@ -520,7 +520,7 @@ export default function Index({ embedded = false }: { embedded?: boolean }) {
                 <span className="block text-sm font-medium text-foreground">
                   {parsing ? "Processando..." : "Arraste o arquivo, cole um print com Ctrl+V ou escolha do aparelho."}
                 </span>
-                <span className="mt-1 block text-xs leading-relaxed text-muted-foreground">
+                <span className="mt-1 block text-[0.9375rem] leading-relaxed text-muted-foreground">
                   Print de conversa, foto de documento, PDF, Word ou texto. PDF até 5MB, demais formatos até 10MB.
                 </span>
               </button>
@@ -548,7 +548,7 @@ export default function Index({ embedded = false }: { embedded?: boolean }) {
             </div>
 
             {editingText && result && (
-              <p className="text-sm text-muted-foreground">
+              <p className="text-base leading-relaxed text-muted-foreground">
                 Você está revisando o texto da rodada {rodada}. A nova análise vai considerar as suas edições e os esclarecimentos escritos.
               </p>
             )}

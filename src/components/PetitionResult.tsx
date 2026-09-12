@@ -396,7 +396,7 @@ export function PetitionResult({ text, petitionType, onNewPetition, citationRepo
 
       <Card>
         <CardHeader>
-          <CardTitle className="text-base text-muted-foreground">
+          <CardTitle className="text-lg text-muted-foreground">
             Edite o texto abaixo conforme necessário
           </CardTitle>
         </CardHeader>
@@ -405,11 +405,11 @@ export function PetitionResult({ text, petitionType, onNewPetition, citationRepo
             ref={textareaRef}
             value={editedText}
             onChange={(e) => setEditedText(e.target.value)}
-            className="w-full min-h-[600px] resize-y rounded-md border border-input bg-background px-4 py-3 text-sm leading-relaxed font-sans focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            className="w-full min-h-[600px] resize-y rounded-md border border-input bg-background px-4 py-3 text-base leading-[1.65] font-sans focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
             style={{ whiteSpace: "pre-wrap" }}
           />
           {notice && (
-            <p className="text-sm text-muted-foreground">
+            <p className="text-[0.9375rem] leading-relaxed text-muted-foreground">
               {notice.message}{" "}
               {notice.hasLink && (
                 <Link to={noticeHref} className="underline hover:text-foreground">

@@ -16,6 +16,8 @@ import {
 import Logo from "@/components/Logo";
 import { UsageSummaryCompact } from "@/components/UsageSummary";
 import { TrialBanner } from "@/components/TrialBanner";
+import { Button } from "@/components/ui/button";
+import { useFontScale, type FontScale } from "@/hooks/useFontScale";
 
 import { useNavigate, useLocation } from "react-router-dom";
 
@@ -75,6 +77,35 @@ export function AppHeader() {
   const navigate = useNavigate();
   const location = useLocation();
   const [sheetOpen, setSheetOpen] = useState(false);
+  const { scale, setScale } = useFontScale();
+
+  const fontScaleOptions: Array<{ value: FontScale; label: string; sample: string }> = [
+    { value: "default", label: "Tamanho padrão", sample: "A" },
+    { value: "large", label: "Texto grande", sample: "A" },
+    { value: "larger", label: "Texto maior", sample: "A" },
+  ];
+
+  const fontScaleControl = (
+    <div className="flex items-center gap-1" role="group" aria-label="Tamanho do texto">
+      {fontScaleOptions.map((option, index) => (
+        <Button
+          key={option.value}
+          type="button"
+          variant="ghost"
+          size="icon"
+          aria-label={option.label}
+          aria-pressed={scale === option.value}
+          title={option.label}
+          onClick={() => setScale(option.value)}
+          className={`min-h-11 min-w-11 text-cream hover:bg-cream/10 hover:text-cream ${
+            scale === option.value ? "bg-cream/10 ring-1 ring-gold/60" : "text-cream/72"
+          } ${index === 0 ? "text-xs" : index === 1 ? "text-sm" : "text-base"}`}
+        >
+          {option.sample}
+        </Button>
+      ))}
+    </div>
+  );
 
   const visible = (items: NavItem[]) =>
     items.filter((i) => !i.lawyerOnly || (isLawyer && !!user));
@@ -164,6 +195,7 @@ export function AppHeader() {
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className={dropdownContent}>
         <div className="px-2 py-2">{profileBadge("full")}</div>
+        <div className="px-2 pb-2">{fontScaleControl}</div>
         <DropdownMenuSeparator className="bg-cream/10" />
         <UsageSummaryCompact />
         <DropdownMenuSeparator className="bg-cream/10" />
@@ -237,6 +269,7 @@ export function AppHeader() {
           ))}
           {toolsMenu}
           {!user && <NavButton item={planosItem} active={isActive(planosItem.path)} onClick={() => navigate(planosItem.path)} />}
+          {!user && fontScaleControl}
           <div className="w-px h-6 bg-cream/10 mx-1" />
           {user ? accountMenu : guestActions}
         </nav>
@@ -248,6 +281,7 @@ export function AppHeader() {
           ))}
           {toolsMenu}
           {!user && <NavButton item={planosItem} active={isActive(planosItem.path)} onClick={() => navigate(planosItem.path)} />}
+          {!user && fontScaleControl}
           <div className="w-px h-6 bg-cream/10 mx-1" />
           {user ? accountMenu : guestActions}
 
@@ -271,6 +305,10 @@ export function AppHeader() {
                 </SheetTitle>
               </SheetHeader>
               <div className="mt-4">{profileBadge("full")}</div>
+              <div className="mt-4 border-y border-cream/10 py-2">
+                <p className="px-2 text-note text-cream/50">Tamanho do texto</p>
+                {fontScaleControl}
+              </div>
               {user && (
                 <div className="mt-3 rounded-md bg-cream/5">
                   <UsageSummaryCompact onNavigate={() => setSheetOpen(false)} />

@@ -154,7 +154,7 @@ function ChatPanel({ decisionId }: { decisionId: string }) {
   return (
     <div className="flex flex-col h-full bg-white text-navy">
       <div className="px-4 py-3 border-b border-cream-dark">
-        <span className="text-sm font-medium">Assistente jurídico</span>
+        <span className="text-lg font-medium">Assistente jurídico</span>
       </div>
 
       <ScrollArea ref={scrollRef} className="flex-1 px-4 py-3">
@@ -165,7 +165,7 @@ function ChatPanel({ decisionId }: { decisionId: string }) {
               <button
                 key={s}
                 onClick={() => send(s)}
-                className="block w-full text-left text-sm text-navy underline underline-offset-4 hover:text-gold py-1"
+                className="block w-full text-left text-base leading-relaxed text-navy underline underline-offset-4 hover:text-gold py-1"
               >
                 {s}
               </button>
@@ -177,7 +177,7 @@ function ChatPanel({ decisionId }: { decisionId: string }) {
           {messages.map((m, i) => (
             <div key={i} className={`flex ${m.role === "user" ? "justify-end" : "justify-start"}`}>
               <div
-                className={`max-w-[85%] rounded-lg px-3 py-2 text-sm ${
+                className={`max-w-[85%] rounded-lg px-3 py-2 text-base leading-[1.65] ${
                   m.role === "user"
                     ? "bg-navy text-cream"
                     : "bg-cream text-navy"
@@ -211,7 +211,7 @@ function ChatPanel({ decisionId }: { decisionId: string }) {
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && send(input)}
             placeholder="Pergunte sobre a decisão"
-            className="text-sm h-10 bg-white text-navy border border-cream-dark focus-visible:ring-gold"
+            className="text-base h-10 bg-white text-navy border border-cream-dark focus-visible:ring-gold"
             disabled={loading}
           />
           <Button size="sm" aria-label="Enviar pergunta" onClick={() => send(input)} disabled={loading || !input.trim()} className="h-10 px-3 bg-gold text-navy hover:bg-gold-light">
@@ -376,13 +376,13 @@ export default function DecisaoDetalhe() {
               <section className="mt-8 border-t border-cream-dark pt-6 grid gap-6 sm:grid-cols-2">
                 {decision.temas_juridicos && decision.temas_juridicos.length > 0 && (
                   <div>
-                    <h3 className="text-sm font-medium text-navy">Temas jurídicos</h3>
+                    <h3 className="text-lg font-medium text-navy">Temas jurídicos</h3>
                     <p className="text-note text-navy/70 mt-2">{decision.temas_juridicos.join(", ")}</p>
                   </div>
                 )}
                 {decision.legislacao_citada && decision.legislacao_citada.length > 0 && (
                   <div>
-                    <h3 className="text-sm font-medium text-navy">Legislação citada</h3>
+                    <h3 className="text-lg font-medium text-navy">Legislação citada</h3>
                     <p className="text-note text-navy/70 mt-2">{decision.legislacao_citada.join(", ")}</p>
                   </div>
                 )}
@@ -398,7 +398,7 @@ export default function DecisaoDetalhe() {
           </div>
         </div>
 
-        <aside className="hidden lg:flex w-[380px] border-l border-cream-dark flex-col bg-white">
+        <aside className="hidden lg:flex w-[24rem] max-w-[34vw] border-l border-cream-dark flex-col bg-white">
           <ChatPanel decisionId={id} />
         </aside>
 
