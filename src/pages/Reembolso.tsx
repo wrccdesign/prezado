@@ -35,7 +35,7 @@ export default function Reembolso() {
       <h2>Como solicitar o reembolso</h2>
       <p>
         As assinaturas são vendidas pelo <strong>Honorífico</strong>, entidade sediada na Irlanda, e os
-        pagamentos são processados com segurança pela <strong>Stripe</strong>. Para solicitar reembolso:
+        pagamentos são processados com segurança pelo <strong>Asaas</strong>. Para solicitar reembolso:
       </p>
       <ol>
         <li>
