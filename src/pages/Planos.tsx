@@ -226,7 +226,12 @@ export default function Planos() {
           duration: 15000,
         });
       }
+      // Fecha o diálogo: evita um segundo pedido e uma assinatura duplicada.
+      setPendingPriceId(null);
+      setCpfCnpj("");
+      setPhone("");
       setIsCheckoutLoading(false);
+
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : "";
       if (message.toLowerCase().includes("pix")) {
