@@ -297,6 +297,8 @@ export default function Index({ embedded = false }: { embedded?: boolean }) {
     if (!refine) {
       setResult(null);
       setEsclarecimentos({});
+      setEsclarecimentoResumo("");
+      setEsclarecimentoDirecionamentos("");
     }
 
     try {
@@ -317,8 +319,12 @@ export default function Index({ embedded = false }: { embedded?: boolean }) {
                 tipo_de_causa: previous?.tipo_de_causa,
                 riscos_processuais: previous?.riscos_processuais ?? [],
                 pontos_fracos: previous?.pontos_fracos ?? [],
+                resumo: previous?.resumo,
+                direcionamentos: previous?.direcionamentos ?? [],
               },
               esclarecimentos: esclarecimentosPayload,
+              esclarecimento_resumo: esclarecimentoResumo.trim() || undefined,
+              esclarecimento_direcionamentos: esclarecimentoDirecionamentos.trim() || undefined,
             }
           : { text: currentText, file_name: fileName },
       });
@@ -332,7 +338,11 @@ export default function Index({ embedded = false }: { embedded?: boolean }) {
       if (typeof data.rodadas_incluidas === "number") setRodadasIncluidas(data.rodadas_incluidas);
 
       setEditingText(false);
-      if (refine) setEsclarecimentos({});
+      if (refine) {
+        setEsclarecimentos({});
+        setEsclarecimentoResumo("");
+        setEsclarecimentoDirecionamentos("");
+      }
       notifyUsageConsumed();
       toast({ title: refine ? "Nova análise concluída!" : "Análise concluída!" });
     } catch (err: any) {
@@ -378,6 +388,8 @@ export default function Index({ embedded = false }: { embedded?: boolean }) {
     setPartialExtraction(false);
     setRodada(1);
     setEsclarecimentos({});
+    setEsclarecimentoResumo("");
+    setEsclarecimentoDirecionamentos("");
     setEditingText(false);
     try {
       sessionStorage.removeItem(SESSION_KEY);
