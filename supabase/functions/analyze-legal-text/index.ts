@@ -262,7 +262,7 @@ Ajuste as recomendações desta rodada conforme essa observação: remova as que
 
 ## ANÁLISE ANTERIOR (RODADA ${rodada - 1}) E ESCLARECIMENTOS DO USUÁRIO
 Este é um REFINAMENTO. O usuário revisou o material e respondeu aos apontamentos abaixo.
-${render("RISCOS PROCESSUAIS APONTADOS ANTES:", anterior.riscos_processuais)}${render("PONTOS FRACOS APONTADOS ANTES:", anterior.pontos_fracos)}
+${render("RISCOS PROCESSUAIS APONTADOS ANTES:", anterior.riscos_processuais)}${render("PONTOS FRACOS APONTADOS ANTES:", anterior.pontos_fracos)}${blocoResumo}${blocoDirecionamentos}
 ${textoAlterado
       ? "O TEXTO FOI EDITADO desde a rodada anterior. Confira no texto atual se o ponto foi de fato corrigido; não confie apenas na alegação do usuário."
       : "O texto NÃO foi editado: avalie apenas se o esclarecimento supre a lacuna apontada."}
@@ -273,7 +273,9 @@ Para CADA item listado acima você DEVE decidir explicitamente:
 - MANTER: o ponto continua de pé. Mantenha o item na lista correspondente E registre-o em "itens_mantidos" explicando por que o esclarecimento não resolve.
 É PROIBIDO repetir um item da rodada anterior sem se posicionar sobre o esclarecimento correspondente.
 Em "itens_resolvidos" e "itens_mantidos", repita o texto do item EXATAMENTE como aparece acima.
-Itens NOVOS, que não estavam na rodada anterior, podem ser incluídos normalmente nas listas e não entram nesses dois campos.`;
+Itens NOVOS, que não estavam na rodada anterior, podem ser incluídos normalmente nas listas e não entram nesses dois campos.
+
+ATENÇÃO A VALORES: se a rodada anterior citou qualquer número, valor em dinheiro, percentual, índice de correção, prazo em dias ou data, e o usuário apontou erro ou trouxe dado novo, recalcule a partir do dado do usuário e do texto atual. Não repita o número anterior por inércia. Se o texto não permite chegar a um valor confiável, diga isso de forma explícita em vez de estimar. Quando apresentar um valor, indique de onde ele saiu (trecho do texto, dado informado pelo usuário ou norma aplicável).`;
 }
 
 serve(async (req) => {
