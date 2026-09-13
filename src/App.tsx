@@ -79,6 +79,7 @@ const App = () => (
       <BrowserRouter>
         <AuthProvider>
           <UserProfileProvider>
+            <ScrollToTop />
             <PostAuthRedirect />
             <ProfileOnboardingDialog />
             <Routes>
