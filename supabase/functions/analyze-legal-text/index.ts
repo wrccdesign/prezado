@@ -222,6 +222,8 @@ function buildIterationBlock(
   esclarecimentos: EsclarecimentoInput[],
   textoAlterado: boolean,
   rodada: number,
+  esclarecimentoResumo?: string | null,
+  esclarecimentoDirecionamentos?: string | null,
 ): string {
   const findEsclarecimento = (item: string) =>
     esclarecimentos.find((e) => e.item_original === item)?.esclarecimento;
