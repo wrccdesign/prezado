@@ -209,14 +209,7 @@ Deno.serve(async (req) => {
       billingTypes: ["CREDIT_CARD"],
     };
 
-    let session;
-    try {
-      session = await createCheckoutSession(env, sessionOptions);
-    } catch (error) {
-      if (!isPixKeyMissingError(error)) throw error;
-      console.warn("Asaas sem chave Pix; refazendo checkout apenas com cartão.");
-      session = await createCheckoutSession(env, sessionOptions);
-    }
+    const session = await createCheckoutSession(env, sessionOptions);
 
     const checkoutUrl = session.link || checkoutSessionUrl(env, session.id);
     await supabase
