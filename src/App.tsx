@@ -42,6 +42,7 @@ import OAuthConsent from "./pages/OAuthConsent";
 
 import { PostAuthRedirect } from "@/components/PostAuthRedirect";
 import { ProfileOnboardingDialog } from "@/components/ProfileOnboardingDialog";
+import { ScrollToTop } from "@/components/ScrollToTop";
 
 
 
