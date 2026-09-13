@@ -259,7 +259,7 @@ export default function LandingPage() {
             </p>
           </div>
 
-          <div className="mt-10 bg-white rounded-lg border border-cream-dark overflow-hidden">
+          <div id="memoria" className="mt-10 bg-white rounded-lg border border-cream-dark overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full text-left text-base">
                 <thead>
@@ -368,7 +368,7 @@ export default function LandingPage() {
                   ))}
                 </ul>
                 {p.limitationNote && (
-                  <p className="mb-7 text-note text-navy/60">{p.limitationNote}</p>
+                  <p className={`mb-7 text-note ${p.highlight ? "text-navy/60" : "text-cream/50"}`}>{p.limitationNote}</p>
                 )}
                 <Button className={`w-full font-medium rounded-md ${p.highlight ? "bg-gold text-navy hover:bg-gold-light" : "border border-cream/25 bg-transparent text-cream hover:bg-cream/10"}`} asChild>
                   <Link to="/planos">{p.cta}</Link>
