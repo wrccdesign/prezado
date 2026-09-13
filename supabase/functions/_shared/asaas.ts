@@ -268,7 +268,8 @@ export async function createSubscription(
   customerId: string,
   priceId: PriceId,
   userId: string,
-  billingType: "PIX" | "CREDIT_CARD" = "PIX",
+  /** Obrigatório: nunca criar assinatura com forma de pagamento indefinida. */
+  billingType: "PIX" | "CREDIT_CARD",
 ): Promise<AsaasSubscription> {
   const config = PLAN_CONFIG[priceId];
   const nextDueDate = new Date();
@@ -287,26 +288,18 @@ export async function createSubscription(
   });
 }
 
-export async function createAnnualCharge(
+/** Assinaturas ativas do cliente no Asaas (fonte da verdade contra duplicidade). */
+export async function listActiveCustomerSubscriptions(
   env: AsaasEnv,
   customerId: string,
-  priceId: PriceId,
-): Promise<AsaasPayment> {
-  const config = PLAN_CONFIG[priceId];
-  const dueDate = new Date();
-  dueDate.setDate(dueDate.getDate() + 3);
-  return asaasRequest<AsaasPayment>(env, "/payments", {
-    method: "POST",
-    body: {
-      customer: customerId,
-      billingType: "UNDEFINED",
-      value: config.valueCents / 100,
-      dueDate: dueDate.toISOString().split("T")[0],
-      description: config.description,
-      externalReference: priceId,
-    },
-  });
+): Promise<AsaasSubscription[]> {
+  const res = await asaasRequest<{ data: AsaasSubscription[] }>(
+    env,
+    `/subscriptions?customer=${encodeURIComponent(customerId)}&status=ACTIVE&limit=100`,
+  );
+  return res.data ?? [];
 }
+
 
 export async function getSubscription(env: AsaasEnv, subscriptionId: string): Promise<AsaasSubscription> {
   return asaasRequest<AsaasSubscription>(env, `/subscriptions/${subscriptionId}`);
