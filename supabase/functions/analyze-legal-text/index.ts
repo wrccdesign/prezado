@@ -158,6 +158,8 @@ interface AnalisePrevia {
   riscos_processuais: string[];
   pontos_fracos: string[];
   tipo_de_causa?: string;
+  resumo?: string;
+  direcionamentos?: string[];
 }
 
 function clampText(value: unknown, max: number): string | null {
@@ -186,11 +188,17 @@ function sanitizeAnalisePrevia(value: unknown): AnalisePrevia | null {
   const raw = value as Record<string, unknown>;
   const riscos = sanitizeStringList(raw.riscos_processuais, 20);
   const fracos = sanitizeStringList(raw.pontos_fracos, 20);
-  if (riscos.length === 0 && fracos.length === 0) return null;
+  const resumo = clampText(raw.resumo, 3000) ?? undefined;
+  const direcionamentos = sanitizeStringList(raw.direcionamentos, 20);
+  if (riscos.length === 0 && fracos.length === 0 && !resumo && direcionamentos.length === 0) {
+    return null;
+  }
   return {
     riscos_processuais: riscos,
     pontos_fracos: fracos,
     tipo_de_causa: clampText(raw.tipo_de_causa, 200) ?? undefined,
+    resumo,
+    direcionamentos: direcionamentos.length > 0 ? direcionamentos : undefined,
   };
 }
 
