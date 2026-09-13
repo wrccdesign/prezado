@@ -62,6 +62,8 @@ export default function Index({ embedded = false }: { embedded?: boolean }) {
         result?: LegalAnalysis | null;
         rodada?: number;
         esclarecimentos?: Record<string, string>;
+        esclarecimentoResumo?: string;
+        esclarecimentoDirecionamentos?: string;
       };
       if (saved.result) setResult(saved.result);
       if (saved.text) setText(saved.text);
@@ -69,6 +71,9 @@ export default function Index({ embedded = false }: { embedded?: boolean }) {
       if (saved.fileName !== undefined) setFileName(saved.fileName);
       if (saved.rodada) setRodada(saved.rodada);
       if (saved.esclarecimentos) setEsclarecimentos(saved.esclarecimentos);
+      if (saved.esclarecimentoResumo) setEsclarecimentoResumo(saved.esclarecimentoResumo);
+      if (saved.esclarecimentoDirecionamentos)
+        setEsclarecimentoDirecionamentos(saved.esclarecimentoDirecionamentos);
     } catch {
       // estado corrompido: começa limpo
     }
@@ -83,12 +88,30 @@ export default function Index({ embedded = false }: { embedded?: boolean }) {
       }
       sessionStorage.setItem(
         SESSION_KEY,
-        JSON.stringify({ text, fileName, analyzedText, result, rodada, esclarecimentos }),
+        JSON.stringify({
+          text,
+          fileName,
+          analyzedText,
+          result,
+          rodada,
+          esclarecimentos,
+          esclarecimentoResumo,
+          esclarecimentoDirecionamentos,
+        }),
       );
     } catch {
       // quota cheia: seguir sem espelho
     }
-  }, [text, fileName, analyzedText, result, rodada, esclarecimentos]);
+  }, [
+    text,
+    fileName,
+    analyzedText,
+    result,
+    rodada,
+    esclarecimentos,
+    esclarecimentoResumo,
+    esclarecimentoDirecionamentos,
+  ]);
 
 
   const processFile = async (file: File) => {
