@@ -278,6 +278,7 @@ export default function Conta() {
                         <Button
                           onClick={() => run("change-plan", { newPriceId: "escritorio_mensal" })}
                           disabled={busy !== null}
+                          className="h-auto min-h-10 whitespace-normal text-left"
                         >
                           {busy === "change-plan" ? (
                             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -292,6 +293,7 @@ export default function Conta() {
                           variant="outline"
                           onClick={() => run("change-plan", { newPriceId: "profissional_mensal" })}
                           disabled={busy !== null}
+                          className="h-auto min-h-10 whitespace-normal text-left"
                         >
                           Mudar para Profissional na próxima cobrança
                         </Button>
