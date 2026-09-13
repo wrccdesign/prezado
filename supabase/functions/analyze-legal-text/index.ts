@@ -239,6 +239,25 @@ function buildIterationBlock(
     return `\n${titulo}\n${linhas}\n`;
   };
 
+  const blocoResumo = esclarecimentoResumo
+    ? `
+OBSERVAÇÃO DO USUÁRIO SOBRE O RESUMO DA RODADA ANTERIOR:
+Resumo anterior: ${anterior.resumo ?? "(não informado)"}
+Observação do usuário: ${esclarecimentoResumo}
+Reescreva o resumo desta rodada incorporando o que for pertinente nessa observação e corrija explicitamente qualquer número ou valor que ela questione. Se discordar da observação, diga no próprio resumo por que o ponto permanece.
+`
+    : "";
+
+  const blocoDirecionamentos = esclarecimentoDirecionamentos
+    ? `
+OBSERVAÇÃO DO USUÁRIO SOBRE AS RECOMENDAÇÕES DA RODADA ANTERIOR:
+Recomendações anteriores:
+${(anterior.direcionamentos ?? []).map((d, i) => `${i + 1}. ${d}`).join("\n") || "(não informadas)"}
+Observação do usuário: ${esclarecimentoDirecionamentos}
+Ajuste as recomendações desta rodada conforme essa observação: remova as que deixaram de fazer sentido, corrija valores e prazos questionados e mantenha, com justificativa na própria recomendação, as que continuam necessárias.
+`
+    : "";
+
   return `
 
 ## ANÁLISE ANTERIOR (RODADA ${rodada - 1}) E ESCLARECIMENTOS DO USUÁRIO
