@@ -337,6 +337,13 @@ export function AnalysisResult({
         <div className="md:col-span-2">
           <SectionCard icon={BookOpen} title="Resumo da Análise" variant="highlight">
             <p className="text-reading text-foreground">{result.resumo}</p>
+            {renderClarifyBox({
+              key: "__resumo__",
+              label: "Esclarecer o resumo",
+              placeholder: "Algo no resumo está impreciso? Aponte aqui, inclusive valores e cálculos.",
+              value: resumoClarify,
+              onChange: onEsclarecimentoResumoChange,
+            })}
           </SectionCard>
         </div>
 
