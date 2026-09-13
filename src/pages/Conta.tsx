@@ -151,10 +151,10 @@ export default function Conta() {
 
       <main className="container max-w-3xl flex-1 px-4 py-10">
         <h1 className="font-heading text-3xl font-bold text-foreground">Minha conta</h1>
-        <p className="mt-2 text-sm text-muted-foreground">{user?.email}</p>
+        <p className="mt-2 text-reading text-muted-foreground">{user?.email}</p>
 
         {data?.environment && (
-          <div className="mt-4 flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
+          <div className="mt-4 flex flex-wrap items-center gap-2 text-note text-muted-foreground">
             <Badge variant={data.environment === "sandbox" ? "secondary" : "outline"}>
               {data.environment === "sandbox" ? "Ambiente de teste" : "Ambiente de produção"}
             </Badge>
@@ -174,7 +174,7 @@ export default function Conta() {
         ) : (
           <div className="mt-8 space-y-6">
             {isTrial && (
-              <div className="rounded-lg border border-gold/40 bg-gold/10 p-4 text-sm">
+              <div className="rounded-lg border border-gold/40 bg-gold/10 p-4 text-reading">
                 <p className="font-heading text-base font-semibold text-foreground">
                   Teste grátis do Profissional
                   {trialEndLabel ? ` — termina em ${trialEndLabel}` : ""}
@@ -192,7 +192,7 @@ export default function Conta() {
             {isPastDue && (
               <div className="flex items-start gap-3 rounded-lg border border-destructive/40 bg-destructive/10 p-4">
                 <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0 text-destructive" />
-                <div className="text-sm">
+                <div className="text-reading">
                   <p className="font-semibold text-destructive">Pagamento pendente</p>
                   <p className="mt-1 text-muted-foreground">
                     Não conseguimos processar sua última cobrança. Acesse a fatura para pagar por Pix, boleto ou cartão.
@@ -217,7 +217,7 @@ export default function Conta() {
                       {sub ? STATUS_LABEL[sub.status] || sub.status : "Sem assinatura paga"}
                     </CardDescription>
                     {pendingPlanLabel && (
-                      <p className="mt-1 text-sm text-muted-foreground">
+                      <p className="mt-1 text-reading text-muted-foreground">
                         Muda para {pendingPlanLabel}
                         {sub?.currentPeriodEnd ? ` em ${formatShortDate(sub.currentPeriodEnd)}` : ""}.
                       </p>
@@ -229,7 +229,7 @@ export default function Conta() {
               <CardContent className="space-y-4">
                 {sub && isOneTime ? (
                   <>
-                    <dl className="grid gap-3 text-sm sm:grid-cols-2">
+                    <dl className="grid gap-3 text-reading sm:grid-cols-2">
                       <div>
                         <dt className="text-muted-foreground">Tipo de acesso</dt>
                         <dd className="font-medium text-foreground">Anual pago à vista</dd>
@@ -240,12 +240,12 @@ export default function Conta() {
                       </div>
                     </dl>
                     {expiryWarning && (
-                      <div className="rounded-lg border border-accent/40 bg-accent/10 p-3 text-sm text-foreground">
+                      <div className="rounded-lg border border-accent/40 bg-accent/10 p-3 text-reading text-foreground">
                         Seu acesso anual termina em {daysLeft} {daysLeft === 1 ? "dia" : "dias"}. Renove para
                         não perder os recursos pagos.
                       </div>
                     )}
-                    <p className="text-sm text-muted-foreground">
+                    <p className="text-reading text-muted-foreground">
                       Não há cobrança automática: ao final do período a conta volta ao plano gratuito.
                     </p>
                     <div className="flex flex-wrap gap-2 pt-2">
@@ -256,7 +256,7 @@ export default function Conta() {
                   </>
                 ) : sub ? (
                   <>
-                    <dl className="grid gap-3 text-sm sm:grid-cols-2">
+                    <dl className="grid gap-3 text-reading sm:grid-cols-2">
                       <div>
                         <dt className="text-muted-foreground">Período atual</dt>
                         <dd className="font-medium text-foreground">
@@ -326,7 +326,7 @@ export default function Conta() {
                 ) : (
 
                   <div className="space-y-3">
-                    <p className="text-sm text-muted-foreground">
+                    <p className="text-reading text-muted-foreground">
                       Você está no plano gratuito. Faça upgrade para liberar petições, mais buscas e diagnósticos.
                     </p>
                     <Button asChild>
@@ -343,7 +343,7 @@ export default function Conta() {
               isEscritorio ? (
                 <LetterheadCard />
               ) : (
-                <p className="text-sm text-muted-foreground">
+                <p className="text-reading text-muted-foreground">
                   Assinantes do plano Escritório podem personalizar o timbre das petições com logo e
                   identificação.{" "}
                   <Link to="/planos" className="underline hover:text-foreground">
@@ -354,7 +354,7 @@ export default function Conta() {
             )}
 
 
-            <div className="rounded-lg border border-border bg-muted/40 p-4 text-sm text-muted-foreground">
+            <div className="rounded-lg border border-border bg-muted/40 p-4 text-reading text-muted-foreground">
               <p className="font-medium text-foreground">Mudança nas cotas</p>
               <p className="mt-1">
                 As cotas deixaram de ser diárias e passaram a ser <strong>mensais</strong>, com
@@ -379,7 +379,7 @@ export default function Conta() {
                 {data?.invoices?.length ? (
                   <ul className="divide-y">
                     {data.invoices.map((inv) => (
-                      <li key={inv.id} className="flex items-center justify-between py-3 text-sm">
+                      <li key={inv.id} className="flex items-center justify-between py-3 text-reading">
                         <div>
                           <p className="font-medium text-foreground">{inv.id.slice(0, 16)}</p>
                           <p className="text-muted-foreground">{formatDate(inv.date)}</p>
@@ -392,7 +392,7 @@ export default function Conta() {
                               href={inv.url}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="text-xs underline"
+                              className="text-note underline"
                             >
                               Ver boleto/Pix
                             </a>
@@ -402,7 +402,7 @@ export default function Conta() {
                     ))}
                   </ul>
                 ) : (
-                  <p className="text-sm text-muted-foreground">Nenhuma fatura encontrada.</p>
+                  <p className="text-reading text-muted-foreground">Nenhuma fatura encontrada.</p>
                 )}
               </CardContent>
             </Card>

@@ -296,7 +296,7 @@ export function CustasCalc() {
     return (
       <div className="space-y-5">
         <StepIndicator steps={PASSOS} current={1} ariaLabel="Etapas do cálculo" />
-        <p className="text-sm text-navy/70">
+        <p className="text-reading text-navy/70">
           Selecione o ato processual. Nesta primeira versão as regras são do <strong>TJSP</strong>.
         </p>
         <div className="grid gap-3 sm:grid-cols-2">
@@ -321,14 +321,14 @@ export function CustasCalc() {
               <div className="flex h-full min-h-[92px] flex-col gap-1.5 p-4 sm:p-5">
                 <div className="flex items-center gap-2">
                   
-                  <p className="text-sm font-medium">{a.titulo}</p>
+                  <p className="text-reading font-medium">{a.titulo}</p>
                 </div>
-                <p className="text-xs text-navy/60">{a.desc}</p>
+                <p className="text-note text-navy/60">{a.desc}</p>
               </div>
             </div>
           ))}
         </div>
-        <p className="text-xs text-navy/60">{RODAPE_PADRAO}</p>
+        <p className="text-note text-navy/60">{RODAPE_PADRAO}</p>
       </div>
     );
   }
@@ -345,7 +345,7 @@ export function CustasCalc() {
 
         <div className="space-y-1">
           <p className="font-medium">{atoInfo.titulo}</p>
-          <p className="text-xs text-navy/60">{atoInfo.desc}</p>
+          <p className="text-note text-navy/60">{atoInfo.desc}</p>
         </div>
 
         <div className="grid gap-4 sm:grid-cols-2">
@@ -355,7 +355,7 @@ export function CustasCalc() {
                 <Label htmlFor="custas-base">{atoInfo.baseLabel}</Label>
                 <button
                   type="button"
-                  className="rounded-sm text-xs text-navy underline hover:text-gold underline-offset-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                  className="rounded-sm text-note text-navy underline hover:text-gold underline-offset-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                   onClick={() => setCorrecaoAberta(true)}
                 >
                   atualizar este valor
@@ -379,7 +379,7 @@ export function CustasCalc() {
               value={dataAto}
               onChange={e => setDataAto(e.target.value)}
             />
-            <p className="text-xs text-navy/60">
+            <p className="text-note text-navy/60">
               Define a regra (alíquota) vigente na época do ato.
             </p>
           </div>
@@ -393,7 +393,7 @@ export function CustasCalc() {
               value={recolhimentoEfetivo}
               onChange={e => setDataRecolhimento(e.target.value)}
             />
-            <p className="text-xs text-navy/60">
+            <p className="text-note text-navy/60">
               A alíquota vem da data do ato; a UFESP aplicada é a vigente no primeiro dia do mês do
               recolhimento. Por padrão, igual à data do ato.
             </p>
@@ -411,7 +411,7 @@ export function CustasCalc() {
                 value={qtdAutores}
                 onChange={e => setQtdAutores(e.target.value)}
               />
-              <p className="text-xs text-navy/60">
+              <p className="text-note text-navy/60">
                 No litisconsórcio ativo voluntário acrescentam-se 10 UFESPs a cada grupo de 10 autores
                 (ou fração) que exceder.
               </p>
@@ -420,12 +420,12 @@ export function CustasCalc() {
         </div>
 
         <div className="space-y-3 rounded-lg border p-4">
-          <p className="text-sm font-medium">Isenções</p>
+          <p className="text-reading font-medium">Isenções</p>
           <label className="flex items-start gap-3 py-1">
             <Checkbox checked={justicaGratuita} onCheckedChange={v => setJusticaGratuita(v === true)} />
-            <span className="text-sm">
+            <span className="text-reading">
               Justiça gratuita
-              <span className="block text-xs text-navy/60">
+              <span className="block text-note text-navy/60">
                 Benefício da justiça gratuita já deferido. Pedido ainda pendente de decisão não
                 dispensa o recolhimento.
               </span>
@@ -433,18 +433,18 @@ export function CustasCalc() {
           </label>
           <label className="flex items-start gap-3 py-1">
             <Checkbox checked={parteIsenta} onCheckedChange={v => setParteIsenta(v === true)} />
-            <span className="text-sm">
+            <span className="text-reading">
               Parte isenta por qualidade
-              <span className="block text-xs text-navy/60">
+              <span className="block text-note text-navy/60">
                 União, Estado, Município, suas autarquias e fundações e o Ministério Público.
               </span>
             </span>
           </label>
           <label className="flex items-start gap-3 py-1">
             <Checkbox checked={naturezaIsenta} onCheckedChange={v => setNaturezaIsenta(v === true)} />
-            <span className="text-sm">
+            <span className="text-reading">
               Feito isento pela natureza
-              <span className="block text-xs text-navy/60">
+              <span className="block text-note text-navy/60">
                 Jurisdição de menores, acidentes do trabalho, alimentos até 2 salários mínimos e
                 Juizados Especiais em 1ª instância.
               </span>
@@ -567,10 +567,10 @@ export function CustasCalc() {
         {/* aviso de outras guias */}
         <div className="rounded-lg border border-cream-dark bg-white border-amber-500/40 bg-amber-500/5">
           <div className="space-y-2 p-5">
-            <p className="flex items-center gap-2 text-sm font-medium">
+            <p className="flex items-center gap-2 text-reading font-medium">
               <AlertTriangle className="h-4 w-4 text-amber-600" /> Atenção, outras guias
             </p>
-            <ul className="list-disc space-y-1 pl-5 text-sm text-navy/70">
+            <ul className="list-disc space-y-1 pl-5 text-reading text-navy/70">
               {result.aviso_outras_guias.map(a => (
                 <li key={a}>{a}</li>
               ))}
@@ -583,7 +583,7 @@ export function CustasCalc() {
           <div className="space-y-4 p-5">
             <div className="grid gap-3 sm:grid-cols-2">
               <div className="rounded-md border p-3">
-                <p className="text-xs text-navy/60">Valor a recolher</p>
+                <p className="text-note text-navy/60">Valor a recolher</p>
                 <div className="flex items-center justify-between gap-2">
                   <p className="font-medium">{fmt(result.valor_devido)}</p>
                   <Button
@@ -598,7 +598,7 @@ export function CustasCalc() {
                 </div>
               </div>
               <div className="rounded-md border p-3">
-                <p className="text-xs text-navy/60">Guia e código de receita</p>
+                <p className="text-note text-navy/60">Guia e código de receita</p>
                 <div className="flex items-center justify-between gap-2">
                   <p className="font-medium">
                     {result.tipo_guia}
@@ -627,12 +627,12 @@ export function CustasCalc() {
               </Button>
             )}
 
-            <p className="text-xs text-navy/60">{result.aviso_emissao}</p>
+            <p className="text-note text-navy/60">{result.aviso_emissao}</p>
           </div>
         </div>
 
         {/* base legal */}
-        <div className="space-y-2 text-xs text-navy/60">
+        <div className="space-y-2 text-note text-navy/60">
           <div>
             <strong className="text-foreground">Base legal:</strong>
             <ul className="mt-1 list-disc space-y-1 pl-4">
