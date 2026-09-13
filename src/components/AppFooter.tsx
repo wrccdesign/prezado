@@ -92,7 +92,7 @@ export function AppFooter() {
               Diagnóstico, análise de documentos, consulta processual e petição, com precedentes do CNJ. Calculadoras com séries do Banco Central e memória de cálculo.
             </p>
             <p className="text-xs text-cream/40 mt-3 leading-relaxed">
-              Pagamentos processados com segurança via <strong className="text-cream/72">Stripe</strong>.
+              Pagamentos processados com segurança via <strong className="text-cream/72">Asaas</strong>.
             </p>
           </div>
         </div>
