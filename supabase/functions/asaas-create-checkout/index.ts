@@ -2,12 +2,14 @@ import { corsHeaders } from "npm:@supabase/supabase-js@2/cors";
 import { createClient } from "npm:@supabase/supabase-js@2";
 import {
   type AsaasEnv,
+  cancelSubscription,
   isPixKeyMissingError,
   checkoutSessionUrl,
   createCheckoutSession,
   createSubscription,
   findOrCreateCustomer,
   isRecurringPrice,
+  listActiveCustomerSubscriptions,
   listCustomerPayments,
   planFromPriceId,
   resolveAsaasEnv,
@@ -19,6 +21,9 @@ const supabase = createClient(
   Deno.env.get("SUPABASE_URL")!,
   Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
 );
+
+/** Janela de reuso da sessão de checkout já criada. */
+const REUSE_WINDOW_MS = 30 * 60 * 1000;
 
 function json(body: unknown, status = 200) {
   return new Response(JSON.stringify(body), {
@@ -55,6 +60,32 @@ Deno.serve(async (req) => {
       return json({ error: "Informe um telefone com DDD para o pagamento." }, 400);
     }
 
+    const planId = planFromPriceId(priceId);
+    const recurring = isRecurringPrice(priceId);
+
+    // 1) Reaproveita uma sessão de checkout recente do mesmo plano.
+    const cutoff = new Date(Date.now() - REUSE_WINDOW_MS).toISOString();
+    const { data: reusable } = await supabase
+      .from("subscriptions")
+      .select("id, checkout_url, checkout_expires_at")
+      .eq("user_id", user.id)
+      .eq("environment", env)
+      .eq("provider", "asaas")
+      .eq("price_id", priceId)
+      .eq("status", "incomplete")
+      .gte("created_at", cutoff)
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+
+    if (
+      reusable?.checkout_url &&
+      reusable.checkout_expires_at &&
+      new Date(reusable.checkout_expires_at as string) > new Date()
+    ) {
+      return json({ checkoutUrl: reusable.checkout_url, reused: true });
+    }
+
     const customer = await findOrCreateCustomer(env, {
       email: user.email ?? undefined,
       userId: user.id,
@@ -63,12 +94,54 @@ Deno.serve(async (req) => {
       phone,
     });
 
-    const planId = planFromPriceId(priceId);
-    const recurring = isRecurringPrice(priceId);
+    // 2) Nunca cria uma segunda assinatura ativa para o mesmo plano.
+    if (recurring) {
+      const activeRemote = await listActiveCustomerSubscriptions(env, customer.id);
+      const samePlan = activeRemote.find((s) => (s.externalReference ?? "").endsWith(`:${priceId}`));
+      if (samePlan) {
+        return json({
+          error: "Você já tem uma assinatura ativa deste plano. Veja os detalhes na sua conta.",
+          alreadySubscribed: true,
+          manageUrl: `${origin}/conta`,
+        }, 409);
+      }
+    }
+
+    const expiresAt = new Date(Date.now() + 60 * 60 * 1000).toISOString();
 
     const requestedBillingType = body?.billingType === "PIX" ? "PIX" : "CREDIT_CARD";
     if (requestedBillingType === "PIX" && !recurring) {
       return json({ error: "O Pix mensal só está disponível para assinaturas mensais." }, 400);
+    }
+
+    // 3) Grava a intenção ANTES de criar no Asaas, para não gerar cobrança órfã.
+    const intent = {
+      user_id: user.id,
+      provider: "asaas",
+      provider_customer_id: customer.id,
+      plan_id: planId,
+      price_id: priceId,
+      status: "incomplete",
+      access_type: recurring ? "recurring" : "one_time",
+      environment: env,
+      checkout_expires_at: expiresAt,
+      updated_at: new Date().toISOString(),
+    };
+
+    let intentId = reusable?.id as string | undefined;
+    if (intentId) {
+      const { error } = await supabase.from("subscriptions").update(intent).eq("id", intentId);
+      if (error) throw new Error(`Erro ao registrar a cobrança: ${error.message}`);
+    } else {
+      const { data: inserted, error } = await supabase
+        .from("subscriptions")
+        .insert(intent)
+        .select("id")
+        .single();
+      if (error || !inserted) {
+        throw new Error(`Erro ao registrar a cobrança: ${error?.message ?? "sem retorno"}`);
+      }
+      intentId = inserted.id as string;
     }
 
     if (requestedBillingType === "PIX") {
@@ -94,35 +167,46 @@ Deno.serve(async (req) => {
         }
         throw error;
       }
-      const payments = await listCustomerPayments(env, customer.id);
-      const firstPayment = payments.find((payment) => payment.subscription === subscription.id);
-      if (!firstPayment?.invoiceUrl) {
-        throw new Error("O Asaas não retornou a cobrança Pix da assinatura.");
+
+      // Daqui em diante, qualquer falha cancela a assinatura recém-criada.
+      try {
+        const payments = await listCustomerPayments(env, customer.id);
+        const firstPayment = payments.find((payment) => payment.subscription === subscription.id);
+        if (!firstPayment?.invoiceUrl) {
+          throw new Error("O Asaas não retornou a cobrança Pix da assinatura.");
+        }
+
+        const { error: linkError } = await supabase
+          .from("subscriptions")
+          .update({
+            provider_subscription_id: subscription.id,
+            checkout_url: firstPayment.invoiceUrl,
+            checkout_expires_at: expiresAt,
+            updated_at: new Date().toISOString(),
+          })
+          .eq("id", intentId);
+        if (linkError) throw new Error(`Erro ao registrar assinatura: ${linkError.message}`);
+
+        return json({ checkoutUrl: firstPayment.invoiceUrl, billingType: "PIX" });
+      } catch (error) {
+        try {
+          await cancelSubscription(env, subscription.id);
+          console.error("Assinatura Pix cancelada após falha local:", subscription.id);
+        } catch (cancelError) {
+          console.error("Falha ao cancelar assinatura órfã:", subscription.id, cancelError);
+        }
+        throw error;
       }
-
-      const { error: intentError } = await supabase.from("subscriptions").insert({
-        user_id: user.id,
-        provider: "asaas",
-        provider_customer_id: customer.id,
-        provider_subscription_id: subscription.id,
-        plan_id: planId,
-        price_id: priceId,
-        status: "incomplete",
-        access_type: "recurring",
-        environment: env,
-        updated_at: new Date().toISOString(),
-      });
-      if (intentError) throw new Error(`Erro ao registrar assinatura: ${intentError.message}`);
-
-      return json({ checkoutUrl: firstPayment.invoiceUrl, billingType: "PIX" });
     }
 
     const sessionOptions = {
+      customerId: customer.id,
       priceId: priceId as PriceId,
       userId: user.id,
       successUrl: `${origin}/planos?checkout=success`,
       cancelUrl: `${origin}/planos?checkout=cancelled`,
       expiredUrl: `${origin}/planos?checkout=expired`,
+      billingTypes: ["CREDIT_CARD"],
     };
 
     let session;
@@ -130,44 +214,21 @@ Deno.serve(async (req) => {
       session = await createCheckoutSession(env, sessionOptions);
     } catch (error) {
       if (!isPixKeyMissingError(error)) throw error;
-      // Conta sem chave Pix cadastrada: refaz o checkout apenas com cartão.
       console.warn("Asaas sem chave Pix; refazendo checkout apenas com cartão.");
-      session = await createCheckoutSession(env, {
-        ...sessionOptions,
-        billingTypes: ["CREDIT_CARD"],
-      });
+      session = await createCheckoutSession(env, sessionOptions);
     }
 
-    // Registra a intenção; o webhook confirma o pagamento.
-    const intent = {
-      user_id: user.id,
-      provider: "asaas",
-      provider_customer_id: customer.id,
-      plan_id: planId,
-      price_id: priceId,
-      status: "incomplete",
-      access_type: recurring ? "recurring" : "one_time",
-      environment: env,
-      updated_at: new Date().toISOString(),
-    };
-
-    const { data: existing } = await supabase
+    const checkoutUrl = session.link || checkoutSessionUrl(env, session.id);
+    await supabase
       .from("subscriptions")
-      .select("id")
-      .eq("user_id", user.id)
-      .eq("environment", env)
-      .eq("provider", "asaas")
-      .eq("status", "incomplete")
-      .limit(1)
-      .maybeSingle();
+      .update({
+        checkout_url: checkoutUrl,
+        checkout_expires_at: expiresAt,
+        updated_at: new Date().toISOString(),
+      })
+      .eq("id", intentId);
 
-    if (existing?.id) {
-      await supabase.from("subscriptions").update(intent).eq("id", existing.id);
-    } else {
-      await supabase.from("subscriptions").insert(intent);
-    }
-
-    return json({ checkoutUrl: session.link || checkoutSessionUrl(env, session.id) });
+    return json({ checkoutUrl });
   } catch (error) {
     console.error("asaas-create-checkout error:", error);
     return json({ error: error instanceof Error ? error.message : "Erro ao iniciar checkout" }, 400);
