@@ -365,7 +365,7 @@ export function CorrecaoCalc({ onUsarValor, usarValorLabel = "Usar este valor", 
 
       <Collapsible open={usarDatasJuros} onOpenChange={setUsarDatasJuros}>
         <CollapsibleTrigger asChild>
-          <Button variant="ghost" size="sm" className="px-0">
+          <Button variant="ghost" size="sm" className="h-auto min-h-9 whitespace-normal px-0 text-left">
             <ChevronDown className={`mr-1.5 h-4 w-4 transition-transform ${usarDatasJuros ? "rotate-180" : ""}`} />
             Definir período próprio para os juros (opcional)
           </Button>
