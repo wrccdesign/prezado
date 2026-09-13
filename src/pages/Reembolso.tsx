@@ -42,7 +42,7 @@ export default function Reembolso() {
           Acesse <a href="/conta">Minha conta</a> e localize a fatura correspondente; e
         </li>
         <li>
-          Envie um e-mail para <a href="mailto:wrccdesign@gmail.com">wrccdesign@gmail.com</a> com o comprovante
+          Envie um e-mail para <a href="mailto:contato@honorifico.com.br">contato@honorifico.com.br</a> com o comprovante
           da compra que retornaremos em até 2 dias úteis.
         </li>
       </ol>
@@ -69,14 +69,14 @@ export default function Reembolso() {
 
       <h2>Casos especiais</h2>
       <ul>
-        <li><strong>Cobrança duplicada ou não reconhecida:</strong> reembolso integral, independentemente do prazo. Escreva imediatamente para <a href="mailto:wrccdesign@gmail.com">wrccdesign@gmail.com</a>.</li>
+        <li><strong>Cobrança duplicada ou não reconhecida:</strong> reembolso integral, independentemente do prazo. Escreva imediatamente para <a href="mailto:contato@honorifico.com.br">contato@honorifico.com.br</a>.</li>
         <li><strong>Falha do Serviço:</strong> se o Serviço estiver indisponível por período prolongado, avalie reembolso proporcional junto ao suporte.</li>
         <li><strong>Estorno (<em>chargeback</em>):</strong> incentivamos o contato prévio conosco antes de abrir estorno no cartão — resolvemos com mais rapidez.</li>
       </ul>
 
       <h2>Contato</h2>
       <p>
-        Dúvidas sobre pagamento, fatura ou reembolso: <a href="mailto:wrccdesign@gmail.com">wrccdesign@gmail.com</a>.
+        Dúvidas sobre pagamento, fatura ou reembolso: <a href="mailto:contato@honorifico.com.br">contato@honorifico.com.br</a>.
       </p>
     </LegalPageLayout>
   );

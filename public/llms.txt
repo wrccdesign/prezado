@@ -35,4 +35,4 @@ Versão detalhada, com fórmulas, base legal e perguntas respondidas: /llms-full
 - [Entrar](/auth): Cadastro e login.
 - [Termos de Uso](/termos), [Privacidade](/privacidade), [Reembolso](/reembolso): Documentos legais.
 
-Contato: wrccdesign@gmail.com
+Contato: contato@honorifico.com.br

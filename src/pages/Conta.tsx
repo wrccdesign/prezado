@@ -363,7 +363,7 @@ export default function Conta() {
                 volumes bem maiores por mês e renovação no primeiro dia de cada mês (horário de
                 Brasília). Saldo não utilizado não acumula para o mês seguinte. Esta mudança vale
                 a partir de agora; se ela prejudicar seu uso, fale com{" "}
-                <a className="underline" href="mailto:wrccdesign@gmail.com">wrccdesign@gmail.com</a>{" "}
+                <a className="underline" href="mailto:contato@honorifico.com.br">contato@honorifico.com.br</a>{" "}
                 nos próximos 30 dias.
               </p>
             </div>
