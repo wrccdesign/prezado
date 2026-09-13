@@ -42,6 +42,8 @@ export default function Index({ embedded = false }: { embedded?: boolean }) {
   const [rodadasIncluidas, setRodadasIncluidas] = useState<number | null>(null);
 
   const [esclarecimentos, setEsclarecimentos] = useState<Record<string, string>>({});
+  const [esclarecimentoResumo, setEsclarecimentoResumo] = useState("");
+  const [esclarecimentoDirecionamentos, setEsclarecimentoDirecionamentos] = useState("");
   const [editingText, setEditingText] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
   const restored = useRef(false);
@@ -60,6 +62,8 @@ export default function Index({ embedded = false }: { embedded?: boolean }) {
         result?: LegalAnalysis | null;
         rodada?: number;
         esclarecimentos?: Record<string, string>;
+        esclarecimentoResumo?: string;
+        esclarecimentoDirecionamentos?: string;
       };
       if (saved.result) setResult(saved.result);
       if (saved.text) setText(saved.text);
@@ -67,6 +71,9 @@ export default function Index({ embedded = false }: { embedded?: boolean }) {
       if (saved.fileName !== undefined) setFileName(saved.fileName);
       if (saved.rodada) setRodada(saved.rodada);
       if (saved.esclarecimentos) setEsclarecimentos(saved.esclarecimentos);
+      if (saved.esclarecimentoResumo) setEsclarecimentoResumo(saved.esclarecimentoResumo);
+      if (saved.esclarecimentoDirecionamentos)
+        setEsclarecimentoDirecionamentos(saved.esclarecimentoDirecionamentos);
     } catch {
       // estado corrompido: começa limpo
     }
@@ -81,12 +88,30 @@ export default function Index({ embedded = false }: { embedded?: boolean }) {
       }
       sessionStorage.setItem(
         SESSION_KEY,
-        JSON.stringify({ text, fileName, analyzedText, result, rodada, esclarecimentos }),
+        JSON.stringify({
+          text,
+          fileName,
+          analyzedText,
+          result,
+          rodada,
+          esclarecimentos,
+          esclarecimentoResumo,
+          esclarecimentoDirecionamentos,
+        }),
       );
     } catch {
       // quota cheia: seguir sem espelho
     }
-  }, [text, fileName, analyzedText, result, rodada, esclarecimentos]);
+  }, [
+    text,
+    fileName,
+    analyzedText,
+    result,
+    rodada,
+    esclarecimentos,
+    esclarecimentoResumo,
+    esclarecimentoDirecionamentos,
+  ]);
 
 
   const processFile = async (file: File) => {
@@ -272,6 +297,8 @@ export default function Index({ embedded = false }: { embedded?: boolean }) {
     if (!refine) {
       setResult(null);
       setEsclarecimentos({});
+      setEsclarecimentoResumo("");
+      setEsclarecimentoDirecionamentos("");
     }
 
     try {
@@ -292,8 +319,12 @@ export default function Index({ embedded = false }: { embedded?: boolean }) {
                 tipo_de_causa: previous?.tipo_de_causa,
                 riscos_processuais: previous?.riscos_processuais ?? [],
                 pontos_fracos: previous?.pontos_fracos ?? [],
+                resumo: previous?.resumo,
+                direcionamentos: previous?.direcionamentos ?? [],
               },
               esclarecimentos: esclarecimentosPayload,
+              esclarecimento_resumo: esclarecimentoResumo.trim() || undefined,
+              esclarecimento_direcionamentos: esclarecimentoDirecionamentos.trim() || undefined,
             }
           : { text: currentText, file_name: fileName },
       });
@@ -307,7 +338,11 @@ export default function Index({ embedded = false }: { embedded?: boolean }) {
       if (typeof data.rodadas_incluidas === "number") setRodadasIncluidas(data.rodadas_incluidas);
 
       setEditingText(false);
-      if (refine) setEsclarecimentos({});
+      if (refine) {
+        setEsclarecimentos({});
+        setEsclarecimentoResumo("");
+        setEsclarecimentoDirecionamentos("");
+      }
       notifyUsageConsumed();
       toast({ title: refine ? "Nova análise concluída!" : "Análise concluída!" });
     } catch (err: any) {
@@ -353,6 +388,8 @@ export default function Index({ embedded = false }: { embedded?: boolean }) {
     setPartialExtraction(false);
     setRodada(1);
     setEsclarecimentos({});
+    setEsclarecimentoResumo("");
+    setEsclarecimentoDirecionamentos("");
     setEditingText(false);
     try {
       sessionStorage.removeItem(SESSION_KEY);
@@ -396,6 +433,10 @@ export default function Index({ embedded = false }: { embedded?: boolean }) {
 
           esclarecimentos={esclarecimentos}
           onEsclarecimentoChange={handleEsclarecimentoChange}
+          esclarecimentoResumo={esclarecimentoResumo}
+          onEsclarecimentoResumoChange={setEsclarecimentoResumo}
+          esclarecimentoDirecionamentos={esclarecimentoDirecionamentos}
+          onEsclarecimentoDirecionamentosChange={setEsclarecimentoDirecionamentos}
           onReanalyze={() => void handleAnalyze({ refine: true })}
           onEditText={handleEditText}
           reanalyzing={loading}

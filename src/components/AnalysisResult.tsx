@@ -78,6 +78,10 @@ export function AnalysisResult({
   rodadasIncluidas,
   esclarecimentos,
   onEsclarecimentoChange,
+  esclarecimentoResumo,
+  onEsclarecimentoResumoChange,
+  esclarecimentoDirecionamentos,
+  onEsclarecimentoDirecionamentosChange,
   onReanalyze,
   onEditText,
   reanalyzing = false,
@@ -93,6 +97,12 @@ export function AnalysisResult({
   /** Esclarecimentos escritos pelo usuário, indexados pelo texto do item. */
   esclarecimentos?: Record<string, string>;
   onEsclarecimentoChange?: (item: string, value: string) => void;
+  /** Esclarecimento sobre o bloco do resumo como um todo. */
+  esclarecimentoResumo?: string;
+  onEsclarecimentoResumoChange?: (value: string) => void;
+  /** Esclarecimento sobre o bloco de recomendações como um todo. */
+  esclarecimentoDirecionamentos?: string;
+  onEsclarecimentoDirecionamentosChange?: (value: string) => void;
   onReanalyze?: () => void;
   onEditText?: () => void;
   reanalyzing?: boolean;
@@ -102,32 +112,43 @@ export function AnalysisResult({
   const [openItems, setOpenItems] = useState<Record<string, boolean>>({});
   const clarifications = esclarecimentos ?? {};
   const canClarify = !!onEsclarecimentoChange && !!onReanalyze;
-  const filledCount = Object.values(clarifications).filter((v) => v.trim().length > 0).length;
+  const resumoClarify = esclarecimentoResumo ?? "";
+  const direcionamentosClarify = esclarecimentoDirecionamentos ?? "";
+  const filledCount =
+    Object.values(clarifications).filter((v) => v.trim().length > 0).length +
+    (resumoClarify.trim().length > 0 ? 1 : 0) +
+    (direcionamentosClarify.trim().length > 0 ? 1 : 0);
   const refinamentosUsados = Math.max(0, rodada - 1);
 
 
   const toggleItem = (item: string) =>
     setOpenItems((prev) => ({ ...prev, [item]: !prev[item] }));
 
-  const renderClarifyField = (item: string) => {
-    if (!canClarify) return null;
-    const open = openItems[item] || (clarifications[item]?.length ?? 0) > 0;
+  const renderClarifyBox = (opts: {
+    key: string;
+    label: string;
+    placeholder: string;
+    value: string;
+    onChange?: (value: string) => void;
+  }) => {
+    if (!canClarify || !opts.onChange) return null;
+    const open = openItems[opts.key] || opts.value.length > 0;
     return (
       <div className="mt-2">
         {!open ? (
           <button
             type="button"
-            onClick={() => toggleItem(item)}
+            onClick={() => toggleItem(opts.key)}
             className="inline-flex items-center gap-1.5 text-xs font-medium text-muted-foreground underline-offset-4 hover:text-foreground hover:underline"
           >
             <MessageSquarePlus className="h-3.5 w-3.5" />
-            Esclarecer este ponto
+            {opts.label}
           </button>
         ) : (
           <Textarea
-            value={clarifications[item] ?? ""}
-            onChange={(e) => onEsclarecimentoChange?.(item, e.target.value)}
-            placeholder="Explique por que este ponto já está resolvido ou não se aplica ao caso."
+            value={opts.value}
+            onChange={(e) => opts.onChange?.(e.target.value)}
+            placeholder={opts.placeholder}
             className="min-h-[72px] text-base leading-relaxed"
             maxLength={1500}
           />
@@ -135,6 +156,15 @@ export function AnalysisResult({
       </div>
     );
   };
+
+  const renderClarifyField = (item: string) =>
+    renderClarifyBox({
+      key: item,
+      label: "Esclarecer este ponto",
+      placeholder: "Explique por que este ponto já está resolvido ou não se aplica ao caso.",
+      value: clarifications[item] ?? "",
+      onChange: (value) => onEsclarecimentoChange?.(item, value),
+    });
 
 
   const copyJson = () => {
@@ -307,6 +337,13 @@ export function AnalysisResult({
         <div className="md:col-span-2">
           <SectionCard icon={BookOpen} title="Resumo da Análise" variant="highlight">
             <p className="text-reading text-foreground">{result.resumo}</p>
+            {renderClarifyBox({
+              key: "__resumo__",
+              label: "Esclarecer o resumo",
+              placeholder: "Algo no resumo está impreciso? Aponte aqui, inclusive valores e cálculos.",
+              value: resumoClarify,
+              onChange: onEsclarecimentoResumoChange,
+            })}
           </SectionCard>
         </div>
 
@@ -437,6 +474,13 @@ export function AnalysisResult({
             </div>
           ))}
         </div>
+        {renderClarifyBox({
+          key: "__direcionamentos__",
+          label: "Esclarecer as recomendações",
+          placeholder: "Alguma recomendação não se aplica ao caso, ou algum valor está errado? Explique aqui.",
+          value: direcionamentosClarify,
+          onChange: onEsclarecimentoDirecionamentosChange,
+        })}
       </SectionCard>
 
       {/* Fontes de Consulta Recomendadas - FIXED LINKS */}

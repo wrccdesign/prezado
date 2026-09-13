@@ -158,6 +158,8 @@ interface AnalisePrevia {
   riscos_processuais: string[];
   pontos_fracos: string[];
   tipo_de_causa?: string;
+  resumo?: string;
+  direcionamentos?: string[];
 }
 
 function clampText(value: unknown, max: number): string | null {
@@ -186,11 +188,17 @@ function sanitizeAnalisePrevia(value: unknown): AnalisePrevia | null {
   const raw = value as Record<string, unknown>;
   const riscos = sanitizeStringList(raw.riscos_processuais, 20);
   const fracos = sanitizeStringList(raw.pontos_fracos, 20);
-  if (riscos.length === 0 && fracos.length === 0) return null;
+  const resumo = clampText(raw.resumo, 3000) ?? undefined;
+  const direcionamentos = sanitizeStringList(raw.direcionamentos, 20);
+  if (riscos.length === 0 && fracos.length === 0 && !resumo && direcionamentos.length === 0) {
+    return null;
+  }
   return {
     riscos_processuais: riscos,
     pontos_fracos: fracos,
     tipo_de_causa: clampText(raw.tipo_de_causa, 200) ?? undefined,
+    resumo,
+    direcionamentos: direcionamentos.length > 0 ? direcionamentos : undefined,
   };
 }
 
@@ -214,6 +222,8 @@ function buildIterationBlock(
   esclarecimentos: EsclarecimentoInput[],
   textoAlterado: boolean,
   rodada: number,
+  esclarecimentoResumo?: string | null,
+  esclarecimentoDirecionamentos?: string | null,
 ): string {
   const findEsclarecimento = (item: string) =>
     esclarecimentos.find((e) => e.item_original === item)?.esclarecimento;
@@ -229,11 +239,30 @@ function buildIterationBlock(
     return `\n${titulo}\n${linhas}\n`;
   };
 
+  const blocoResumo = esclarecimentoResumo
+    ? `
+OBSERVAÇÃO DO USUÁRIO SOBRE O RESUMO DA RODADA ANTERIOR:
+Resumo anterior: ${anterior.resumo ?? "(não informado)"}
+Observação do usuário: ${esclarecimentoResumo}
+Reescreva o resumo desta rodada incorporando o que for pertinente nessa observação e corrija explicitamente qualquer número ou valor que ela questione. Se discordar da observação, diga no próprio resumo por que o ponto permanece.
+`
+    : "";
+
+  const blocoDirecionamentos = esclarecimentoDirecionamentos
+    ? `
+OBSERVAÇÃO DO USUÁRIO SOBRE AS RECOMENDAÇÕES DA RODADA ANTERIOR:
+Recomendações anteriores:
+${(anterior.direcionamentos ?? []).map((d, i) => `${i + 1}. ${d}`).join("\n") || "(não informadas)"}
+Observação do usuário: ${esclarecimentoDirecionamentos}
+Ajuste as recomendações desta rodada conforme essa observação: remova as que deixaram de fazer sentido, corrija valores e prazos questionados e mantenha, com justificativa na própria recomendação, as que continuam necessárias.
+`
+    : "";
+
   return `
 
 ## ANÁLISE ANTERIOR (RODADA ${rodada - 1}) E ESCLARECIMENTOS DO USUÁRIO
 Este é um REFINAMENTO. O usuário revisou o material e respondeu aos apontamentos abaixo.
-${render("RISCOS PROCESSUAIS APONTADOS ANTES:", anterior.riscos_processuais)}${render("PONTOS FRACOS APONTADOS ANTES:", anterior.pontos_fracos)}
+${render("RISCOS PROCESSUAIS APONTADOS ANTES:", anterior.riscos_processuais)}${render("PONTOS FRACOS APONTADOS ANTES:", anterior.pontos_fracos)}${blocoResumo}${blocoDirecionamentos}
 ${textoAlterado
       ? "O TEXTO FOI EDITADO desde a rodada anterior. Confira no texto atual se o ponto foi de fato corrigido; não confie apenas na alegação do usuário."
       : "O texto NÃO foi editado: avalie apenas se o esclarecimento supre a lacuna apontada."}
@@ -244,7 +273,9 @@ Para CADA item listado acima você DEVE decidir explicitamente:
 - MANTER: o ponto continua de pé. Mantenha o item na lista correspondente E registre-o em "itens_mantidos" explicando por que o esclarecimento não resolve.
 É PROIBIDO repetir um item da rodada anterior sem se posicionar sobre o esclarecimento correspondente.
 Em "itens_resolvidos" e "itens_mantidos", repita o texto do item EXATAMENTE como aparece acima.
-Itens NOVOS, que não estavam na rodada anterior, podem ser incluídos normalmente nas listas e não entram nesses dois campos.`;
+Itens NOVOS, que não estavam na rodada anterior, podem ser incluídos normalmente nas listas e não entram nesses dois campos.
+
+ATENÇÃO A VALORES: se a rodada anterior citou qualquer número, valor em dinheiro, percentual, índice de correção, prazo em dias ou data, e o usuário apontou erro ou trouxe dado novo, recalcule a partir do dado do usuário e do texto atual. Não repita o número anterior por inércia. Se o texto não permite chegar a um valor confiável, diga isso de forma explícita em vez de estimar. Quando apresentar um valor, indique de onde ele saiu (trecho do texto, dado informado pelo usuário ou norma aplicável).`;
 }
 
 serve(async (req) => {
@@ -283,8 +314,17 @@ serve(async (req) => {
     const anterior = sanitizeAnalisePrevia(body?.analise_anterior);
     const esclarecimentos = sanitizeEsclarecimentos(body?.esclarecimentos);
     const textoAlterado = body?.texto_alterado === true;
+    const esclarecimentoResumo = clampText(body?.esclarecimento_resumo, 1500);
+    const esclarecimentoDirecionamentos = clampText(body?.esclarecimento_direcionamentos, 1500);
     const iterationBlock = anterior
-      ? buildIterationBlock(anterior, esclarecimentos, textoAlterado, rodada)
+      ? buildIterationBlock(
+          anterior,
+          esclarecimentos,
+          textoAlterado,
+          rodada,
+          esclarecimentoResumo,
+          esclarecimentoDirecionamentos,
+        )
       : "";
 
     // Esta é a função mais cara do produto (duas chamadas de IA), portanto
