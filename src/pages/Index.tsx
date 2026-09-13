@@ -42,6 +42,8 @@ export default function Index({ embedded = false }: { embedded?: boolean }) {
   const [rodadasIncluidas, setRodadasIncluidas] = useState<number | null>(null);
 
   const [esclarecimentos, setEsclarecimentos] = useState<Record<string, string>>({});
+  const [esclarecimentoResumo, setEsclarecimentoResumo] = useState("");
+  const [esclarecimentoDirecionamentos, setEsclarecimentoDirecionamentos] = useState("");
   const [editingText, setEditingText] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
   const restored = useRef(false);
