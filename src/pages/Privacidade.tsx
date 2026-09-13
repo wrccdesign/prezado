@@ -30,7 +30,7 @@ export default function Privacidade() {
         <li><strong>Perfil de advogado (opcional):</strong> número e UF da OAB, nome do escritório, endereço, telefone e e‑mail do escritório.</li>
         <li><strong>Conteúdo enviado:</strong> descrições de situações, fatos e pedidos de petição, mensagens de chat, documentos carregados para análise.</li>
         <li><strong>Dados de uso:</strong> páginas visitadas, ações realizadas, contadores de uso mensal por funcionalidade, data e hora de acesso, endereço IP, tipo de navegador/dispositivo.</li>
-        <li><strong>Dados de pagamento:</strong> os dados de cartão são coletados e processados diretamente pela Stripe (provedor certificado PCI-DSS); o Honorífico recebe apenas identificadores de transação, status da assinatura, plano contratado e e-mail do pagador.</li>
+        <li><strong>Dados de pagamento:</strong> os dados de cartão são coletados e processados diretamente pelo Asaas (provedor certificado PCI-DSS); o Honorífico recebe apenas identificadores de transação, status da assinatura, plano contratado e e-mail do pagador.</li>
         <li><strong>Cookies estritamente necessários</strong> para autenticação e funcionamento do Serviço.</li>
       </ul>
 
@@ -68,7 +68,7 @@ export default function Privacidade() {
         <li><strong>Provedor de infraestrutura em nuvem</strong> (hospedagem, banco de dados, autenticação, armazenamento de arquivos).</li>
         <li><strong>Provedor de modelos de IA</strong> — processamento dos prompts enviados por você para gerar respostas.</li>
         <li><strong>Provedor de embeddings jurídicos</strong> — geração de representações vetoriais para busca semântica.</li>
-        <li><strong>Stripe, Inc.</strong> — processamento de pagamentos, prevenção a fraudes e emissão de recibos. Consulte a <a href="https://stripe.com/br/privacy" target="_blank" rel="noopener noreferrer">Política de Privacidade da Stripe</a>.</li>
+        <li><strong>Asaas</strong> — processamento de pagamentos, prevenção a fraudes e emissão de recibos. Consulte a <a href="https://www.asaas.com" target="_blank" rel="noopener noreferrer">Política de Privacidade do Asaas</a>.</li>
         <li><strong>Autoridades públicas</strong> — quando exigido por lei, ordem judicial ou proteção de direitos.</li>
       </ul>
 

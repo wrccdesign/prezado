@@ -35,7 +35,7 @@ export default function Reembolso() {
       <h2>Como solicitar o reembolso</h2>
       <p>
         As assinaturas são vendidas pelo <strong>Honorífico</strong>, entidade sediada na Irlanda, e os
-        pagamentos são processados com segurança pela <strong>Stripe</strong>. Para solicitar reembolso:
+        pagamentos são processados com segurança pelo <strong>Asaas</strong>. Para solicitar reembolso:
       </p>
       <ol>
         <li>
@@ -47,9 +47,9 @@ export default function Reembolso() {
         </li>
       </ol>
       <p>
-        Reembolsamos integralmente o valor da assinatura. Eventuais encargos cobrados pelo seu banco em
-        compras internacionais (como IOF ou tarifa de conversão) não são recebidos por nós e seguem a
-        política da instituição emissora do cartão.
+        Reembolsamos integralmente o valor da assinatura. Eventuais tarifas ou encargos cobrados pela
+        instituição emissora do meio de pagamento não são recebidos por nós e seguem a política da própria
+        instituição.
       </p>
 
       <h2>Como o reembolso é processado</h2>
