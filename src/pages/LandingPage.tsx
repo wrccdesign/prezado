@@ -218,7 +218,7 @@ export default function LandingPage() {
               <li key={e.title} className="relative border-t border-navy/25 pt-6">
                 <span className="font-serif text-5xl leading-none text-navy/15 tabular">0{i + 1}</span>
                 <h3 className="text-h3 text-navy mt-5">{e.title}</h3>
-                <p className="text-navy/70 text-reading mt-3 md:min-h-[6.5rem]">{e.body}</p>
+                <p className="text-navy/70 text-reading mt-3 md:min-h-[5.5rem]">{e.body}</p>
                 <Link
                   to={e.href}
                   className="inline-block text-navy text-sm font-medium mt-5 border-b border-navy/30 hover:border-gold hover:text-gold transition-colors"
