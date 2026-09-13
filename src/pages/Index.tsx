@@ -433,6 +433,10 @@ export default function Index({ embedded = false }: { embedded?: boolean }) {
 
           esclarecimentos={esclarecimentos}
           onEsclarecimentoChange={handleEsclarecimentoChange}
+          esclarecimentoResumo={esclarecimentoResumo}
+          onEsclarecimentoResumoChange={setEsclarecimentoResumo}
+          esclarecimentoDirecionamentos={esclarecimentoDirecionamentos}
+          onEsclarecimentoDirecionamentosChange={setEsclarecimentoDirecionamentos}
           onReanalyze={() => void handleAnalyze({ refine: true })}
           onEditText={handleEditText}
           reanalyzing={loading}
