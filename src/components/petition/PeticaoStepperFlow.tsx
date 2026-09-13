@@ -349,7 +349,7 @@ export function PeticaoStepperFlow({ tipoAcaoOptions, varaJuizoOptions, initial 
               <Button variant="outline" onClick={() => setStep(1)} disabled={loading}>
                 <ArrowLeft className="mr-2 h-4 w-4" /> Voltar
               </Button>
-              <Button className="flex-1" onClick={goFundamentacao} disabled={loading || keywords.length === 0}>
+              <Button className="h-auto min-h-10 flex-1 whitespace-normal py-2" onClick={goFundamentacao} disabled={loading || keywords.length === 0}>
                 {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <ArrowRight className="mr-2 h-4 w-4" />}
                 Buscar legislação
               </Button>
@@ -402,7 +402,7 @@ export function PeticaoStepperFlow({ tipoAcaoOptions, varaJuizoOptions, initial 
               <Button variant="outline" onClick={() => setStep(2)} disabled={loading}>
                 <ArrowLeft className="mr-2 h-4 w-4" /> Voltar
               </Button>
-              <Button className="flex-1" onClick={goPrecedentes} disabled={loading}>
+              <Button className="h-auto min-h-10 flex-1 whitespace-normal py-2" onClick={goPrecedentes} disabled={loading}>
                 {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <ArrowRight className="mr-2 h-4 w-4" />}
                 Buscar precedentes
               </Button>
@@ -472,7 +472,7 @@ export function PeticaoStepperFlow({ tipoAcaoOptions, varaJuizoOptions, initial 
               <Button variant="outline" onClick={() => setStep(3)} disabled={loading}>
                 <ArrowLeft className="mr-2 h-4 w-4" /> Voltar
               </Button>
-              <Button className="flex-1" size="lg" onClick={goFinal} disabled={loading}>
+              <Button className="h-auto min-h-10 flex-1 whitespace-normal py-2" size="lg" onClick={goFinal} disabled={loading}>
                 {loading ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : <FileSignature className="mr-2 h-5 w-5" />}
                 {loading ? "Gerando Petição..." : "Gerar Petição"}
               </Button>
