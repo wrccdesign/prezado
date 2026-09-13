@@ -30,9 +30,9 @@ export function FonteTable({
 
       <div className="mt-8 overflow-hidden rounded-lg border border-cream-dark bg-white">
         <div className="overflow-x-auto">
-        <table className="w-full text-sm text-left">
+        <table className="w-full text-base text-left">
           <thead>
-            <tr className="border-b border-cream-dark bg-cream-dark/45 font-medium">
+            <tr className="border-b border-cream-dark bg-cream-dark/45 font-medium text-note">
               <th scope="col" className="px-5 py-4"></th>
               <th scope="col" className="px-5 py-4 text-navy/60">Sem fonte verificável</th>
               <th scope="col" className="border-l border-gold/20 px-5 py-4 text-navy">No Honorífico</th>
