@@ -186,7 +186,7 @@ export default function LandingPage() {
                 <p className="font-mono text-sm text-navy/70 mt-1">{heroDecision.numeroCnj}</p>
                 <p className="font-serif text-lg leading-relaxed mt-6 line-clamp-5">{heroDecision.ementa}</p>
                 <p className="text-note text-navy/60 mt-3">{heroDecision.relatoria}</p>
-                <div className="mt-5 pt-4 border-t border-cream-dark flex items-center justify-between text-sm">
+                <div className="mt-5 pt-4 border-t border-cream-dark flex items-center justify-between text-note">
                   <a
                     href={heroDecision.sourceUrl}
                     target="_blank"
@@ -218,7 +218,7 @@ export default function LandingPage() {
               <li key={e.title} className="relative border-t border-navy/25 pt-6">
                 <span className="font-serif text-5xl leading-none text-navy/15 tabular">0{i + 1}</span>
                 <h3 className="text-h3 text-navy mt-5">{e.title}</h3>
-                <p className="text-navy/70 text-sm leading-relaxed mt-3 min-h-[4.5rem]">{e.body}</p>
+                <p className="text-navy/70 text-reading mt-3 md:min-h-[6.5rem]">{e.body}</p>
                 <Link
                   to={e.href}
                   className="inline-block text-navy text-sm font-medium mt-5 border-b border-navy/30 hover:border-gold hover:text-gold transition-colors"
@@ -229,7 +229,7 @@ export default function LandingPage() {
             ))}
           </ol>
 
-          <p className="border-t border-navy/15 pt-5 text-navy/70 text-sm mt-12">
+          <p className="border-t border-navy/15 pt-5 text-navy/70 text-reading mt-12">
             O chat jurídico acompanha todas as etapas para dúvidas de legislação e jurisprudência.{" "}
             <Link to="/chat" className="text-navy underline underline-offset-4 hover:text-gold">Abrir o chat</Link>
           </p>
@@ -261,9 +261,9 @@ export default function LandingPage() {
 
           <div className="mt-10 bg-white rounded-lg border border-cream-dark overflow-hidden">
             <div className="overflow-x-auto">
-              <table className="w-full text-left text-sm">
+              <table className="w-full text-left text-base">
                 <thead>
-                  <tr className="font-medium text-navy/70 bg-cream-dark/45">
+                  <tr className="font-medium text-navy/70 bg-cream-dark/45 text-note">
                     {["Mês", "Índice", "Variação", "Fator acum.", "Saldo corrigido"].map((h) => (
                       <th key={h} scope="col" className="whitespace-nowrap px-4 py-3 font-medium">{h}</th>
                     ))}
@@ -299,7 +299,7 @@ export default function LandingPage() {
       <section id="calcular" className="bg-cream text-navy py-14 md:py-20">
         <div className="container mx-auto px-4 sm:px-6">
           <h2 className="text-h2">Calcule agora, sem cadastro</h2>
-          <p className="mt-3 text-sm text-navy/70 max-w-[60ch]">
+          <p className="mt-3 text-reading text-navy/70 max-w-[60ch]">
             O cálculo e a memória de cálculo são livres, sem conta. Baixar em PDF ou Word exige conta grátis.
           </p>
 
@@ -314,7 +314,7 @@ export default function LandingPage() {
             />
           </div>
 
-          <p className="mt-4 text-sm text-navy/70">
+          <p className="mt-4 text-reading text-navy/70">
             Outras calculadoras:{" "}
             <Link to="/calculadoras/prazo-processual" className="text-navy underline underline-offset-4 hover:text-gold">prazo processual</Link>,{" "}
             <Link to="/calculadoras/custas-tjsp" className="text-navy underline underline-offset-4 hover:text-gold">custas do TJSP</Link> e{" "}
@@ -357,15 +357,15 @@ export default function LandingPage() {
                   <span className="absolute top-4 right-4 bg-gold text-navy text-xs font-medium rounded-md px-2 py-0.5">Mais popular</span>
                 )}
                 <h3 className="text-h3">{p.name}</h3>
-                <p className={`text-sm mt-1 mb-4 ${p.highlight ? "text-navy/70" : "text-cream/50"}`}>{p.desc}</p>
+                <p className={`text-reading mt-1 mb-4 ${p.highlight ? "text-navy/70" : "text-cream/50"}`}>{p.desc}</p>
                 <div className="mb-2">
                   <span className="text-h2 tabular">{p.price}</span>
-                  <span className={`text-sm ${p.highlight ? "text-navy/70" : "text-cream/50"}`}>{p.period}</span>
+                  <span className={`text-note ${p.highlight ? "text-navy/70" : "text-cream/50"}`}>{p.period}</span>
                 </div>
-                <p className={`mb-6 text-note min-h-[2.5rem] ${p.highlight ? "text-navy/60" : "text-cream/50"}`}>{p.annualNote ?? ""}</p>
-                <ul className="space-y-2.5 mb-7">
+                <p className={`mb-6 text-note min-h-[3rem] ${p.highlight ? "text-navy/60" : "text-cream/50"}`}>{p.annualNote ?? ""}</p>
+                <ul className="space-y-3 mb-7">
                   {p.features.map((f) => (
-                    <li key={f} className={`flex items-center gap-2 text-sm ${p.highlight ? "text-navy/80" : "text-cream/72"}`}>
+                    <li key={f} className={`flex items-start gap-2 text-reading ${p.highlight ? "text-navy/80" : "text-cream/72"}`}>
                       <Check className="h-4 w-4 text-gold shrink-0" aria-hidden />
                       {f}
                     </li>
