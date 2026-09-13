@@ -180,7 +180,8 @@ export default function Planos() {
   };
 
   const startCheckout = async () => {
-    if (!pendingPriceId) return;
+    // Trava de duplo clique: um pedido de cada vez.
+    if (!pendingPriceId || isCheckoutLoading) return;
     const digits = cpfCnpj.replace(/\D/g, "");
     if (digits.length !== 11 && digits.length !== 14) {
       toast.error("Informe um CPF ou CNPJ válido.");
