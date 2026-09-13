@@ -21,7 +21,7 @@ export default function Privacidade() {
         pelas decisões sobre o tratamento. Como o controlador está estabelecido na Irlanda, os dados de
         usuários brasileiros podem ser transferidos e processados fora do Brasil, com as salvaguardas
         exigidas pela LGPD. Para exercer seus direitos ou tirar dúvidas, use
-        <a href="mailto:wrccdesign@gmail.com"> wrccdesign@gmail.com</a>.
+        <a href="mailto:contato@honorifico.com.br"> contato@honorifico.com.br</a>.
       </p>
 
       <h2>2. Dados que coletamos</h2>
@@ -100,7 +100,7 @@ export default function Privacidade() {
         <li>Peticionar perante a Autoridade Nacional de Proteção de Dados (<a href="https://www.gov.br/anpd" target="_blank" rel="noopener noreferrer">ANPD</a>).</li>
       </ul>
       <p>
-        Para exercer qualquer direito, escreva para <a href="mailto:wrccdesign@gmail.com">wrccdesign@gmail.com</a>.
+        Para exercer qualquer direito, escreva para <a href="mailto:contato@honorifico.com.br">contato@honorifico.com.br</a>.
         Responderemos em até 15 dias.
       </p>
 
@@ -125,7 +125,7 @@ export default function Privacidade() {
 
       <h2>12. Encarregado (DPO) e contato</h2>
       <p>
-        Encarregado de Proteção de Dados: <a href="mailto:wrccdesign@gmail.com">wrccdesign@gmail.com</a>.
+        Encarregado de Proteção de Dados: <a href="mailto:contato@honorifico.com.br">contato@honorifico.com.br</a>.
       </p>
     </LegalPageLayout>
   );

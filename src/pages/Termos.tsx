@@ -17,7 +17,7 @@ export default function Termos() {
       </p>
       <p>
         <strong>Identificação do Vendedor:</strong> Honorífico — entidade sediada na Irlanda. Contato:{" "}
-        <a href="mailto:wrccdesign@gmail.com">wrccdesign@gmail.com</a>.
+        <a href="mailto:contato@honorifico.com.br">contato@honorifico.com.br</a>.
       </p>
 
 
@@ -141,8 +141,8 @@ export default function Termos() {
 
       <h2>13. Contato</h2>
       <p>
-        Dúvidas sobre estes Termos: <a href="mailto:wrccdesign@gmail.com">wrccdesign@gmail.com</a>.
-        Questões sobre pagamento, fatura ou reembolso: <a href="mailto:wrccdesign@gmail.com">wrccdesign@gmail.com</a>.
+        Dúvidas sobre estes Termos: <a href="mailto:contato@honorifico.com.br">contato@honorifico.com.br</a>.
+        Questões sobre pagamento, fatura ou reembolso: <a href="mailto:contato@honorifico.com.br">contato@honorifico.com.br</a>.
       </p>
     </LegalPageLayout>
   );
