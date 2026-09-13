@@ -327,7 +327,7 @@ export function CorrecaoCalc({ onUsarValor, usarValorLabel = "Usar este valor", 
           <Label>Cálculo pro rata die</Label>
           <div className="flex items-center gap-3 pt-1">
             <Switch checked={proRata} onCheckedChange={setProRata} />
-            <span className="text-sm text-navy/70">
+            <span className="text-reading text-navy/70">
               {proRata ? "Proporcional nos meses parciais" : "Meses inteiros"}
             </span>
           </div>
@@ -337,7 +337,7 @@ export function CorrecaoCalc({ onUsarValor, usarValorLabel = "Usar este valor", 
             <Label>Manter o índice escolhido após 30/08/2024</Label>
             <div className="flex items-center gap-3 pt-1">
               <Switch checked={manterIndiceContratual} onCheckedChange={setManterIndiceContratual} />
-              <span className="text-sm text-navy/70">
+              <span className="text-reading text-navy/70">
                 {manterIndiceContratual
                   ? "Índice contratual mantido (art. 389, § único, CC, norma supletiva)"
                   : "Substituir pelo IPCA a partir da vigência da Lei 14.905/2024"}
@@ -354,7 +354,7 @@ export function CorrecaoCalc({ onUsarValor, usarValorLabel = "Usar este valor", 
           <Label>A multa incide também sobre os juros?</Label>
           <div className="flex items-center gap-3 pt-1">
             <Switch checked={multaSobreJuros} onCheckedChange={setMultaSobreJuros} />
-            <span className="text-sm text-navy/70">{multaSobreJuros ? "Sim" : "Não"}</span>
+            <span className="text-reading text-navy/70">{multaSobreJuros ? "Sim" : "Não"}</span>
           </div>
         </div>
         <div className="space-y-2">
@@ -365,7 +365,7 @@ export function CorrecaoCalc({ onUsarValor, usarValorLabel = "Usar este valor", 
 
       <Collapsible open={usarDatasJuros} onOpenChange={setUsarDatasJuros}>
         <CollapsibleTrigger asChild>
-          <Button variant="ghost" size="sm" className="px-0">
+          <Button variant="ghost" size="sm" className="h-auto min-h-9 whitespace-normal px-0 text-left">
             <ChevronDown className={`mr-1.5 h-4 w-4 transition-transform ${usarDatasJuros ? "rotate-180" : ""}`} />
             Definir período próprio para os juros (opcional)
           </Button>
@@ -392,7 +392,7 @@ export function CorrecaoCalc({ onUsarValor, usarValorLabel = "Usar este valor", 
           {result.meses_faltantes.length > 0 && (
             <div className="flex items-start gap-2 rounded-lg border border-yellow-500/30 bg-yellow-50  p-4">
               <AlertTriangle className="h-5 w-5 text-yellow-600  shrink-0 mt-0.5" />
-              <div className="text-sm text-yellow-700 ">
+              <div className="text-reading text-yellow-700 ">
                 <p className="font-medium">Índices ainda não divulgados para os meses abaixo, considerados como 0%:</p>
                 <p className="mt-1">
                   {result.meses_faltantes.map(m => `${mesLabel(m.mes_ref)} (${m.indice.toUpperCase()})`).join(", ")}
@@ -410,12 +410,12 @@ export function CorrecaoCalc({ onUsarValor, usarValorLabel = "Usar este valor", 
                 { label: "Honorários", v: result.honorarios },
               ].map(c => (
                 <tr key={c.label} className="border-t border-cream-dark">
-                  <td className="py-2 pr-4 text-sm text-navy/70">{c.label}</td>
-                  <td className="py-2 text-right text-sm text-navy tabular">{fmt(c.v)}</td>
+                  <td className="py-2 pr-4 text-reading text-navy/70">{c.label}</td>
+                  <td className="py-2 text-right text-reading text-navy tabular">{fmt(c.v)}</td>
                 </tr>
               ))}
               <tr className="border-t border-navy/20">
-                <td className="py-3 pr-4 text-sm text-navy">Total</td>
+                <td className="py-3 pr-4 text-reading text-navy">Total</td>
                 <td className="py-3 text-right text-lg text-navy tabular">{fmt(result.total)}</td>
               </tr>
             </tbody>
@@ -475,13 +475,13 @@ export function CorrecaoCalc({ onUsarValor, usarValorLabel = "Usar este valor", 
                     {result.memoria.map(l => (
                       <TableRow key={l.mes_ref}>
                         <TableCell className="font-medium">{mesLabel(l.mes_ref)}</TableCell>
-                        <TableCell className="text-xs">{l.indice_utilizado}</TableCell>
+                        <TableCell className="text-note">{l.indice_utilizado}</TableCell>
                         <TableCell className="text-right">{l.variacao_percentual.toFixed(2)}%</TableCell>
                         <TableCell className="text-right">{l.fator_acumulado.toFixed(6)}</TableCell>
                         <TableCell className="text-right">{fmt(l.saldo_corrigido)}</TableCell>
                         <TableCell className="text-right">{fmt(l.juros_do_mes)}</TableCell>
                         <TableCell className="text-right">{fmt(l.juros_acumulados)}</TableCell>
-                        <TableCell className="text-xs">
+                        <TableCell className="text-note">
                           {REGIME_LABEL[l.regime]}
                         </TableCell>
 
@@ -494,7 +494,7 @@ export function CorrecaoCalc({ onUsarValor, usarValorLabel = "Usar este valor", 
           </Collapsible>
 
           <div className="rounded-lg border border-cream-dark bg-white border-muted">
-            <div className="p-5 space-y-1 text-xs text-navy/60">
+            <div className="p-5 space-y-1 text-note text-navy/60">
               <p><strong className="text-foreground">Fonte:</strong> {result.fonte}</p>
               <p>
                 <strong className="text-foreground">Última sincronização dos índices:</strong>{" "}

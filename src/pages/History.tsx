@@ -129,7 +129,7 @@ export default function History() {
             <ChevronLeft className="mr-1.5 h-4 w-4" />
             Voltar ao Histórico
           </Button>
-          <div className="mb-4 text-sm text-muted-foreground">
+          <div className="mb-4 text-note text-muted-foreground">
             {format(new Date(selectedAnalysis.created_at), "d 'de' MMMM 'de' yyyy, HH:mm", { locale: ptBR })}
             {selectedAnalysis.file_name && (
               <span className="ml-3 inline-flex items-center gap-1">
@@ -143,7 +143,7 @@ export default function History() {
               <div className="flex items-center gap-2 p-3">
                 <button
                   onClick={() => setShowInputText((v) => !v)}
-                  className="flex flex-1 items-center gap-2 text-left text-sm font-medium text-foreground"
+                  className="flex flex-1 items-center gap-2 text-left text-reading font-medium text-foreground"
                 >
                   <FileText className="h-4 w-4 shrink-0 text-primary" />
                   Texto analisado
@@ -189,13 +189,13 @@ export default function History() {
             <ChevronLeft className="mr-1.5 h-4 w-4" />
             Voltar ao Histórico
           </Button>
-          <div className="mb-4 text-sm text-muted-foreground">
+          <div className="mb-4 text-note text-muted-foreground">
             {format(new Date(selectedPetition.created_at), "d 'de' MMMM 'de' yyyy, HH:mm", { locale: ptBR })}
             <span className="ml-3">
               <Badge variant="secondary">{selectedPetition.petition_type}</Badge>
             </span>
           </div>
-          <div className="mb-4 p-4 rounded-lg bg-muted/50 text-sm">
+          <div className="mb-4 p-4 rounded-lg bg-muted/50 text-reading">
             <div className="flex items-center gap-2 mb-2">
               <Users className="h-4 w-4 text-muted-foreground" />
               <span className="font-medium">Partes:</span>
@@ -257,7 +257,7 @@ export default function History() {
                 <CardContent className="flex flex-col items-center py-12 text-center">
                   <Scale className="mb-4 h-12 w-12 text-muted-foreground/50" />
                   <p className="text-lg font-medium text-foreground">Nenhuma análise ainda</p>
-                  <p className="text-sm text-muted-foreground">Suas análises aparecerão aqui após a primeira consulta.</p>
+                  <p className="text-reading text-muted-foreground">Suas análises aparecerão aqui após a primeira consulta.</p>
                 </CardContent>
               </Card>
             ) : (
@@ -278,8 +278,8 @@ export default function History() {
                             <Badge className="bg-destructive text-destructive-foreground text-xs">Urgente</Badge>
                           )}
                         </div>
-                        <p className="truncate text-sm text-foreground">{a.result.resumo}</p>
-                        <div className="mt-1 flex items-center gap-2 text-xs text-muted-foreground">
+                        <p className="truncate text-reading text-foreground">{a.result.resumo}</p>
+                        <div className="mt-1 flex items-center gap-2 text-note text-muted-foreground">
                           <Clock className="h-3 w-3" />
                           {format(new Date(a.created_at), "dd/MM/yyyy HH:mm")}
                           {a.file_name && (
@@ -320,7 +320,7 @@ export default function History() {
                 <CardContent className="flex flex-col items-center py-12 text-center">
                   <FileSignature className="mb-4 h-12 w-12 text-muted-foreground/50" />
                   <p className="text-lg font-medium text-foreground">Nenhuma petição ainda</p>
-                  <p className="text-sm text-muted-foreground">Suas petições geradas aparecerão aqui.</p>
+                  <p className="text-reading text-muted-foreground">Suas petições geradas aparecerão aqui.</p>
                 </CardContent>
               </Card>
             ) : (
@@ -338,10 +338,10 @@ export default function History() {
                             {petitionTypeLabels[p.petition_type] || p.petition_type}
                           </Badge>
                         </div>
-                        <p className="truncate text-sm text-foreground">
+                        <p className="truncate text-reading text-foreground">
                           {p.form_data.autor} vs {p.form_data.reu}
                         </p>
-                        <div className="mt-1 flex items-center gap-2 text-xs text-muted-foreground">
+                        <div className="mt-1 flex items-center gap-2 text-note text-muted-foreground">
                           <Clock className="h-3 w-3" />
                           {format(new Date(p.created_at), "dd/MM/yyyy HH:mm")}
                         </div>
@@ -376,7 +376,7 @@ export default function History() {
                 <CardContent className="flex flex-col items-center py-12 text-center">
                   <Calculator className="mb-4 h-12 w-12 text-muted-foreground/50" />
                   <p className="text-lg font-medium text-foreground">Nenhum cálculo salvo</p>
-                  <p className="text-sm text-muted-foreground">
+                  <p className="text-reading text-muted-foreground">
                     Os cálculos que você salvar nas calculadoras aparecerão aqui.
                   </p>
                 </CardContent>
@@ -394,13 +394,13 @@ export default function History() {
                           <div className="mb-1 flex items-center gap-2">
                             <Badge className="bg-primary text-primary-foreground text-xs">{c.tipo}</Badge>
                             {valor !== null && (
-                              <span className="text-sm font-semibold text-foreground">
+                              <span className="text-reading font-semibold text-foreground">
                                 {valor.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
                               </span>
                             )}
                           </div>
-                          <p className="truncate text-sm text-foreground">{c.titulo}</p>
-                          <div className="mt-1 flex items-center gap-2 text-xs text-muted-foreground">
+                          <p className="truncate text-reading text-foreground">{c.titulo}</p>
+                          <div className="mt-1 flex items-center gap-2 text-note text-muted-foreground">
                             <Clock className="h-3 w-3" />
                             {format(new Date(c.created_at), "dd/MM/yyyy HH:mm")}
                           </div>

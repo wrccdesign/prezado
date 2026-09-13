@@ -28,7 +28,7 @@ export function UsageSummaryCompact({ onNavigate }: { onNavigate?: () => void })
 
   if (isLoading) {
     return (
-      <div className="flex items-center gap-2 px-2 py-2 text-xs text-white/50">
+      <div className="flex items-center gap-2 px-2 py-2 text-note text-white/50">
         <Loader2 className="h-3 w-3 animate-spin" /> Carregando uso...
       </div>
     );
@@ -37,13 +37,13 @@ export function UsageSummaryCompact({ onNavigate }: { onNavigate?: () => void })
 
   return (
     <div className="px-2 py-2">
-      <p className="mb-2 text-[11px] font-semibold uppercase tracking-wider text-white/40">
+      <p className="mb-2 text-[0.8125rem] font-semibold uppercase tracking-wider text-white/40">
         Uso neste mês
       </p>
 
       <ul className="space-y-1.5">
         {data.actions.map((a) => (
-          <li key={a.action} className="flex items-center justify-between gap-3 text-xs">
+          <li key={a.action} className="flex items-center justify-between gap-3 text-note">
             <span className="truncate text-white/60">{a.label}</span>
             {isUnlimited(a) ? (
               <span className="shrink-0 font-medium text-white/80">Ilimitado</span>
@@ -62,7 +62,7 @@ export function UsageSummaryCompact({ onNavigate }: { onNavigate?: () => void })
       <Link
         to="/conta"
         onClick={onNavigate}
-        className="mt-2 inline-block text-xs font-medium text-gold-light hover:underline"
+        className="mt-2 inline-block text-note font-medium text-gold-light hover:underline"
       >
         Ver detalhes
       </Link>
@@ -104,7 +104,7 @@ export function UsageSummary() {
                     {isUnlimited(a) ? (
                       <span className="text-muted-foreground">Ilimitado</span>
                     ) : a.limit === 0 ? (
-                      <span className="flex items-center gap-1 text-xs text-muted-foreground">
+                      <span className="flex items-center gap-1 text-note text-muted-foreground">
                         <Lock className="h-3 w-3" /> Não incluído no seu plano
                       </span>
                     ) : (

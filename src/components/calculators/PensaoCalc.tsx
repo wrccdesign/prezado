@@ -176,9 +176,9 @@ export function PensaoCalc() {
         <div className="space-y-4">
           <div className="rounded-lg border border-cream-dark bg-white">
             <div className="p-5 text-center space-y-1">
-              <p className="text-sm text-navy/70">Valor Sugerido</p>
+              <p className="text-reading text-navy/70">Valor Sugerido</p>
               <p className="text-3xl text-navy tabular">{fmt(result.sugerido)}</p>
-              <p className="text-sm text-navy/70">({result.percentualSug.toFixed(1)}% da renda)</p>
+              <p className="text-note text-navy/70">({result.percentualSug.toFixed(1)}% da renda)</p>
             </div>
           </div>
 
@@ -201,7 +201,7 @@ export function PensaoCalc() {
           </div>
 
           <div className="rounded-lg border border-cream-dark bg-white bg-muted/50">
-            <div className="p-5 text-sm text-navy/70 space-y-2">
+            <div className="p-5 text-reading text-navy/70 space-y-2">
               <p className="font-medium text-foreground">Como o juiz calcula a pensão?</p>
               <p>O valor da pensão alimentícia é definido pelo juiz com base no <strong>binômio necessidade × possibilidade</strong> (art. 1.694 do Código Civil).</p>
               <p>Na prática, a jurisprudência do STJ costuma fixar entre <strong>15% e 30%</strong> da renda líquida por filho.</p>
@@ -210,7 +210,7 @@ export function PensaoCalc() {
 
           <div className="flex items-start gap-2 rounded-md border border-yellow-500/30 bg-yellow-500/10 p-4">
             <AlertTriangle className="h-5 w-5 shrink-0 text-yellow-600 mt-0.5" />
-            <p className="text-sm text-yellow-800 ">Este é um valor de referência. O juiz decidirá com base nas necessidades e possibilidades das partes.</p>
+            <p className="text-reading text-yellow-800 ">Este é um valor de referência. O juiz decidirá com base nas necessidades e possibilidades das partes.</p>
           </div>
 
           <Button variant="outline" onClick={() => requireAccount(gerarPDF, "baixar o relatório em PDF")} className="h-11 w-full sm:w-auto">

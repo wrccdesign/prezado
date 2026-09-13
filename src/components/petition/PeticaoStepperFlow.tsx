@@ -206,7 +206,7 @@ export function PeticaoStepperFlow({ tipoAcaoOptions, varaJuizoOptions, initial 
           const active = step === s.n;
           const done = step > s.n;
           return (
-            <li key={s.n} className="relative flex flex-col items-center text-center">
+            <li key={s.n} className="relative flex min-w-0 flex-col items-center text-center">
               <span
                 aria-current={active ? "step" : undefined}
                 className="flex h-11 w-11 items-center justify-center rounded-full font-serif text-base font-bold"
@@ -218,7 +218,7 @@ export function PeticaoStepperFlow({ tipoAcaoOptions, varaJuizoOptions, initial 
               >
                 {s.n}
               </span>
-              <span className={`mt-2 text-[0.8125rem] leading-snug ${active ? "font-semibold text-foreground" : "text-muted-foreground"}`}>
+              <span className={`mt-2 w-full break-words hyphens-auto text-[0.8125rem] leading-snug ${active ? "font-semibold text-foreground" : "text-muted-foreground"}`}>
                 {s.label}
               </span>
             </li>
@@ -279,7 +279,7 @@ export function PeticaoStepperFlow({ tipoAcaoOptions, varaJuizoOptions, initial 
               />
             </div>
 
-            <Button className="w-full" size="lg" onClick={goEnquadramento} disabled={loading}>
+            <Button className="h-auto min-h-11 w-full whitespace-normal py-3" size="lg" onClick={goEnquadramento} disabled={loading}>
               {loading ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : <ArrowRight className="mr-2 h-5 w-5" />}
               {loading ? "Analisando..." : "Continuar para o enquadramento"}
             </Button>
@@ -349,7 +349,7 @@ export function PeticaoStepperFlow({ tipoAcaoOptions, varaJuizoOptions, initial 
               <Button variant="outline" onClick={() => setStep(1)} disabled={loading}>
                 <ArrowLeft className="mr-2 h-4 w-4" /> Voltar
               </Button>
-              <Button className="flex-1" onClick={goFundamentacao} disabled={loading || keywords.length === 0}>
+              <Button className="h-auto min-h-10 flex-1 whitespace-normal py-2" onClick={goFundamentacao} disabled={loading || keywords.length === 0}>
                 {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <ArrowRight className="mr-2 h-4 w-4" />}
                 Buscar legislação
               </Button>
@@ -402,7 +402,7 @@ export function PeticaoStepperFlow({ tipoAcaoOptions, varaJuizoOptions, initial 
               <Button variant="outline" onClick={() => setStep(2)} disabled={loading}>
                 <ArrowLeft className="mr-2 h-4 w-4" /> Voltar
               </Button>
-              <Button className="flex-1" onClick={goPrecedentes} disabled={loading}>
+              <Button className="h-auto min-h-10 flex-1 whitespace-normal py-2" onClick={goPrecedentes} disabled={loading}>
                 {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <ArrowRight className="mr-2 h-4 w-4" />}
                 Buscar precedentes
               </Button>
@@ -472,7 +472,7 @@ export function PeticaoStepperFlow({ tipoAcaoOptions, varaJuizoOptions, initial 
               <Button variant="outline" onClick={() => setStep(3)} disabled={loading}>
                 <ArrowLeft className="mr-2 h-4 w-4" /> Voltar
               </Button>
-              <Button className="flex-1" size="lg" onClick={goFinal} disabled={loading}>
+              <Button className="h-auto min-h-10 flex-1 whitespace-normal py-2" size="lg" onClick={goFinal} disabled={loading}>
                 {loading ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : <FileSignature className="mr-2 h-5 w-5" />}
                 {loading ? "Gerando Petição..." : "Gerar Petição"}
               </Button>
