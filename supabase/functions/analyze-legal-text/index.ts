@@ -314,8 +314,17 @@ serve(async (req) => {
     const anterior = sanitizeAnalisePrevia(body?.analise_anterior);
     const esclarecimentos = sanitizeEsclarecimentos(body?.esclarecimentos);
     const textoAlterado = body?.texto_alterado === true;
+    const esclarecimentoResumo = clampText(body?.esclarecimento_resumo, 1500);
+    const esclarecimentoDirecionamentos = clampText(body?.esclarecimento_direcionamentos, 1500);
     const iterationBlock = anterior
-      ? buildIterationBlock(anterior, esclarecimentos, textoAlterado, rodada)
+      ? buildIterationBlock(
+          anterior,
+          esclarecimentos,
+          textoAlterado,
+          rodada,
+          esclarecimentoResumo,
+          esclarecimentoDirecionamentos,
+        )
       : "";
 
     // Esta é a função mais cara do produto (duas chamadas de IA), portanto
