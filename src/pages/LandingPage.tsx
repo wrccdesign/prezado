@@ -79,9 +79,9 @@ const heroShortcuts = [
 ];
 
 
-const plans: { name: string; price: string; period: string; desc: string; features: string[]; cta: string; highlight: boolean; annualNote?: string }[] = [
-  { name: "Gratuito", price: "R$ 0", period: "/mês", desc: "Para conhecer a plataforma", features: ["Calculadoras ilimitadas", "20 consultas processuais/mês", "10 mensagens de chat/mês", "1 diagnóstico jurídico/mês", "Petições não incluídas"], cta: "Começar Grátis", highlight: false },
-  { name: "Profissional", price: "R$ 49", period: "/mês", desc: "Para advogados autônomos", annualNote: "ou R$ 409/ano à vista no cartão (R$ 34,08/mês, -30%)", features: ["Calculadoras ilimitadas", "400 consultas e 200 mensagens/mês", "60 petições e 60 diagnósticos/mês", "40 análises de documentos/mês", "Painel do advogado"], cta: "Assinar Agora", highlight: true },
+const plans: { name: string; price: string; period: string; desc: string; features: string[]; cta: string; highlight: boolean; annualNote?: string; limitationNote?: string }[] = [
+  { name: "Gratuito", price: "R$ 0", period: "/mês", desc: "Para conhecer a plataforma", features: ["Calculadoras ilimitadas", "20 consultas processuais/mês", "10 mensagens de chat/mês", "1 diagnóstico jurídico/mês"], limitationNote: "Petições não estão incluídas neste plano.", cta: "Começar grátis", highlight: false },
+  { name: "Profissional", price: "R$ 49", period: "/mês", desc: "Para advogados autônomos", annualNote: "ou R$ 409/ano à vista no cartão (R$ 34,08/mês, -30%)", features: ["Calculadoras ilimitadas", "400 consultas e 200 mensagens/mês", "60 petições e 60 diagnósticos/mês", "40 análises de documentos/mês", "Painel do advogado"], cta: "Assinar", highlight: true },
   { name: "Escritório", price: "R$ 149", period: "/mês", desc: "Para escritórios de advocacia", annualNote: "ou R$ 1.249/ano à vista no cartão (R$ 104,08/mês, -30%)", features: ["Calculadoras ilimitadas", "1500 consultas e 800 mensagens/mês", "200 petições e 150 análises/mês", "300 leituras/OCR de documentos/mês", "Gestão de clientes e modelos"], cta: "Assinar Escritório", highlight: false },
 ];
 
@@ -209,7 +209,7 @@ export default function LandingPage() {
           <div className="grid gap-4 md:grid-cols-12 md:items-end">
             <h2 className="text-h2 text-navy md:col-span-5">Do fato ao fundamento</h2>
             <p className="text-body-serif text-navy/75 max-w-[52ch] md:col-span-7">
-              Quatro etapas, na ordem em que o trabalho acontece. Cada uma entrega um artefato que você aproveita na seguinte.
+              Quatro etapas, na ordem em que o trabalho acontece. Cada etapa entrega algo que você usa na seguinte.
             </p>
           </div>
 
@@ -249,13 +249,13 @@ export default function LandingPage() {
       </section>
 
 
-      {/* MEMÓRIA DE CÁLCULO */}
-      <section id="memoria" className="bg-cream text-navy py-14 md:py-20">
+      {/* MEMÓRIA DE CÁLCULO E CALCULADORA */}
+      <section id="calcular" className="bg-cream text-navy py-14 md:py-20">
         <div className="container mx-auto px-4 sm:px-6">
           <div className="grid gap-4 md:grid-cols-12 md:items-end">
-            <h2 className="text-h2 md:col-span-7">A memória de cálculo vai anexada à petição</h2>
+            <h2 className="text-h2 md:col-span-7">Calcule e leve a memória para a petição</h2>
             <p className="text-body-serif text-navy/75 max-w-[48ch] md:col-span-5">
-              Mês a mês, com o regime legal de cada período. É o documento que acompanha o pedido.
+              Confira o resultado mês a mês, com o regime legal de cada período, e faça seu cálculo sem cadastro.
             </p>
           </div>
 
@@ -292,18 +292,14 @@ export default function LandingPage() {
               <span>Fonte e base legal impressas no rodapé do arquivo.</span>
             </div>
           </div>
-        </div>
-      </section>
 
-      {/* CALCULADORA */}
-      <section id="calcular" className="bg-cream text-navy py-14 md:py-20">
-        <div className="container mx-auto px-4 sm:px-6">
-          <h2 className="text-h2">Calcule agora, sem cadastro</h2>
-          <p className="mt-3 text-reading text-navy/70 max-w-[60ch]">
-            O cálculo e a memória de cálculo são livres, sem conta. Baixar em PDF ou Word exige conta grátis.
-          </p>
+          <div className="mt-12 border-t border-cream-dark pt-10">
+            <p className="text-reading text-navy/70 max-w-[60ch]">
+              O cálculo e a memória de cálculo são livres, sem conta. Baixar em PDF ou Word exige conta grátis.
+            </p>
+          </div>
 
-          <div className="mt-8 bg-white rounded-lg border border-navy/20 p-5 sm:p-8">
+          <div className="mt-6 bg-white rounded-lg border border-navy/20 p-5 sm:p-8">
             <CorrecaoCalc
               usarValorLabel="Gerar petição com este valor"
               usarValorVariant="ghost"
@@ -371,6 +367,9 @@ export default function LandingPage() {
                     </li>
                   ))}
                 </ul>
+                {p.limitationNote && (
+                  <p className="mb-7 text-note text-navy/60">{p.limitationNote}</p>
+                )}
                 <Button className={`w-full font-medium rounded-md ${p.highlight ? "bg-gold text-navy hover:bg-gold-light" : "border border-cream/25 bg-transparent text-cream hover:bg-cream/10"}`} asChild>
                   <Link to="/planos">{p.cta}</Link>
                 </Button>
@@ -384,6 +383,7 @@ export default function LandingPage() {
       <section className="bg-navy border-t border-cream/15 py-16 md:py-20">
         <div className="container mx-auto px-4 sm:px-6 text-center">
           <h2 className="text-h2 text-cream">Comece pelo caso que está na sua mesa agora.</h2>
+          <p className="mt-3 text-reading text-cream/72">7 dias no plano Profissional, sem cartão.</p>
           <div className="mt-8 flex flex-wrap gap-6 justify-center items-center">
             <Button size="lg" className="bg-gold text-navy hover:bg-gold-light font-medium rounded-md" asChild>
               <Link to="/auth">Criar conta grátis</Link>
