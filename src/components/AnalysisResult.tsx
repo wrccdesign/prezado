@@ -474,6 +474,13 @@ export function AnalysisResult({
             </div>
           ))}
         </div>
+        {renderClarifyBox({
+          key: "__direcionamentos__",
+          label: "Esclarecer as recomendações",
+          placeholder: "Alguma recomendação não se aplica ao caso, ou algum valor está errado? Explique aqui.",
+          value: direcionamentosClarify,
+          onChange: onEsclarecimentoDirecionamentosChange,
+        })}
       </SectionCard>
 
       {/* Fontes de Consulta Recomendadas - FIXED LINKS */}
