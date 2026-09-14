@@ -63,7 +63,13 @@ Deno.serve(async (req) => {
     const planId = planFromPriceId(priceId);
     const recurring = isRecurringPrice(priceId);
 
-    // 1) Reaproveita uma sessão de checkout recente do mesmo plano.
+    // Forma de pagamento pedida. No anual o Asaas mostra Pix e cartão na mesma tela.
+    const requestedBillingType = recurring
+      ? (body?.billingType === "PIX" ? "PIX" : "CREDIT_CARD")
+      : "PIX_OR_CREDIT_CARD";
+
+    // 1) Reaproveita uma sessão de checkout recente do mesmo plano E da mesma
+    //    forma de pagamento — trocar de Pix para cartão precisa de link novo.
     const cutoff = new Date(Date.now() - REUSE_WINDOW_MS).toISOString();
     const { data: reusable } = await supabase
       .from("subscriptions")
@@ -73,6 +79,7 @@ Deno.serve(async (req) => {
       .eq("provider", "asaas")
       .eq("price_id", priceId)
       .eq("status", "incomplete")
+      .eq("checkout_billing_type", requestedBillingType)
       .gte("created_at", cutoff)
       .order("created_at", { ascending: false })
       .limit(1)
