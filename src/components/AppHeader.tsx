@@ -16,6 +16,7 @@ import {
 import Logo from "@/components/Logo";
 import { UsageSummaryCompact } from "@/components/UsageSummary";
 import { TrialBanner } from "@/components/TrialBanner";
+import { PaymentTestModeBanner } from "@/components/PaymentTestModeBanner";
 import { Button } from "@/components/ui/button";
 import { useFontScale, type FontScale } from "@/hooks/useFontScale";
 
@@ -386,6 +387,7 @@ export function AppHeader() {
       </div>
     </header>
 
+    <PaymentTestModeBanner />
     <TrialBanner />
     </>
   );
