@@ -128,6 +128,7 @@ Deno.serve(async (req) => {
       access_type: recurring ? "recurring" : "one_time",
       environment: env,
       checkout_expires_at: expiresAt,
+      checkout_billing_type: requestedBillingType,
       updated_at: new Date().toISOString(),
     };
 
