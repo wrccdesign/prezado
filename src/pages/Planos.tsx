@@ -1,6 +1,7 @@
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { AppHeader } from "@/components/AppHeader";
+import { getPaymentEnvironmentSafe } from "@/lib/payment-env";
 import { SEO } from "@/components/SEO";
 import { AppFooter } from "@/components/AppFooter";
 import { FaqSection } from "@/components/FaqSection";
@@ -570,6 +571,11 @@ export default function Planos() {
                 />
               </div>
             </div>
+            <p className="text-note text-muted-foreground">
+              {getPaymentEnvironmentSafe() === "sandbox"
+                ? "Pagamento de teste. Nada será cobrado."
+                : "Pagamento real, em produção."}
+            </p>
             <DialogFooter>
               <Button variant="outline" onClick={() => { setPendingPriceId(null); setCpfCnpj(""); setPhone(""); setMonthlyBillingType("CREDIT_CARD"); }}>
                 Cancelar
