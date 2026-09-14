@@ -247,14 +247,10 @@ async function handleWebhook(event: any, env: AsaasEnv) {
         await markPaymentFailed(payment.id, env);
       }
       break;
-    case "SUBSCRIPTION_CANCELLED":
+    case "SUBSCRIPTION_DELETED":
+    case "SUBSCRIPTION_INACTIVATED":
       if (subscription?.id) {
         await markSubscriptionCanceled(subscription.id, env);
-      }
-      break;
-    case "SUBSCRIPTION_RENEWED":
-      if (subscription?.id) {
-        await renewSubscription(subscription.id, env);
       }
       break;
     default:
