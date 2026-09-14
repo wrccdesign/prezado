@@ -12,7 +12,19 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, Play, CheckCircle2, XCircle, AlertTriangle, Database, ArrowRight } from "lucide-react";
+import { Loader2, Play, CheckCircle2, XCircle, AlertTriangle, Database, ArrowRight, Copy, Wallet } from "lucide-react";
+
+const WEBHOOK_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/asaas-webhook`;
+
+const ASAAS_EVENTOS = [
+  "PAYMENT_RECEIVED",
+  "PAYMENT_CONFIRMED",
+  "PAYMENT_OVERDUE",
+  "PAYMENT_DELETED",
+  "PAYMENT_REFUNDED",
+  "SUBSCRIPTION_INACTIVATED",
+  "SUBSCRIPTION_DELETED",
+];
 
 interface IngestResult {
   tribunal: string;
