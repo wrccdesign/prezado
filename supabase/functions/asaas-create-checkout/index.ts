@@ -210,10 +210,25 @@ Deno.serve(async (req) => {
       successUrl: `${origin}/planos?checkout=success`,
       cancelUrl: `${origin}/planos?checkout=cancelled`,
       expiredUrl: `${origin}/planos?checkout=expired`,
-      billingTypes: ["CREDIT_CARD"],
+      // Mensal no cartão: só cartão. Anual: Pix e cartão na mesma tela.
+      billingTypes: recurring ? ["CREDIT_CARD"] : ["PIX", "CREDIT_CARD"],
     };
 
-    const session = await createCheckoutSession(env, sessionOptions);
+    let session;
+    try {
+      session = await createCheckoutSession(env, sessionOptions);
+    } catch (error) {
+      // Conta sem chave Pix: o anual continua disponível no cartão.
+      if (!recurring && isPixKeyMissingError(error)) {
+        session = await createCheckoutSession(env, {
+          ...sessionOptions,
+          billingTypes: ["CREDIT_CARD"],
+        });
+      } else {
+        throw error;
+      }
+    }
+
 
     const checkoutUrl = session.link || checkoutSessionUrl(env, session.id);
     await supabase
