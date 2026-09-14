@@ -116,10 +116,6 @@ Deno.serve(async (req) => {
 
     const expiresAt = new Date(Date.now() + 60 * 60 * 1000).toISOString();
 
-    const requestedBillingType = body?.billingType === "PIX" ? "PIX" : "CREDIT_CARD";
-    if (requestedBillingType === "PIX" && !recurring) {
-      return json({ error: "O Pix mensal só está disponível para assinaturas mensais." }, 400);
-    }
 
     // 3) Grava a intenção ANTES de criar no Asaas, para não gerar cobrança órfã.
     const intent = {
