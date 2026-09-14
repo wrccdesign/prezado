@@ -63,7 +63,13 @@ Deno.serve(async (req) => {
     const planId = planFromPriceId(priceId);
     const recurring = isRecurringPrice(priceId);
 
-    // 1) Reaproveita uma sessão de checkout recente do mesmo plano.
+    // Forma de pagamento pedida. No anual o Asaas mostra Pix e cartão na mesma tela.
+    const requestedBillingType = recurring
+      ? (body?.billingType === "PIX" ? "PIX" : "CREDIT_CARD")
+      : "PIX_OR_CREDIT_CARD";
+
+    // 1) Reaproveita uma sessão de checkout recente do mesmo plano E da mesma
+    //    forma de pagamento — trocar de Pix para cartão precisa de link novo.
     const cutoff = new Date(Date.now() - REUSE_WINDOW_MS).toISOString();
     const { data: reusable } = await supabase
       .from("subscriptions")
@@ -73,6 +79,7 @@ Deno.serve(async (req) => {
       .eq("provider", "asaas")
       .eq("price_id", priceId)
       .eq("status", "incomplete")
+      .eq("checkout_billing_type", requestedBillingType)
       .gte("created_at", cutoff)
       .order("created_at", { ascending: false })
       .limit(1)
@@ -109,10 +116,6 @@ Deno.serve(async (req) => {
 
     const expiresAt = new Date(Date.now() + 60 * 60 * 1000).toISOString();
 
-    const requestedBillingType = body?.billingType === "PIX" ? "PIX" : "CREDIT_CARD";
-    if (requestedBillingType === "PIX" && !recurring) {
-      return json({ error: "O Pix mensal só está disponível para assinaturas mensais." }, 400);
-    }
 
     // 3) Grava a intenção ANTES de criar no Asaas, para não gerar cobrança órfã.
     const intent = {
@@ -125,6 +128,7 @@ Deno.serve(async (req) => {
       access_type: recurring ? "recurring" : "one_time",
       environment: env,
       checkout_expires_at: expiresAt,
+      checkout_billing_type: requestedBillingType,
       updated_at: new Date().toISOString(),
     };
 
@@ -206,10 +210,25 @@ Deno.serve(async (req) => {
       successUrl: `${origin}/planos?checkout=success`,
       cancelUrl: `${origin}/planos?checkout=cancelled`,
       expiredUrl: `${origin}/planos?checkout=expired`,
-      billingTypes: ["CREDIT_CARD"],
+      // Mensal no cartão: só cartão. Anual: Pix e cartão na mesma tela.
+      billingTypes: recurring ? ["CREDIT_CARD"] : ["PIX", "CREDIT_CARD"],
     };
 
-    const session = await createCheckoutSession(env, sessionOptions);
+    let session;
+    try {
+      session = await createCheckoutSession(env, sessionOptions);
+    } catch (error) {
+      // Conta sem chave Pix: o anual continua disponível no cartão.
+      if (!recurring && isPixKeyMissingError(error)) {
+        session = await createCheckoutSession(env, {
+          ...sessionOptions,
+          billingTypes: ["CREDIT_CARD"],
+        });
+      } else {
+        throw error;
+      }
+    }
+
 
     const checkoutUrl = session.link || checkoutSessionUrl(env, session.id);
     await supabase

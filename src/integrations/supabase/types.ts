@@ -669,6 +669,7 @@ export type Database = {
           access_expires_at: string | null
           access_type: string
           cancel_at_period_end: boolean | null
+          checkout_billing_type: string | null
           checkout_expires_at: string | null
           checkout_url: string | null
           created_at: string | null
@@ -692,6 +693,7 @@ export type Database = {
           access_expires_at?: string | null
           access_type?: string
           cancel_at_period_end?: boolean | null
+          checkout_billing_type?: string | null
           checkout_expires_at?: string | null
           checkout_url?: string | null
           created_at?: string | null
@@ -715,6 +717,7 @@ export type Database = {
           access_expires_at?: string | null
           access_type?: string
           cancel_at_period_end?: boolean | null
+          checkout_billing_type?: string | null
           checkout_expires_at?: string | null
           checkout_url?: string | null
           created_at?: string | null
