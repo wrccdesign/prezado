@@ -239,6 +239,54 @@ export default function AdminIngestao() {
           </div>
         </div>
 
+        {/* Card de configuração do Asaas */}
+        <Card>
+          <CardHeader className="pb-3">
+            <CardTitle className="text-lg flex items-center gap-2">
+              <Wallet className="h-5 w-5 text-primary" />
+              Configuração do Asaas
+            </CardTitle>
+            <CardDescription>
+              Cadastre o aviso automático no painel do Asaas. Sem ele, o plano não é ativado sozinho quando o pagamento cai.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="space-y-1.5">
+              <Label>Endereço do aviso (cole no campo URL)</Label>
+              <div className="flex items-center gap-2">
+                <code className="flex-1 truncate rounded-md border bg-muted/40 px-3 py-2 text-sm">{WEBHOOK_URL}</code>
+                <Button variant="outline" size="sm" onClick={copyWebhookUrl} aria-label="Copiar endereço do aviso">
+                  <Copy className="h-4 w-4" />
+                </Button>
+              </div>
+            </div>
+            <div className="space-y-1.5">
+              <Label>Token de autenticação</Label>
+              <p className="text-sm text-muted-foreground">
+                O Asaas envia o token no cabeçalho <code className="rounded bg-muted/40 px-1 py-0.5">asaas-access-token</code>.
+                Em produção use o token ao vivo e, no ambiente de testes, o token de teste. Use os mesmos valores salvos com segurança no projeto.
+              </p>
+            </div>
+            <div className="space-y-1.5">
+              <Label>Eventos a marcar no painel do Asaas</Label>
+              <div className="flex flex-wrap gap-1.5">
+                {ASAAS_EVENTOS.map((ev) => (
+                  <Badge key={ev} variant="outline" className="font-mono text-xs">{ev}</Badge>
+                ))}
+              </div>
+            </div>
+            <div className="space-y-1.5">
+              <Label>Passo a passo</Label>
+              <ol className="list-decimal list-inside space-y-1 text-sm text-muted-foreground">
+                <li>No painel do Asaas, abra Integrações e depois Webhook para cobranças.</li>
+                <li>Informe a URL acima e o token (produção usa o token ao vivo, testes usam o de teste).</li>
+                <li>Marque todos os eventos listados acima e salve.</li>
+                <li>Faça o mesmo no ambiente de testes do Asaas e valide um pagamento de teste antes de ligar em produção.</li>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
         {/* Config Card */}
         <Card className="border-primary/20">
           <CardHeader className="pb-3">
