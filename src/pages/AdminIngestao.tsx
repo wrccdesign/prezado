@@ -282,7 +282,7 @@ export default function AdminIngestao() {
                 <li>Informe a URL acima e o token (produção usa o token ao vivo, testes usam o de teste).</li>
                 <li>Marque todos os eventos listados acima e salve.</li>
                 <li>Faça o mesmo no ambiente de testes do Asaas e valide um pagamento de teste antes de ligar em produção.</li>
-              </div>
+              </ol>
             </div>
           </CardContent>
         </Card>
