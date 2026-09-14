@@ -1,18 +1,30 @@
 export type PaymentEnv = "sandbox" | "live";
 
 /**
- * Determina o ambiente de pagamento a partir do hostname.
- * - preview.lovable.app / lovable.app → sandbox
- * - honorifico.com.br / www.honorifico.com.br → live
- * - localhost → sandbox
+ * Regra única de ambiente de pagamento, espelhada em
+ * supabase/functions/_shared/payment-env.ts.
+ * Host desconhecido é sempre tratado como produção.
  */
-export function getPaymentEnvironmentSafe(): PaymentEnv {
-  if (typeof window === "undefined") return "live";
-  const host = window.location.hostname;
-  if (host === "localhost" || host.includes("preview.lovable.app") || host.includes("lovable.app")) {
+export function classifyHost(rawHost: string): PaymentEnv {
+  const host = (rawHost || "").trim().toLowerCase().replace(/\.$/, "");
+  if (!host) return "live";
+
+  if (host === "localhost" || host === "127.0.0.1" || host === "[::1]" || host === "::1") {
     return "sandbox";
   }
+  if (host.endsWith(".localhost")) return "sandbox";
+  if (host.includes("preview--")) return "sandbox";
+  if (host === "lovableproject.com" || host.endsWith(".lovableproject.com")) return "sandbox";
+  if (host.endsWith(".sandbox.lovable.app")) return "sandbox";
+  if (host.endsWith(".lovable.dev")) return "sandbox";
+  if (host.endsWith(".gptengineer.app")) return "sandbox";
+
   return "live";
+}
+
+export function getPaymentEnvironmentSafe(): PaymentEnv {
+  if (typeof window === "undefined") return "live";
+  return classifyHost(window.location.hostname);
 }
 
 export function getPaymentEnvironment(): PaymentEnv {
