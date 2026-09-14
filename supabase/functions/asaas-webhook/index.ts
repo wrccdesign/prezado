@@ -215,19 +215,6 @@ async function markPastDue(subscriptionId: string, env: AsaasEnv) {
     .eq("environment", env);
 }
 
-async function renewSubscription(subscriptionId: string, env: AsaasEnv) {
-  const sub = await getSubscription(env, subscriptionId);
-  const end = sub.nextDueDate
-    ? new Date(sub.nextDueDate + "T23:59:59").toISOString()
-    : null;
-  if (!end) return;
-  await getSupabase()
-    .from("subscriptions")
-    .update({ current_period_end: end, updated_at: new Date().toISOString() })
-    .eq("provider_subscription_id", subscriptionId)
-    .eq("provider", "asaas")
-    .eq("environment", env);
-}
 
 async function handleWebhook(event: any, env: AsaasEnv) {
   const eventId = `asaas_${event.id}`;
@@ -260,14 +247,10 @@ async function handleWebhook(event: any, env: AsaasEnv) {
         await markPaymentFailed(payment.id, env);
       }
       break;
-    case "SUBSCRIPTION_CANCELLED":
+    case "SUBSCRIPTION_DELETED":
+    case "SUBSCRIPTION_INACTIVATED":
       if (subscription?.id) {
         await markSubscriptionCanceled(subscription.id, env);
-      }
-      break;
-    case "SUBSCRIPTION_RENEWED":
-      if (subscription?.id) {
-        await renewSubscription(subscription.id, env);
       }
       break;
     default:
