@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { AppHeader } from "@/components/AppHeader";
-import { PaymentTestModeBanner } from "@/components/PaymentTestModeBanner";
 import { SEO } from "@/components/SEO";
 import { LegalDisclaimer } from "@/components/LegalDisclaimer";
 import { Button } from "@/components/ui/button";
@@ -311,7 +310,6 @@ export default function Diagnostico({ embedded = false }: { embedded?: boolean }
   return (
     <div className={embedded ? "" : "flex min-h-screen flex-col bg-background"}>
       {!embedded && <AppHeader />}
-      {!embedded && <PaymentTestModeBanner />}
       {!embedded && (
         <SEO title="Diagnóstico Jurídico com IA — Honorífico" description="Descreva sua situação em linguagem simples e receba diagnóstico jurídico estruturado: direitos, riscos e próximos passos." path="/diagnostico" />
       )}

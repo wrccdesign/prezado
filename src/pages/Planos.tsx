@@ -5,7 +5,6 @@ import { SEO } from "@/components/SEO";
 import { AppFooter } from "@/components/AppFooter";
 import { FaqSection } from "@/components/FaqSection";
 import { buildFaqJsonLd, FAQ_PLANOS } from "@/seo/faqData";
-import { PaymentTestModeBanner } from "@/components/PaymentTestModeBanner";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -306,7 +305,6 @@ export default function Planos() {
         ]}
 
       />
-      <PaymentTestModeBanner />
 
       <main className="container max-w-5xl flex-1 px-4 py-12">
         <div className="max-w-[60ch] space-y-4">

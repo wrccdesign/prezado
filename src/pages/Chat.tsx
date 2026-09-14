@@ -1,7 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { AppHeader } from "@/components/AppHeader";
-import { PaymentTestModeBanner } from "@/components/PaymentTestModeBanner";
 import { SEO } from "@/components/SEO";
 import { LegalDisclaimer } from "@/components/LegalDisclaimer";
 import { useUserProfile } from "@/contexts/UserProfileContext";
@@ -209,7 +208,7 @@ export default function Chat() {
 
   return (
     <div className="flex min-h-screen flex-col bg-background">
-      <AppHeader /><PaymentTestModeBanner />
+      <AppHeader />
       <SEO title="Chat Jurídico com IA — Honorífico" description="Converse com a IA jurídica do Honorífico sobre qualquer tema do Direito brasileiro, com respostas fundamentadas." path="/chat" />
       <LegalDisclaimer />
       <main className="flex flex-1 flex-col container max-w-3xl py-4">
