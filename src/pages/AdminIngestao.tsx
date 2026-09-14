@@ -113,6 +113,15 @@ export default function AdminIngestao() {
     : null;
   const ingestStale = daysSinceSuccess === null || daysSinceSuccess > 7;
 
+  const copyWebhookUrl = async () => {
+    try {
+      await navigator.clipboard.writeText(WEBHOOK_URL);
+      toast({ title: "Endereço copiado" });
+    } catch {
+      toast({ title: "Não foi possível copiar", description: "Copie manualmente.", variant: "destructive" });
+    }
+  };
+
   const toggleTribunal = (t: string) => {
     setSelectedTribunais((prev) =>
       prev.includes(t) ? prev.filter((x) => x !== t) : [...prev, t]
