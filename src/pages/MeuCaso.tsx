@@ -4,7 +4,6 @@ import { AppHeader } from "@/components/AppHeader";
 import { AppFooter } from "@/components/AppFooter";
 import { SEO } from "@/components/SEO";
 import { LegalDisclaimer } from "@/components/LegalDisclaimer";
-import { PaymentTestModeBanner } from "@/components/PaymentTestModeBanner";
 import Index from "@/pages/Index";
 import Diagnostico from "@/pages/Diagnostico";
 
@@ -39,7 +38,6 @@ export default function MeuCaso() {
   return (
     <div className="flex min-h-screen flex-col bg-background">
       <AppHeader />
-      <PaymentTestModeBanner />
       <SEO
         title="Meu caso — Honorífico"
         description="Envie um documento ou descreva sua situação e receba uma leitura jurídica com direitos, riscos e próximos passos."

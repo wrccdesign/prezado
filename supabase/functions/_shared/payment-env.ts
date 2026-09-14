@@ -1,26 +1,35 @@
 export type PaymentEnv = "sandbox" | "live";
 
 /**
- * Resolve the payment environment SERVER-SIDE.
+ * Regra única de ambiente de pagamento, espelhada em src/lib/payment-env.ts.
  *
- * The client used to send `x-payment-env`, which meant a production user could
- * claim `sandbox` and inherit a subscription paid with a test card. We now
- * derive the environment from the request Origin/Referer instead: only the
- * Lovable preview and local dev map to sandbox, everything else is live.
+ * O ambiente NUNCA vem de header do cliente: é derivado do Origin/Referer.
+ * Host desconhecido é sempre tratado como produção.
  */
+export function classifyHost(rawHost: string): PaymentEnv {
+  const host = (rawHost || "").trim().toLowerCase().replace(/\.$/, "");
+  if (!host) return "live";
+
+  if (host === "localhost" || host === "127.0.0.1" || host === "[::1]" || host === "::1") {
+    return "sandbox";
+  }
+  if (host.endsWith(".localhost")) return "sandbox";
+  if (host.includes("preview--")) return "sandbox";
+  if (host === "lovableproject.com" || host.endsWith(".lovableproject.com")) return "sandbox";
+  if (host.endsWith(".sandbox.lovable.app")) return "sandbox";
+  if (host.endsWith(".lovable.dev")) return "sandbox";
+  if (host.endsWith(".gptengineer.app")) return "sandbox";
+
+  return "live";
+}
+
 export function resolvePaymentEnv(req: Request): PaymentEnv {
   const raw = req.headers.get("origin") || req.headers.get("referer") || "";
   let host = "";
   try {
-    host = new URL(raw).hostname.toLowerCase();
+    host = new URL(raw).hostname;
   } catch {
     host = "";
   }
-
-  if (!host) return "live";
-  if (host === "localhost" || host === "127.0.0.1" || host.endsWith(".localhost")) return "sandbox";
-  if (host.startsWith("id-preview--")) return "sandbox";
-  if (host.endsWith(".lovableproject.com")) return "sandbox";
-  if (host.endsWith(".sandbox.lovable.app")) return "sandbox";
-  return "live";
+  return classifyHost(host);
 }
