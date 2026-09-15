@@ -82,6 +82,20 @@ export function isPixKeyMissingError(error: unknown): boolean {
   return normalized.includes("chave pix");
 }
 
+/** Detecta a recusa "o cliente precisa ter endereço completo cadastrado". */
+export function isAddressRequiredError(error: unknown): boolean {
+  const message = error instanceof Error ? error.message : String(error ?? "");
+  const normalized = message
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase();
+  return (
+    normalized.includes("deve existir para o customer") ||
+    normalized.includes("postalcode") ||
+    normalized.includes("addressnumber")
+  );
+}
+
 export function resolveAsaasEnv(req: Request): AsaasEnv {
   return resolvePaymentEnv(req);
 }
