@@ -3,6 +3,7 @@ import { createClient } from "npm:@supabase/supabase-js@2";
 import {
   type AsaasEnv,
   cancelSubscription,
+  isAddressRequiredError,
   isPixKeyMissingError,
   checkoutSessionUrl,
   createCheckoutSession,
@@ -203,24 +204,37 @@ Deno.serve(async (req) => {
       }
     }
 
+    // O Asaas recusa URL de retorno com parâmetro de consulta: usar caminho puro.
     const sessionOptions = {
       customerId: customer.id,
       priceId: priceId as PriceId,
       userId: user.id,
-      successUrl: `${origin}/planos?checkout=success`,
-      cancelUrl: `${origin}/planos?checkout=cancelled`,
-      expiredUrl: `${origin}/planos?checkout=expired`,
+      successUrl: `${origin}/planos/pagamento/sucesso`,
+      cancelUrl: `${origin}/planos/pagamento/cancelado`,
+      expiredUrl: `${origin}/planos/pagamento/expirado`,
       // Mensal no cartão: só cartão. Anual: Pix e cartão na mesma tela.
       billingTypes: recurring ? ["CREDIT_CARD"] : ["PIX", "CREDIT_CARD"],
     };
 
+    const openCheckout = async (options: typeof sessionOptions) => {
+      try {
+        return await createCheckoutSession(env, options);
+      } catch (error) {
+        // Cliente sem endereço completo no Asaas: o próprio checkout coleta os dados.
+        if (isAddressRequiredError(error)) {
+          return await createCheckoutSession(env, { ...options, customerId: undefined });
+        }
+        throw error;
+      }
+    };
+
     let session;
     try {
-      session = await createCheckoutSession(env, sessionOptions);
+      session = await openCheckout(sessionOptions);
     } catch (error) {
       // Conta sem chave Pix: o anual continua disponível no cartão.
       if (!recurring && isPixKeyMissingError(error)) {
-        session = await createCheckoutSession(env, {
+        session = await openCheckout({
           ...sessionOptions,
           billingTypes: ["CREDIT_CARD"],
         });

@@ -132,7 +132,10 @@ export default function Planos() {
 
 
   useEffect(() => {
-    if (searchParams.get("checkout") === "success") {
+    const returned =
+      searchParams.get("checkout") === "success" ||
+      window.location.pathname === "/planos/pagamento/sucesso";
+    if (returned) {
       toast.success("Pagamento realizado! Ativando seu plano...");
       // Webhook can take a few seconds, poll the subscription query.
       let attempts = 0;
