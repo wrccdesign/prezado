@@ -109,6 +109,7 @@ const App = () => (
               <Route path="/modelos-de-minutas/:slug" element={<MinutaDetalhe />} />
               <Route path="/comparativo" element={<Comparativo />} />
               <Route path="/planos" element={<Planos />} />
+              <Route path="/planos/pagamento/:status" element={<Planos />} />
               <Route path="/conta" element={<ProtectedRoute><Conta /></ProtectedRoute>} />
               <Route path="/admin/ingestao" element={<ProtectedRoute><AdminIngestao /></ProtectedRoute>} />
               <Route path="/mapa-do-site" element={<MapaDoSite />} />
