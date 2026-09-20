@@ -75,8 +75,10 @@ export default function MinutaDetalhe() {
   };
 
   const related = MINUTAS.filter((m) => m.slug !== minuta.slug && m.category === minuta.category).slice(0, 3);
+  const tools = RELATED_TOOLS[minuta.category] ?? [];
+  const faq = ROUTE_CONTENT[`/modelos-de-minutas/${minuta.slug}`]?.faq ?? [];
 
-  const jsonLd = [
+  const jsonLd: Record<string, unknown>[] = [
     {
       "@context": "https://schema.org",
       "@type": "HowTo",
@@ -109,6 +111,10 @@ export default function MinutaDetalhe() {
       ],
     },
   ];
+
+  if (faq.length) {
+    jsonLd.push(buildFaqJsonLd(faq));
+  }
 
   return (
     <div className="min-h-screen bg-background">
