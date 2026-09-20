@@ -2,14 +2,58 @@ import { Link, useParams } from "react-router-dom";
 import { AppHeader } from "@/components/AppHeader";
 import { AppFooter } from "@/components/AppFooter";
 import { SEO } from "@/components/SEO";
+import { FaqSection, buildFaqJsonLd } from "@/components/FaqSection";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, CheckCircle, Copy, Download, FileDown, Sparkles } from "lucide-react";
 import { getMinuta, minutaToPlainText, MINUTAS } from "@/data/minutas";
+import { ROUTE_CONTENT } from "@/seo/routeContent";
 import { exportToPDF, exportToDOCX, slugify } from "@/lib/exportDocument";
 import { useToast } from "@/hooks/use-toast";
 import NotFound from "./NotFound";
+
+/** Ferramentas do site úteis em cada tipo de peça, para ligação interna. */
+const RELATED_TOOLS: Record<string, { to: string; label: string }[]> = {
+  Trabalhista: [
+    { to: "/calculadoras/rescisao-trabalhista", label: "Calculadora de rescisão trabalhista" },
+    {
+      to: "/calculadoras/correcao-monetaria-juros-lei-14905",
+      label: "Correção monetária e juros",
+    },
+    { to: "/calculadoras/prazo-processual", label: "Calculadora de prazo processual" },
+  ],
+  Cível: [
+    {
+      to: "/calculadoras/correcao-monetaria-juros-lei-14905",
+      label: "Correção monetária e juros",
+    },
+    { to: "/calculadoras/custas-tjsp", label: "Custas processuais do TJSP" },
+    { to: "/calculadoras/prazo-processual", label: "Calculadora de prazo processual" },
+  ],
+  Recursos: [
+    { to: "/calculadoras/prazo-processual", label: "Calculadora de prazo processual" },
+    { to: "/calculadoras/custas-tjsp", label: "Custas processuais do TJSP" },
+    { to: "/jurisprudencia", label: "Consulta processual e jurisprudência" },
+  ],
+  Extrajudicial: [
+    {
+      to: "/calculadoras/correcao-monetaria-juros-lei-14905",
+      label: "Correção monetária e juros",
+    },
+    { to: "/calculadoras/operacoes-datas", label: "Operações com datas" },
+    { to: "/calculadoras/validador-cpf-cnpj", label: "Validador de CPF e CNPJ" },
+  ],
+  Contratos: [
+    { to: "/calculadoras/validador-cpf-cnpj", label: "Validador de CPF e CNPJ" },
+    {
+      to: "/calculadoras/correcao-monetaria-juros-lei-14905",
+      label: "Correção monetária e juros",
+    },
+    { to: "/planos", label: "Planos do Honorífico" },
+  ],
+};
+
 
 export default function MinutaDetalhe() {
   const { slug } = useParams();
