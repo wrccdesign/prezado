@@ -226,8 +226,29 @@ export default function MinutaDetalhe() {
                 </CardContent>
               </Card>
             )}
+
+            {tools.length > 0 && (
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-lg">Ferramentas para esta peça</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-2">
+                  {tools.map((t) => (
+                    <Link
+                      key={t.to}
+                      to={t.to}
+                      className="block text-sm text-primary hover:underline"
+                    >
+                      {t.label}
+                    </Link>
+                  ))}
+                </CardContent>
+              </Card>
+            )}
           </aside>
         </div>
+
+        {faq.length > 0 && <FaqSection items={faq} className="max-w-3xl" />}
 
         <p className="text-[0.9375rem] leading-relaxed text-muted-foreground max-w-3xl">
           Conteúdo informativo. Os campos entre colchetes devem ser preenchidos com os dados do caso
