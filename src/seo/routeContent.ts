@@ -144,12 +144,82 @@ export const ROUTE_CONTENT: Record<string, RouteContent> = {
   "/modelos-de-minutas/peticao-inicial-cobranca": {
     heading: "Modelo de petição inicial de cobrança",
     intro:
-      "Minuta editável de petição inicial de cobrança pelo procedimento comum, com os requisitos do art. 319 do CPC: qualificação, fatos, fundamentação jurídica, pedidos, valor da causa e requerimento de provas.",
+      "Minuta editável de petição inicial de cobrança pelo procedimento comum, com os requisitos do art. 319 do CPC: endereçamento, qualificação das partes, fatos, fundamentação jurídica, pedidos, valor da causa e requerimento de provas. Serve para dívida líquida sem título executivo, para título prescrito para execução e para prestação de serviço não paga.",
+    bullets: [
+      "Requisitos do art. 319 do CPC conferidos um a um, para evitar emenda da inicial.",
+      "Valor da causa correspondente ao proveito econômico pretendido, art. 292, I e II, do CPC.",
+      "Pedido de correção monetária e juros desde o vencimento, com a Lei 14.905/2024 aplicada.",
+      "Requerimento de citação, de produção de provas e de honorários de sucumbência.",
+      "Campos entre colchetes para preenchimento e checklist de conferência antes do protocolo.",
+      "Exportação em PDF e Word.",
+    ],
+    faq: [
+      {
+        question: "Quando usar cobrança em vez de execução ou monitória?",
+        answer:
+          "A execução exige título executivo, judicial ou extrajudicial. A monitória cabe quando há prova escrita sem eficácia de título, art. 700 do CPC. A ação de cobrança pelo procedimento comum é o caminho quando não há título nem prova escrita suficiente, ou quando a pretensão executiva já prescreveu.",
+      },
+      {
+        question: "Desde quando correm juros e correção?",
+        answer:
+          "Em obrigação com data certa, a mora é automática desde o vencimento, art. 397 do Código Civil. Sem data certa, a mora começa com a notificação ou a citação. A calculadora de correção monetária e juros do Honorífico gera a memória de cálculo mês a mês para anexar à inicial.",
+      },
+      {
+        question: "Como definir o valor da causa?",
+        answer:
+          "Pelo valor do débito atualizado até a data da distribuição, somando principal, correção, juros e, quando cabível, multa contratual. Valor subestimado pode gerar impugnação e recolhimento complementar de custas.",
+      },
+      {
+        question: "Quais documentos instruem a inicial?",
+        answer:
+          "Contrato ou proposta aceita, notas fiscais, comprovantes de entrega ou de prestação do serviço, planilha do débito, notificação extrajudicial enviada e comprovante de recebimento, e procuração.",
+      },
+      {
+        question: "Preciso tentar acordo antes?",
+        answer:
+          "Não é condição da ação, mas a notificação extrajudicial prévia constitui em mora e demonstra boa-fé. A audiência de conciliação do art. 334 do CPC é designada de ofício, salvo desinteresse expresso das duas partes.",
+      },
+    ],
   },
   "/modelos-de-minutas/contestacao-civel": {
     heading: "Modelo de contestação cível",
     intro:
-      "Minuta editável de contestação cível conforme os arts. 335 a 342 do CPC, com preliminares, alegação de prescrição, impugnação específica dos fatos, pedidos finais e checklist.",
+      "Minuta editável de contestação cível conforme os arts. 335 a 342 do CPC, com preliminares do art. 337, alegação de prescrição e decadência, impugnação específica dos fatos, pedido contraposto quando cabível, pedidos finais e checklist. A estrutura segue a ordem em que o juiz lê a peça: preliminares, prejudiciais de mérito e mérito.",
+    bullets: [
+      "Prazo de 15 dias úteis, contado conforme o art. 335 do CPC, com o marco variando entre audiência de conciliação, protocolo do pedido de cancelamento e juntada do aviso de recebimento.",
+      "Preliminares do art. 337: incompetência, inépcia da inicial, ilegitimidade, falta de interesse, litispendência, coisa julgada e conexão.",
+      "Prejudiciais de mérito: prescrição e decadência, que devem vir antes da defesa de fundo.",
+      "Impugnação específica de cada fato, sob pena de presunção de veracidade, art. 341 do CPC.",
+      "Requerimento de provas, de honorários de sucumbência e, quando cabível, de justiça gratuita.",
+      "Checklist de conferência e exportação em PDF e Word.",
+    ],
+    faq: [
+      {
+        question: "De quando começa a correr o prazo de contestação?",
+        answer:
+          "Do art. 335 do CPC: da audiência de conciliação frustrada, do protocolo do pedido de cancelamento da audiência pelo réu quando as duas partes manifestam desinteresse, ou da juntada do mandado ou do aviso de recebimento nos demais casos. São 15 dias úteis, art. 219 do CPC.",
+      },
+      {
+        question: "O que acontece se algum fato não for impugnado?",
+        answer:
+          "O art. 341 do CPC presume verdadeiros os fatos não impugnados especificamente, salvo nas exceções do próprio artigo. Por isso a defesa deve percorrer cada fato narrado na inicial, não apenas negar em bloco.",
+      },
+      {
+        question: "Toda matéria precisa vir na contestação?",
+        answer:
+          "Sim, pelo princípio da eventualidade do art. 336 do CPC: toda a defesa deve ser deduzida de uma vez. Depois, só podem ser alegadas matérias de ordem pública, fato superveniente ou aquelas que a lei permite conhecer de ofício.",
+      },
+      {
+        question: "Dá para pedir algo contra o autor na própria contestação?",
+        answer:
+          "Sim, nos procedimentos que admitem pedido contraposto, como o dos Juizados Especiais. No procedimento comum, a pretensão do réu contra o autor é deduzida por reconvenção, na mesma peça, art. 343 do CPC.",
+      },
+      {
+        question: "Como calcular a prescrição alegada?",
+        answer:
+          "Identifique o termo inicial, aplique o prazo do art. 205 ou 206 do Código Civil e verifique causas de interrupção e suspensão. A calculadora de operações com datas ajuda a contar o intervalo exato entre o termo inicial e a distribuição.",
+      },
+    ],
   },
   "/modelos-de-minutas/reclamacao-trabalhista": {
     heading: "Modelo de reclamação trabalhista",
