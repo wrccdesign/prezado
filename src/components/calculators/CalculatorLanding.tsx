@@ -125,6 +125,8 @@ export function CalculatorLanding({
     },
   ];
 
+  const relatedMinutas = RELATED_MINUTAS[path] ?? [];
+
   if (faq?.length) {
     jsonLd.push(buildFaqJsonLd(faq));
   }
@@ -198,6 +200,24 @@ export function CalculatorLanding({
                 Ver todas
               </Link>
             </section>
+
+            {relatedMinutas.length > 0 && (
+              <section className="border-t border-cream-dark pt-6">
+                <h2 className="text-h3 text-navy">Modelos que acompanham este cálculo</h2>
+                <ul className="mt-4">
+                  {relatedMinutas.map(m => (
+                    <li key={m.to} className="border-t border-cream-dark py-3 text-sm">
+                      <Link
+                        to={m.to}
+                        className="text-navy underline underline-offset-4 hover:text-gold"
+                      >
+                        {m.label}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </section>
+            )}
           </aside>
         </div>
       </main>
