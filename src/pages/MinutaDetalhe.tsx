@@ -2,14 +2,58 @@ import { Link, useParams } from "react-router-dom";
 import { AppHeader } from "@/components/AppHeader";
 import { AppFooter } from "@/components/AppFooter";
 import { SEO } from "@/components/SEO";
+import { FaqSection, buildFaqJsonLd } from "@/components/FaqSection";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, CheckCircle, Copy, Download, FileDown, Sparkles } from "lucide-react";
 import { getMinuta, minutaToPlainText, MINUTAS } from "@/data/minutas";
+import { ROUTE_CONTENT } from "@/seo/routeContent";
 import { exportToPDF, exportToDOCX, slugify } from "@/lib/exportDocument";
 import { useToast } from "@/hooks/use-toast";
 import NotFound from "./NotFound";
+
+/** Ferramentas do site úteis em cada tipo de peça, para ligação interna. */
+const RELATED_TOOLS: Record<string, { to: string; label: string }[]> = {
+  Trabalhista: [
+    { to: "/calculadoras/rescisao-trabalhista", label: "Calculadora de rescisão trabalhista" },
+    {
+      to: "/calculadoras/correcao-monetaria-juros-lei-14905",
+      label: "Correção monetária e juros",
+    },
+    { to: "/calculadoras/prazo-processual", label: "Calculadora de prazo processual" },
+  ],
+  Cível: [
+    {
+      to: "/calculadoras/correcao-monetaria-juros-lei-14905",
+      label: "Correção monetária e juros",
+    },
+    { to: "/calculadoras/custas-tjsp", label: "Custas processuais do TJSP" },
+    { to: "/calculadoras/prazo-processual", label: "Calculadora de prazo processual" },
+  ],
+  Recursos: [
+    { to: "/calculadoras/prazo-processual", label: "Calculadora de prazo processual" },
+    { to: "/calculadoras/custas-tjsp", label: "Custas processuais do TJSP" },
+    { to: "/jurisprudencia", label: "Consulta processual e jurisprudência" },
+  ],
+  Extrajudicial: [
+    {
+      to: "/calculadoras/correcao-monetaria-juros-lei-14905",
+      label: "Correção monetária e juros",
+    },
+    { to: "/calculadoras/operacoes-datas", label: "Operações com datas" },
+    { to: "/calculadoras/validador-cpf-cnpj", label: "Validador de CPF e CNPJ" },
+  ],
+  Contratos: [
+    { to: "/calculadoras/validador-cpf-cnpj", label: "Validador de CPF e CNPJ" },
+    {
+      to: "/calculadoras/correcao-monetaria-juros-lei-14905",
+      label: "Correção monetária e juros",
+    },
+    { to: "/planos", label: "Planos do Honorífico" },
+  ],
+};
+
 
 export default function MinutaDetalhe() {
   const { slug } = useParams();
@@ -31,8 +75,10 @@ export default function MinutaDetalhe() {
   };
 
   const related = MINUTAS.filter((m) => m.slug !== minuta.slug && m.category === minuta.category).slice(0, 3);
+  const tools = RELATED_TOOLS[minuta.category] ?? [];
+  const faq = ROUTE_CONTENT[`/modelos-de-minutas/${minuta.slug}`]?.faq ?? [];
 
-  const jsonLd = [
+  const jsonLd: Record<string, unknown>[] = [
     {
       "@context": "https://schema.org",
       "@type": "HowTo",
@@ -65,6 +111,10 @@ export default function MinutaDetalhe() {
       ],
     },
   ];
+
+  if (faq.length) {
+    jsonLd.push(buildFaqJsonLd(faq));
+  }
 
   return (
     <div className="min-h-screen bg-background">
@@ -176,8 +226,29 @@ export default function MinutaDetalhe() {
                 </CardContent>
               </Card>
             )}
+
+            {tools.length > 0 && (
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-lg">Ferramentas para esta peça</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-2">
+                  {tools.map((t) => (
+                    <Link
+                      key={t.to}
+                      to={t.to}
+                      className="block text-sm text-primary hover:underline"
+                    >
+                      {t.label}
+                    </Link>
+                  ))}
+                </CardContent>
+              </Card>
+            )}
           </aside>
         </div>
+
+        {faq.length > 0 && <FaqSection items={faq} className="max-w-3xl" />}
 
         <p className="text-[0.9375rem] leading-relaxed text-muted-foreground max-w-3xl">
           Conteúdo informativo. Os campos entre colchetes devem ser preenchidos com os dados do caso

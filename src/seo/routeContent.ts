@@ -154,17 +154,107 @@ export const ROUTE_CONTENT: Record<string, RouteContent> = {
   "/modelos-de-minutas/reclamacao-trabalhista": {
     heading: "Modelo de reclamação trabalhista",
     intro:
-      "Minuta editável de reclamação trabalhista com pedidos líquidos, como exige o art. 840, §1º, da CLT, cobrindo verbas rescisórias, horas extras e requerimentos processuais.",
+      "Minuta editável de reclamação trabalhista com pedidos líquidos, como exige o art. 840, §1º, da CLT, cobrindo verbas rescisórias, horas extras e requerimentos processuais. O texto vem com os campos entre colchetes para preenchimento e com a estrutura na ordem em que a Vara do Trabalho espera ler a peça.",
+    bullets: [
+      "Endereçamento à Vara do Trabalho competente pelo local da prestação de serviços, art. 651 da CLT.",
+      "Qualificação das partes com CTPS, função, salário, data de admissão e de saída.",
+      "Narrativa dos fatos separada por tema: contrato, jornada, verbas não pagas e rescisão.",
+      "Pedidos líquidos com o valor de cada verba, exigência do art. 840, §1º, da CLT desde a Reforma Trabalhista.",
+      "Requerimentos processuais: justiça gratuita, honorários de sucumbência, provas e valor da causa.",
+      "Checklist de conferência antes do protocolo e exportação em PDF e Word.",
+    ],
+    faq: [
+      {
+        question: "O que muda com a exigência de pedido líquido?",
+        answer:
+          "Desde a Lei 13.467/2017, o art. 840, §1º, da CLT exige pedido certo, determinado e com indicação de valor. Pedido sem valor pode ser extinto sem resolução de mérito. O modelo já traz a coluna de valores por verba; a calculadora de rescisão trabalhista do Honorífico gera esses números com memória de cálculo.",
+      },
+      {
+        question: "Onde protocolar a reclamação?",
+        answer:
+          "Em regra, na Vara do Trabalho do local da prestação de serviços, conforme o art. 651 da CLT, mesmo que a contratação tenha ocorrido em outra cidade. Há exceções para agente ou viajante comercial e para empregador que promova atividade fora do lugar do contrato.",
+      },
+      {
+        question: "Preciso atualizar os valores dos pedidos?",
+        answer:
+          "Sim. As verbas devem estar atualizadas até a data da distribuição, com correção e juros. A calculadora de correção monetária e juros aplica a Lei 14.905/2024 e entrega a memória mês a mês para anexar à petição.",
+      },
+      {
+        question: "O modelo serve para qualquer caso?",
+        answer:
+          "É um ponto de partida. A peça precisa ser ajustada aos fatos, à prova disponível e à jurisprudência do tribunal, e revisada por advogado habilitado antes do protocolo.",
+      },
+    ],
   },
   "/modelos-de-minutas/notificacao-extrajudicial": {
     heading: "Modelo de notificação extrajudicial",
     intro:
-      "Minuta editável de notificação extrajudicial para constituição em mora, com prazo para cumprimento, advertência sobre as medidas judiciais cabíveis e checklist de envio com comprovação.",
+      "Minuta editável de notificação extrajudicial para constituição em mora, com prazo para cumprimento, advertência sobre as medidas judiciais cabíveis e checklist de envio com comprovação. Serve para cobrança, rescisão contratual, exigência de obrigação de fazer e interrupção de discussões antes do ajuizamento.",
+    bullets: [
+      "Identificação do notificante e do notificado, com CPF ou CNPJ e endereço completo.",
+      "Descrição objetiva da obrigação descumprida, com data, valor e documento que a comprova.",
+      "Prazo para cumprimento, em regra de 5 a 15 dias, contado do recebimento.",
+      "Constituição em mora nos termos dos arts. 394 e 397 do Código Civil.",
+      "Advertência sobre as medidas judiciais cabíveis em caso de silêncio.",
+      "Formas de envio com prova de recebimento: cartório de títulos e documentos, carta com aviso de recebimento ou e-mail com confirmação.",
+    ],
+    faq: [
+      {
+        question: "A notificação extrajudicial é obrigatória antes de processar?",
+        answer:
+          "Na maioria dos casos não, mas ela constitui o devedor em mora quando a obrigação não tem data certa, art. 397, parágrafo único, do Código Civil, e serve como prova da tentativa de solução antes do processo. Em alguns contratos, como alienação fiduciária e locação, a notificação prévia é exigida.",
+      },
+      {
+        question: "Qual a diferença entre notificação extrajudicial e protesto?",
+        answer:
+          "A notificação comunica e concede prazo. O protesto, feito em cartório, registra publicamente a inadimplência e afeta o crédito do devedor. Os dois podem ser usados, em sequência.",
+      },
+      {
+        question: "Como comprovar que o notificado recebeu?",
+        answer:
+          "Pelo cartório de títulos e documentos, que certifica a entrega, por carta registrada com aviso de recebimento ou por e-mail com confirmação de leitura, guardando o comprovante para instruir eventual ação.",
+      },
+      {
+        question: "Preciso de advogado para notificar?",
+        answer:
+          "A notificação pode ser enviada pela própria parte, mas a redação por advogado reduz o risco de descrever mal a obrigação, de fixar prazo inadequado ou de gerar prova contra o próprio notificante.",
+      },
+    ],
   },
   "/modelos-de-minutas/procuracao-ad-judicia": {
     heading: "Modelo de procuração ad judicia",
     intro:
-      "Minuta editável de procuração ad judicia et extra com os poderes especiais do art. 105 do CPC, para representação judicial e extrajudicial do cliente.",
+      "Minuta editável de procuração ad judicia et extra com os poderes especiais do art. 105 do CPC, para representação judicial e extrajudicial do cliente. Inclui os poderes da cláusula geral, os poderes especiais que precisam de menção expressa e os campos de qualificação do outorgante e do outorgado.",
+    bullets: [
+      "Poderes gerais da cláusula ad judicia: postular em juízo, requerer, recorrer e acompanhar o processo até o fim.",
+      "Poderes especiais do art. 105 do CPC, que exigem menção expressa: receber citação, confessar, reconhecer a procedência do pedido, transigir, desistir, renunciar ao direito, receber, dar quitação, firmar compromisso e assinar declaração de hipossuficiência.",
+      "Cláusula ad extra para representação fora do processo, em órgãos públicos e entidades privadas.",
+      "Prazo de validade e possibilidade de substabelecimento, com ou sem reserva de poderes.",
+      "Qualificação completa do outorgante, do outorgado e da sociedade de advogados, quando houver.",
+      "Versão para pessoa física e para pessoa jurídica, exportável em PDF e Word.",
+    ],
+    faq: [
+      {
+        question: "O que significa ad judicia et extra?",
+        answer:
+          "Ad judicia são os poderes para atuar dentro do processo. Et extra estende a representação para fora dele, como protocolos em órgãos públicos, cartórios, bancos e concessionárias.",
+      },
+      {
+        question: "Quais poderes precisam constar expressamente?",
+        answer:
+          "Os do art. 105 do CPC: receber citação, confessar, reconhecer a procedência do pedido, transigir, desistir, renunciar ao direito sobre o qual se funda a ação, receber, dar quitação, firmar compromisso e assinar declaração de hipossuficiência. Sem menção expressa, o advogado não pode praticá-los.",
+      },
+      {
+        question: "A procuração precisa de reconhecimento de firma?",
+        answer:
+          "Em regra não. O art. 105 do CPC dispensa o reconhecimento de firma na procuração para o foro em geral. Exigências específicas podem aparecer em atos notariais e em alguns órgãos administrativos.",
+      },
+      {
+        question: "Procuração eletrônica tem a mesma validade?",
+        answer:
+          "Sim, quando assinada com certificado digital ICP-Brasil ou por plataforma de assinatura eletrônica aceita pelo tribunal, conforme o art. 105, §1º, do CPC e as normas do processo eletrônico.",
+      },
+    ],
   },
   "/modelos-de-minutas/recurso-apelacao": {
     heading: "Modelo de recurso de apelação",

@@ -28,6 +28,68 @@ interface CalculatorLandingProps {
 
 const SITE_URL = "https://honorifico.com.br";
 
+/** Modelos de minuta que costumam acompanhar cada cálculo, para ligação interna. */
+const RELATED_MINUTAS: Record<string, { to: string; label: string }[]> = {
+  "/calculadoras/rescisao-trabalhista": [
+    {
+      to: "/modelos-de-minutas/reclamacao-trabalhista",
+      label: "Modelo de reclamação trabalhista",
+    },
+    {
+      to: "/modelos-de-minutas/acordo-extrajudicial-homologacao",
+      label: "Modelo de acordo extrajudicial",
+    },
+  ],
+  "/calculadoras/correcao-monetaria-juros-lei-14905": [
+    {
+      to: "/modelos-de-minutas/peticao-inicial-cobranca",
+      label: "Modelo de petição inicial de cobrança",
+    },
+    {
+      to: "/modelos-de-minutas/notificacao-extrajudicial",
+      label: "Modelo de notificação extrajudicial",
+    },
+  ],
+  "/calculadoras/prazo-processual": [
+    { to: "/modelos-de-minutas/contestacao-civel", label: "Modelo de contestação cível" },
+    { to: "/modelos-de-minutas/recurso-apelacao", label: "Modelo de recurso de apelação" },
+  ],
+  "/calculadoras/custas-tjsp": [
+    {
+      to: "/modelos-de-minutas/peticao-inicial-cobranca",
+      label: "Modelo de petição inicial de cobrança",
+    },
+    { to: "/modelos-de-minutas/recurso-apelacao", label: "Modelo de recurso de apelação" },
+  ],
+  "/calculadoras/pensao-alimenticia": [
+    {
+      to: "/modelos-de-minutas/acordo-extrajudicial-homologacao",
+      label: "Modelo de acordo extrajudicial",
+    },
+    {
+      to: "/modelos-de-minutas/notificacao-extrajudicial",
+      label: "Modelo de notificação extrajudicial",
+    },
+  ],
+  "/calculadoras/validador-cpf-cnpj": [
+    {
+      to: "/modelos-de-minutas/procuracao-ad-judicia",
+      label: "Modelo de procuração ad judicia",
+    },
+    {
+      to: "/modelos-de-minutas/contrato-prestacao-servicos-advocaticios",
+      label: "Modelo de contrato de honorários",
+    },
+  ],
+  "/calculadoras/operacoes-datas": [
+    {
+      to: "/modelos-de-minutas/notificacao-extrajudicial",
+      label: "Modelo de notificação extrajudicial",
+    },
+    { to: "/modelos-de-minutas/contestacao-civel", label: "Modelo de contestação cível" },
+  ],
+};
+
 export function CalculatorLanding({
   title,
   description,
@@ -62,6 +124,8 @@ export function CalculatorLanding({
       offers: { "@type": "Offer", price: "0", priceCurrency: "BRL" },
     },
   ];
+
+  const relatedMinutas = RELATED_MINUTAS[path] ?? [];
 
   if (faq?.length) {
     jsonLd.push(buildFaqJsonLd(faq));
@@ -136,6 +200,24 @@ export function CalculatorLanding({
                 Ver todas
               </Link>
             </section>
+
+            {relatedMinutas.length > 0 && (
+              <section className="border-t border-cream-dark pt-6">
+                <h2 className="text-h3 text-navy">Modelos que acompanham este cálculo</h2>
+                <ul className="mt-4">
+                  {relatedMinutas.map(m => (
+                    <li key={m.to} className="border-t border-cream-dark py-3 text-sm">
+                      <Link
+                        to={m.to}
+                        className="text-navy underline underline-offset-4 hover:text-gold"
+                      >
+                        {m.label}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </section>
+            )}
           </aside>
         </div>
       </main>
