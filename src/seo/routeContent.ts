@@ -144,12 +144,82 @@ export const ROUTE_CONTENT: Record<string, RouteContent> = {
   "/modelos-de-minutas/peticao-inicial-cobranca": {
     heading: "Modelo de petição inicial de cobrança",
     intro:
-      "Minuta editável de petição inicial de cobrança pelo procedimento comum, com os requisitos do art. 319 do CPC: qualificação, fatos, fundamentação jurídica, pedidos, valor da causa e requerimento de provas.",
+      "Minuta editável de petição inicial de cobrança pelo procedimento comum, com os requisitos do art. 319 do CPC: endereçamento, qualificação das partes, fatos, fundamentação jurídica, pedidos, valor da causa e requerimento de provas. Serve para dívida líquida sem título executivo, para título prescrito para execução e para prestação de serviço não paga.",
+    bullets: [
+      "Requisitos do art. 319 do CPC conferidos um a um, para evitar emenda da inicial.",
+      "Valor da causa correspondente ao proveito econômico pretendido, art. 292, I e II, do CPC.",
+      "Pedido de correção monetária e juros desde o vencimento, com a Lei 14.905/2024 aplicada.",
+      "Requerimento de citação, de produção de provas e de honorários de sucumbência.",
+      "Campos entre colchetes para preenchimento e checklist de conferência antes do protocolo.",
+      "Exportação em PDF e Word.",
+    ],
+    faq: [
+      {
+        question: "Quando usar cobrança em vez de execução ou monitória?",
+        answer:
+          "A execução exige título executivo, judicial ou extrajudicial. A monitória cabe quando há prova escrita sem eficácia de título, art. 700 do CPC. A ação de cobrança pelo procedimento comum é o caminho quando não há título nem prova escrita suficiente, ou quando a pretensão executiva já prescreveu.",
+      },
+      {
+        question: "Desde quando correm juros e correção?",
+        answer:
+          "Em obrigação com data certa, a mora é automática desde o vencimento, art. 397 do Código Civil. Sem data certa, a mora começa com a notificação ou a citação. A calculadora de correção monetária e juros do Honorífico gera a memória de cálculo mês a mês para anexar à inicial.",
+      },
+      {
+        question: "Como definir o valor da causa?",
+        answer:
+          "Pelo valor do débito atualizado até a data da distribuição, somando principal, correção, juros e, quando cabível, multa contratual. Valor subestimado pode gerar impugnação e recolhimento complementar de custas.",
+      },
+      {
+        question: "Quais documentos instruem a inicial?",
+        answer:
+          "Contrato ou proposta aceita, notas fiscais, comprovantes de entrega ou de prestação do serviço, planilha do débito, notificação extrajudicial enviada e comprovante de recebimento, e procuração.",
+      },
+      {
+        question: "Preciso tentar acordo antes?",
+        answer:
+          "Não é condição da ação, mas a notificação extrajudicial prévia constitui em mora e demonstra boa-fé. A audiência de conciliação do art. 334 do CPC é designada de ofício, salvo desinteresse expresso das duas partes.",
+      },
+    ],
   },
   "/modelos-de-minutas/contestacao-civel": {
     heading: "Modelo de contestação cível",
     intro:
-      "Minuta editável de contestação cível conforme os arts. 335 a 342 do CPC, com preliminares, alegação de prescrição, impugnação específica dos fatos, pedidos finais e checklist.",
+      "Minuta editável de contestação cível conforme os arts. 335 a 342 do CPC, com preliminares do art. 337, alegação de prescrição e decadência, impugnação específica dos fatos, pedido contraposto quando cabível, pedidos finais e checklist. A estrutura segue a ordem em que o juiz lê a peça: preliminares, prejudiciais de mérito e mérito.",
+    bullets: [
+      "Prazo de 15 dias úteis, contado conforme o art. 335 do CPC, com o marco variando entre audiência de conciliação, protocolo do pedido de cancelamento e juntada do aviso de recebimento.",
+      "Preliminares do art. 337: incompetência, inépcia da inicial, ilegitimidade, falta de interesse, litispendência, coisa julgada e conexão.",
+      "Prejudiciais de mérito: prescrição e decadência, que devem vir antes da defesa de fundo.",
+      "Impugnação específica de cada fato, sob pena de presunção de veracidade, art. 341 do CPC.",
+      "Requerimento de provas, de honorários de sucumbência e, quando cabível, de justiça gratuita.",
+      "Checklist de conferência e exportação em PDF e Word.",
+    ],
+    faq: [
+      {
+        question: "De quando começa a correr o prazo de contestação?",
+        answer:
+          "Do art. 335 do CPC: da audiência de conciliação frustrada, do protocolo do pedido de cancelamento da audiência pelo réu quando as duas partes manifestam desinteresse, ou da juntada do mandado ou do aviso de recebimento nos demais casos. São 15 dias úteis, art. 219 do CPC.",
+      },
+      {
+        question: "O que acontece se algum fato não for impugnado?",
+        answer:
+          "O art. 341 do CPC presume verdadeiros os fatos não impugnados especificamente, salvo nas exceções do próprio artigo. Por isso a defesa deve percorrer cada fato narrado na inicial, não apenas negar em bloco.",
+      },
+      {
+        question: "Toda matéria precisa vir na contestação?",
+        answer:
+          "Sim, pelo princípio da eventualidade do art. 336 do CPC: toda a defesa deve ser deduzida de uma vez. Depois, só podem ser alegadas matérias de ordem pública, fato superveniente ou aquelas que a lei permite conhecer de ofício.",
+      },
+      {
+        question: "Dá para pedir algo contra o autor na própria contestação?",
+        answer:
+          "Sim, nos procedimentos que admitem pedido contraposto, como o dos Juizados Especiais. No procedimento comum, a pretensão do réu contra o autor é deduzida por reconvenção, na mesma peça, art. 343 do CPC.",
+      },
+      {
+        question: "Como calcular a prescrição alegada?",
+        answer:
+          "Identifique o termo inicial, aplique o prazo do art. 205 ou 206 do Código Civil e verifique causas de interrupção e suspensão. A calculadora de operações com datas ajuda a contar o intervalo exato entre o termo inicial e a distribuição.",
+      },
+    ],
   },
   "/modelos-de-minutas/reclamacao-trabalhista": {
     heading: "Modelo de reclamação trabalhista",
@@ -259,17 +329,122 @@ export const ROUTE_CONTENT: Record<string, RouteContent> = {
   "/modelos-de-minutas/recurso-apelacao": {
     heading: "Modelo de recurso de apelação",
     intro:
-      "Minuta editável de apelação conforme os arts. 1.009 a 1.014 do CPC: petição de interposição, razões recursais, preliminares e pedido de reforma da sentença.",
+      "Minuta editável de apelação conforme os arts. 1.009 a 1.014 do CPC, em duas partes: petição de interposição dirigida ao juízo de primeiro grau e razões recursais dirigidas ao tribunal, com preliminares, impugnação específica dos fundamentos da sentença e pedido de reforma ou anulação.",
+    bullets: [
+      "Prazo de 15 dias úteis da publicação da sentença, art. 1.003, §5º, do CPC, em dobro para a Fazenda Pública, o Ministério Público e a Defensoria.",
+      "Petição de interposição com comprovante de preparo, sob pena de deserção, art. 1.007 do CPC.",
+      "Razões com impugnação específica de cada fundamento da sentença, art. 1.010, II, do CPC.",
+      "Preliminares e questões resolvidas por decisão interlocutória não agravável, art. 1.009, §1º.",
+      "Pedido de efeito suspensivo ou de antecipação da tutela recursal quando houver risco de dano.",
+      "Checklist de conferência antes do protocolo e exportação em PDF e Word.",
+    ],
+    faq: [
+      {
+        question: "O que precisa constar nas razões de apelação?",
+        answer:
+          "Os nomes e a qualificação das partes, a exposição do fato e do direito, as razões do pedido de reforma ou de decretação de nulidade e o próprio pedido de nova decisão, conforme o art. 1.010 do CPC. A jurisprudência exige impugnação específica dos fundamentos da sentença; razão genérica leva ao não conhecimento.",
+      },
+      {
+        question: "Como se calcula o preparo?",
+        answer:
+          "Pelas custas do tribunal respectivo. No TJSP, é a taxa judiciária da fase recursal da Lei estadual 11.608/2003, calculada na calculadora de custas do Honorífico, com piso e teto em UFESP. O comprovante acompanha a interposição, salvo justiça gratuita ou dispensa legal.",
+      },
+      {
+        question: "A apelação tem efeito suspensivo?",
+        answer:
+          "Em regra sim, art. 1.012 do CPC. As exceções do §1º, como sentença que homologa divisão, condena a pagar alimentos ou confirma tutela provisória, produzem efeitos desde logo, cabendo pedido de efeito suspensivo ao relator.",
+      },
+      {
+        question: "Posso apresentar documento novo em grau de recurso?",
+        answer:
+          "Somente quando o documento não estava disponível antes ou se refere a fato ocorrido depois, art. 435 do CPC, com demonstração do motivo. Fora disso, a juntada tende a ser indeferida.",
+      },
+      {
+        question: "Como contar o prazo com feriados e suspensões?",
+        answer:
+          "Em dias úteis, art. 219 do CPC, descontando feriados forenses e o recesso de 20 de dezembro a 20 de janeiro do art. 220. A calculadora de prazo processual faz a contagem a partir da disponibilização no DJe e indica o motivo de cada dia excluído.",
+      },
+    ],
   },
   "/modelos-de-minutas/contrato-prestacao-servicos-advocaticios": {
     heading: "Modelo de contrato de honorários advocatícios",
     intro:
-      "Minuta editável de contrato de honorários: objeto, honorários fixos e de êxito, reembolso de despesas, hipóteses de rescisão e foro eleito.",
+      "Minuta editável de contrato de prestação de serviços advocatícios com objeto delimitado, honorários fixos e de êxito, forma de pagamento, reembolso de despesas, hipóteses de rescisão e foro eleito. A redação segue o Código de Ética e Disciplina da OAB e o art. 22 do Estatuto da Advocacia, Lei 8.906/1994.",
+    bullets: [
+      "Objeto delimitado: processo, instância e atos abrangidos, para evitar discussão sobre o que estava contratado.",
+      "Honorários contratuais fixos, por ato ou por êxito, com percentual e base de cálculo explícitos.",
+      "Distinção entre honorários contratuais e de sucumbência, que pertencem ao advogado, art. 23 da Lei 8.906/1994.",
+      "Reembolso de custas, diligências e deslocamentos, com forma de comprovação.",
+      "Reajuste, mora, hipóteses de rescisão e critério de pagamento proporcional ao trabalho já realizado.",
+      "Versões para pessoa física e jurídica, exportáveis em PDF e Word.",
+    ],
+    faq: [
+      {
+        question: "Honorário de êxito tem limite?",
+        answer:
+          "Não há percentual fixado em lei, mas o Código de Ética e Disciplina veda valores aviltantes e exige proporcionalidade com o trabalho e o proveito econômico. Em causas de família e nas que envolvem verba alimentar, a tabela da seccional e a moderação são referências obrigatórias.",
+      },
+      {
+        question: "Honorários de sucumbência entram no acerto com o cliente?",
+        answer:
+          "Não. O art. 23 da Lei 8.906/1994 define que pertencem ao advogado, sendo distintos do contratado. O contrato deve dizer isso de forma expressa para evitar compensação indevida.",
+      },
+      {
+        question: "O que acontece se o cliente revogar o mandato no meio do processo?",
+        answer:
+          "São devidos os honorários proporcionais ao trabalho já realizado, além do reembolso das despesas. A cláusula de rescisão deve prever o critério de apuração, por fase processual ou por percentual do contratado.",
+      },
+      {
+        question: "O contrato serve como título executivo?",
+        answer:
+          "Sim, quando assinado pelo cliente e por duas testemunhas, como título executivo extrajudicial, art. 784, III, do CPC, o que permite execução direta do valor inadimplido.",
+      },
+      {
+        question: "Como corrigir valores atrasados?",
+        answer:
+          "Pelo índice previsto no contrato e, na ausência, pela regra do art. 406 do Código Civil com a redação da Lei 14.905/2024. A calculadora de correção monetária e juros gera a memória de cálculo do débito.",
+      },
+    ],
   },
   "/modelos-de-minutas/acordo-extrajudicial-homologacao": {
     heading: "Modelo de acordo extrajudicial com homologação",
     intro:
-      "Minuta editável de acordo extrajudicial acompanhada de petição conjunta de homologação judicial, com base nos arts. 515, III, e 725, VIII, do CPC.",
+      "Minuta editável de acordo extrajudicial acompanhada de petição conjunta de homologação judicial, com base nos arts. 515, III, e 725, VIII, do CPC. Homologado, o acordo vira título executivo judicial, o que permite cumprimento de sentença direto em caso de descumprimento.",
+    bullets: [
+      "Qualificação das partes, objeto do acordo e descrição da obrigação de cada uma.",
+      "Valor, forma de pagamento, parcelas, vencimentos e índice de correção.",
+      "Cláusula penal e vencimento antecipado das parcelas em caso de inadimplemento.",
+      "Quitação, com delimitação do que está sendo quitado, para evitar discussão futura.",
+      "Petição conjunta de homologação, art. 725, VIII, do CPC, com pedido de extinção quando houver processo em curso.",
+      "Checklist de conferência e exportação em PDF e Word.",
+    ],
+    faq: [
+      {
+        question: "Precisa homologar o acordo?",
+        answer:
+          "Não é obrigatório. Sem homologação, o acordo assinado por duas testemunhas já é título executivo extrajudicial, art. 784, III, do CPC. Com homologação, vira título judicial, art. 515, III, e o descumprimento é cobrado por cumprimento de sentença, com trâmite mais rápido.",
+      },
+      {
+        question: "Onde pedir a homologação?",
+        answer:
+          "No juízo competente pelo domicílio das partes ou pela matéria, em procedimento de jurisdição voluntária, art. 725, VIII, do CPC. Havendo processo em curso, o pedido é feito nos próprios autos, com requerimento de extinção pelo art. 487, III, b.",
+      },
+      {
+        question: "O acordo pode incluir direitos trabalhistas?",
+        answer:
+          "Sim, pelo processo de jurisdição voluntária dos arts. 855-B a 855-E da CLT, com advogado distinto para cada parte. O juiz do trabalho pode homologar em parte, e a quitação alcança apenas o que estiver expresso.",
+      },
+      {
+        question: "O que fazer se a outra parte não pagar?",
+        answer:
+          "Com acordo homologado, é cumprimento de sentença, com multa de 10% e honorários de 10% em caso de não pagamento em 15 dias, art. 523 do CPC. Sem homologação, é execução de título extrajudicial.",
+      },
+      {
+        question: "Como atualizar parcelas em atraso?",
+        answer:
+          "Pelo índice e pelos juros previstos no próprio acordo; na omissão, aplica-se o art. 406 do Código Civil com a Lei 14.905/2024. A calculadora de correção monetária e juros entrega a memória mês a mês para instruir a cobrança.",
+      },
+    ],
   },
   "/comparativo": {
     heading: "Comparativo de ferramentas jurídicas",
