@@ -38,139 +38,144 @@ const QUERIES_PHASE2 = [
   "acidente trânsito indenização",
 ];
 
+// Tempo máximo que um tribunal pode consumir. Sem isso, um scraper travado
+// come o orçamento inteiro da execução.
+const PER_TRIBUNAL_TIMEOUT_MS = 120_000;
+
+declare const EdgeRuntime: { waitUntil(p: Promise<unknown>): void } | undefined;
+
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   const _svcErr = requireInternalCall(req);
   if (_svcErr) return _svcErr;
 
-  const body = await req.json().catch(() => ({}));
-  const phase = body.phase ?? 1;
+  const body = await req.json().catch(() => ({} as Record<string, unknown>));
+  const phase = Number(body.phase ?? 1);
+  const index = Number(body.index ?? 0);
 
   const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
   const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
   const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
-  const results: Record<string, unknown> = {};
-  let totalIngested = 0;
-  let fatalError: string | null = null;
+  const tribunais = phase === 1 ? DATAJUD_TRIBUNAIS : FIRECRAWL_TRIBUNAIS;
 
-  // O log é gravado SEMPRE (inclusive em falha total) — um pipeline que falha
-  // em silêncio é pior que um pipeline desligado.
-  const writeLog = async () => {
+  // Uma invocação por tribunal. O runtime das funções tem teto de tempo: um
+  // laço sobre 8 ou 19 tribunais na mesma chamada é interrompido no meio e o
+  // progresso é perdido. Cada passo grava no log e só então chama o próximo.
+  if (index >= tribunais.length) {
+    return new Response(JSON.stringify({ phase, status: "done" }), {
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
+  }
+
+  const tribunal = tribunais[index];
+  const query = typeof body.query === "string" && body.query
+    ? body.query
+    : (phase === 1 ? QUERIES_PHASE1 : QUERIES_PHASE2)[
+        Math.floor(Math.random() * (phase === 1 ? QUERIES_PHASE1 : QUERIES_PHASE2).length)
+      ];
+
+  // Linha única por execução: criada no primeiro passo, atualizada nos demais.
+  let runId = typeof body.run_id === "string" ? body.run_id : null;
+  if (!runId) {
+    const { data, error } = await supabase
+      .from("cron_ingest_log")
+      .insert({ phase, total_ingested: 0, results: { _query: query }, executed_at: new Date().toISOString() })
+      .select("id")
+      .single();
+    if (error) console.error("[cron-ingest] falha ao criar cron_ingest_log:", error.message);
+    runId = data?.id ?? null;
+  }
+
+  const run = async () => {
+    const functionName = phase === 1
+      ? "scrape-tj-fallback"
+      : (["TJSP", "TJCE", "TJAM"].includes(tribunal) ? "scrape-esaj" : "scrape-tj-proprio");
+    const size = phase === 1 ? 10 : 5;
+
+    let resultado: Record<string, number> = { ingested: 0, skipped: 0, errors: 1 };
     try {
-      await supabase.from("cron_ingest_log").insert({
-        phase,
-        total_ingested: totalIngested,
-        results: fatalError ? { ...results, _fatal_error: fatalError } : results,
-        executed_at: new Date().toISOString(),
+      const ctrl = new AbortController();
+      const t = setTimeout(() => ctrl.abort(), PER_TRIBUNAL_TIMEOUT_MS);
+      let res: Response;
+      try {
+        res = await fetch(`${SUPABASE_URL}/functions/v1/${functionName}`, {
+          method: "POST",
+          signal: ctrl.signal,
+          headers: {
+            "Authorization": `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ tribunal, query, size }),
+        });
+      } finally {
+        clearTimeout(t);
+      }
+
+      if (res.ok) {
+        const data = await res.json();
+        resultado = {
+          ingested: data.ingested || 0,
+          skipped: data.skipped || 0,
+          errors: data.errors?.length || 0,
+        };
+        console.log(`[cron-ingest] ${tribunal} (${functionName}): +${resultado.ingested} inseridas`);
+      } else {
+        console.error(`[cron-ingest] ${tribunal} (${functionName}) HTTP ${res.status}`);
+      }
+    } catch (e) {
+      console.error(`[cron-ingest] ${tribunal} error:`, e);
+    }
+
+    // Grava o progresso deste tribunal antes de seguir — um corte de tempo
+    // depois daqui não apaga o que já foi feito.
+    if (runId) {
+      try {
+        const { data: atual } = await supabase
+          .from("cron_ingest_log")
+          .select("total_ingested, results")
+          .eq("id", runId)
+          .single();
+        await supabase
+          .from("cron_ingest_log")
+          .update({
+            total_ingested: (atual?.total_ingested ?? 0) + resultado.ingested,
+            results: { ...(atual?.results ?? {}), [tribunal]: resultado },
+          })
+          .eq("id", runId);
+      } catch (e) {
+        console.error("[cron-ingest] falha ao gravar progresso:", e);
+      }
+    }
+
+    // Próximo tribunal, só se houver trabalho restante.
+    const proximo = index + 1;
+    if (proximo >= tribunais.length) {
+      console.log(`[cron-ingest] Phase ${phase} concluída (${tribunais.length} tribunais).`);
+      return;
+    }
+
+    await new Promise((r) => setTimeout(r, 1000));
+    try {
+      await fetch(`${SUPABASE_URL}/functions/v1/cron-ingest`, {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ phase, index: proximo, query, run_id: runId }),
       });
     } catch (e) {
-      console.error("[cron-ingest] falha ao gravar cron_ingest_log:", e);
+      console.error(`[cron-ingest] falha ao encadear índice ${proximo}:`, e);
     }
   };
 
-  try {
+  const task = run();
+  if (typeof EdgeRuntime !== "undefined") EdgeRuntime.waitUntil(task);
 
-    if (phase === 1) {
-      // DataJud — 19 TJs, 1 query aleatória, size 10
-      const query = QUERIES_PHASE1[Math.floor(Math.random() * QUERIES_PHASE1.length)];
-      console.log(`[cron-ingest] Phase 1 — query: "${query}"`);
-
-      for (const tribunal of DATAJUD_TRIBUNAIS) {
-        try {
-          const res = await fetch(`${SUPABASE_URL}/functions/v1/scrape-tj-fallback`, {
-            method: "POST",
-            headers: {
-              "Authorization": `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`,
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ tribunal, query, size: 10 }),
-          });
-
-          if (!res.ok) {
-            console.error(`[cron-ingest] ${tribunal} HTTP ${res.status}`);
-            results[tribunal] = { ingested: 0, skipped: 0, errors: 1 };
-            continue;
-          }
-
-          const data = await res.json();
-          results[tribunal] = {
-            ingested: data.ingested || 0,
-            skipped: data.skipped || 0,
-            errors: data.errors?.length || 0,
-          };
-          totalIngested += data.ingested || 0;
-          console.log(`[cron-ingest] ${tribunal}: +${data.ingested} inseridas`);
-        } catch (e) {
-          console.error(`[cron-ingest] ${tribunal} error:`, e);
-          results[tribunal] = { ingested: 0, skipped: 0, errors: 1 };
-        }
-
-        // Pequena pausa entre tribunais para não sobrecarregar
-        await new Promise((r) => setTimeout(r, 500));
-      }
-    } else if (phase === 2) {
-      // Firecrawl — 8 TJs, 1 query aleatória, size 5
-      const query = QUERIES_PHASE2[Math.floor(Math.random() * QUERIES_PHASE2.length)];
-      console.log(`[cron-ingest] Phase 2 — query: "${query}"`);
-
-      for (const tribunal of FIRECRAWL_TRIBUNAIS) {
-        // Determinar qual scraper usar baseado no tribunal
-        const isEsaj = ["TJSP", "TJCE", "TJAM"].includes(tribunal);
-        const functionName = isEsaj ? "scrape-esaj" : "scrape-tj-proprio";
-
-        try {
-          const res = await fetch(`${SUPABASE_URL}/functions/v1/${functionName}`, {
-            method: "POST",
-            headers: {
-              "Authorization": `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`,
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ tribunal, query, size: 5 }),
-          });
-
-          if (!res.ok) {
-            console.error(`[cron-ingest] ${tribunal} (${functionName}) HTTP ${res.status}`);
-            results[tribunal] = { ingested: 0, skipped: 0, errors: 1 };
-            continue;
-          }
-
-          const data = await res.json();
-          results[tribunal] = {
-            ingested: data.ingested || 0,
-            skipped: data.skipped || 0,
-            errors: data.errors?.length || 0,
-          };
-          totalIngested += data.ingested || 0;
-          console.log(`[cron-ingest] ${tribunal} (${functionName}): +${data.ingested} inseridas`);
-        } catch (e) {
-          console.error(`[cron-ingest] ${tribunal} error:`, e);
-          results[tribunal] = { ingested: 0, skipped: 0, errors: 1 };
-        }
-
-        await new Promise((r) => setTimeout(r, 500));
-      }
-    }
-
-    await writeLog();
-
-    console.log(`[cron-ingest] Phase ${phase} done. Total: ${totalIngested}`);
-
-    return new Response(JSON.stringify({
-      phase,
-      total_ingested: totalIngested,
-      results,
-    }), {
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
-  } catch (e) {
-    console.error("[cron-ingest] error:", e);
-    fatalError = e instanceof Error ? e.message : "Erro desconhecido";
-    await writeLog();
-    return new Response(
-      JSON.stringify({ error: fatalError }),
-      { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-    );
-  }
+  return new Response(
+    JSON.stringify({ phase, tribunal, index, run_id: runId, status: "started" }),
+    { status: 202, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+  );
 });
