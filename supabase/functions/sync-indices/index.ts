@@ -90,6 +90,8 @@ async function fetchJanela(
   throw new Error(lastErr || "falha desconhecida");
 }
 
+declare const EdgeRuntime: { waitUntil(p: Promise<unknown>): void } | undefined;
+
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
@@ -117,6 +119,9 @@ serve(async (req) => {
   const hoje = new Date();
   const resumo: Record<string, { registros: number; erro?: string }> = {};
 
+  // Roda em segundo plano: a resposta volta na hora, senão o gateway corta em
+  // 504 e as últimas séries da lista nunca são sincronizadas.
+  const run = async () => {
   for (const serie of SERIES) {
     if (only && serie.codigo_indice !== only) continue;
     try {
@@ -173,8 +178,14 @@ serve(async (req) => {
       console.error(`[sync-indices] ${serie.codigo_indice} falhou: ${msg}`);
     }
   }
+    console.log(`[sync-indices] concluído: ${JSON.stringify(resumo)}`);
+  };
 
-  return new Response(JSON.stringify({ ok: true, modo: full ? "backfill" : "incremental", resumo }), {
-    headers: { ...corsHeaders, "Content-Type": "application/json" },
-  });
+  const task = run();
+  if (typeof EdgeRuntime !== "undefined") EdgeRuntime.waitUntil(task);
+
+  return new Response(
+    JSON.stringify({ ok: true, status: "started", modo: full ? "backfill" : "incremental" }),
+    { status: 202, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+  );
 });
