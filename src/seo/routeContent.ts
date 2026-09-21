@@ -76,37 +76,193 @@ export const ROUTE_CONTENT: Record<string, RouteContent> = {
   "/calculadoras/custas-tjsp": {
     heading: "Calculadora de custas processuais do TJSP",
     intro:
-      "Calcule a taxa judiciária do Tribunal de Justiça de São Paulo pela Lei estadual 11.608/2003: 1% na distribuição e 1% na fase recursal, com piso de 5 UFESPs e teto de 3.000 UFESPs, aplicando a UFESP vigente.",
+      "Calcule a taxa judiciária do Tribunal de Justiça de São Paulo pela Lei estadual 11.608/2003: 1% na distribuição e 1% na fase recursal, com piso de 5 UFESPs e teto de 3.000 UFESPs, aplicando a UFESP vigente. O resultado vem com memória de cálculo, indicando base, alíquota, piso e teto aplicados.",
     bullets: [
-      "Valor por fase, com memória de cálculo detalhada.",
-      "Tratamento das hipóteses de isenção e de justiça gratuita.",
-      "Resultado exportável em PDF e Word.",
+      "Base de cálculo: valor da causa atualizado, art. 4º da Lei 11.608/2003.",
+      "1% na distribuição da inicial e 1% na interposição do recurso, cada parcela com piso e teto próprios.",
+      "Piso de 5 UFESPs e teto de 3.000 UFESPs por parcela, convertidos pela UFESP do exercício.",
+      "Hipóteses de isenção e de justiça gratuita tratadas separadamente do cálculo.",
+      "Memória de cálculo exportável em PDF e Word, pronta para instruir a guia.",
+    ],
+    faq: [
+      {
+        question: "Como a taxa judiciária do TJSP é calculada?",
+        answer:
+          "Sobre o valor da causa atualizado, na alíquota de 1% no momento da distribuição e 1% na fase recursal, conforme os arts. 4º e 5º da Lei estadual 11.608/2003, observados o mínimo de 5 UFESPs e o máximo de 3.000 UFESPs em cada parcela.",
+      },
+      {
+        question: "O que é a UFESP e onde encontro o valor vigente?",
+        answer:
+          "É a Unidade Fiscal do Estado de São Paulo, reajustada anualmente pela Secretaria da Fazenda estadual e publicada em portaria no fim de cada ano. A calculadora aplica a UFESP do exercício e mostra o valor usado no resultado.",
+      },
+      {
+        question: "Quem é isento das custas?",
+        answer:
+          "Entre outros, o beneficiário da justiça gratuita, art. 98 do CPC, a Fazenda Pública nas hipóteses legais, o Ministério Público e os processos nos Juizados Especiais em primeiro grau, art. 54 da Lei 9.099/1995. A isenção não alcança despesas de terceiros, como perito e diligência de oficial.",
+      },
+      {
+        question: "O que acontece se o recurso for protocolado sem preparo?",
+        answer:
+          "A consequência é a deserção, art. 1.007 do CPC, com possibilidade de recolhimento em dobro quando houver insuficiência e intimação para complementação, nas hipóteses previstas nos parágrafos do mesmo artigo.",
+      },
+      {
+        question: "A calculadora cobre despesas além da taxa judiciária?",
+        answer:
+          "Não. Ela calcula a taxa da Lei 11.608/2003. Porte de remessa, diligência de oficial de justiça, honorários periciais e emolumentos de cartório são cobrados à parte, conforme as tabelas próprias.",
+      },
     ],
   },
   "/calculadoras/rescisao-trabalhista": {
     heading: "Calculadora de rescisão trabalhista",
     intro:
-      "Estime as verbas rescisórias conforme a CLT: saldo de salário, aviso prévio, 13º proporcional, férias vencidas e proporcionais com o terço constitucional, FGTS do período e multa rescisória.",
+      "Estime as verbas rescisórias conforme a CLT: saldo de salário, aviso prévio, 13º proporcional, férias vencidas e proporcionais com o terço constitucional, FGTS do período e multa rescisória. Escolha a modalidade de saída e a calculadora aplica as regras próprias de cada uma, com memória de cálculo por verba.",
     bullets: [
       "Dispensa sem justa causa, pedido de demissão, dispensa por justa causa e o acordo do art. 484-A da CLT.",
-      "Aviso prévio proporcional, com os 3 dias por ano de serviço da Lei 12.506/2011.",
+      "Aviso prévio proporcional, com os 3 dias por ano de serviço da Lei 12.506/2011, limitado a 90 dias.",
+      "13º salário proporcional por avos, contando como mês inteiro a fração igual ou superior a 15 dias.",
+      "Férias vencidas e proporcionais com o terço do art. 7º, XVII, da Constituição.",
+      "FGTS de 8% sobre a remuneração e multa rescisória de 40% sobre o saldo, art. 18 da Lei 8.036/1990.",
       "No acordo do art. 484-A, aviso e multa pela metade, saque de 80% do FGTS e sem seguro-desemprego.",
+    ],
+    faq: [
+      {
+        question: "Qual o prazo para o pagamento das verbas rescisórias?",
+        answer:
+          "Dez dias corridos contados do término do contrato, art. 477, §6º, da CLT. O atraso gera multa equivalente a um salário do empregado, §8º do mesmo artigo, salvo quando a mora for causada pelo próprio trabalhador.",
+      },
+      {
+        question: "Como funciona o acordo do art. 484-A da CLT?",
+        answer:
+          "É a rescisão por comum acordo: aviso prévio indenizado e multa do FGTS pela metade, saque de até 80% do saldo do FGTS e ausência de direito ao seguro-desemprego. As demais verbas são pagas integralmente.",
+      },
+      {
+        question: "O que muda na dispensa por justa causa?",
+        answer:
+          "São devidos saldo de salário e férias vencidas com o terço. Não há aviso prévio, 13º proporcional, férias proporcionais, multa do FGTS nem saque do fundo, salvo entendimento diverso no caso concreto.",
+      },
+      {
+        question: "As horas extras habituais entram na base de cálculo?",
+        answer:
+          "Sim. A média das horas extras, dos adicionais de insalubridade, periculosidade e noturno e das comissões integra a remuneração para cálculo de aviso, 13º, férias e FGTS, conforme as Súmulas 45, 347 e 376 do TST.",
+      },
+      {
+        question: "O resultado serve para instruir uma reclamação trabalhista?",
+        answer:
+          "Serve como base. O art. 840, §1º, da CLT exige pedido com indicação de valor, e a memória de cálculo exportada em PDF ou Word pode acompanhar a petição, junto do modelo de reclamação trabalhista disponível no site.",
+      },
     ],
   },
   "/calculadoras/pensao-alimenticia": {
     heading: "Calculadora de pensão alimentícia",
     intro:
-      "Estime uma faixa de pensão pelo binômio necessidade e possibilidade do art. 1.694, §1º, do Código Civil, considerando renda do alimentante, número de filhos, despesas fixas e padrão de vida. É uma referência, não um valor vinculante: a fixação depende do juiz e da prova do caso.",
+      "Estime uma faixa de pensão pelo binômio necessidade e possibilidade do art. 1.694, §1º, do Código Civil, considerando renda do alimentante, número de filhos, despesas fixas e padrão de vida. É uma referência para negociação, não um valor vinculante: a fixação depende do juiz e da prova produzida no caso.",
+    bullets: [
+      "Binômio do art. 1.694, §1º, do Código Civil: necessidade de quem recebe e possibilidade de quem paga.",
+      "Faixa de referência, com percentual sobre renda líquida e valor mensal estimado.",
+      "Ajuste pelo número de filhos, por despesas fixas do alimentante e por outras obrigações alimentares.",
+      "Distinção entre percentual sobre o rendimento e valor fixo em salários mínimos.",
+      "Resultado exportável em PDF e Word para instruir acordo ou petição.",
+    ],
+    faq: [
+      {
+        question: "Existe percentual fixo de pensão em lei?",
+        answer:
+          "Não. A lei não fixa percentual. A prática forense costuma girar em torno de 20% a 30% da renda líquida para um filho, mas o valor depende da necessidade comprovada e da capacidade do alimentante, art. 1.694, §1º, do Código Civil.",
+      },
+      {
+        question: "A pensão incide sobre o salário bruto ou líquido?",
+        answer:
+          "Em regra sobre a remuneração líquida, descontados apenas os encargos obrigatórios, como imposto de renda e contribuição previdenciária. Descontos voluntários, como empréstimo consignado e plano de saúde opcional, não reduzem a base.",
+      },
+      {
+        question: "Décimo terceiro e férias entram na conta?",
+        answer:
+          "Quando a pensão é fixada em percentual sobre a remuneração, a jurisprudência do STJ admite a incidência sobre 13º salário e terço de férias, salvo disposição diferente na decisão ou no acordo.",
+      },
+      {
+        question: "Quem não tem vínculo formal também paga?",
+        answer:
+          "Sim. Na ausência de renda comprovada, a fixação costuma ocorrer em salários mínimos, com base em sinais exteriores de riqueza e no padrão de vida demonstrado nos autos.",
+      },
+      {
+        question: "Como pedir revisão do valor?",
+        answer:
+          "Por ação revisional, art. 1.699 do Código Civil, sempre que houver mudança na necessidade de quem recebe ou na possibilidade de quem paga. O acordo entre as partes também pode ser levado à homologação judicial.",
+      },
+    ],
   },
   "/calculadoras/operacoes-datas": {
     heading: "Operações com datas",
     intro:
-      "Some ou subtraia dias úteis e corridos, calcule a diferença entre duas datas e verifique se uma data cai em dia útil. Útil para prazos contratuais e controle interno do escritório.",
+      "Some ou subtraia dias úteis e corridos, calcule a diferença entre duas datas e verifique se uma data cai em dia útil. Útil para prazos contratuais, contagem de prescrição e controle interno do escritório, com feriados nacionais já considerados na contagem em dias úteis.",
+    bullets: [
+      "Soma e subtração de dias corridos ou úteis a partir de uma data base.",
+      "Diferença entre duas datas em dias, meses e anos.",
+      "Verificação de dia útil, com indicação do feriado quando houver.",
+      "Feriados nacionais aplicados automaticamente na contagem em dias úteis.",
+      "Resultado exportável em PDF e Word.",
+    ],
+    faq: [
+      {
+        question: "Quando o prazo conta em dias úteis e quando conta em dias corridos?",
+        answer:
+          "Prazo processual civil conta em dias úteis, art. 219 do CPC. Prazo material, como prescrição, decadência e obrigação contratual, conta em dias corridos, art. 132 do Código Civil. Prazo trabalhista processual também é contado em dias úteis, art. 775 da CLT.",
+      },
+      {
+        question: "O dia inicial entra na contagem?",
+        answer:
+          "Não. Exclui-se o dia do começo e inclui-se o do vencimento, art. 132 do Código Civil e art. 224 do CPC. Vencendo em dia não útil, prorroga-se para o primeiro dia útil seguinte.",
+      },
+      {
+        question: "Esta calculadora serve para prazo processual?",
+        answer:
+          "Para prazo judicial, use a calculadora de prazo processual: ela aplica a regra de publicação no DJe, os feriados forenses locais e a suspensão de 20 de dezembro a 20 de janeiro do art. 220 do CPC.",
+      },
+      {
+        question: "Quais feriados são considerados?",
+        answer:
+          "Os feriados nacionais, incluindo os móveis, calculados a partir da Páscoa. Feriados estaduais, municipais e suspensões de tribunal ficam na calculadora de prazo processual, que tem o cadastro por tribunal.",
+      },
+    ],
   },
   "/calculadoras/validador-cpf-cnpj": {
     heading: "Validador de CPF e CNPJ",
     intro:
-      "Confira os dígitos verificadores de CPF e CNPJ pelo algoritmo de módulo 11. O número é processado no próprio navegador, sem envio a servidor e sem consulta à Receita Federal. O dígito válido não significa que o número esteja ativo.",
+      "Confira os dígitos verificadores de CPF e CNPJ pelo algoritmo de módulo 11. O número é processado no próprio navegador, sem envio a servidor e sem consulta à Receita Federal. O dígito válido indica apenas que o número é bem formado; não significa que ele exista ou esteja ativo.",
+    bullets: [
+      "Validação de CPF pelos dois dígitos verificadores, com pesos de 10 a 2 e de 11 a 2.",
+      "Validação de CNPJ pelos pesos cíclicos de 2 a 9, no formato de 14 dígitos.",
+      "Rejeição de sequências repetidas, como 111.111.111-11, que passam na conta mas são inválidas.",
+      "Processamento local, sem envio do número e sem armazenamento.",
+      "Formatação automática com pontos, barra e traço para copiar na qualificação da peça.",
+    ],
+    faq: [
+      {
+        question: "O validador consulta a situação cadastral na Receita Federal?",
+        answer:
+          "Não. A conferência é apenas matemática, pelos dígitos verificadores. Situação cadastral, nome do titular e endereço só podem ser obtidos nos canais oficiais da Receita Federal.",
+      },
+      {
+        question: "Como funciona o cálculo do dígito verificador?",
+        answer:
+          "Pelo módulo 11: cada algarismo é multiplicado por um peso, os produtos são somados e o resto da divisão da soma por 11 define o dígito, sendo zero quando o resto é 0 ou 1. O segundo dígito repete a conta incluindo o primeiro.",
+      },
+      {
+        question: "Por que 111.111.111-11 é recusado?",
+        answer:
+          "Porque sequências com todos os algarismos iguais satisfazem a conta do módulo 11, mas nunca foram atribuídas. O validador as rejeita expressamente, como fazem os sistemas oficiais.",
+      },
+      {
+        question: "O número digitado fica gravado?",
+        answer:
+          "Não. A validação ocorre no próprio navegador, sem envio ao servidor e sem registro, o que atende ao princípio da minimização de dados da LGPD.",
+      },
+      {
+        question: "Existe o novo CNPJ alfanumérico?",
+        answer:
+          "A Receita Federal definiu o formato alfanumérico para novas inscrições a partir de 2026, mantendo o dígito verificador por módulo 11 sobre os valores das letras. O validador trata hoje o formato numérico de 14 dígitos.",
+      },
+    ],
   },
   "/diagnostico": {
     heading: "Diagnóstico jurídico do caso",
