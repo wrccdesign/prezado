@@ -912,6 +912,18 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      ai_usage_summary: {
+        Args: { p_days?: number }
+        Returns: {
+          chamadas: number
+          custo_brl: number
+          dia: string
+          falhas: number
+          function_name: string
+          input_tokens: number
+          output_tokens: number
+        }[]
+      }
       get_user_plan: {
         Args: { p_env?: string; p_user_id: string }
         Returns: string
