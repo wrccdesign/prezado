@@ -125,7 +125,10 @@ export function CalculatorLanding({
     },
   ];
 
-  const relatedMinutas = RELATED_MINUTAS[path] ?? [];
+  const relatedKey = Object.keys(RELATED_MINUTAS).find(
+    key => path === key || path.startsWith(`${key}/`),
+  );
+  const relatedMinutas = relatedKey ? RELATED_MINUTAS[relatedKey] : [];
 
   if (faq?.length) {
     jsonLd.push(buildFaqJsonLd(faq));

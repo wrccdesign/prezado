@@ -10,6 +10,7 @@ import {
   FAQ_PLANOS,
   FAQ_PRAZO_PROCESSUAL,
 } from "./faqData";
+import { RESCISAO_SITUACOES, rescisaoPath } from "./rescisaoSituacoes";
 
 export type RouteMeta = {
   path: string;
@@ -301,6 +302,41 @@ export const ROUTE_META: RouteMeta[] = [
       "Como o Honorífico trata dados pessoais: base legal conforme a LGPD, finalidades de uso, compartilhamento com operadores, retenção e direitos do titular.",
     ogImage: OG_DEFAULT, // TODO: OG própria
   },
+  ...RESCISAO_SITUACOES.map((s) => ({
+    path: rescisaoPath(s.slug),
+    title: `${s.seoTitle} | Honorífico`,
+    description: s.seoDescription,
+    ogImage: OG_DEFAULT,
+    jsonLd: [
+      {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        itemListElement: [
+          { "@type": "ListItem", position: 1, name: "Início", item: `${SITE_URL}/` },
+          { "@type": "ListItem", position: 2, name: "Calculadoras", item: `${SITE_URL}/calculadoras` },
+          {
+            "@type": "ListItem",
+            position: 3,
+            name: "Calculadora de Rescisão Trabalhista",
+            item: `${SITE_URL}/calculadoras/rescisao-trabalhista`,
+          },
+          { "@type": "ListItem", position: 4, name: s.title, item: `${SITE_URL}${rescisaoPath(s.slug)}` },
+        ],
+      },
+      {
+        "@context": "https://schema.org",
+        "@type": "SoftwareApplication",
+        name: s.title,
+        applicationCategory: "BusinessApplication",
+        operatingSystem: "Web",
+        url: `${SITE_URL}${rescisaoPath(s.slug)}`,
+        description: s.description,
+        inLanguage: "pt-BR",
+        offers: { "@type": "Offer", price: "0", priceCurrency: "BRL" },
+      },
+      buildFaqJsonLd(s.faq),
+    ],
+  })),
 ];
 
 export function getRouteMeta(path: string): RouteMeta | undefined {

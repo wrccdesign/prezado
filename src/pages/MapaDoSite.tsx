@@ -38,6 +38,31 @@ const calculadoras = [
     hint: "Verbas rescisórias, aviso prévio, 13º, férias e multa do FGTS.",
   },
   {
+    to: "/calculadoras/rescisao-trabalhista/demissao-sem-justa-causa",
+    label: "Rescisão na demissão sem justa causa",
+    hint: "Pacote completo: aviso prévio, 13º e férias proporcionais e multa de 40% do FGTS.",
+  },
+  {
+    to: "/calculadoras/rescisao-trabalhista/pedido-de-demissao",
+    label: "Rescisão no pedido de demissão",
+    hint: "O que permanece devido quando a saída parte do empregado.",
+  },
+  {
+    to: "/calculadoras/rescisao-trabalhista/acordo-484a",
+    label: "Rescisão por acordo, art. 484-A da CLT",
+    hint: "Aviso pela metade, multa de 20% e saque de até 80% do FGTS.",
+  },
+  {
+    to: "/calculadoras/rescisao-trabalhista/justa-causa",
+    label: "Rescisão na demissão por justa causa",
+    hint: "Saldo de salário e férias vencidas com um terço, sem multa do FGTS.",
+  },
+  {
+    to: "/calculadoras/rescisao-trabalhista/contrato-de-experiencia",
+    label: "Rescisão de contrato de experiência",
+    hint: "Término no prazo e quebra antecipada pelos arts. 479 e 480 da CLT.",
+  },
+  {
     to: "/calculadoras/pensao-alimenticia",
     label: "Pensão alimentícia",
     hint: "Faixa de referência pelo binômio necessidade × possibilidade, art. 1.694 do CC.",

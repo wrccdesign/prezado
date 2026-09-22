@@ -1,5 +1,7 @@
+import { Link } from "react-router-dom";
 import { CalculatorLanding } from "@/components/calculators/CalculatorLanding";
 import { RescisaoCalc } from "@/components/calculators/RescisaoCalc";
+import { RESCISAO_SITUACOES, rescisaoPath } from "@/seo/rescisaoSituacoes";
 
 export default function RescisaoTrabalhistaLanding() {
   return (
@@ -59,6 +61,25 @@ export default function RescisaoTrabalhistaLanding() {
             dos dados informados e não considera descontos de INSS, IRRF, faltas, adiantamentos ou
             verbas previstas em convenção coletiva.
           </p>
+
+          <h2 className="text-h3 text-navy">Cálculo por situação de saída</h2>
+          <p>
+            Cada situação tem regra própria de aviso prévio, FGTS e verbas proporcionais. As páginas
+            abaixo trazem a explicação específica, a base legal e as perguntas mais comuns de cada
+            uma.
+          </p>
+          <ul>
+            {RESCISAO_SITUACOES.map(s => (
+              <li key={s.slug} className="border-t border-cream-dark py-3">
+                <Link
+                  to={rescisaoPath(s.slug)}
+                  className="text-navy underline underline-offset-4 hover:text-gold"
+                >
+                  {s.title}
+                </Link>
+              </li>
+            ))}
+          </ul>
         </>
       }
       faq={[
