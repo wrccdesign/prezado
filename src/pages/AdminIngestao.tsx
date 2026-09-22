@@ -33,7 +33,15 @@ interface AiUsageRow {
   falhas: number;
   input_tokens: number;
   output_tokens: number;
-  custo_brl: number;
+  reasoning_tokens: number;
+  custo_usd: number;
+  sem_preco: number;
+}
+
+interface ModelPriceRow {
+  model: string;
+  input_usd_per_mtok: number;
+  output_usd_per_mtok: number;
 }
 
 interface IngestResult {
@@ -89,6 +97,9 @@ export default function AdminIngestao() {
   const [running, setRunning] = useState(false);
   const [lastSuccess, setLastSuccess] = useState<string | null>(null);
   const [usage, setUsage] = useState<AiUsageRow[]>([]);
+  const [prices, setPrices] = useState<ModelPriceRow[]>([]);
+  const [usdBrl, setUsdBrl] = useState("5.40");
+  const [savingPrices, setSavingPrices] = useState(false);
   const allowed = !!user && isAdmin;
 
   useEffect(() => {
@@ -118,8 +129,21 @@ export default function AdminIngestao() {
   useEffect(() => {
     if (!allowed) return;
     supabase.rpc("ai_usage_summary", { p_days: 30 }).then(({ data }) => {
-      setUsage((data ?? []) as AiUsageRow[]);
+      setUsage((data ?? []) as unknown as AiUsageRow[]);
     });
+    supabase
+      .from("ai_model_prices")
+      .select("model, input_usd_per_mtok, output_usd_per_mtok")
+      .order("model")
+      .then(({ data }) => setPrices((data ?? []) as unknown as ModelPriceRow[]));
+    supabase
+      .from("ai_settings")
+      .select("value")
+      .eq("key", "usd_brl")
+      .maybeSingle()
+      .then(({ data }) => {
+        if (data?.value) setUsdBrl(String(data.value));
+      });
   }, [allowed]);
 
 
