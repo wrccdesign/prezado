@@ -132,6 +132,31 @@ export default function AdminIngestao() {
     : null;
   const ingestStale = daysSinceSuccess === null || daysSinceSuccess > 7;
 
+  const usageTotals = usage.reduce(
+    (acc, r) => ({
+      chamadas: acc.chamadas + Number(r.chamadas),
+      falhas: acc.falhas + Number(r.falhas),
+      tokens: acc.tokens + Number(r.input_tokens) + Number(r.output_tokens),
+      custo: acc.custo + Number(r.custo_brl),
+    }),
+    { chamadas: 0, falhas: 0, tokens: 0, custo: 0 },
+  );
+
+  const usagePorFuncao = Object.values(
+    usage.reduce<Record<string, { function_name: string; chamadas: number; falhas: number; tokens: number; custo: number }>>(
+      (acc, r) => {
+        const cur = acc[r.function_name] ?? { function_name: r.function_name, chamadas: 0, falhas: 0, tokens: 0, custo: 0 };
+        cur.chamadas += Number(r.chamadas);
+        cur.falhas += Number(r.falhas);
+        cur.tokens += Number(r.input_tokens) + Number(r.output_tokens);
+        cur.custo += Number(r.custo_brl);
+        acc[r.function_name] = cur;
+        return acc;
+      },
+      {},
+    ),
+  ).sort((a, b) => b.custo - a.custo);
+
   const copyWebhookUrl = async () => {
     try {
       await navigator.clipboard.writeText(WEBHOOK_URL);
