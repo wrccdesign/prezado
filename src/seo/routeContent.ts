@@ -10,6 +10,7 @@ import {
   FAQ_PLANOS,
   FAQ_PRAZO_PROCESSUAL,
 } from "./faqData";
+import { RESCISAO_SITUACOES, rescisaoPath } from "./rescisaoSituacoes";
 
 export type RouteContent = {
   /** Título principal em texto, equivalente ao H1 da página. */
