@@ -16,6 +16,7 @@ import CpfCnpjLanding from "./pages/calculators/CpfCnpjLanding";
 import OperacoesDatasLanding from "./pages/calculators/OperacoesDatasLanding";
 import CustasTjspLanding from "./pages/calculators/CustasTjspLanding";
 import RescisaoTrabalhistaLanding from "./pages/calculators/RescisaoTrabalhistaLanding";
+import RescisaoSituacaoLanding from "./pages/calculators/RescisaoSituacaoLanding";
 import PensaoAlimenticiaLanding from "./pages/calculators/PensaoAlimenticiaLanding";
 import LawyerDashboard from "./pages/LawyerDashboard";
 import Diagnostico from "./pages/Diagnostico";
@@ -100,6 +101,7 @@ const App = () => (
               <Route path="/calculadoras/operacoes-datas" element={<OperacoesDatasLanding />} />
               <Route path="/calculadoras/custas-tjsp" element={<CustasTjspLanding />} />
               <Route path="/calculadoras/rescisao-trabalhista" element={<RescisaoTrabalhistaLanding />} />
+              <Route path="/calculadoras/rescisao-trabalhista/:situacao" element={<RescisaoSituacaoLanding />} />
               <Route path="/calculadoras/pensao-alimenticia" element={<PensaoAlimenticiaLanding />} />
               <Route path="/diagnostico" element={<DiagnosticoRoute />} />
               <Route path="/jurisprudencia" element={<Jurisprudencia />} />
