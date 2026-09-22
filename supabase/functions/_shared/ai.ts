@@ -100,7 +100,7 @@ interface AIRequestOptions extends AIUsageMeta {
 }
 
 const MAX_ATTEMPTS = 3;
-const DEFAULT_TIMEOUT_MS = 30_000;
+const DEFAULT_TIMEOUT_MS = 60_000;
 /**
  * Orçamento total (modelo principal + fallback + esperas). A edge function tem
  * limite de parede: sem este teto, um pico de 503 no Google fazia a requisição
