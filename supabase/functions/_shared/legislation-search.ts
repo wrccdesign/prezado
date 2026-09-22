@@ -24,7 +24,7 @@ export async function searchLegislation(termo: string, _tipoNorma?: string, _ano
   // Approach 1: Try the SCON API
   try {
     const sconUrl = `${SCON_API}/busca?q=${encodeURIComponent(termo)}&tipoDocumento=LEG&qtd=10&origem=JSON`;
-    console.log("Trying SCON API:", sconUrl);
+    console.log("Trying SCON API");
 
     const sconResponse = await fetch(sconUrl, {
       headers: { Accept: "application/json" },

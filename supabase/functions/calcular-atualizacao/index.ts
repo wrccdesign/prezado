@@ -168,7 +168,10 @@ serve(async (req) => {
     .gte("data_ref", primeiroMes)
     .lte("data_ref", ultimoMes);
 
-  if (idxErr) return bad(`Falha ao ler índices: ${idxErr.message}`, 500);
+  if (idxErr) {
+    console.error("calcular-atualizacao: falha ao ler índices", idxErr);
+    return bad("Não foi possível consultar os índices agora. Tente de novo em instantes.", 500);
+  }
 
   const mapa = new Map<string, number>();
   for (const r of idxRows ?? []) {
