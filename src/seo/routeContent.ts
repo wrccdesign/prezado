@@ -646,6 +646,17 @@ export const ROUTE_CONTENT: Record<string, RouteContent> = {
     intro:
       "Como o Honorífico trata dados pessoais: base legal conforme a LGPD, finalidades de uso, compartilhamento com operadores, prazo de retenção e direitos do titular, incluindo acesso, correção e exclusão.",
   },
+  ...Object.fromEntries(
+    RESCISAO_SITUACOES.map((s) => [
+      rescisaoPath(s.slug),
+      {
+        heading: s.title,
+        intro: s.description,
+        bullets: [...s.features, ...s.paragraphs.map((p) => `${p.heading}: ${p.body}`)],
+        faq: s.faq,
+      } satisfies RouteContent,
+    ]),
+  ),
 };
 
 function escapeHtml(value: string) {
