@@ -26,6 +26,16 @@ const ASAAS_EVENTOS = [
   "SUBSCRIPTION_DELETED",
 ];
 
+interface AiUsageRow {
+  dia: string;
+  function_name: string;
+  chamadas: number;
+  falhas: number;
+  input_tokens: number;
+  output_tokens: number;
+  custo_brl: number;
+}
+
 interface IngestResult {
   tribunal: string;
   query: string;
@@ -78,6 +88,7 @@ export default function AdminIngestao() {
   const [results, setResults] = useState<IngestResult[]>([]);
   const [running, setRunning] = useState(false);
   const [lastSuccess, setLastSuccess] = useState<string | null>(null);
+  const [usage, setUsage] = useState<AiUsageRow[]>([]);
   const allowed = !!user && isAdmin;
 
   useEffect(() => {
