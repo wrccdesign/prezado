@@ -26,6 +26,30 @@ const supabase = createClient(
 /** Janela de reuso da sessão de checkout já criada. */
 const REUSE_WINDOW_MS = 30 * 60 * 1000;
 
+const DEFAULT_ORIGIN = "https://honorifico.com.br";
+
+/** Só aceitamos voltar do pagamento para um domínio nosso. */
+function resolveReturnOrigin(rawOrigin: string | null): string {
+  if (!rawOrigin) return DEFAULT_ORIGIN;
+  let host: string;
+  let protocol: string;
+  try {
+    const url = new URL(rawOrigin);
+    host = url.hostname;
+    protocol = url.protocol;
+  } catch {
+    return DEFAULT_ORIGIN;
+  }
+  if (protocol !== "https:" && host !== "localhost" && host !== "127.0.0.1") return DEFAULT_ORIGIN;
+  const allowed = host === "honorifico.com.br" ||
+    host === "www.honorifico.com.br" ||
+    host === "localhost" ||
+    host === "127.0.0.1" ||
+    host.endsWith(".lovable.app") ||
+    host.endsWith(".lovableproject.com");
+  return allowed ? rawOrigin.replace(/\/+$/, "") : DEFAULT_ORIGIN;
+}
+
 function json(body: unknown, status = 200) {
   return new Response(JSON.stringify(body), {
     status,
@@ -49,7 +73,9 @@ Deno.serve(async (req) => {
     }
 
     const env: AsaasEnv = resolveAsaasEnv(req);
-    const origin = req.headers.get("origin") || "https://honorifico.com.br";
+    // O endereço de retorno nunca vem do corpo da requisição, e o Origin só é
+    // aceito quando pertence a um domínio nosso conhecido.
+    const origin = resolveReturnOrigin(req.headers.get("origin"));
 
     const cpfCnpj = typeof body?.cpfCnpj === "string" ? body.cpfCnpj.replace(/\D/g, "") : "";
     if (!cpfCnpj || (cpfCnpj.length !== 11 && cpfCnpj.length !== 14)) {

@@ -95,7 +95,10 @@ serve(async (req) => {
     .gte("data", inicioBusca)
     .lte("data", fimBusca);
 
-  if (error) return bad(`Falha ao ler feriados: ${error.message}`, 500);
+  if (error) {
+    console.error("calcular-prazo: falha ao ler feriados", error);
+    return bad("Não foi possível consultar o calendário de feriados agora. Tente de novo em instantes.", 500);
+  }
 
   const aplicaveis = (feriadosRows ?? []).filter((f) => {
     if (f.tipo === "nacional") return true;
