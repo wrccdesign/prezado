@@ -1,5 +1,7 @@
+import { Link } from "react-router-dom";
 import { CalculatorLanding } from "@/components/calculators/CalculatorLanding";
 import { RescisaoCalc } from "@/components/calculators/RescisaoCalc";
+import { RESCISAO_SITUACOES, rescisaoPath } from "@/seo/rescisaoSituacoes";
 
 export default function RescisaoTrabalhistaLanding() {
   return (
