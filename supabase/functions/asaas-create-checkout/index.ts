@@ -49,7 +49,9 @@ Deno.serve(async (req) => {
     }
 
     const env: AsaasEnv = resolveAsaasEnv(req);
-    const origin = req.headers.get("origin") || "https://honorifico.com.br";
+    // O endereço de retorno nunca vem do corpo da requisição, e o Origin só é
+    // aceito quando pertence a um domínio nosso conhecido.
+    const origin = resolveReturnOrigin(req.headers.get("origin"));
 
     const cpfCnpj = typeof body?.cpfCnpj === "string" ? body.cpfCnpj.replace(/\D/g, "") : "";
     if (!cpfCnpj || (cpfCnpj.length !== 11 && cpfCnpj.length !== 14)) {
