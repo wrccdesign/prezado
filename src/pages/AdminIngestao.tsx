@@ -33,7 +33,15 @@ interface AiUsageRow {
   falhas: number;
   input_tokens: number;
   output_tokens: number;
-  custo_brl: number;
+  reasoning_tokens: number;
+  custo_usd: number;
+  sem_preco: number;
+}
+
+interface ModelPriceRow {
+  model: string;
+  input_usd_per_mtok: number;
+  output_usd_per_mtok: number;
 }
 
 interface IngestResult {
@@ -89,6 +97,9 @@ export default function AdminIngestao() {
   const [running, setRunning] = useState(false);
   const [lastSuccess, setLastSuccess] = useState<string | null>(null);
   const [usage, setUsage] = useState<AiUsageRow[]>([]);
+  const [prices, setPrices] = useState<ModelPriceRow[]>([]);
+  const [usdBrl, setUsdBrl] = useState("5.40");
+  const [savingPrices, setSavingPrices] = useState(false);
   const allowed = !!user && isAdmin;
 
   useEffect(() => {
@@ -118,8 +129,21 @@ export default function AdminIngestao() {
   useEffect(() => {
     if (!allowed) return;
     supabase.rpc("ai_usage_summary", { p_days: 30 }).then(({ data }) => {
-      setUsage((data ?? []) as AiUsageRow[]);
+      setUsage((data ?? []) as unknown as AiUsageRow[]);
     });
+    supabase
+      .from("ai_model_prices")
+      .select("model, input_usd_per_mtok, output_usd_per_mtok")
+      .order("model")
+      .then(({ data }) => setPrices((data ?? []) as unknown as ModelPriceRow[]));
+    supabase
+      .from("ai_settings")
+      .select("value")
+      .eq("key", "usd_brl")
+      .maybeSingle()
+      .then(({ data }) => {
+        if (data?.value) setUsdBrl(String(data.value));
+      });
   }, [allowed]);
 
 
@@ -132,30 +156,77 @@ export default function AdminIngestao() {
     : null;
   const ingestStale = daysSinceSuccess === null || daysSinceSuccess > 7;
 
+  const cotacao = Number(usdBrl.replace(",", ".")) || 0;
+  const fmtUsd = (v: number) =>
+    v.toLocaleString("pt-BR", { style: "currency", currency: "USD", minimumFractionDigits: 4 });
+  const fmtBrl = (v: number) =>
+    v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+
   const usageTotals = usage.reduce(
     (acc, r) => ({
       chamadas: acc.chamadas + Number(r.chamadas),
       falhas: acc.falhas + Number(r.falhas),
-      tokens: acc.tokens + Number(r.input_tokens) + Number(r.output_tokens),
-      custo: acc.custo + Number(r.custo_brl),
+      entrada: acc.entrada + Number(r.input_tokens),
+      saida: acc.saida + Number(r.output_tokens),
+      raciocinio: acc.raciocinio + Number(r.reasoning_tokens),
+      custo: acc.custo + Number(r.custo_usd),
+      semPreco: acc.semPreco + Number(r.sem_preco),
     }),
-    { chamadas: 0, falhas: 0, tokens: 0, custo: 0 },
+    { chamadas: 0, falhas: 0, entrada: 0, saida: 0, raciocinio: 0, custo: 0, semPreco: 0 },
   );
 
+  type FuncRow = {
+    function_name: string;
+    chamadas: number;
+    falhas: number;
+    entrada: number;
+    saida: number;
+    raciocinio: number;
+    custo: number;
+  };
   const usagePorFuncao = Object.values(
-    usage.reduce<Record<string, { function_name: string; chamadas: number; falhas: number; tokens: number; custo: number }>>(
-      (acc, r) => {
-        const cur = acc[r.function_name] ?? { function_name: r.function_name, chamadas: 0, falhas: 0, tokens: 0, custo: 0 };
-        cur.chamadas += Number(r.chamadas);
-        cur.falhas += Number(r.falhas);
-        cur.tokens += Number(r.input_tokens) + Number(r.output_tokens);
-        cur.custo += Number(r.custo_brl);
-        acc[r.function_name] = cur;
-        return acc;
-      },
-      {},
-    ),
+    usage.reduce<Record<string, FuncRow>>((acc, r) => {
+      const cur = acc[r.function_name] ?? {
+        function_name: r.function_name,
+        chamadas: 0, falhas: 0, entrada: 0, saida: 0, raciocinio: 0, custo: 0,
+      };
+      cur.chamadas += Number(r.chamadas);
+      cur.falhas += Number(r.falhas);
+      cur.entrada += Number(r.input_tokens);
+      cur.saida += Number(r.output_tokens);
+      cur.raciocinio += Number(r.reasoning_tokens);
+      cur.custo += Number(r.custo_usd);
+      acc[r.function_name] = cur;
+      return acc;
+    }, {}),
   ).sort((a, b) => b.custo - a.custo);
+
+  const updatePrice = (model: string, field: "input_usd_per_mtok" | "output_usd_per_mtok", value: string) => {
+    setPrices((prev) =>
+      prev.map((p) => (p.model === model ? { ...p, [field]: Number(value.replace(",", ".")) } : p)),
+    );
+  };
+
+  const savePrices = async () => {
+    setSavingPrices(true);
+    const { error } = await supabase.from("ai_model_prices").upsert(
+      prices.map((p) => ({
+        model: p.model,
+        input_usd_per_mtok: p.input_usd_per_mtok,
+        output_usd_per_mtok: p.output_usd_per_mtok,
+      })),
+      { onConflict: "model" },
+    );
+    const { error: settingError } = await supabase
+      .from("ai_settings")
+      .upsert({ key: "usd_brl", value: String(cotacao) }, { onConflict: "key" });
+    setSavingPrices(false);
+    if (error || settingError) {
+      toast({ title: "Não foi possível salvar", variant: "destructive" });
+      return;
+    }
+    toast({ title: "Preços atualizados" });
+  };
 
   const copyWebhookUrl = async () => {
     try {
@@ -340,6 +411,11 @@ export default function AdminIngestao() {
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
+            {usageTotals.semPreco > 0 && (
+              <p className="text-sm text-muted-foreground">
+                {usageTotals.semPreco} chamada(s) usaram um modelo sem preço cadastrado, então ficaram fora do custo.
+              </p>
+            )}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-sm">
               <div>
                 <p className="text-muted-foreground">Chamadas</p>
@@ -350,14 +426,13 @@ export default function AdminIngestao() {
                 <p className="tabular-nums">{usageTotals.falhas}</p>
               </div>
               <div>
-                <p className="text-muted-foreground">Tokens</p>
-                <p className="tabular-nums">{usageTotals.tokens.toLocaleString("pt-BR")}</p>
+                <p className="text-muted-foreground">Tokens de raciocínio</p>
+                <p className="tabular-nums">{usageTotals.raciocinio.toLocaleString("pt-BR")}</p>
               </div>
               <div>
                 <p className="text-muted-foreground">Custo estimado</p>
-                <p className="tabular-nums">
-                  {usageTotals.custo.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
-                </p>
+                <p className="tabular-nums">{fmtUsd(usageTotals.custo)}</p>
+                <p className="text-muted-foreground tabular-nums">{fmtBrl(usageTotals.custo * cotacao)}</p>
               </div>
             </div>
 
@@ -371,8 +446,11 @@ export default function AdminIngestao() {
                       <th className="py-2 pr-3">Função</th>
                       <th className="py-2 pr-3">Chamadas</th>
                       <th className="py-2 pr-3">Falhas</th>
-                      <th className="py-2 pr-3">Tokens</th>
-                      <th className="py-2">Custo</th>
+                      <th className="py-2 pr-3">Entrada</th>
+                      <th className="py-2 pr-3">Saída</th>
+                      <th className="py-2 pr-3">Raciocínio</th>
+                      <th className="py-2 pr-3">Custo (USD)</th>
+                      <th className="py-2">Custo (BRL)</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -381,16 +459,76 @@ export default function AdminIngestao() {
                         <td className="py-2 pr-3">{row.function_name}</td>
                         <td className="py-2 pr-3 tabular-nums">{row.chamadas}</td>
                         <td className="py-2 pr-3 tabular-nums">{row.falhas}</td>
-                        <td className="py-2 pr-3 tabular-nums">{row.tokens.toLocaleString("pt-BR")}</td>
-                        <td className="py-2 tabular-nums">
-                          {row.custo.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
-                        </td>
+                        <td className="py-2 pr-3 tabular-nums">{row.entrada.toLocaleString("pt-BR")}</td>
+                        <td className="py-2 pr-3 tabular-nums">{row.saida.toLocaleString("pt-BR")}</td>
+                        <td className="py-2 pr-3 tabular-nums">{row.raciocinio.toLocaleString("pt-BR")}</td>
+                        <td className="py-2 pr-3 tabular-nums">{fmtUsd(row.custo)}</td>
+                        <td className="py-2 tabular-nums">{fmtBrl(row.custo * cotacao)}</td>
                       </tr>
                     ))}
                   </tbody>
                 </table>
               </div>
             )}
+
+            <div className="space-y-3 border-t pt-4">
+              <div>
+                <p className="text-sm">Preços por modelo, em dólar por milhão de tokens</p>
+                <p className="text-sm text-muted-foreground">
+                  Valores da página oficial de preços do Gemini. O raciocínio é cobrado como saída.
+                </p>
+              </div>
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="border-b text-left text-muted-foreground">
+                      <th className="py-2 pr-3">Modelo</th>
+                      <th className="py-2 pr-3">Entrada</th>
+                      <th className="py-2">Saída</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {prices.map((p) => (
+                      <tr key={p.model} className="border-b last:border-0">
+                        <td className="py-2 pr-3">{p.model}</td>
+                        <td className="py-2 pr-3">
+                          <Input
+                            className="h-8 w-28 tabular-nums"
+                            inputMode="decimal"
+                            value={String(p.input_usd_per_mtok)}
+                            onChange={(e) => updatePrice(p.model, "input_usd_per_mtok", e.target.value)}
+                          />
+                        </td>
+                        <td className="py-2">
+                          <Input
+                            className="h-8 w-28 tabular-nums"
+                            inputMode="decimal"
+                            value={String(p.output_usd_per_mtok)}
+                            onChange={(e) => updatePrice(p.model, "output_usd_per_mtok", e.target.value)}
+                          />
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+              <div className="flex flex-wrap items-end gap-3">
+                <div className="space-y-1.5">
+                  <Label htmlFor="usd-brl">Cotação do dólar</Label>
+                  <Input
+                    id="usd-brl"
+                    className="h-9 w-32 tabular-nums"
+                    inputMode="decimal"
+                    value={usdBrl}
+                    onChange={(e) => setUsdBrl(e.target.value)}
+                  />
+                </div>
+                <Button onClick={savePrices} disabled={savingPrices}>
+                  {savingPrices && <Loader2 className="h-4 w-4 animate-spin" />}
+                  Salvar preços
+                </Button>
+              </div>
+            </div>
           </CardContent>
         </Card>
 
