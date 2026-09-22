@@ -433,7 +433,7 @@ export async function aiChatStream(opts: AIRequestOptions): Promise<ReadableStre
 
   const decoder = new TextDecoder();
   let buffer = "";
-  let usage: { prompt_tokens?: number; completion_tokens?: number } | undefined;
+  let usage: AIUsageTokens | undefined;
 
   const transform = new TransformStream<Uint8Array, Uint8Array>({
     transform(chunk, controller) {
