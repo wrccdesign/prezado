@@ -325,6 +325,9 @@ export async function aiChat(opts: AIRequestOptions): Promise<any> {
     });
     throw e;
   }
+}
+
+
 
 /** Atalho: retorna apenas o texto da primeira escolha. */
 export async function aiChatText(opts: AIRequestOptions): Promise<string> {
