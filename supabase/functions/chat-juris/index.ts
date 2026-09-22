@@ -106,11 +106,10 @@ serve(async (req) => {
   const _userId = auth.userId;
 
   try {
-    const { messages, isLawyer } = await req.json();
+    const { messages: rawMessages, isLawyer } = await req.json();
 
-    if (!messages || !Array.isArray(messages) || messages.length === 0) {
-      throw new Error("Mensagens não fornecidas");
-    }
+    // Só papéis "user" e "assistant" passam: a instrução do sistema é do servidor.
+    const messages = sanitizeChatMessages(rawMessages);
 
     const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
     const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;

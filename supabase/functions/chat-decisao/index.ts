@@ -19,8 +19,11 @@ serve(async (req) => {
 
 
   try {
-    const { messages, decisionId } = await req.json();
+    const { messages: rawMessages, decisionId } = await req.json();
     if (!decisionId) throw new Error("decisionId is required");
+
+    // Só papéis "user" e "assistant" passam: a instrução do sistema é do servidor.
+    const messages = sanitizeChatMessages(rawMessages);
 
 
 
