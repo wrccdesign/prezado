@@ -14,9 +14,58 @@ export type Database = {
   }
   public: {
     Tables: {
+      ai_model_prices: {
+        Row: {
+          created_at: string
+          effective_from: string
+          input_usd_per_mtok: number
+          model: string
+          notes: string | null
+          output_usd_per_mtok: number
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          effective_from?: string
+          input_usd_per_mtok: number
+          model: string
+          notes?: string | null
+          output_usd_per_mtok: number
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          effective_from?: string
+          input_usd_per_mtok?: number
+          model?: string
+          notes?: string | null
+          output_usd_per_mtok?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      ai_settings: {
+        Row: {
+          key: string
+          updated_at: string
+          value: string
+        }
+        Insert: {
+          key: string
+          updated_at?: string
+          value: string
+        }
+        Update: {
+          key?: string
+          updated_at?: string
+          value?: string
+        }
+        Relationships: []
+      }
       ai_usage: {
         Row: {
           cost_brl: number | null
+          cost_usd: number | null
           created_at: string
           duration_ms: number | null
           environment: string
@@ -26,12 +75,14 @@ export type Database = {
           input_tokens: number
           model: string
           output_tokens: number
+          reasoning_tokens: number
           success: boolean
           tier: string | null
           user_id: string | null
         }
         Insert: {
           cost_brl?: number | null
+          cost_usd?: number | null
           created_at?: string
           duration_ms?: number | null
           environment?: string
@@ -41,12 +92,14 @@ export type Database = {
           input_tokens?: number
           model: string
           output_tokens?: number
+          reasoning_tokens?: number
           success?: boolean
           tier?: string | null
           user_id?: string | null
         }
         Update: {
           cost_brl?: number | null
+          cost_usd?: number | null
           created_at?: string
           duration_ms?: number | null
           environment?: string
@@ -56,6 +109,7 @@ export type Database = {
           input_tokens?: number
           model?: string
           output_tokens?: number
+          reasoning_tokens?: number
           success?: boolean
           tier?: string | null
           user_id?: string | null
@@ -916,12 +970,14 @@ export type Database = {
         Args: { p_days?: number }
         Returns: {
           chamadas: number
-          custo_brl: number
+          custo_usd: number
           dia: string
           falhas: number
           function_name: string
           input_tokens: number
           output_tokens: number
+          reasoning_tokens: number
+          sem_preco: number
         }[]
       }
       get_user_plan: {
