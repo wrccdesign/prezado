@@ -178,7 +178,7 @@ serve(async (req) => {
     let aiResult: any;
     try {
       aiResult = await aiChat({
-        model: "main",
+        model: "light",
         functionName: "scrape-esaj",
         messages: [
           { role: "system", content: EXTRACTION_SYSTEM_PROMPT },

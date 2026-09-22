@@ -26,6 +26,16 @@ const ASAAS_EVENTOS = [
   "SUBSCRIPTION_DELETED",
 ];
 
+interface AiUsageRow {
+  dia: string;
+  function_name: string;
+  chamadas: number;
+  falhas: number;
+  input_tokens: number;
+  output_tokens: number;
+  custo_brl: number;
+}
+
 interface IngestResult {
   tribunal: string;
   query: string;
@@ -78,6 +88,7 @@ export default function AdminIngestao() {
   const [results, setResults] = useState<IngestResult[]>([]);
   const [running, setRunning] = useState(false);
   const [lastSuccess, setLastSuccess] = useState<string | null>(null);
+  const [usage, setUsage] = useState<AiUsageRow[]>([]);
   const allowed = !!user && isAdmin;
 
   useEffect(() => {
@@ -104,6 +115,14 @@ export default function AdminIngestao() {
       });
   }, [allowed]);
 
+  useEffect(() => {
+    if (!allowed) return;
+    supabase.rpc("ai_usage_summary", { p_days: 30 }).then(({ data }) => {
+      setUsage((data ?? []) as AiUsageRow[]);
+    });
+  }, [allowed]);
+
+
   if (authLoading || roleLoading) return null;
   if (!user) return <Navigate to="/auth" replace />;
   if (!isAdmin) return <Navigate to="/" replace />;
@@ -112,6 +131,31 @@ export default function AdminIngestao() {
     ? Math.floor((Date.now() - new Date(lastSuccess).getTime()) / 86400000)
     : null;
   const ingestStale = daysSinceSuccess === null || daysSinceSuccess > 7;
+
+  const usageTotals = usage.reduce(
+    (acc, r) => ({
+      chamadas: acc.chamadas + Number(r.chamadas),
+      falhas: acc.falhas + Number(r.falhas),
+      tokens: acc.tokens + Number(r.input_tokens) + Number(r.output_tokens),
+      custo: acc.custo + Number(r.custo_brl),
+    }),
+    { chamadas: 0, falhas: 0, tokens: 0, custo: 0 },
+  );
+
+  const usagePorFuncao = Object.values(
+    usage.reduce<Record<string, { function_name: string; chamadas: number; falhas: number; tokens: number; custo: number }>>(
+      (acc, r) => {
+        const cur = acc[r.function_name] ?? { function_name: r.function_name, chamadas: 0, falhas: 0, tokens: 0, custo: 0 };
+        cur.chamadas += Number(r.chamadas);
+        cur.falhas += Number(r.falhas);
+        cur.tokens += Number(r.input_tokens) + Number(r.output_tokens);
+        cur.custo += Number(r.custo_brl);
+        acc[r.function_name] = cur;
+        return acc;
+      },
+      {},
+    ),
+  ).sort((a, b) => b.custo - a.custo);
 
   const copyWebhookUrl = async () => {
     try {
@@ -284,6 +328,69 @@ export default function AdminIngestao() {
                 <li>Faça o mesmo no ambiente de testes do Asaas e valide um pagamento de teste antes de ligar em produção.</li>
               </ol>
             </div>
+          </CardContent>
+        </Card>
+
+        {/* Consumo de IA */}
+        <Card>
+          <CardHeader className="pb-3">
+            <CardTitle className="text-lg">Consumo de IA, últimos 30 dias</CardTitle>
+            <CardDescription>
+              Custo estimado a partir dos tokens. A fatura oficial é a do Google.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-sm">
+              <div>
+                <p className="text-muted-foreground">Chamadas</p>
+                <p className="tabular-nums">{usageTotals.chamadas}</p>
+              </div>
+              <div>
+                <p className="text-muted-foreground">Falhas</p>
+                <p className="tabular-nums">{usageTotals.falhas}</p>
+              </div>
+              <div>
+                <p className="text-muted-foreground">Tokens</p>
+                <p className="tabular-nums">{usageTotals.tokens.toLocaleString("pt-BR")}</p>
+              </div>
+              <div>
+                <p className="text-muted-foreground">Custo estimado</p>
+                <p className="tabular-nums">
+                  {usageTotals.custo.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
+                </p>
+              </div>
+            </div>
+
+            {usagePorFuncao.length === 0 ? (
+              <p className="text-sm text-muted-foreground">Nenhuma chamada registrada no período.</p>
+            ) : (
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="border-b text-left text-muted-foreground">
+                      <th className="py-2 pr-3">Função</th>
+                      <th className="py-2 pr-3">Chamadas</th>
+                      <th className="py-2 pr-3">Falhas</th>
+                      <th className="py-2 pr-3">Tokens</th>
+                      <th className="py-2">Custo</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {usagePorFuncao.map((row) => (
+                      <tr key={row.function_name} className="border-b last:border-0">
+                        <td className="py-2 pr-3">{row.function_name}</td>
+                        <td className="py-2 pr-3 tabular-nums">{row.chamadas}</td>
+                        <td className="py-2 pr-3 tabular-nums">{row.falhas}</td>
+                        <td className="py-2 pr-3 tabular-nums">{row.tokens.toLocaleString("pt-BR")}</td>
+                        <td className="py-2 tabular-nums">
+                          {row.custo.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
           </CardContent>
         </Card>
 

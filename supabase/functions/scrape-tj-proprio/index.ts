@@ -208,7 +208,7 @@ serve(async (req) => {
     let aiResult: any;
     try {
       aiResult = await aiChat({
-        model: "main",
+        model: "light",
         functionName: "scrape-tj-proprio",
         messages: [
           { role: "system", content: EXTRACTION_SYSTEM_PROMPT },

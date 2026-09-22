@@ -121,23 +121,58 @@ function sleep(ms: number) {
 }
 
 
+/**
+ * Preço por 1 milhão de tokens, em dólar, por prefixo de modelo.
+ * Serve só para estimativa interna de custo — a fatura oficial é a do Google.
+ */
+const PRICE_USD_PER_MTOK: Array<{ prefix: string; input: number; output: number }> = [
+  { prefix: "gemini-3.6-flash", input: 0.30, output: 2.50 },
+  { prefix: "gemini-3.5-flash-lite", input: 0.10, output: 0.40 },
+  { prefix: "gemini-3.5-flash", input: 0.30, output: 2.50 },
+  { prefix: "gemini-3.1-flash-lite", input: 0.10, output: 0.40 },
+];
+/** Câmbio usado só na estimativa de custo. */
+const USD_BRL = Number(Deno.env.get("USD_BRL_ESTIMATE") || "5.40");
+
+function estimateCostBrl(model: string, inTok: number, outTok: number): number {
+  const row = PRICE_USD_PER_MTOK.find((p) => model.startsWith(p.prefix));
+  if (!row) return 0;
+  const usd = (inTok / 1_000_000) * row.input + (outTok / 1_000_000) * row.output;
+  return Number((usd * USD_BRL).toFixed(6));
+}
+
+interface UsageExtras {
+  tier?: ModelTier;
+  durationMs?: number;
+  success?: boolean;
+  errorStatus?: number | null;
+}
+
 async function logUsage(
   meta: AIUsageMeta,
   model: string,
   usage: { prompt_tokens?: number; completion_tokens?: number } | undefined,
+  extras: UsageExtras = {},
 ) {
   try {
     const url = Deno.env.get("SUPABASE_URL");
     const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
     if (!url || !serviceKey) return;
     const supa = createClient(url, serviceKey);
+    const inTok = usage?.prompt_tokens ?? 0;
+    const outTok = usage?.completion_tokens ?? 0;
     await supa.from("ai_usage").insert({
       user_id: meta.userId ?? null,
       function_name: meta.functionName,
       model,
-      input_tokens: usage?.prompt_tokens ?? 0,
-      output_tokens: usage?.completion_tokens ?? 0,
+      input_tokens: inTok,
+      output_tokens: outTok,
       environment: meta.environment ?? "live",
+      tier: extras.tier ?? null,
+      success: extras.success ?? true,
+      error_status: extras.errorStatus ?? null,
+      duration_ms: extras.durationMs ?? null,
+      cost_brl: estimateCostBrl(model, inTok, outTok),
     });
   } catch (e) {
     // Nunca derrubar a chamada por falha de log.
@@ -266,15 +301,33 @@ export async function aiChat(opts: AIRequestOptions): Promise<any> {
   if (typeof opts.temperature === "number") body.temperature = opts.temperature;
 
   const tier = opts.model ?? "main";
-  const { res, model: usedModel } = await postChat(
-    body,
-    opts.timeoutMs ?? DEFAULT_TIMEOUT_MS,
-    resolveFallbackModel(tier),
-  );
-  const data = await res.json();
-  await logUsage(opts, usedModel, data?.usage);
-  return data;
+  const startedAt = Date.now();
+  try {
+    const { res, model: usedModel } = await postChat(
+      body,
+      opts.timeoutMs ?? DEFAULT_TIMEOUT_MS,
+      resolveFallbackModel(tier),
+    );
+    const data = await res.json();
+    await logUsage(opts, usedModel, data?.usage, {
+      tier,
+      durationMs: Date.now() - startedAt,
+      success: true,
+    });
+    return data;
+  } catch (e) {
+    // Falha também vira linha: sem isso, uma semana inteira de erro aparece como consumo zero.
+    await logUsage(opts, model, undefined, {
+      tier,
+      durationMs: Date.now() - startedAt,
+      success: false,
+      errorStatus: e instanceof AIError ? e.status : null,
+    });
+    throw e;
+  }
 }
+
+
 
 /** Atalho: retorna apenas o texto da primeira escolha. */
 export async function aiChatText(opts: AIRequestOptions): Promise<string> {
@@ -311,7 +364,23 @@ export async function aiChatStream(opts: AIRequestOptions): Promise<ReadableStre
   if (typeof opts.temperature === "number") body.temperature = opts.temperature;
 
   // Sem timeout de corte: streaming longo é normal. Fallback de modelo também vale aqui.
-  const { res, model: usedModel } = await postChat(body, undefined, resolveFallbackModel(opts.model ?? "main"));
+  const tier = opts.model ?? "main";
+  const startedAt = Date.now();
+  let res: Response;
+  let usedModel: string;
+  try {
+    const out = await postChat(body, undefined, resolveFallbackModel(tier));
+    res = out.res;
+    usedModel = out.model;
+  } catch (e) {
+    await logUsage(opts, model, undefined, {
+      tier,
+      durationMs: Date.now() - startedAt,
+      success: false,
+      errorStatus: e instanceof AIError ? e.status : null,
+    });
+    throw e;
+  }
   const upstream = res.body;
   if (!upstream) throw new AIError(userMessageFor(502), 502);
 
@@ -339,7 +408,11 @@ export async function aiChatStream(opts: AIRequestOptions): Promise<ReadableStre
     },
     flush() {
       // Não aguarda: log é best-effort.
-      logUsage(opts, usedModel, usage);
+      logUsage(opts, usedModel, usage, {
+        tier,
+        durationMs: Date.now() - startedAt,
+        success: true,
+      });
     },
   });
 

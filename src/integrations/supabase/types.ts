@@ -16,33 +16,48 @@ export type Database = {
     Tables: {
       ai_usage: {
         Row: {
+          cost_brl: number | null
           created_at: string
+          duration_ms: number | null
           environment: string
+          error_status: number | null
           function_name: string
           id: string
           input_tokens: number
           model: string
           output_tokens: number
+          success: boolean
+          tier: string | null
           user_id: string | null
         }
         Insert: {
+          cost_brl?: number | null
           created_at?: string
+          duration_ms?: number | null
           environment?: string
+          error_status?: number | null
           function_name: string
           id?: string
           input_tokens?: number
           model: string
           output_tokens?: number
+          success?: boolean
+          tier?: string | null
           user_id?: string | null
         }
         Update: {
+          cost_brl?: number | null
           created_at?: string
+          duration_ms?: number | null
           environment?: string
+          error_status?: number | null
           function_name?: string
           id?: string
           input_tokens?: number
           model?: string
           output_tokens?: number
+          success?: boolean
+          tier?: string | null
           user_id?: string | null
         }
         Relationships: []
@@ -897,6 +912,18 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      ai_usage_summary: {
+        Args: { p_days?: number }
+        Returns: {
+          chamadas: number
+          custo_brl: number
+          dia: string
+          falhas: number
+          function_name: string
+          input_tokens: number
+          output_tokens: number
+        }[]
+      }
       get_user_plan: {
         Args: { p_env?: string; p_user_id: string }
         Returns: string
