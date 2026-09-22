@@ -156,30 +156,77 @@ export default function AdminIngestao() {
     : null;
   const ingestStale = daysSinceSuccess === null || daysSinceSuccess > 7;
 
+  const cotacao = Number(usdBrl.replace(",", ".")) || 0;
+  const fmtUsd = (v: number) =>
+    v.toLocaleString("pt-BR", { style: "currency", currency: "USD", minimumFractionDigits: 4 });
+  const fmtBrl = (v: number) =>
+    v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+
   const usageTotals = usage.reduce(
     (acc, r) => ({
       chamadas: acc.chamadas + Number(r.chamadas),
       falhas: acc.falhas + Number(r.falhas),
-      tokens: acc.tokens + Number(r.input_tokens) + Number(r.output_tokens),
-      custo: acc.custo + Number(r.custo_brl),
+      entrada: acc.entrada + Number(r.input_tokens),
+      saida: acc.saida + Number(r.output_tokens),
+      raciocinio: acc.raciocinio + Number(r.reasoning_tokens),
+      custo: acc.custo + Number(r.custo_usd),
+      semPreco: acc.semPreco + Number(r.sem_preco),
     }),
-    { chamadas: 0, falhas: 0, tokens: 0, custo: 0 },
+    { chamadas: 0, falhas: 0, entrada: 0, saida: 0, raciocinio: 0, custo: 0, semPreco: 0 },
   );
 
+  type FuncRow = {
+    function_name: string;
+    chamadas: number;
+    falhas: number;
+    entrada: number;
+    saida: number;
+    raciocinio: number;
+    custo: number;
+  };
   const usagePorFuncao = Object.values(
-    usage.reduce<Record<string, { function_name: string; chamadas: number; falhas: number; tokens: number; custo: number }>>(
-      (acc, r) => {
-        const cur = acc[r.function_name] ?? { function_name: r.function_name, chamadas: 0, falhas: 0, tokens: 0, custo: 0 };
-        cur.chamadas += Number(r.chamadas);
-        cur.falhas += Number(r.falhas);
-        cur.tokens += Number(r.input_tokens) + Number(r.output_tokens);
-        cur.custo += Number(r.custo_brl);
-        acc[r.function_name] = cur;
-        return acc;
-      },
-      {},
-    ),
+    usage.reduce<Record<string, FuncRow>>((acc, r) => {
+      const cur = acc[r.function_name] ?? {
+        function_name: r.function_name,
+        chamadas: 0, falhas: 0, entrada: 0, saida: 0, raciocinio: 0, custo: 0,
+      };
+      cur.chamadas += Number(r.chamadas);
+      cur.falhas += Number(r.falhas);
+      cur.entrada += Number(r.input_tokens);
+      cur.saida += Number(r.output_tokens);
+      cur.raciocinio += Number(r.reasoning_tokens);
+      cur.custo += Number(r.custo_usd);
+      acc[r.function_name] = cur;
+      return acc;
+    }, {}),
   ).sort((a, b) => b.custo - a.custo);
+
+  const updatePrice = (model: string, field: "input_usd_per_mtok" | "output_usd_per_mtok", value: string) => {
+    setPrices((prev) =>
+      prev.map((p) => (p.model === model ? { ...p, [field]: Number(value.replace(",", ".")) } : p)),
+    );
+  };
+
+  const savePrices = async () => {
+    setSavingPrices(true);
+    const { error } = await supabase.from("ai_model_prices").upsert(
+      prices.map((p) => ({
+        model: p.model,
+        input_usd_per_mtok: p.input_usd_per_mtok,
+        output_usd_per_mtok: p.output_usd_per_mtok,
+      })),
+      { onConflict: "model" },
+    );
+    const { error: settingError } = await supabase
+      .from("ai_settings")
+      .upsert({ key: "usd_brl", value: String(cotacao) }, { onConflict: "key" });
+    setSavingPrices(false);
+    if (error || settingError) {
+      toast({ title: "Não foi possível salvar", variant: "destructive" });
+      return;
+    }
+    toast({ title: "Preços atualizados" });
+  };
 
   const copyWebhookUrl = async () => {
     try {
