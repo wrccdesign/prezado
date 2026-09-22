@@ -301,15 +301,30 @@ export async function aiChat(opts: AIRequestOptions): Promise<any> {
   if (typeof opts.temperature === "number") body.temperature = opts.temperature;
 
   const tier = opts.model ?? "main";
-  const { res, model: usedModel } = await postChat(
-    body,
-    opts.timeoutMs ?? DEFAULT_TIMEOUT_MS,
-    resolveFallbackModel(tier),
-  );
-  const data = await res.json();
-  await logUsage(opts, usedModel, data?.usage);
-  return data;
-}
+  const startedAt = Date.now();
+  try {
+    const { res, model: usedModel } = await postChat(
+      body,
+      opts.timeoutMs ?? DEFAULT_TIMEOUT_MS,
+      resolveFallbackModel(tier),
+    );
+    const data = await res.json();
+    await logUsage(opts, usedModel, data?.usage, {
+      tier,
+      durationMs: Date.now() - startedAt,
+      success: true,
+    });
+    return data;
+  } catch (e) {
+    // Falha também vira linha: sem isso, uma semana inteira de erro aparece como consumo zero.
+    await logUsage(opts, model, undefined, {
+      tier,
+      durationMs: Date.now() - startedAt,
+      success: false,
+      errorStatus: e instanceof AIError ? e.status : null,
+    });
+    throw e;
+  }
 
 /** Atalho: retorna apenas o texto da primeira escolha. */
 export async function aiChatText(opts: AIRequestOptions): Promise<string> {
