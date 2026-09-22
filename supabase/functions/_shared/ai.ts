@@ -122,23 +122,51 @@ function sleep(ms: number) {
 
 
 /**
- * Preço por 1 milhão de tokens, em dólar, por prefixo de modelo.
- * Serve só para estimativa interna de custo — a fatura oficial é a do Google.
+ * Preços vêm da tabela `ai_model_prices` (editável na administração), nunca do
+ * código. Cache por instância para não consultar o banco a cada chamada.
+ * O custo é gravado em DÓLAR; a conversão para reais acontece na exibição.
  */
-const PRICE_USD_PER_MTOK: Array<{ prefix: string; input: number; output: number }> = [
-  { prefix: "gemini-3.6-flash", input: 0.30, output: 2.50 },
-  { prefix: "gemini-3.5-flash-lite", input: 0.10, output: 0.40 },
-  { prefix: "gemini-3.5-flash", input: 0.30, output: 2.50 },
-  { prefix: "gemini-3.1-flash-lite", input: 0.10, output: 0.40 },
-];
-/** Câmbio usado só na estimativa de custo. */
-const USD_BRL = Number(Deno.env.get("USD_BRL_ESTIMATE") || "5.40");
+interface ModelPrice { input: number; output: number }
+let priceCache: { at: number; rows: Record<string, ModelPrice> } | null = null;
+const PRICE_TTL_MS = 5 * 60_000;
 
-function estimateCostBrl(model: string, inTok: number, outTok: number): number {
-  const row = PRICE_USD_PER_MTOK.find((p) => model.startsWith(p.prefix));
-  if (!row) return 0;
-  const usd = (inTok / 1_000_000) * row.input + (outTok / 1_000_000) * row.output;
-  return Number((usd * USD_BRL).toFixed(6));
+async function loadPrices(supa: any): Promise<Record<string, ModelPrice>> {
+  if (priceCache && Date.now() - priceCache.at < PRICE_TTL_MS) return priceCache.rows;
+  const { data, error } = await supa
+    .from("ai_model_prices")
+    .select("model, input_usd_per_mtok, output_usd_per_mtok");
+  if (error) {
+    console.error("[ai] falha ao ler ai_model_prices:", error.message);
+    return priceCache?.rows ?? {};
+  }
+  const rows: Record<string, ModelPrice> = {};
+  for (const r of data ?? []) {
+    rows[r.model] = { input: Number(r.input_usd_per_mtok), output: Number(r.output_usd_per_mtok) };
+  }
+  priceCache = { at: Date.now(), rows };
+  return rows;
+}
+
+/** Tokens de raciocínio são cobrados como saída pelo Google. */
+function estimateCostUsd(
+  prices: Record<string, ModelPrice>,
+  model: string,
+  inTok: number,
+  outTok: number,
+  reasoningTok: number,
+): number | null {
+  const exact = prices[model];
+  const row = exact ??
+    Object.entries(prices)
+      .filter(([m]) => model.startsWith(m))
+      .sort((a, b) => b[0].length - a[0].length)[0]?.[1];
+  if (!row) {
+    console.warn(`[ai] modelo sem preço cadastrado: ${model}`);
+    return null;
+  }
+  const usd = (inTok / 1_000_000) * row.input +
+    ((outTok + reasoningTok) / 1_000_000) * row.output;
+  return Number(usd.toFixed(8));
 }
 
 interface UsageExtras {
@@ -148,10 +176,24 @@ interface UsageExtras {
   errorStatus?: number | null;
 }
 
+/** Formato OpenAI-compatível do Google, incluindo tokens de raciocínio. */
+export interface AIUsageTokens {
+  prompt_tokens?: number;
+  completion_tokens?: number;
+  completion_tokens_details?: { reasoning_tokens?: number };
+  /** Alguns retornos do Google usam este nome. */
+  thoughts_token_count?: number;
+}
+
+function reasoningOf(usage: AIUsageTokens | undefined): number {
+  return usage?.completion_tokens_details?.reasoning_tokens ??
+    usage?.thoughts_token_count ?? 0;
+}
+
 async function logUsage(
   meta: AIUsageMeta,
   model: string,
-  usage: { prompt_tokens?: number; completion_tokens?: number } | undefined,
+  usage: AIUsageTokens | undefined,
   extras: UsageExtras = {},
 ) {
   try {
@@ -160,19 +202,24 @@ async function logUsage(
     if (!url || !serviceKey) return;
     const supa = createClient(url, serviceKey);
     const inTok = usage?.prompt_tokens ?? 0;
-    const outTok = usage?.completion_tokens ?? 0;
+    const reasoningTok = reasoningOf(usage);
+    // O Google já inclui o raciocínio em completion_tokens; separamos para não contar duas vezes.
+    const rawOut = usage?.completion_tokens ?? 0;
+    const outTok = Math.max(0, rawOut - reasoningTok);
+    const prices = await loadPrices(supa);
     await supa.from("ai_usage").insert({
       user_id: meta.userId ?? null,
       function_name: meta.functionName,
       model,
       input_tokens: inTok,
       output_tokens: outTok,
+      reasoning_tokens: reasoningTok,
       environment: meta.environment ?? "live",
       tier: extras.tier ?? null,
       success: extras.success ?? true,
       error_status: extras.errorStatus ?? null,
       duration_ms: extras.durationMs ?? null,
-      cost_brl: estimateCostBrl(model, inTok, outTok),
+      cost_usd: estimateCostUsd(prices, model, inTok, outTok, reasoningTok),
     });
   } catch (e) {
     // Nunca derrubar a chamada por falha de log.
