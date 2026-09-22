@@ -306,6 +306,69 @@ export default function AdminIngestao() {
           </CardContent>
         </Card>
 
+        {/* Consumo de IA */}
+        <Card>
+          <CardHeader className="pb-3">
+            <CardTitle className="text-lg">Consumo de IA, últimos 30 dias</CardTitle>
+            <CardDescription>
+              Custo estimado a partir dos tokens. A fatura oficial é a do Google.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-sm">
+              <div>
+                <p className="text-muted-foreground">Chamadas</p>
+                <p className="tabular-nums">{usageTotals.chamadas}</p>
+              </div>
+              <div>
+                <p className="text-muted-foreground">Falhas</p>
+                <p className="tabular-nums">{usageTotals.falhas}</p>
+              </div>
+              <div>
+                <p className="text-muted-foreground">Tokens</p>
+                <p className="tabular-nums">{usageTotals.tokens.toLocaleString("pt-BR")}</p>
+              </div>
+              <div>
+                <p className="text-muted-foreground">Custo estimado</p>
+                <p className="tabular-nums">
+                  {usageTotals.custo.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
+                </p>
+              </div>
+            </div>
+
+            {usagePorFuncao.length === 0 ? (
+              <p className="text-sm text-muted-foreground">Nenhuma chamada registrada no período.</p>
+            ) : (
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="border-b text-left text-muted-foreground">
+                      <th className="py-2 pr-3">Função</th>
+                      <th className="py-2 pr-3">Chamadas</th>
+                      <th className="py-2 pr-3">Falhas</th>
+                      <th className="py-2 pr-3">Tokens</th>
+                      <th className="py-2">Custo</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {usagePorFuncao.map((row) => (
+                      <tr key={row.function_name} className="border-b last:border-0">
+                        <td className="py-2 pr-3">{row.function_name}</td>
+                        <td className="py-2 pr-3 tabular-nums">{row.chamadas}</td>
+                        <td className="py-2 pr-3 tabular-nums">{row.falhas}</td>
+                        <td className="py-2 pr-3 tabular-nums">{row.tokens.toLocaleString("pt-BR")}</td>
+                        <td className="py-2 tabular-nums">
+                          {row.custo.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
         {/* Config Card */}
         <Card className="border-primary/20">
           <CardHeader className="pb-3">
