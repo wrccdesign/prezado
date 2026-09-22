@@ -115,6 +115,14 @@ export default function AdminIngestao() {
       });
   }, [allowed]);
 
+  useEffect(() => {
+    if (!allowed) return;
+    supabase.rpc("ai_usage_summary", { p_days: 30 }).then(({ data }) => {
+      setUsage((data ?? []) as AiUsageRow[]);
+    });
+  }, [allowed]);
+
+
   if (authLoading || roleLoading) return null;
   if (!user) return <Navigate to="/auth" replace />;
   if (!isAdmin) return <Navigate to="/" replace />;
