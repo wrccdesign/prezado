@@ -16,33 +16,48 @@ export type Database = {
     Tables: {
       ai_usage: {
         Row: {
+          cost_brl: number | null
           created_at: string
+          duration_ms: number | null
           environment: string
+          error_status: number | null
           function_name: string
           id: string
           input_tokens: number
           model: string
           output_tokens: number
+          success: boolean
+          tier: string | null
           user_id: string | null
         }
         Insert: {
+          cost_brl?: number | null
           created_at?: string
+          duration_ms?: number | null
           environment?: string
+          error_status?: number | null
           function_name: string
           id?: string
           input_tokens?: number
           model: string
           output_tokens?: number
+          success?: boolean
+          tier?: string | null
           user_id?: string | null
         }
         Update: {
+          cost_brl?: number | null
           created_at?: string
+          duration_ms?: number | null
           environment?: string
+          error_status?: number | null
           function_name?: string
           id?: string
           input_tokens?: number
           model?: string
           output_tokens?: number
+          success?: boolean
+          tier?: string | null
           user_id?: string | null
         }
         Relationships: []
