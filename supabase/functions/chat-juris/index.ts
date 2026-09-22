@@ -3,6 +3,7 @@ import { requireUser } from "../_shared/auth.ts";
 import { burstLimitMessage, checkRateLimit, extractEnv, monthlyLimitMessage } from "../_shared/rate-limit.ts";
 import { fetchGroundingContext, buildGroundingBlock, fetchGroundingSumulas, buildSumulasBlock } from "../_shared/grounding.ts";
 import { aiChatStream, AIError } from "../_shared/ai.ts";
+import { sanitizeChatMessages } from "../_shared/chat-messages.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
