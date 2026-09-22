@@ -411,6 +411,11 @@ export default function AdminIngestao() {
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
+            {usageTotals.semPreco > 0 && (
+              <p className="text-sm text-muted-foreground">
+                {usageTotals.semPreco} chamada(s) usaram um modelo sem preço cadastrado, então ficaram fora do custo.
+              </p>
+            )}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-sm">
               <div>
                 <p className="text-muted-foreground">Chamadas</p>
@@ -421,14 +426,13 @@ export default function AdminIngestao() {
                 <p className="tabular-nums">{usageTotals.falhas}</p>
               </div>
               <div>
-                <p className="text-muted-foreground">Tokens</p>
-                <p className="tabular-nums">{usageTotals.tokens.toLocaleString("pt-BR")}</p>
+                <p className="text-muted-foreground">Tokens de raciocínio</p>
+                <p className="tabular-nums">{usageTotals.raciocinio.toLocaleString("pt-BR")}</p>
               </div>
               <div>
                 <p className="text-muted-foreground">Custo estimado</p>
-                <p className="tabular-nums">
-                  {usageTotals.custo.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
-                </p>
+                <p className="tabular-nums">{fmtUsd(usageTotals.custo)}</p>
+                <p className="text-muted-foreground tabular-nums">{fmtBrl(usageTotals.custo * cotacao)}</p>
               </div>
             </div>
 
@@ -442,8 +446,11 @@ export default function AdminIngestao() {
                       <th className="py-2 pr-3">Função</th>
                       <th className="py-2 pr-3">Chamadas</th>
                       <th className="py-2 pr-3">Falhas</th>
-                      <th className="py-2 pr-3">Tokens</th>
-                      <th className="py-2">Custo</th>
+                      <th className="py-2 pr-3">Entrada</th>
+                      <th className="py-2 pr-3">Saída</th>
+                      <th className="py-2 pr-3">Raciocínio</th>
+                      <th className="py-2 pr-3">Custo (USD)</th>
+                      <th className="py-2">Custo (BRL)</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -452,16 +459,76 @@ export default function AdminIngestao() {
                         <td className="py-2 pr-3">{row.function_name}</td>
                         <td className="py-2 pr-3 tabular-nums">{row.chamadas}</td>
                         <td className="py-2 pr-3 tabular-nums">{row.falhas}</td>
-                        <td className="py-2 pr-3 tabular-nums">{row.tokens.toLocaleString("pt-BR")}</td>
-                        <td className="py-2 tabular-nums">
-                          {row.custo.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
-                        </td>
+                        <td className="py-2 pr-3 tabular-nums">{row.entrada.toLocaleString("pt-BR")}</td>
+                        <td className="py-2 pr-3 tabular-nums">{row.saida.toLocaleString("pt-BR")}</td>
+                        <td className="py-2 pr-3 tabular-nums">{row.raciocinio.toLocaleString("pt-BR")}</td>
+                        <td className="py-2 pr-3 tabular-nums">{fmtUsd(row.custo)}</td>
+                        <td className="py-2 tabular-nums">{fmtBrl(row.custo * cotacao)}</td>
                       </tr>
                     ))}
                   </tbody>
                 </table>
               </div>
             )}
+
+            <div className="space-y-3 border-t pt-4">
+              <div>
+                <p className="text-sm">Preços por modelo, em dólar por milhão de tokens</p>
+                <p className="text-sm text-muted-foreground">
+                  Valores da página oficial de preços do Gemini. O raciocínio é cobrado como saída.
+                </p>
+              </div>
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="border-b text-left text-muted-foreground">
+                      <th className="py-2 pr-3">Modelo</th>
+                      <th className="py-2 pr-3">Entrada</th>
+                      <th className="py-2">Saída</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {prices.map((p) => (
+                      <tr key={p.model} className="border-b last:border-0">
+                        <td className="py-2 pr-3">{p.model}</td>
+                        <td className="py-2 pr-3">
+                          <Input
+                            className="h-8 w-28 tabular-nums"
+                            inputMode="decimal"
+                            value={String(p.input_usd_per_mtok)}
+                            onChange={(e) => updatePrice(p.model, "input_usd_per_mtok", e.target.value)}
+                          />
+                        </td>
+                        <td className="py-2">
+                          <Input
+                            className="h-8 w-28 tabular-nums"
+                            inputMode="decimal"
+                            value={String(p.output_usd_per_mtok)}
+                            onChange={(e) => updatePrice(p.model, "output_usd_per_mtok", e.target.value)}
+                          />
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+              <div className="flex flex-wrap items-end gap-3">
+                <div className="space-y-1.5">
+                  <Label htmlFor="usd-brl">Cotação do dólar</Label>
+                  <Input
+                    id="usd-brl"
+                    className="h-9 w-32 tabular-nums"
+                    inputMode="decimal"
+                    value={usdBrl}
+                    onChange={(e) => setUsdBrl(e.target.value)}
+                  />
+                </div>
+                <Button onClick={savePrices} disabled={savingPrices}>
+                  {savingPrices && <Loader2 className="h-4 w-4 animate-spin" />}
+                  Salvar preços
+                </Button>
+              </div>
+            </div>
           </CardContent>
         </Card>
 
