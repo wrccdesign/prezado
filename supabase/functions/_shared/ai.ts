@@ -99,16 +99,16 @@ interface AIRequestOptions extends AIUsageMeta {
   timeoutMs?: number;
 }
 
-const MAX_ATTEMPTS = 2;
+const MAX_ATTEMPTS = 3;
 const DEFAULT_TIMEOUT_MS = 30_000;
 /**
  * Orçamento total (modelo principal + fallback + esperas). A edge function tem
  * limite de parede: sem este teto, um pico de 503 no Google fazia a requisição
  * passar de 4 minutos e o usuário recebia 504 em vez de uma mensagem clara.
  */
-const TOTAL_BUDGET_MS = 90_000;
+const TOTAL_BUDGET_MS = 150_000;
 /** Espera base entre tentativas (ms), compatível com pico de demanda do Google. */
-const BACKOFF_MS = [1_000, 3_000];
+const BACKOFF_MS = [2_000, 6_000, 12_000];
 /** Jitter aleatório de até 30% para dessincronizar retentativas simultâneas. */
 function backoffFor(attempt: number): number {
   const base = BACKOFF_MS[attempt - 1] ?? BACKOFF_MS[BACKOFF_MS.length - 1];
