@@ -327,6 +327,9 @@ export default function AdminIngestao() {
             <h1 className="text-2xl font-bold text-foreground">Ingestão DataJud</h1>
             <p className="text-sm text-muted-foreground">Importe decisões judiciais da API pública do CNJ</p>
           </div>
+          <Button variant="outline" size="sm" className="ml-auto" asChild>
+            <a href="/admin/coleta">Ver coleta por tribunal</a>
+          </Button>
         </div>
 
         {/* Alerta de pipeline parado */}
