@@ -11,6 +11,7 @@ import {
   FAQ_PRAZO_PROCESSUAL,
 } from "./faqData";
 import { RESCISAO_SITUACOES, rescisaoPath } from "./rescisaoSituacoes";
+import { CORRECAO_INDICES, correcaoPath } from "./correcaoIndices";
 
 export type RouteContent = {
   /** Título principal em texto, equivalente ao H1 da página. */
@@ -654,6 +655,17 @@ export const ROUTE_CONTENT: Record<string, RouteContent> = {
         intro: s.description,
         bullets: [...s.features, ...s.paragraphs.map((p) => `${p.heading}: ${p.body}`)],
         faq: s.faq,
+      } satisfies RouteContent,
+    ]),
+  ),
+  ...Object.fromEntries(
+    CORRECAO_INDICES.map((i) => [
+      correcaoPath(i.slug),
+      {
+        heading: i.title,
+        intro: i.description,
+        bullets: [...i.features, ...i.paragraphs.map((p) => `${p.heading}: ${p.body}`)],
+        faq: i.faq,
       } satisfies RouteContent,
     ]),
   ),
