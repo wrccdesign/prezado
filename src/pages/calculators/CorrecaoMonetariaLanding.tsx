@@ -1,6 +1,8 @@
+import { Link } from "react-router-dom";
 import { FAQ_CORRECAO_MONETARIA } from "@/seo/faqData";
 import { CalculatorLanding } from "@/components/calculators/CalculatorLanding";
 import { CorrecaoCalc } from "@/components/calculators/CorrecaoCalc";
+import { CORRECAO_INDICES, correcaoPath } from "@/seo/correcaoIndices";
 
 export default function CorrecaoMonetariaLanding() {
   return (
