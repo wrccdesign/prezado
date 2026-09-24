@@ -338,6 +338,41 @@ export const ROUTE_META: RouteMeta[] = [
       buildFaqJsonLd(s.faq),
     ],
   })),
+  ...CORRECAO_INDICES.map((i) => ({
+    path: correcaoPath(i.slug),
+    title: `${i.seoTitle} | Honorífico`,
+    description: i.seoDescription,
+    ogImage: OG_DEFAULT,
+    jsonLd: [
+      {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        itemListElement: [
+          { "@type": "ListItem", position: 1, name: "Início", item: `${SITE_URL}/` },
+          { "@type": "ListItem", position: 2, name: "Calculadoras", item: `${SITE_URL}/calculadoras` },
+          {
+            "@type": "ListItem",
+            position: 3,
+            name: "Calculadora de Correção Monetária e Juros",
+            item: `${SITE_URL}${CORRECAO_BASE_PATH}`,
+          },
+          { "@type": "ListItem", position: 4, name: i.title, item: `${SITE_URL}${correcaoPath(i.slug)}` },
+        ],
+      },
+      {
+        "@context": "https://schema.org",
+        "@type": "SoftwareApplication",
+        name: i.title,
+        applicationCategory: "BusinessApplication",
+        operatingSystem: "Web",
+        url: `${SITE_URL}${correcaoPath(i.slug)}`,
+        description: i.description,
+        inLanguage: "pt-BR",
+        offers: { "@type": "Offer", price: "0", priceCurrency: "BRL" },
+      },
+      buildFaqJsonLd(i.faq),
+    ],
+  })),
 ];
 
 export function getRouteMeta(path: string): RouteMeta | undefined {

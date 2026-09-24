@@ -658,6 +658,17 @@ export const ROUTE_CONTENT: Record<string, RouteContent> = {
       } satisfies RouteContent,
     ]),
   ),
+  ...Object.fromEntries(
+    CORRECAO_INDICES.map((i) => [
+      correcaoPath(i.slug),
+      {
+        heading: i.title,
+        intro: i.description,
+        bullets: [...i.features, ...i.paragraphs.map((p) => `${p.heading}: ${p.body}`)],
+        faq: i.faq,
+      } satisfies RouteContent,
+    ]),
+  ),
 };
 
 function escapeHtml(value: string) {
