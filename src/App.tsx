@@ -11,6 +11,7 @@ import Petition from "./pages/Petition";
 import Chat from "./pages/Chat";
 import Calculators from "./pages/Calculators";
 import CorrecaoMonetariaLanding from "./pages/calculators/CorrecaoMonetariaLanding";
+import CorrecaoIndiceLanding from "./pages/calculators/CorrecaoIndiceLanding";
 import PrazoProcessualLanding from "./pages/calculators/PrazoProcessualLanding";
 import CpfCnpjLanding from "./pages/calculators/CpfCnpjLanding";
 import OperacoesDatasLanding from "./pages/calculators/OperacoesDatasLanding";
@@ -96,6 +97,7 @@ const App = () => (
               <Route path="/historico" element={<ProtectedRoute><History /></ProtectedRoute>} />
               <Route path="/calculadoras" element={<Calculators />} />
               <Route path="/calculadoras/correcao-monetaria-juros-lei-14905" element={<CorrecaoMonetariaLanding />} />
+              <Route path="/calculadoras/correcao-monetaria-juros-lei-14905/:indice" element={<CorrecaoIndiceLanding />} />
               <Route path="/calculadoras/prazo-processual" element={<PrazoProcessualLanding />} />
               <Route path="/calculadoras/validador-cpf-cnpj" element={<CpfCnpjLanding />} />
               <Route path="/calculadoras/operacoes-datas" element={<OperacoesDatasLanding />} />

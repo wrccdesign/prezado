@@ -11,6 +11,7 @@ import {
   FAQ_PRAZO_PROCESSUAL,
 } from "./faqData";
 import { RESCISAO_SITUACOES, rescisaoPath } from "./rescisaoSituacoes";
+import { CORRECAO_INDICES, CORRECAO_BASE_PATH, correcaoPath } from "./correcaoIndices";
 
 export type RouteMeta = {
   path: string;
