@@ -13,6 +13,31 @@ const calculadoras = [
     hint: "IPCA, INPC, IGP-M, Selic e Taxa Legal com memória de cálculo mês a mês.",
   },
   {
+    to: "/calculadoras/correcao-monetaria-juros-lei-14905/ipca",
+    label: "Correção pelo IPCA",
+    hint: "Índice legal do Código Civil, usado em condenações cíveis e contratos sem índice próprio.",
+  },
+  {
+    to: "/calculadoras/correcao-monetaria-juros-lei-14905/inpc",
+    label: "Correção pelo INPC",
+    hint: "Débitos trabalhistas e previdenciários, com a série oficial do Banco Central.",
+  },
+  {
+    to: "/calculadoras/correcao-monetaria-juros-lei-14905/igpm",
+    label: "Correção pelo IGP-M",
+    hint: "Reajuste anual de aluguel e contratos, pelo acumulado de doze meses.",
+  },
+  {
+    to: "/calculadoras/correcao-monetaria-juros-lei-14905/selic",
+    label: "Atualização pela Selic",
+    hint: "Débitos federais e restituições, com correção e juros em parcela única.",
+  },
+  {
+    to: "/calculadoras/correcao-monetaria-juros-lei-14905/taxa-legal",
+    label: "Taxa Legal, Lei 14.905/2024",
+    hint: "Juros do art. 406 do Código Civil, Selic deduzido o IPCA, com o corte de 30/08/2024.",
+  },
+  {
     to: "/calculadoras/prazo-processual",
     label: "Prazo processual",
     hint: "Dias úteis ou corridos, com feriados, suspensões forenses e regra do DJe.",
