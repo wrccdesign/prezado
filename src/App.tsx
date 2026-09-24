@@ -29,6 +29,7 @@ import Jurisprudencia from "./pages/Jurisprudencia";
 import DecisaoDetalhe from "./pages/DecisaoDetalhe";
 import LandingPage from "./pages/LandingPage";
 import AdminIngestao from "./pages/AdminIngestao";
+import AdminColeta from "./pages/AdminColeta";
 import Comparativo from "./pages/Comparativo";
 import Planos from "./pages/Planos";
 import ModelosMinutas from "./pages/ModelosMinutas";
@@ -116,6 +117,7 @@ const App = () => (
               <Route path="/planos/pagamento/:status" element={<Planos />} />
               <Route path="/conta" element={<ProtectedRoute><Conta /></ProtectedRoute>} />
               <Route path="/admin/ingestao" element={<ProtectedRoute><AdminIngestao /></ProtectedRoute>} />
+              <Route path="/admin/coleta" element={<ProtectedRoute><AdminColeta /></ProtectedRoute>} />
               <Route path="/mapa-do-site" element={<MapaDoSite />} />
               <Route path="/termos" element={<Termos />} />
               <Route path="/reembolso" element={<Reembolso />} />
