@@ -966,6 +966,26 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      admin_decisions_por_tribunal: {
+        Args: never
+        Returns: {
+          indexadas: number
+          total: number
+          tribunal: string
+          ultima_entrada: string
+          ultimos_7d: number
+        }[]
+      }
+      admin_ingest_runs: {
+        Args: { p_limit?: number }
+        Returns: {
+          executed_at: string
+          id: string
+          phase: number
+          results: Json
+          total_ingested: number
+        }[]
+      }
       ai_usage_summary: {
         Args: { p_days?: number }
         Returns: {
