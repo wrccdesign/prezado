@@ -43,6 +43,19 @@ export default function CorrecaoMonetariaLanding() {
             (art. 406, §3º, do CC) e o índice contratual pode ser mantido quando for o caso (art. 389, parágrafo
             único, do CC).
           </p>
+          <h2 className="text-h3 text-navy">Cálculo por índice</h2>
+          <ul>
+            {CORRECAO_INDICES.map((i) => (
+              <li key={i.slug} className="border-t border-cream-dark py-3">
+                <Link
+                  to={correcaoPath(i.slug)}
+                  className="text-navy underline underline-offset-4 hover:text-gold"
+                >
+                  {i.title}
+                </Link>
+              </li>
+            ))}
+          </ul>
         </>
       }
       faq={FAQ_CORRECAO_MONETARIA}
