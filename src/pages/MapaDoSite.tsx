@@ -104,6 +104,7 @@ const plataforma = [
   { to: "/calculadoras", label: "Todas as calculadoras" },
   { to: "/modelos-de-minutas", label: "Modelos de minutas" },
   { to: "/comparativo", label: "Comparativo" },
+  { to: "/chatgpt-juridico", label: "ChatGPT jurídico e IA para advogados" },
 ];
 
 const conta = [

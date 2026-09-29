@@ -9,6 +9,7 @@ import {
   FAQ_CORRECAO_MONETARIA,
   FAQ_PLANOS,
   FAQ_PRAZO_PROCESSUAL,
+  FAQ_IA_JURIDICA,
 } from "./faqData";
 import { RESCISAO_SITUACOES, rescisaoPath } from "./rescisaoSituacoes";
 import { CORRECAO_INDICES, correcaoPath } from "./correcaoIndices";
@@ -603,6 +604,19 @@ export const ROUTE_CONTENT: Record<string, RouteContent> = {
           "Pelo índice e pelos juros previstos no próprio acordo; na omissão, aplica-se o art. 406 do Código Civil com a Lei 14.905/2024. A calculadora de correção monetária e juros entrega a memória mês a mês para instruir a cobrança.",
       },
     ],
+  },
+  "/chatgpt-juridico": {
+    heading: "ChatGPT jurídico: o que muda quando a IA precisa citar a fonte",
+    intro:
+      "Um modelo de linguagem prevê a próxima palavra e não consulta um registro do Judiciário antes de escrever, por isso consegue produzir ementas, números de processo e datas para julgados que nunca existiram. Quem protocola responde pelo conteúdo da peça, nos termos dos arts. 77, 80 e 489, §1º, do Código de Processo Civil. No Honorífico, toda citação é conferida contra o acervo do CNJ antes do protocolo, e o que não foi localizado aparece marcado como não localizado.",
+    bullets: [
+      "Origem do precedente: acervo do CNJ com link para o tribunal, em vez de texto gerado pelo modelo.",
+      "Quando não existe decisão sobre o tema, a resposta diz que não encontrou.",
+      "Cada citação da peça é conferida depois de gerada, e o resultado da conferência é exibido.",
+      "Correção monetária, juros e prazos são calculados sem IA, pelas séries do Banco Central, pela Lei 14.905/2024 e pelo calendário forense.",
+      "Petição e memória de cálculo saem em PDF e Word, prontas para anexar.",
+    ],
+    faq: FAQ_IA_JURIDICA,
   },
   "/comparativo": {
     heading: "Comparativo de ferramentas jurídicas",

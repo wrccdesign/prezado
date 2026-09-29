@@ -145,3 +145,36 @@ export const FAQ_PRAZO_PROCESSUAL: FaqItem[] = [
             "Não. O cálculo é gratuito e sem login. A conta gratuita só é necessária para exportar o resultado em PDF/Word, gerar o arquivo .ics e salvar o histórico.",
         },
       ];
+
+export const FAQ_IA_JURIDICA: FaqItem[] = [
+  {
+    question: "Posso usar o ChatGPT para escrever uma petição?",
+    answer:
+      "Pode usar para estruturar o texto, mas não para citar precedente. Modelos generalistas produzem ementas, números de processo e datas plausíveis sem qualquer registro oficial vinculado. O advogado que protocola responde pelo conteúdo, nos termos dos arts. 77, 80 e 489, §1º, do CPC. No Honorífico, toda citação é conferida contra o acervo do CNJ antes de você protocolar, e o que não foi localizado aparece marcado como não localizado.",
+  },
+  {
+    question: "IA jurídica alucina?",
+    answer:
+      "Todo modelo de linguagem pode alucinar, porque ele prevê a próxima palavra, não consulta um registro. A diferença está no que o sistema faz depois de gerar o texto. O Honorífico busca o precedente no acervo consultável, exibe o link para a fonte no tribunal e, quando não encontra decisão, diz que não encontrou em vez de preencher o vazio.",
+  },
+  {
+    question: "Qual a diferença entre o Honorífico e uma IA generalista?",
+    answer:
+      "Origem do dado e verificação. A IA generalista escreve a partir do modelo; o Honorífico escreve a partir do acervo do CNJ, com link para a fonte, e confere cada citação depois de gerar a peça. Os cálculos também não passam pela IA: correção monetária, juros e prazos são calculados por funções determinísticas com as séries oficiais do Banco Central e os feriados forenses cadastrados.",
+  },
+  {
+    question: "A IA calcula a correção monetária?",
+    answer:
+      "Não. O cálculo é feito por rotina determinística com as séries do SGS do Banco Central, IPCA, INPC, IGP-M, Selic e Taxa Legal, aplicando a Lei 14.905/2024. O resultado sai como memória de cálculo mês a mês, exportável em PDF e Word, pronta para anexar à petição. A IA só entra na redação da peça.",
+  },
+  {
+    question: "Os dados do meu cliente ficam guardados?",
+    answer:
+      "O tratamento segue a LGPD e os dados são usados para operar o serviço que você pediu, não para treinar modelos. Ainda assim, vale a regra de sempre: envie o mínimo necessário e anonimize dados sensíveis quando o caso permitir. As condições completas estão no aviso de privacidade.",
+  },
+  {
+    question: "Preciso pagar para testar?",
+    answer:
+      "Não. As calculadoras são livres e ilimitadas, inclusive sem conta. A consulta processual e os recursos de IA têm cota mensal no plano gratuito, e o plano Profissional tem sete dias de teste sem cartão.",
+  },
+];

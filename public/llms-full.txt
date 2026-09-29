@@ -96,6 +96,21 @@ Em todos eles, as citações da resposta são conferidas contra o acervo e o res
 
 ---
 
+## ChatGPT jurídico e IA para advogados
+URL: https://honorifico.com.br/chatgpt-juridico
+
+Um modelo de linguagem prevê a próxima palavra e não consulta um registro do Judiciário antes de escrever, por isso consegue produzir ementas, números de processo e datas para julgados que nunca existiram. Quem protocola responde pelo conteúdo da peça, nos termos dos arts. 77, 80 e 489, §1º, do Código de Processo Civil.
+
+Diferenças entre uma IA generalista e o Honorífico:
+
+- Origem do precedente: no Honorífico vem do acervo do CNJ, com link para o tribunal de origem; na IA generalista, é gerado pelo modelo, sem registro oficial vinculado.
+- Quando não existe decisão sobre o tema, a resposta do Honorífico diz que não encontrou, em vez de preencher o vazio.
+- Depois de gerar a peça, cada citação é conferida contra o acervo e o não localizado aparece marcado.
+- Correção monetária, juros e prazos não passam pela IA: são calculados por rotinas determinísticas com as séries do Banco Central, a Lei 14.905/2024 e o calendário forense.
+- A entrega é petição e memória de cálculo em PDF e Word, não apenas texto para copiar.
+
+---
+
 ## Planos e preços
 URL: https://honorifico.com.br/planos
 

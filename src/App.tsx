@@ -31,6 +31,7 @@ import LandingPage from "./pages/LandingPage";
 import AdminIngestao from "./pages/AdminIngestao";
 import AdminColeta from "./pages/AdminColeta";
 import Comparativo from "./pages/Comparativo";
+import ChatgptJuridico from "./pages/ChatgptJuridico";
 import Planos from "./pages/Planos";
 import ModelosMinutas from "./pages/ModelosMinutas";
 import MinutaDetalhe from "./pages/MinutaDetalhe";
@@ -113,6 +114,8 @@ const App = () => (
               <Route path="/modelos-de-minutas" element={<ModelosMinutas />} />
               <Route path="/modelos-de-minutas/:slug" element={<MinutaDetalhe />} />
               <Route path="/comparativo" element={<Comparativo />} />
+              <Route path="/chatgpt-juridico" element={<ChatgptJuridico />} />
+              <Route path="/ia-juridica" element={<ChatgptJuridico />} />
               <Route path="/planos" element={<Planos />} />
               <Route path="/planos/pagamento/:status" element={<Planos />} />
               <Route path="/conta" element={<ProtectedRoute><Conta /></ProtectedRoute>} />
