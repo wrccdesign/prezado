@@ -9,6 +9,7 @@ import {
   FAQ_CORRECAO_MONETARIA,
   FAQ_PLANOS,
   FAQ_PRAZO_PROCESSUAL,
+  FAQ_IA_JURIDICA,
 } from "./faqData";
 import { RESCISAO_SITUACOES, rescisaoPath } from "./rescisaoSituacoes";
 import { CORRECAO_INDICES, CORRECAO_BASE_PATH, correcaoPath } from "./correcaoIndices";
@@ -236,6 +237,24 @@ export const ROUTE_META: RouteMeta[] = [
     description:
       "Modelo editável de acordo extrajudicial com petição conjunta de homologação judicial (arts. 515, III, e 725, VIII, do CPC), com cláusulas e checklist.",
     ogImage: OG_DEFAULT, // TODO: OG própria
+  },
+  {
+    path: "/chatgpt-juridico",
+    title: "ChatGPT jurídico e IA para advogados | Honorífico",
+    description:
+      "Por que IAs generalistas inventam precedentes e como usar IA jurídica que cita a fonte: acervo do CNJ, verificação das citações e cálculo pelas séries do Banco Central.",
+    ogImage: OG_DEFAULT,
+    jsonLd: [
+      {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        itemListElement: [
+          { "@type": "ListItem", position: 1, name: "Início", item: `${SITE_URL}/` },
+          { "@type": "ListItem", position: 2, name: "ChatGPT jurídico e IA para advogados", item: `${SITE_URL}/chatgpt-juridico` },
+        ],
+      },
+      buildFaqJsonLd(FAQ_IA_JURIDICA),
+    ],
   },
   {
     path: "/comparativo",
