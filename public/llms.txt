@@ -10,6 +10,7 @@ Versão detalhada, com fórmulas, base legal e perguntas respondidas: /llms-full
 
 ## Pages
 
+- [ChatGPT jurídico e IA para advogados](/chatgpt-juridico): Por que IAs generalistas inventam precedentes, como o Honorífico confere cada citação contra o acervo do CNJ e por que os cálculos não passam pela IA.
 - [Início](/): O que a plataforma faz, calculadora de correção monetária em funcionamento e origem dos dados.
 - [Calculadoras Jurídicas](/calculadoras): Índice das sete calculadoras gratuitas.
 - [Correção Monetária e Juros](/calculadoras/correcao-monetaria-juros-lei-14905): Atualização por IPCA, INPC, IGP-M, Selic e Taxa Legal, com juros da Lei 14.905/2024 (art. 389 e art. 406 do Código Civil).
