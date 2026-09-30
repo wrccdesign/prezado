@@ -101,6 +101,7 @@ const plataforma = [
   { to: "/jurisprudencia/tema/dano-moral", label: "Jurisprudência sobre dano moral" },
   { to: "/jurisprudencia/tema/dano-material", label: "Jurisprudência sobre dano material" },
   { to: "/jurisprudencia/tema/plano-de-saude", label: "Jurisprudência sobre plano de saúde" },
+  { to: "/jurisprudencia/tema/usucapiao", label: "Jurisprudência sobre usucapião" },
   { to: "/diagnostico", label: "Diagnóstico jurídico" },
   { to: "/peticao", label: "Gerador de petições" },
   { to: "/chat", label: "Chat jurídico" },
