@@ -9,6 +9,7 @@ import { AlertTriangle } from "lucide-react";
 import { toast } from "sonner";
 import jsPDF from "jspdf";
 import { useGuestExportGate } from "@/components/calculators/shared/GuestExportGate";
+import { UsarNaPeticaoButton } from "@/components/calculators/shared/UsarNaPeticaoButton";
 
 function fmt(v: number) {
   return v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
@@ -213,9 +214,28 @@ export function PensaoCalc() {
             <p className="text-reading text-yellow-800 ">Este é um valor de referência. O juiz decidirá com base nas necessidades e possibilidades das partes.</p>
           </div>
 
-          <Button variant="outline" onClick={() => requireAccount(gerarPDF, "baixar o relatório em PDF")} className="h-11 w-full sm:w-auto">
-            Gerar Relatório PDF
-          </Button>
+          <div className="flex flex-col sm:flex-row gap-3">
+            <Button variant="outline" onClick={() => requireAccount(gerarPDF, "baixar o relatório em PDF")} className="h-11 w-full sm:w-auto">
+              Gerar Relatório PDF
+            </Button>
+            <UsarNaPeticaoButton
+              size="default"
+              label={`Gerar ação de alimentos com este cálculo (${fmt(result.sugerido)})`}
+              payload={{
+                valor: result.sugerido,
+                tipoAcao: "Ação de alimentos",
+                varaJuizo: "Família",
+                origem: "calculadora de pensão alimentícia",
+                fatos: [
+                  `Renda líquida informada do alimentante: ${fmt(parseFloat(renda) || 0)}.`,
+                  `Número de filhos: ${Math.max(1, parseInt(filhos) || 1)}.`,
+                  `Faixa de referência: de ${fmt(result.minimo)} (${result.percentualMin.toFixed(1)}%) a ${fmt(result.maximo)} (${result.percentualMax.toFixed(1)}%) da renda.`,
+                  `Valor sugerido: ${fmt(result.sugerido)}, equivalente a ${result.percentualSug.toFixed(1)}% da renda.`,
+                ].join(" "),
+                pedidos: `Fixação de alimentos no valor mensal de ${fmt(result.sugerido)}, equivalente a ${result.percentualSug.toFixed(1)}% da renda líquida do alimentante, conforme demonstrativo em anexo.`,
+              }}
+            />
+          </div>
         </div>
       )}
     </div>
