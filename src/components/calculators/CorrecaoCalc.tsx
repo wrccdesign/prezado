@@ -47,6 +47,8 @@ interface Resultado {
   base_legal: string[];
 }
 
+import { UsarNaPeticaoButton } from "@/components/calculators/shared/UsarNaPeticaoButton";
+
 const REGIME_LABEL: Record<LinhaMemoria["regime"], string> = {
   pre_14905: "regime anterior",
   transicao_14905: "transição (Lei 14.905/2024 em 30–31/08/2024)",
