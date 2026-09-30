@@ -437,7 +437,7 @@ export function CorrecaoCalc({ onUsarValor, usarValorLabel = "Usar este valor", 
               Copiar link deste cálculo
             </Button>
 
-            {onUsarValor && (
+            {onUsarValor ? (
               <Button
                 variant={usarValorVariant}
                 size="sm"
@@ -445,6 +445,23 @@ export function CorrecaoCalc({ onUsarValor, usarValorLabel = "Usar este valor", 
               >
                 {usarValorLabel} ({fmt(result.total)})
               </Button>
+            ) : (
+              <UsarNaPeticaoButton
+                label={`Gerar petição com este cálculo (${fmt(result.total)})`}
+                payload={{
+                  valor: result.total,
+                  dataInicial,
+                  dataFinal,
+                  indice,
+                  origem: "calculadora de correção monetária e juros",
+                  fatos: [
+                    `Valor original de ${fmt(result.valor_original)}, atualizado de ${dataInicial} a ${dataFinal}.`,
+                    `Índice aplicado: ${INDICES.find(i => i.id === indice)?.label ?? indice}.`,
+                    `Correção monetária de ${fmt(result.valor_corrigido - result.valor_original)} e juros de mora de ${fmt(result.juros)}.`,
+                    `Total apurado: ${fmt(result.total)}, com memória de cálculo mês a mês em anexo.`,
+                  ].join(" "),
+                }}
+              />
             )}
 
           </div>
