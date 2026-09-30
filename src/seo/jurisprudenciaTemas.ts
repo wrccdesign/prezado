@@ -598,8 +598,8 @@ export const JURISPRUDENCIA_TEMAS: JurisprudenciaTema[] = [
         relator: "José Daniel Toaldo",
         data: "2025-08-15",
         ementa:
-          "Recurso inominado. Ação declaratória de inexistência de débito e nulidade contratual c/c restituição e indenização por danos morais. Contratação de cartão de crédito consignado com reserva de margem.",
-        fonte: "https://portal.tjpr.jus.br/jurisprudencia/j/2100000037288911/Decis%C3%A3o-Monocr%C3%A1tica-0000301-10.2022.8.16.0145",
+          "Recurso inominado. Ação declaratória de inexistência de débito e nulidade contratual c/c restituição e indenização por danos morais. Cartão de crédito com reserva de margem consignável (RMC). Legalidade da contratação. Instrução Normativa do INSS 39/2009. Ausência de prova de vício na contratação.",
+        fonte: "https://portal.tjpr.jus.br/jurisprudencia/j/2100000034408792/Decis%C3%A3o%20monocr%C3%A1tica-0000301-10.2022.8.16.0145",
       },
       {
         id: "01c9ee6a-d8d0-44cb-986a-e72a17a98209",
