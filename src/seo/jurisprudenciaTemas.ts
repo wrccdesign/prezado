@@ -411,4 +411,350 @@ export const JURISPRUDENCIA_TEMAS: JurisprudenciaTema[] = [
       },
     ],
   },
+  {
+    slug: "atraso-de-voo",
+    title: "Jurisprudência sobre atraso e cancelamento de voo",
+    description:
+      "Atraso, cancelamento e preterição de embarque são tratados como falha na prestação do serviço, com responsabilidade objetiva da companhia aérea (art. 14 do CDC). A discussão prática gira em torno de duas coisas: a causa alegada pela empresa é fortuito interno ou externo, e o transtorno passou do mero aborrecimento.",
+    seoTitle: "Atraso e cancelamento de voo: jurisprudência e decisões reais",
+    seoDescription:
+      "Decisões reais de tribunais sobre atraso e cancelamento de voo, com número do processo, relator e link para a fonte oficial. Resolução 400 da ANAC, fortuito interno e valor do dano moral.",
+    query: "atraso cancelamento voo dano moral",
+    legislacao: [
+      { norma: "CDC, art. 14", conteudo: "Responsabilidade objetiva do fornecedor por defeito na prestação do serviço, independente de culpa." },
+      { norma: "Resolução 400/2016 da ANAC", conteudo: "Dever de informar a alteração e de prestar assistência material a partir de 1 hora (comunicação), 2 horas (alimentação) e 4 horas (hospedagem e traslado) de espera." },
+      { norma: "Código Brasileiro de Aeronáutica, art. 251-A", conteudo: "O dano moral em atraso de voo depende de prova do prejuízo, salvo presunção legal." },
+      { norma: "Convenção de Montreal", conteudo: "Aplicada ao transporte internacional, prevalece sobre o CDC nos danos materiais, conforme o Tema 210 do STF." },
+      { norma: "Código Civil, art. 393", conteudo: "Exclusão da responsabilidade por caso fortuito ou força maior, base do debate entre fortuito interno e externo." },
+    ],
+    paragraphs: [
+      {
+        heading: "Fortuito interno e fortuito externo",
+        body: "Manutenção não programada, readequação de malha aérea e problemas operacionais da empresa são tratados como risco do próprio negócio, o fortuito interno, e não afastam a indenização. Fechamento de aeroporto por condição meteorológica comprovada e determinação de autoridade aeronáutica podem ser reconhecidos como fortuito externo, desde que a companhia prove o fato com documento oficial e demonstre que prestou assistência.",
+      },
+      {
+        heading: "O tamanho do atraso e a prova do transtorno",
+        body: "Atrasos longos, com pernoite em aeroporto, perda de conexão ou de compromisso com data marcada, costumam levar ao reconhecimento do dano moral. Atrasos menores, sem repercussão demonstrada, encontram decisões que negam a indenização com base no art. 251-A do Código Brasileiro de Aeronáutica. Guarde cartão de embarque, comunicados da empresa, comprovantes de gasto e prova do compromisso perdido.",
+      },
+      {
+        heading: "O que pedir além do dano moral",
+        body: "Gastos com alimentação, transporte, hospedagem e diária de hotel não usufruída entram como dano material, mediante recibo. Quando a empresa nega o embarque por overbooking, a Resolução 400 prevê ainda a compensação financeira por preterição, cumulável com a reparação judicial.",
+      },
+    ],
+    decisoes: [
+      {
+        id: "149ee4f2-4542-4be0-8a66-b3fbd7d60a97",
+        tribunal: "TJPR",
+        tipo: "Acórdão",
+        numero: "0013296-36.2025.8.16.0182",
+        relator: "Tiago Gagliano Pinto Alberto",
+        data: "2026-07-06",
+        ementa:
+          "Recurso inominado. Transporte aéreo internacional. Ação de indenização por danos morais. Cancelamento de voo. Manutenção não programada da aeronave. Fortuito interno. Atraso de aproximadamente 18 horas. Reacomodação para chegada ao destino apenas no dia seguinte. Responsabilidade civil objetiva. Danos morais configurados. Violação à legítima expectativa do consumidor. Critério bifásico. Quantum que não comporta minoração.",
+        fonte: "https://portal.tjpr.jus.br/jurisprudencia/j/2100000036269821/Ac%C3%B3rd%C3%A3o-0013296-36.2025.8.16.0182",
+      },
+      {
+        id: "a87f9a84-ede8-4b51-b809-5d12c12eebd8",
+        tribunal: "TJPR",
+        tipo: "Acórdão",
+        numero: "0002728-86.2025.8.16.0108",
+        relator: "Alvaro Rodrigues Junior",
+        data: "2026-06-02",
+        ementa:
+          "Direito do consumidor e processual civil. Recurso inominado. Transporte aéreo. Cancelamento de voo. Readequação de malha aérea. Atraso superior a 14 horas. Ausência de comprovação de força maior. Fortuito interno. Falha na prestação de serviços. Danos morais configurados. Manutenção do quantum indenizatório de R$ 2.000,00 para cada autora. Recurso desprovido.",
+        fonte: "https://portal.tjpr.jus.br/jurisprudencia/j/2100000037856711/Ac%C3%B3rd%C3%A3o-0002728-86.2025.8.16.0108",
+      },
+      {
+        id: "6f15d005-dc66-4400-96af-9b2da4c60d58",
+        tribunal: "TJSP",
+        tipo: "Acórdão",
+        numero: "1001331-19.2025.8.26.0068",
+        relator: "Luis Carlos de Barros",
+        data: "2025-11-26",
+        ementa:
+          "Responsabilidade civil. Cancelamento de voo que levou a autora a chegar ao destino final com 22 horas de atraso. Voo nacional. Dano moral não pode ser presumido. Artigo 251-A do Código Brasileiro de Aeronáutica. REsp 1.584.465/MG. Situação dos autos que não evidencia o abalo moral. Recurso desprovido.",
+        fonte: "https://esaj.tjsp.jus.br/cjsg/getArquivo.do?cdAcordao=20004645&cdForo=0",
+      },
+      {
+        id: "464d893f-4266-4bca-8ee0-f28eb26e77e7",
+        tribunal: "TJSP",
+        tipo: "Acórdão",
+        numero: "1021236-45.2024.8.26.0003",
+        relator: "Maria Fernanda de Toledo Rodovalho",
+        data: "2025-05-05",
+        ementa:
+          "Direito do consumidor e transporte aéreo. Atraso e cancelamento de voo. Realocação de passageiros em itinerário alterado. Fortuito externo. Excludente de responsabilidade. Inexistência de dano moral indenizável. Recurso provido.",
+        fonte: "https://esaj.tjsp.jus.br/cjsg/getArquivo.do?cdAcordao=19177424&cdForo=0",
+      },
+      {
+        id: "91e89964-37cf-437d-bfc3-c6631381bbf1",
+        tribunal: "TJPR",
+        tipo: "Acórdão",
+        numero: "0086166-11.2019.8.16.0014",
+        relator: "Manuela Tallão Benke",
+        data: "2021-11-29",
+        ementa:
+          "Recurso inominado. Transporte aéreo nacional. Ação indenizatória. Cancelamento de voo em razão do alegado mau tempo. Não atendimento à Resolução 400 da ANAC. Ausência de documento oficial comprovando a impossibilidade de decolagem. Perda de compromisso profissional. Abalo moral configurado. Indenização de R$ 5.000,00 para cada reclamante que não comporta minoração.",
+        fonte: "https://portal.tjpr.jus.br/jurisprudencia/j/2100000018621281/Ac%C3%B3rd%C3%A3o-0086166-11.2019.8.16.0014",
+      },
+    ],
+    ferramentas: [
+      { to: "/diagnostico", label: "Descrever o caso no Diagnóstico" },
+      { to: "/calculadoras/correcao-monetaria-juros-lei-14905", label: "Atualizar o valor dos gastos e da indenização" },
+      { to: "/modelos-de-minutas/peticao-inicial-cobranca", label: "Modelo de petição inicial" },
+    ],
+    faq: [
+      {
+        question: "Quantas horas de atraso dão direito a indenização?",
+        answer: "Não existe um número automático. A Resolução 400 da ANAC obriga assistência a partir de 1 hora e reacomodação ou reembolso a partir de 4 horas. O dano moral depende da repercussão concreta: pernoite em aeroporto, perda de conexão ou de compromisso com data marcada pesam mais do que a contagem isolada de horas.",
+      },
+      {
+        question: "Mau tempo afasta a responsabilidade da companhia aérea?",
+        answer: "Só quando a empresa prova o fechamento do aeroporto ou a restrição da autoridade aeronáutica com documento oficial, e demonstra que prestou assistência. Alegação genérica de condição meteorológica, sem prova, costuma ser rejeitada.",
+      },
+      {
+        question: "Voo internacional segue a Convenção de Montreal ou o CDC?",
+        answer: "Nos danos materiais do transporte internacional, o STF fixou no Tema 210 a prevalência da Convenção de Montreal, com seus limites de valor. O dano moral continua regido pelo CDC e pelo Código Civil.",
+      },
+      {
+        question: "Qual o prazo para entrar com a ação?",
+        answer: "Em voo nacional, cinco anos pelo art. 27 do CDC. Em voo internacional, dois anos pela Convenção de Montreal. A diferença de prazo é decisiva e precisa ser verificada antes de protocolar.",
+      },
+      {
+        question: "Preciso de advogado para pedir indenização por atraso de voo?",
+        answer: "No juizado especial cível, causas de até 20 salários mínimos dispensam advogado. Acima disso, ou em recurso, a representação é obrigatória.",
+      },
+    ],
+  },
+  {
+    slug: "cartao-consignado-rmc",
+    title: "Jurisprudência sobre cartão consignado e reserva de margem (RMC)",
+    description:
+      "O cartão de crédito consignado com reserva de margem consignável desconta um valor mínimo mensal do benefício ou do salário, sem prazo definido para quitar. Muitos contratantes acreditavam ter feito um empréstimo comum. Os tribunais decidem caso a caso: quando a contratação foi informada e assinada, o desconto é mantido; quando falta informação clara ao consumidor vulnerável, o contrato é anulado ou convertido em empréstimo consignado.",
+    seoTitle: "Cartão consignado RMC: jurisprudência e decisões reais",
+    seoDescription:
+      "Decisões reais de tribunais sobre cartão de crédito consignado e reserva de margem consignável, com número do processo, relator e link para a fonte oficial. Prazo, nulidade e conversão em empréstimo.",
+    query: "cartão consignado reserva de margem RMC",
+    legislacao: [
+      { norma: "CDC, arts. 6º, III, e 46", conteudo: "Direito à informação adequada e clara; o contrato não obriga o consumidor que não teve conhecimento prévio do seu conteúdo." },
+      { norma: "CDC, art. 51, IV", conteudo: "Nulidade da cláusula que coloca o consumidor em desvantagem exagerada." },
+      { norma: "Estatuto do Idoso, art. 96", conteudo: "Fundamenta a proteção reforçada do idoso na contratação de crédito." },
+      { norma: "Lei 10.820/2003 e Lei 14.431/2022", conteudo: "Disciplinam o desconto em folha e o limite da margem consignável, incluindo a margem específica do cartão." },
+      { norma: "CDC, art. 42, parágrafo único", conteudo: "Repetição em dobro do valor cobrado indevidamente, salvo engano justificável." },
+    ],
+    paragraphs: [
+      {
+        heading: "O ponto que decide o caso",
+        body: "A discussão raramente é sobre a legalidade do produto, que é lícito. É sobre a prova da informação. Quando o banco apresenta proposta de adesão assinada, comprovante de saque do crédito e demonstra que o contratante era capaz, os tribunais mantêm a cobrança. Quando o contratante é idoso, semianalfabeto ou hipervulnerável e o banco não demonstra ter aferido a compreensão, a decisão tende à nulidade.",
+      },
+      {
+        heading: "Nulidade, conversão e devolução",
+        body: "As saídas mais comuns são três: manter o contrato, anulá-lo com devolução dos descontos, ou convertê-lo em empréstimo consignado comum, recalculando as parcelas pela taxa média de mercado e compensando o que já foi pago. A devolução em dobro depende do reconhecimento de má-fé ou de cobrança sem engano justificável.",
+      },
+      {
+        heading: "Prazo para questionar",
+        body: "O prazo prescricional é ponto controvertido. O TJPR fixou a tese do prazo quinquenal no IRDR 1746707-5. Antes de propor a ação, confira o marco adotado pelo tribunal do caso e a data do primeiro desconto, porque a contagem muda o pedido de devolução.",
+      },
+    ],
+    decisoes: [
+      {
+        id: "9790f8af-482c-4a6e-b9ab-cbb4e52e8c70",
+        tribunal: "TJPR",
+        tipo: "Acórdão",
+        numero: "0076327-83.2024.8.16.0014",
+        relator: "Luciane Bortoleto",
+        data: "2026-03-07",
+        ementa:
+          "Direito civil e do consumidor. Apelação cível. Validade de contrato de cartão de crédito consignado e nulidade dos pedidos de devolução e danos morais. Recurso provido, julgando improcedentes os pedidos iniciais e invertendo os ônus sucumbenciais.",
+        fonte: "https://portal.tjpr.jus.br/jurisprudencia/j/4100000036256951/Ac%C3%B3rd%C3%A3o-0076327-83.2024.8.16.0014",
+      },
+      {
+        id: "681e918f-13f9-485e-94db-973b639d425b",
+        tribunal: "TJSP",
+        tipo: "Acórdão",
+        numero: "1001731-61.2025.8.26.0576",
+        relator: "Roberto Maia",
+        data: "2025-11-12",
+        ementa:
+          "Direito bancário e do consumidor. Ação declaratória de inexistência de débito e indenizatória por danos materiais e morais. Cartão de crédito consignado (RMC). Alegação de vício de consentimento. Contratação válida. Inexistência de nulidade ou violação às normas do INSS. Direito ao cancelamento do cartão. Obrigação de fazer. Recurso parcialmente provido.",
+        fonte: "https://esaj.tjsp.jus.br/cjsg/getArquivo.do?cdAcordao=19954345&cdForo=0",
+      },
+      {
+        id: "d1ef2a2d-59c6-46e2-829a-cb4eb26ae950",
+        tribunal: "TJPR",
+        tipo: "Acórdão",
+        numero: "0003303-57.2021.8.16.0101",
+        relator: "Eduardo Novacki",
+        data: "2025-09-10",
+        ementa:
+          "Direito civil e do consumidor. Apelação cível. Ação declaratória de nulidade contratual c/c repetição de indébito e danos morais. Contrato de cartão de crédito com reserva de margem consignável. Pessoa idosa e semianalfabeta. Hipervulnerabilidade do consumidor. Insuficiência dos mecanismos adotados pela agência bancária para aferir a plena aquiescência no momento da contratação. Vício de consentimento reconhecido.",
+        fonte: "https://portal.tjpr.jus.br/jurisprudencia/j/4100000033722801/Ac%C3%B3rd%C3%A3o-0003303-57.2021.8.16.0101",
+      },
+      {
+        id: "a800599e-85c2-4582-b22b-f06f5ac44075",
+        tribunal: "TJPR",
+        tipo: "Decisão monocrática",
+        numero: "0000301-10.2022.8.16.0145",
+        relator: "José Daniel Toaldo",
+        data: "2025-08-15",
+        ementa:
+          "Recurso inominado. Ação declaratória de inexistência de débito e nulidade contratual c/c restituição e indenização por danos morais. Contratação de cartão de crédito consignado com reserva de margem.",
+        fonte: "https://portal.tjpr.jus.br/jurisprudencia/j/2100000037288911/Decis%C3%A3o-Monocr%C3%A1tica-0000301-10.2022.8.16.0145",
+      },
+      {
+        id: "01c9ee6a-d8d0-44cb-986a-e72a17a98209",
+        tribunal: "TJMG",
+        tipo: "Acórdão",
+        numero: "5000988-40.2021.8.13.0396",
+        relator: "Ivone Guilarducci",
+        data: "2024-04-29",
+        ementa:
+          "Recurso inominado. Contratação de cartão de crédito consignado. Reserva de margem consignável (RMC). Comprovação. Contrato devidamente assinado. Pessoa maior e capaz. Dever de indenizar inexistente. Se as condições contratuais foram livremente pactuadas e aceitas, não cabe atribuir à parte ré a prática de conduta ilícita.",
+        fonte: "https://www5.tjmg.jus.br/jurisprudencia/downloadDocumentoPJe.do?numero=261dab4c93b687ad1094d7134074dffae953e6d3",
+      },
+    ],
+    ferramentas: [
+      { to: "/diagnostico", label: "Descrever o caso no Diagnóstico" },
+      { to: "/calculadoras/correcao-monetaria-juros-lei-14905", label: "Atualizar os descontos para devolução" },
+      { to: "/modelos-de-minutas/notificacao-extrajudicial", label: "Modelo de notificação extrajudicial" },
+    ],
+    faq: [
+      {
+        question: "O cartão de crédito consignado é ilegal?",
+        answer: "Não. O produto é lícito e previsto na legislação do crédito consignado. O que os tribunais anulam é a contratação feita sem informação clara, sobretudo quando o contratante acreditava ter tomado um empréstimo consignado comum.",
+      },
+      {
+        question: "Qual a diferença entre RMC e empréstimo consignado?",
+        answer: "No empréstimo consignado o número de parcelas é definido e a dívida termina. Na reserva de margem consignável, o desconto mensal cobre apenas o valor mínimo da fatura do cartão, o saldo restante rende juros rotativos e a cobrança pode não ter fim.",
+      },
+      {
+        question: "Dá para converter o cartão consignado em empréstimo?",
+        answer: "Sim, é um dos desfechos frequentes. O juiz determina o recálculo como consignado comum pela taxa média de mercado e a compensação do que já foi descontado, com devolução do excesso.",
+      },
+      {
+        question: "A devolução dos descontos é simples ou em dobro?",
+        answer: "Depende. A devolução em dobro do art. 42, parágrafo único, do CDC exige cobrança indevida sem engano justificável. Havendo dúvida razoável sobre a validade do contrato, os tribunais costumam determinar a devolução simples.",
+      },
+      {
+        question: "Qual o prazo para questionar os descontos?",
+        answer: "O tema é controvertido e varia por tribunal. No TJPR, a tese fixada no IRDR 1746707-5 adota o prazo de cinco anos. Confira o entendimento do tribunal competente e a data do primeiro desconto antes de calcular o pedido.",
+      },
+    ],
+  },
+  {
+    slug: "execucao-e-penhora",
+    title: "Jurisprudência sobre execução e penhora de salário",
+    description:
+      "Salários, aposentadorias e pensões são impenhoráveis pelo art. 833, IV, do CPC. A regra, porém, deixou de ser absoluta: o STJ admite a penhora de percentual quando ela não compromete a subsistência digna do devedor e da família. Na prática, o tribunal olha o valor do rendimento, o percentual pedido e a prova das despesas.",
+    seoTitle: "Penhora de salário na execução: jurisprudência e decisões reais",
+    seoDescription:
+      "Decisões reais de tribunais sobre penhora de salário e de benefício previdenciário em execução, com número do processo, relator e link para a fonte oficial. Art. 833 do CPC e limites da mitigação.",
+    query: "penhora salário impenhorabilidade execução",
+    legislacao: [
+      { norma: "CPC, art. 833, IV", conteudo: "Impenhorabilidade de salários, vencimentos, proventos de aposentadoria, pensões e verbas de natureza alimentar." },
+      { norma: "CPC, art. 833, §2º", conteudo: "Exceção expressa para prestação alimentícia e para a importância que exceder 50 salários mínimos mensais." },
+      { norma: "CPC, art. 529, §3º", conteudo: "Desconto em folha de até 50% dos rendimentos líquidos no cumprimento de sentença de alimentos." },
+      { norma: "CPC, art. 854", conteudo: "Bloqueio eletrônico de ativos financeiros pelo SISBAJUD e prazo de cinco dias para o executado comprovar a impenhorabilidade." },
+      { norma: "Lei 8.009/90", conteudo: "Impenhorabilidade do bem de família, discutida em conjunto com a penhora de rendimentos na exceção de pré-executividade." },
+      { norma: "EREsp 1.874.222/DF (STJ)", conteudo: "Admite a mitigação da impenhorabilidade quando preservado o mínimo existencial do devedor." },
+    ],
+    paragraphs: [
+      {
+        heading: "Quando o tribunal libera a penhora parcial",
+        body: "A mitigação aparece quando o rendimento é alto o bastante para suportar o desconto sem afetar moradia, alimentação e saúde. Percentuais entre 10% e 30% são os mais discutidos. Quando o rendimento gira em torno de dois ou três salários mínimos, as decisões consultadas mantêm a impenhorabilidade integral.",
+      },
+      {
+        heading: "O que cada lado precisa provar",
+        body: "Ao exequente cabe demonstrar que o devedor tem capacidade de arcar com o percentual sem prejuízo do sustento, normalmente com extratos e sinais de padrão de vida. Ao executado cabe comprovar a origem salarial ou previdenciária do valor bloqueado e as despesas essenciais. Extrato genérico, dos dois lados, costuma não sustentar o pedido.",
+      },
+      {
+        heading: "Bloqueio pelo SISBAJUD e o caminho processual",
+        body: "Bloqueado o valor, o executado tem cinco dias para alegar a impenhorabilidade (art. 854, §3º, do CPC). A discussão chega ao tribunal por agravo de instrumento, e é nele que se decide o percentual. A exceção de pré-executividade serve quando a matéria é de ordem pública e dispensa dilação probatória.",
+      },
+    ],
+    decisoes: [
+      {
+        id: "56d200d8-6b36-4db1-a415-91aeb98dfc85",
+        tribunal: "TJPR",
+        tipo: "Acórdão",
+        numero: "0111208-94.2025.8.16.0000",
+        relator: "Vania Maria da Silva Kramer",
+        data: "2026-05-22",
+        ementa:
+          "Direito processual civil. Agravo de instrumento. Execução de título extrajudicial. Penhora de verba salarial. Relativização da impenhorabilidade. Possibilidade. Valores bloqueados via SISBAJUD com natureza salarial reconhecida em exceção de pré-executividade. Recurso parcialmente conhecido e provido.",
+        fonte: "https://portal.tjpr.jus.br/jurisprudencia/j/4100000035300181/Ac%C3%B3rd%C3%A3o-0111208-94.2025.8.16.0000",
+      },
+      {
+        id: "64fb8671-9bd9-4f6e-9efb-94290f027bec",
+        tribunal: "TJPR",
+        tipo: "Acórdão",
+        numero: "0135522-07.2025.8.16.0000",
+        relator: "Luciano Campos de Albuquerque",
+        data: "2026-05-05",
+        ementa:
+          "Direito processual civil. Agravo de instrumento. Impenhorabilidade de salário em execução de título extrajudicial. Recurso provido, reconhecendo a impenhorabilidade da integralidade do valor constrito na conta da executada, por decorrer de verba salarial, já que a penhora de qualquer percentual poderia interferir na sua subsistência.",
+        fonte: "https://portal.tjpr.jus.br/jurisprudencia/j/4100000036035271/Ac%C3%B3rd%C3%A3o-0135522-07.2025.8.16.0000",
+      },
+      {
+        id: "f70fd45d-43ed-4dc8-b422-1dd02ab2ba18",
+        tribunal: "TJPR",
+        tipo: "Acórdão",
+        numero: "0130758-75.2025.8.16.0000",
+        relator: "Naor Ribeiro de Macedo Neto",
+        data: "2026-04-07",
+        ementa:
+          "Direito processual civil. Agravo de instrumento. Decisão que indeferiu a penhora de percentual sobre salário. Montante encontrado via SISBAJUD oriundo de proventos previdenciários. Mitigação da regra do art. 833, IV, do CPC. Possibilidade de penhora parcial. Ausência de demonstração de prejuízo à subsistência do devedor. Recurso parcialmente provido.",
+        fonte: "https://portal.tjpr.jus.br/jurisprudencia/j/4100000035879621/Ac%C3%B3rd%C3%A3o-0130758-75.2025.8.16.0000",
+      },
+      {
+        id: "977077fc-6b29-463d-9d98-22ac1892983c",
+        tribunal: "TJSP",
+        tipo: "Acórdão",
+        numero: "2016744-65.2025.8.26.0000",
+        relator: "Sidney Braga",
+        data: "2025-04-04",
+        ementa:
+          "Agravo de instrumento. Penhora. Bloqueio via SISBAJUD. Benefício previdenciário. Verba impenhorável. Art. 833, IV, do CPC. Mitigação que somente é possível quando a constrição não compromete a subsistência digna do devedor e da família. Devedor que percebe proventos inferiores a três salários mínimos. Penhora indeferida.",
+        fonte: "https://esaj.tjsp.jus.br/cjsg/getArquivo.do?cdAcordao=19084306&cdForo=0",
+      },
+      {
+        id: "5d26a356-0e66-4c52-8922-c568247c4631",
+        tribunal: "TJSP",
+        tipo: "Acórdão",
+        numero: "2038152-15.2025.8.26.0000",
+        relator: "Maria Fernanda de Toledo Rodovalho",
+        data: "2025-03-05",
+        ementa:
+          "Direito processual civil. Agravo de instrumento. Execução de título extrajudicial. Penhora sobre salário. Impenhorabilidade relativa. Rendimento aproximado a dois salários mínimos. Comprometimento da subsistência do devedor. Impossibilidade de relativização. Decisão mantida.",
+        fonte: "https://esaj.tjsp.jus.br/cjsg/getArquivo.do?cdAcordao=18953277&cdForo=0",
+      },
+    ],
+    ferramentas: [
+      { to: "/calculadoras/correcao-monetaria-juros-lei-14905", label: "Atualizar o valor do débito em execução" },
+      { to: "/calculadoras/operacoes-datas", label: "Contar prazos processuais" },
+      { to: "/diagnostico", label: "Descrever o caso no Diagnóstico" },
+    ],
+    faq: [
+      {
+        question: "Salário pode ser penhorado?",
+        answer: "Em regra não, pelo art. 833, IV, do CPC. O texto abre exceção para dívida de alimentos e para a parte que ultrapassa 50 salários mínimos por mês. Fora disso, o STJ admite a penhora parcial quando ela não compromete a subsistência digna do devedor e da família.",
+      },
+      {
+        question: "Qual percentual do salário os tribunais costumam autorizar?",
+        answer: "Não há percentual fixo. As decisões discutem faixas de 10% a 30%, sempre conforme o valor do rendimento e a prova das despesas. Em rendimentos próximos de dois ou três salários mínimos, a penhora costuma ser negada por inteiro.",
+      },
+      {
+        question: "Aposentadoria e pensão do INSS podem ser penhoradas?",
+        answer: "Recebem a mesma proteção do salário. A mitigação é possível em tese, mas as decisões consultadas negam a constrição quando o benefício é baixo e compromete o sustento do aposentado.",
+      },
+      {
+        question: "O que fazer quando a conta é bloqueada pelo SISBAJUD?",
+        answer: "O executado tem cinco dias, a contar da intimação, para comprovar a impenhorabilidade (art. 854, §3º, do CPC), juntando extrato que mostre a origem salarial ou previdenciária do valor. Indeferido o pedido, o caminho é o agravo de instrumento.",
+      },
+      {
+        question: "Na execução de alimentos a regra muda?",
+        answer: "Sim. O art. 833, §2º, do CPC afasta expressamente a impenhorabilidade na dívida alimentar, e o art. 529, §3º, permite o desconto em folha de até 50% dos rendimentos líquidos.",
+      },
+    ],
+  },
 ];
