@@ -64,14 +64,20 @@ export default function Petition() {
     !profileData?.office_logo_url &&
     !profileData?.office_name;
 
-  // Ponte vinda da calculadora de correção monetária: pré-preenche o valor
-  // atualizado no campo de pedidos, sem alterar o restante do formulário.
+  const [origemCalculo, setOrigemCalculo] = useState<string | null>(null);
+
+  // Ponte vinda das calculadoras: pré-preenche tipo de ação, fatos e pedidos
+  // com os números apurados, sem alterar o restante do formulário.
   useEffect(() => {
     const prefill = consumePeticaoPrefill();
     if (!prefill) return;
     const linha = prefillLinha(prefill);
     setPedidos((atual) => (atual ? `${atual}\n${linha}` : linha));
-    toast({ title: "Valor calculado importado", description: linha });
+    if (prefill.tipoAcao && TIPO_ACAO.includes(prefill.tipoAcao)) setTipoAcao(prefill.tipoAcao);
+    if (prefill.varaJuizo && VARA_JUIZO.includes(prefill.varaJuizo)) setVaraJuizo(prefill.varaJuizo);
+    if (prefill.fatos) setFatos((atual) => (atual ? `${atual}\n${prefill.fatos}` : prefill.fatos!));
+    setOrigemCalculo(prefill.origem ?? null);
+    toast({ title: "Cálculo importado", description: linha });
   }, [toast]);
 
 
