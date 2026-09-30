@@ -15,12 +15,20 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useGuestExportGate } from "@/components/calculators/shared/GuestExportGate";
+import { UsarNaPeticaoButton } from "@/components/calculators/shared/UsarNaPeticaoButton";
 
 function fmt(v: number) {
   return v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 }
 
 type TipoDemissao = "sem_justa_causa" | "com_justa_causa" | "pedido_demissao" | "acordo_mutuo";
+
+const TIPO_LABEL: Record<TipoDemissao, string> = {
+  sem_justa_causa: "dispensa sem justa causa",
+  com_justa_causa: "dispensa por justa causa",
+  pedido_demissao: "pedido de demissão",
+  acordo_mutuo: "acordo mútuo (art. 484-A da CLT)",
+};
 
 interface Verba { label: string; valor: number; }
 
@@ -162,6 +170,25 @@ export function RescisaoCalc() {
           </div>
           <div className="flex flex-col sm:flex-row gap-3 items-start">
             <Button onClick={() => requireAccount(gerarPDF, "baixar o relatório em PDF")} variant="outline" className="gap-2">Gerar Relatório PDF</Button>
+            <UsarNaPeticaoButton
+              size="default"
+              label={`Gerar petição com estas verbas (${fmt(total)})`}
+              payload={{
+                valor: total,
+                tipoAcao: "Reclamação trabalhista",
+                varaJuizo: "Trabalho",
+                origem: "calculadora de rescisão trabalhista",
+                fatos: [
+                  `Contrato de trabalho de ${admissao ? format(admissao, "dd/MM/yyyy") : ""} a ${demissao ? format(demissao, "dd/MM/yyyy") : ""}.`,
+                  `Modalidade de rescisão: ${TIPO_LABEL[tipo]}.`,
+                  `Salário informado: ${fmt(parseFloat(salario) || 0)}.`,
+                  `Verbas apuradas: ${verbas.map(v => `${v.label} ${fmt(v.valor)}`).join(", ")}.`,
+                ].join(" "),
+                pedidos: `Pagamento das verbas rescisórias no total estimado de ${fmt(total)}, conforme demonstrativo em anexo: ${verbas
+                  .map(v => `${v.label} ${fmt(v.valor)}`)
+                  .join(", ")}.`,
+              }}
+            />
           </div>
           <div className="flex items-start gap-2 rounded-md border border-yellow-500/30 bg-yellow-50  p-3 text-sm text-yellow-800 ">
             <AlertTriangle className="h-4 w-4 mt-0.5 shrink-0" /><span>Cálculo estimado. Consulte um advogado trabalhista para valores exatos.</span>
