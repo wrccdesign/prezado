@@ -1,15 +1,25 @@
 /**
- * Ponte entre a calculadora de correção monetária e o gerador de petições.
+ * Ponte entre as calculadoras e o gerador de petições.
  * O payload é guardado em sessionStorage porque a rota /peticao é protegida:
  * o visitante anônimo passa por /auth e o `state` da navegação se perderia.
  */
 const KEY = "honorifico:peticao-prefill";
 
 export interface PeticaoPrefill {
+  /** Total apurado pela calculadora. */
   valor: number;
   dataInicial?: string;
   dataFinal?: string;
   indice?: string;
+  /** Tipo de ação sugerido, precisa existir na lista do gerador. */
+  tipoAcao?: string;
+  varaJuizo?: string;
+  /** Síntese dos dados do cálculo, entra no campo de fatos. */
+  fatos?: string;
+  /** Pedido já formatado, entra no campo de pedidos. */
+  pedidos?: string;
+  /** Nome da calculadora de origem, exibido no aviso do formulário. */
+  origem?: string;
 }
 
 export function savePeticaoPrefill(payload: PeticaoPrefill) {
@@ -39,8 +49,13 @@ function mesLabel(iso?: string) {
   return y && m ? `${m}/${y}` : null;
 }
 
+export function formatBRL(v: number) {
+  return v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+}
+
 export function prefillLinha(p: PeticaoPrefill): string {
-  const valor = p.valor.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+  if (p.pedidos) return p.pedidos;
+  const valor = formatBRL(p.valor);
   const inicio = mesLabel(p.dataInicial);
   const fim = mesLabel(p.dataFinal);
   const periodo = inicio && fim ? `, período de ${inicio} a ${fim}` : "";
