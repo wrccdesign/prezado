@@ -84,7 +84,14 @@ const QUERIES_SUGERIDAS = [
   "despejo",
   "usucapião",
   "alimentos",
+  "atraso voo dano moral",
+  "cancelamento voo overbooking",
+  "cartão consignado RMC",
+  "golpe pix responsabilidade banco",
+  "execução título impenhorabilidade",
+  "penhora conta corrente",
 ];
+
 
 export default function AdminIngestao() {
   const { user, loading: authLoading } = useAuth();

@@ -65,3 +65,6 @@ verify_jwt = false
 
 [functions.asaas-webhook]
 verify_jwt = false
+
+[functions.admin-scrape]
+verify_jwt = false

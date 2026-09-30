@@ -28,6 +28,12 @@ const QUERIES_PHASE1 = [
   "plano saúde",
   "servidor público",
   "aposentadoria INSS",
+  "atraso voo dano moral",
+  "cancelamento voo overbooking",
+  "cartão consignado RMC",
+  "golpe pix responsabilidade banco",
+  "execução título impenhorabilidade",
+  "penhora conta corrente",
 ];
 
 const QUERIES_PHASE2 = [
@@ -36,7 +42,11 @@ const QUERIES_PHASE2 = [
   "contrato bancário rescisão",
   "usucapião posse",
   "acidente trânsito indenização",
+  "atraso voo dano moral",
+  "cartão consignado RMC",
+  "execução penhora impenhorabilidade",
 ];
+
 
 // Tempo máximo que um tribunal pode consumir. Sem isso, um scraper travado
 // come o orçamento inteiro da execução.
