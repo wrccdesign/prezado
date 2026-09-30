@@ -21,6 +21,9 @@ Versão detalhada, com fórmulas, base legal e perguntas respondidas: /llms-full
 - [Operações com Datas](/calculadoras/operacoes-datas): Soma e subtração de dias úteis e corridos, diferença entre datas.
 - [Validador CPF/CNPJ](/calculadoras/validador-cpf-cnpj): Dígitos verificadores pelo módulo 11, processado no navegador.
 - [Consulta Processual e Jurisprudência](/jurisprudencia): Consulta de processos e andamentos com dados oficiais do CNJ, com link para o tribunal.
+- [Jurisprudência sobre dano moral](/jurisprudencia/tema/dano-moral): Base legal, critérios de valor e decisões reais com link para o tribunal.
+- [Jurisprudência sobre dano material](/jurisprudencia/tema/dano-material): Danos emergentes, lucros cessantes, prova e atualização, com decisões reais.
+- [Jurisprudência sobre plano de saúde](/jurisprudencia/tema/plano-de-saude): Negativa de cobertura, rescisão do plano coletivo e Tema 1.082 do STJ, com decisões reais.
 - [Modelos de Minutas](/modelos-de-minutas): Nove minutas editáveis com base legal citada.
 - [Comparativo](/comparativo): Diferenças entre o Honorífico, assistentes de IA generalistas, portais de jurisprudência e sistemas de gestão.
 - [Planos](/planos): Gratuito, Profissional (R$ 49/mês) e Escritório, com 7 dias de teste sem cartão.

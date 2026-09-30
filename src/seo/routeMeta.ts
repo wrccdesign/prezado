@@ -13,6 +13,7 @@ import {
 } from "./faqData";
 import { RESCISAO_SITUACOES, rescisaoPath } from "./rescisaoSituacoes";
 import { CORRECAO_INDICES, CORRECAO_BASE_PATH, correcaoPath } from "./correcaoIndices";
+import { JURISPRUDENCIA_TEMAS, jurisTemaPath } from "./jurisprudenciaTemas";
 
 export type RouteMeta = {
   path: string;
@@ -390,6 +391,24 @@ export const ROUTE_META: RouteMeta[] = [
         offers: { "@type": "Offer", price: "0", priceCurrency: "BRL" },
       },
       buildFaqJsonLd(i.faq),
+    ],
+  })),
+  ...JURISPRUDENCIA_TEMAS.map((t) => ({
+    path: jurisTemaPath(t.slug),
+    title: `${t.seoTitle} | Honorífico`,
+    description: t.seoDescription,
+    ogImage: "/og/jurisprudencia.jpg",
+    jsonLd: [
+      {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        itemListElement: [
+          { "@type": "ListItem", position: 1, name: "Início", item: `${SITE_URL}/` },
+          { "@type": "ListItem", position: 2, name: "Jurisprudência", item: `${SITE_URL}/jurisprudencia` },
+          { "@type": "ListItem", position: 3, name: t.title, item: `${SITE_URL}${jurisTemaPath(t.slug)}` },
+        ],
+      },
+      buildFaqJsonLd(t.faq),
     ],
   })),
 ];
