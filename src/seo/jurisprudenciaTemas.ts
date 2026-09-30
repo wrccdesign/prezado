@@ -299,4 +299,116 @@ export const JURISPRUDENCIA_TEMAS: JurisprudenciaTema[] = [
       },
     ],
   },
+  {
+    slug: "usucapiao",
+    title: "Jurisprudência sobre usucapião",
+    description:
+      "A usucapião é a aquisição da propriedade pela posse prolongada, com intenção de dono, sem interrupção nem oposição. O Código Civil prevê modalidades com prazos distintos: extraordinária (15 anos, ou 10 com moradia ou obras), ordinária (10 anos com justo título e boa-fé), especial rural e urbana (5 anos) e a de bens móveis (3 ou 5 anos).",
+    seoTitle: "Jurisprudência sobre usucapião: decisões reais e requisitos",
+    seoDescription:
+      "Decisões reais de tribunais sobre usucapião extraordinária, ordinária, rural e de bem móvel, com número do processo, relator e link para a fonte oficial.",
+    query: "usucapião",
+    legislacao: [
+      { norma: "Código Civil, art. 1.238", conteudo: "Usucapião extraordinária: 15 anos de posse, reduzidos a 10 se houver moradia habitual ou obras produtivas." },
+      { norma: "Código Civil, art. 1.242", conteudo: "Usucapião ordinária: 10 anos de posse com justo título e boa-fé." },
+      { norma: "Código Civil, art. 1.239 e CF/88, art. 191", conteudo: "Usucapião especial rural: até 50 hectares, 5 anos, área tornada produtiva e usada como moradia." },
+      { norma: "Código Civil, art. 1.240 e CF/88, art. 183", conteudo: "Usucapião especial urbana: até 250 m², 5 anos, moradia própria ou da família." },
+      { norma: "Código Civil, arts. 1.260 e 1.261", conteudo: "Usucapião de bem móvel: 3 anos com justo título e boa-fé, ou 5 anos sem eles." },
+      { norma: "CPC, art. 1.071 e Lei 6.015/73, art. 216-A", conteudo: "Permite o reconhecimento extrajudicial da usucapião no cartório de registro de imóveis." },
+    ],
+    paragraphs: [
+      {
+        heading: "O que os tribunais examinam",
+        body: "A prova central é a posse com intenção de dono (animus domini), contínua e sem oposição pelo prazo da modalidade escolhida. Pagamento de tributos, obras, contas no nome do possuidor e testemunhas de vizinhos costumam sustentar a decisão. Mera detenção ou posse por tolerância do proprietário não basta.",
+      },
+      {
+        heading: "Modalidade errada nem sempre derruba o pedido",
+        body: "Há decisões que aplicam a fungibilidade entre modalidades: quando o prazo da extraordinária não foi cumprido, mas os requisitos da ordinária estão provados, o tribunal reconhece a usucapião pela modalidade correta. Também é reconhecida a interversão da posse, quando a detenção inicial se transforma em posse de dono por atos inequívocos.",
+      },
+    ],
+    decisoes: [
+      {
+        id: "f5c71b57-0c42-4e7c-ba85-eb68a197a8b0",
+        tribunal: "TJSP",
+        tipo: "Acórdão",
+        numero: "1005331-71.2020.8.26.0445",
+        relator: "Luis Fernando Nishi",
+        data: "2026-06-03",
+        ementa:
+          "Direito civil. Apelação. Usucapião de bem móvel. Reforma da sentença. Veículo abandonado desde 2013, com pagamento de tributos e manutenção pelo autor. A posse, inicialmente detenção, transformou-se em posse ad usucapionem por interversão, com atos inequívocos de domínio, satisfazendo os requisitos do art. 1.261 do Código Civil. Recurso provido.",
+        fonte: "https://esaj.tjsp.jus.br/cjsg/getArquivo.do?cdAcordao=20591507&cdForo=0",
+      },
+      {
+        id: "2e56eadc-39cc-4ffa-9f9d-11b6c3ab99e7",
+        tribunal: "TJSP",
+        tipo: "Acórdão",
+        numero: "0022838-11.2012.8.26.0100",
+        relator: "Enio Zuliani",
+        data: "2025-04-10",
+        ementa:
+          "Usucapião extraordinária prevista no art. 1.238 do CC. Posse animus domini incontroversa e com idade superior a trinta anos. Possuidores que agiram com publicidade e resistiram às tentativas de desalojamento. A Prefeitura Municipal de São Paulo não conseguiu provar que o imóvel seria bem público.",
+        fonte: "https://esaj.tjsp.jus.br/cjsg/getArquivo.do?cdAcordao=19111042&cdForo=0",
+      },
+      {
+        id: "cdd243fc-b0b2-4786-ab9e-087888b4f273",
+        tribunal: "TJMG",
+        tipo: "Acórdão",
+        numero: "1.0000.25.013068-9/001",
+        relator: "Tiago Gomes de Carvalho Pinto",
+        data: "2025-03-26",
+        ementa:
+          "Apelação cível. Ação de usucapião extraordinária. Requisitos não preenchidos. Aplicação do princípio da fungibilidade entre modalidades. Usucapião ordinária (art. 1.242 do CC). Posse ininterrupta, pacífica, com justo título e boa-fé. Área inferior ao módulo mínimo de parcelamento: irrelevância. Recurso provido.",
+        fonte: "https://www5.tjmg.jus.br/jurisprudencia/relatorioEspelhoAcordao.do?inteiroTeor=true&ano=25&ttriCodigo=1&codigoOrigem=0000&numero=013068&sequencial=001&sequencialAcordao=0",
+      },
+      {
+        id: "5784c68e-33e9-45f8-9d6c-ced5e92f89ef",
+        tribunal: "TJCE",
+        tipo: "Acórdão",
+        numero: "0008061-44.2010.8.06.0101",
+        relator: "Francisco Jaime Medeiros Neto",
+        data: "2024-04-10",
+        ementa:
+          "Ação de usucapião especial e de manutenção de posse sobre o mesmo imóvel rural, julgadas em conjunto. Procedência da usucapião na forma do art. 1.239 do Código Civil: posse e cultivo da terra confessados pelo recorrente e confirmados pela prova testemunhal. Improcedência da manutenção de posse.",
+        fonte: "https://esaj.tjce.jus.br/cjsg/getArquivo.do?cdAcordao=3697044&cdForo=0",
+      },
+      {
+        id: "c2fe88fc-acd4-44cc-95fe-55021682bced",
+        tribunal: "TJMG",
+        tipo: "Acórdão",
+        numero: "1.0000.21.230148-5/001",
+        relator: "Marcos Henrique Caldeira Brant",
+        data: "2022-04-20",
+        ementa:
+          "Apelação cível. Ação de usucapião extraordinária. Posse com animus domini comprovada. Nos termos do art. 1.238 do CC, comprovada a posse com intenção de dono durante mais de 15 anos, sem interrupção nem oposição, deve-se reconhecer a prescrição aquisitiva. Recurso provido.",
+        fonte: "https://www5.tjmg.jus.br/jurisprudencia/relatorioEspelhoAcordao.do?inteiroTeor=true&ano=21&ttriCodigo=1&codigoOrigem=0000&numero=230148&sequencial=001&sequencialAcordao=0",
+      },
+    ],
+    ferramentas: [
+      { to: "/diagnostico", label: "Descrever o caso no Diagnóstico" },
+      { to: "/calculadoras/operacoes-datas", label: "Contar o tempo de posse entre duas datas" },
+      { to: "/modelos-de-minutas/notificacao-extrajudicial", label: "Modelo de notificação extrajudicial" },
+    ],
+    faq: [
+      {
+        question: "Quanto tempo de posse é preciso para usucapião?",
+        answer: "Depende da modalidade: 15 anos na extraordinária (10 com moradia ou obras), 10 anos na ordinária com justo título e boa-fé, 5 anos na especial urbana ou rural e 3 ou 5 anos para bens móveis.",
+      },
+      {
+        question: "Dá para fazer usucapião em cartório?",
+        answer: "Sim. O art. 216-A da Lei 6.015/73 permite o procedimento extrajudicial no registro de imóveis, com ata notarial, planta assinada por profissional habilitado e concordância ou silêncio dos confrontantes. Havendo impugnação, o caminho é judicial.",
+      },
+      {
+        question: "Imóvel público pode ser usucapido?",
+        answer: "Não. A Constituição (arts. 183, §3º, e 191, parágrafo único) e a Súmula 340 do STF vedam. Por isso a discussão sobre a natureza pública do bem aparece com frequência nas decisões.",
+      },
+      {
+        question: "Posse de herdeiro ou de quem comprou por contrato de gaveta conta?",
+        answer: "O possuidor pode somar a sua posse à dos antecessores (art. 1.243 do CC), desde que contínuas e pacíficas. Contrato particular de compra costuma servir como justo título na usucapião ordinária.",
+      },
+      {
+        question: "Carro pode ser usucapido?",
+        answer: "Sim, bens móveis também. São 3 anos com justo título e boa-fé ou 5 anos sem eles (arts. 1.260 e 1.261 do CC). A sentença serve para regularizar o registro no órgão de trânsito.",
+      },
+    ],
+  },
 ];

@@ -24,6 +24,7 @@ Versão detalhada, com fórmulas, base legal e perguntas respondidas: /llms-full
 - [Jurisprudência sobre dano moral](/jurisprudencia/tema/dano-moral): Base legal, critérios de valor e decisões reais com link para o tribunal.
 - [Jurisprudência sobre dano material](/jurisprudencia/tema/dano-material): Danos emergentes, lucros cessantes, prova e atualização, com decisões reais.
 - [Jurisprudência sobre plano de saúde](/jurisprudencia/tema/plano-de-saude): Negativa de cobertura, rescisão do plano coletivo e Tema 1.082 do STJ, com decisões reais.
+- [Jurisprudência sobre usucapião](/jurisprudencia/tema/usucapiao): Modalidades, prazos, usucapião em cartório e de bem móvel, com decisões reais.
 - [Modelos de Minutas](/modelos-de-minutas): Nove minutas editáveis com base legal citada.
 - [Comparativo](/comparativo): Diferenças entre o Honorífico, assistentes de IA generalistas, portais de jurisprudência e sistemas de gestão.
 - [Planos](/planos): Gratuito, Profissional (R$ 49/mês) e Escritório, com 7 dias de teste sem cartão.
