@@ -175,6 +175,11 @@ export default function Petition() {
               </Link>
             </p>
           )}
+          {origemCalculo && (
+            <p className="mt-2 text-sm text-muted-foreground">
+              Dados importados da {origemCalculo}. Você pode editar qualquer campo antes de gerar.
+            </p>
+          )}
 
         </div>
 
