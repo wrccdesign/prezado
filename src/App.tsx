@@ -27,6 +27,7 @@ import DiagnosticoLanding from "./pages/DiagnosticoLanding";
 
 import Jurisprudencia from "./pages/Jurisprudencia";
 import DecisaoDetalhe from "./pages/DecisaoDetalhe";
+import JurisprudenciaTemaLanding from "./pages/JurisprudenciaTemaLanding";
 import LandingPage from "./pages/LandingPage";
 import AdminIngestao from "./pages/AdminIngestao";
 import AdminColeta from "./pages/AdminColeta";
@@ -109,6 +110,7 @@ const App = () => (
               <Route path="/calculadoras/pensao-alimenticia" element={<PensaoAlimenticiaLanding />} />
               <Route path="/diagnostico" element={<DiagnosticoRoute />} />
               <Route path="/jurisprudencia" element={<Jurisprudencia />} />
+              <Route path="/jurisprudencia/tema/:slug" element={<JurisprudenciaTemaLanding />} />
               <Route path="/decisao/:id" element={<DecisaoDetalhe />} />
               <Route path="/painel-advogado" element={<ProtectedRoute><LawyerDashboard /></ProtectedRoute>} />
               <Route path="/modelos-de-minutas" element={<ModelosMinutas />} />

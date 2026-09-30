@@ -13,6 +13,7 @@ import {
 } from "./faqData";
 import { RESCISAO_SITUACOES, rescisaoPath } from "./rescisaoSituacoes";
 import { CORRECAO_INDICES, correcaoPath } from "./correcaoIndices";
+import { JURISPRUDENCIA_TEMAS, jurisTemaPath } from "./jurisprudenciaTemas";
 
 export type RouteContent = {
   /** Título principal em texto, equivalente ao H1 da página. */
@@ -680,6 +681,21 @@ export const ROUTE_CONTENT: Record<string, RouteContent> = {
         intro: i.description,
         bullets: [...i.features, ...i.paragraphs.map((p) => `${p.heading}: ${p.body}`)],
         faq: i.faq,
+      } satisfies RouteContent,
+    ]),
+  ),
+  ...Object.fromEntries(
+    JURISPRUDENCIA_TEMAS.map((t) => [
+      jurisTemaPath(t.slug),
+      {
+        heading: t.title,
+        intro: t.description,
+        bullets: [
+          ...t.legislacao.map((l) => `${l.norma}: ${l.conteudo}`),
+          ...t.paragraphs.map((p) => `${p.heading}: ${p.body}`),
+          ...t.decisoes.map((d) => `${d.tribunal}, ${d.tipo} ${d.numero}, rel. ${d.relator}: ${d.ementa} Fonte: ${d.fonte}`),
+        ],
+        faq: t.faq,
       } satisfies RouteContent,
     ]),
   ),

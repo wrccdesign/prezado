@@ -98,6 +98,9 @@ const calculadoras = [
 const plataforma = [
   { to: "/", label: "Início" },
   { to: "/jurisprudencia", label: "Jurisprudência" },
+  { to: "/jurisprudencia/tema/dano-moral", label: "Jurisprudência sobre dano moral" },
+  { to: "/jurisprudencia/tema/dano-material", label: "Jurisprudência sobre dano material" },
+  { to: "/jurisprudencia/tema/plano-de-saude", label: "Jurisprudência sobre plano de saúde" },
   { to: "/diagnostico", label: "Diagnóstico jurídico" },
   { to: "/peticao", label: "Gerador de petições" },
   { to: "/chat", label: "Chat jurídico" },
