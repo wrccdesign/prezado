@@ -66,10 +66,33 @@ const ATALHOS = [
   },
 ];
 
+const PRIMEIROS_PASSOS = [
+  {
+    to: "/calculadoras",
+    titulo: "Calcular correção ou rescisão",
+    texto: "Índices oficiais e memória de cálculo pronta para anexar.",
+    icon: Calculator,
+  },
+  {
+    to: "/analise",
+    titulo: "Analisar um documento ou caso",
+    texto: "Envie o PDF ou descreva a situação e receba direitos, riscos e próximos passos.",
+    icon: FileSearch,
+  },
+  {
+    to: "/peticao",
+    titulo: "Elaborar uma petição",
+    texto: "Monte a peça em etapas, com a fundamentação conferida na fonte.",
+    icon: FileSignature,
+  },
+];
+
 export default function Inicio() {
   const { user } = useAuth();
   const { isLawyer } = useUserProfile();
+  const { isTrial, trialDaysLeft } = useSubscription();
   const [recentes, setRecentes] = useState<Recente[]>([]);
+  const [carregou, setCarregou] = useState(false);
 
   const primeiroNome = (() => {
     const nome =
