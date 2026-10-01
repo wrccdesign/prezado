@@ -191,6 +191,13 @@ export const ROUTE_META: RouteMeta[] = [
     ogImage: OG_DEFAULT, // TODO: OG própria
   },
   {
+    path: "/modelos-de-minutas/requerimento-transparencia-algoritmica",
+    title: "Requerimento de transparência algorítmica | Honorífico",
+    description:
+      "Modelo editável de requerimento para pedir informação sobre uso de IA em ato judicial, com base na CF, no CPC e na Resolução CNJ 615/2025.",
+    ogImage: OG_DEFAULT,
+  },
+  {
     path: "/modelos-de-minutas/contestacao-civel",
     title: "Modelo de contestação cível | Honorífico",
     description:
