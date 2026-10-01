@@ -9,6 +9,7 @@ import { SEO } from "@/components/SEO";
 import { LegalDisclaimer } from "@/components/LegalDisclaimer";
 import { UsageSummary } from "@/components/UsageSummary";
 import { formatDateBR } from "@/lib/date";
+import { useSubscription } from "@/hooks/useSubscription";
 import {
   BriefcaseBusiness,
   Calculator,
@@ -129,7 +130,10 @@ export default function Inicio() {
         .sort((x, y) => (x.data < y.data ? 1 : -1))
         .slice(0, 3);
 
-      if (ativo) setRecentes(itens);
+      if (ativo) {
+        setRecentes(itens);
+        setCarregou(true);
+      }
     };
     carregar();
     return () => {
