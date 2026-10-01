@@ -172,7 +172,52 @@ export default function Inicio() {
           <p className="mt-3 max-w-[60ch] text-body-serif text-navy/70">
             Comece pelo caso que está na sua mesa agora, ou escolha uma das ferramentas abaixo.
           </p>
+          {isTrial && (
+            <p className="mt-4 max-w-[60ch] text-note text-navy/60">
+              Teste do plano Profissional com todas as ferramentas liberadas,{" "}
+              {trialDaysLeft === 1 ? "último dia" : `${trialDaysLeft} dias restantes`}. Sem cobrança
+              automática ao fim do período.
+            </p>
+          )}
         </header>
+
+        {carregou && recentes.length === 0 && (
+          <section className="mb-12 md:mb-16">
+            <div className="max-w-2xl">
+              <h2 className="text-h2 text-navy">Comece por aqui</h2>
+              <p className="mt-2 text-body-serif text-navy/70">
+                Três caminhos que resolvem algo hoje. O resultado fica salvo para você continuar depois.
+              </p>
+            </div>
+            <ol className="mt-6 divide-y divide-border border-y border-border">
+              {PRIMEIROS_PASSOS.map((p, i) => {
+                const Icon = p.icon;
+                return (
+                  <li key={p.to}>
+                    <Link
+                      to={p.to}
+                      className="group grid grid-cols-[auto_1fr] items-start gap-x-4 py-5 transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring sm:grid-cols-[auto_auto_1fr] sm:items-center sm:gap-x-5"
+                    >
+                      <span className="text-note tabular-nums text-navy/45">{i + 1}</span>
+                      <span className="hidden h-10 w-10 items-center justify-center rounded-md border border-border bg-card text-navy transition-colors duration-150 group-hover:border-gold group-hover:text-gold sm:flex">
+                        <Icon aria-hidden="true" className="h-5 w-5" strokeWidth={1.75} />
+                      </span>
+                      <span className="block">
+                        <span className="block font-serif text-xl font-medium text-navy transition-colors duration-150 group-hover:text-gold">
+                          {p.titulo}
+                        </span>
+                        <span className="mt-1 block max-w-[52ch] text-sm leading-relaxed text-navy/65">
+                          {p.texto}
+                        </span>
+                      </span>
+                    </Link>
+                  </li>
+                );
+              })}
+            </ol>
+          </section>
+        )}
+
 
         {recentes.length > 0 && (
           <section className="mb-12 md:mb-16">
