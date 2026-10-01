@@ -80,10 +80,51 @@ URL: https://honorifico.com.br/jurisprudencia
 
 Consulta de processos e andamentos nos dados públicos do CNJ (DataJud), com número no padrão CNJ, tribunal, órgão julgador, classe, assuntos e movimentações, e link para a fonte no tribunal. O acervo de ementas está em expansão; quando há ementa, ela é exibida com resumo por IA identificado como tal. Sem conta, são permitidas 3 buscas por dia.
 
+## Jurisprudência por tema
+
+Cada página temática reúne a base legal e decisões reais conferidas, com número do processo no padrão CNJ, tribunal, ementa e link para a fonte oficial. Um tema só é publicado quando há decisões reais no acervo.
+
+### Dano moral
+URL: https://honorifico.com.br/jurisprudencia/tema/dano-moral
+Base legal: CF/88, art. 5º, V e X; Código Civil, arts. 186 e 927; CDC, art. 14; Súmula 385 do STJ (anotação irregular não gera dano moral quando já existe inscrição legítima anterior); Súmula 387 do STJ (dano estético e moral podem ser cumulados).
+
+### Dano material
+URL: https://honorifico.com.br/jurisprudencia/tema/dano-material
+Base legal: Código Civil, art. 402 (danos emergentes e lucros cessantes) e art. 944 (indenização pela extensão do dano); CDC, arts. 12, 14 e 18; Súmula 43 do STJ (correção desde o efetivo prejuízo); Súmula 54 do STJ (juros desde o evento danoso na responsabilidade extracontratual).
+
+### Plano de saúde
+URL: https://honorifico.com.br/jurisprudencia/tema/plano-de-saude
+Base legal: Lei 9.656/1998; Lei 14.454/2022 (rol da ANS como referência básica); Súmula 608 do STJ (CDC aplicável, salvo autogestão); Tema 1.082 do STJ (manutenção do tratamento em curso após rescisão do plano coletivo, até a alta).
+
+### Usucapião
+URL: https://honorifico.com.br/jurisprudencia/tema/usucapiao
+Prazos: extraordinária, 15 anos, ou 10 com moradia ou obras produtivas (CC, art. 1.238); ordinária, 10 anos com justo título e boa-fé (CC, art. 1.242); especial urbana, até 250 m² e 5 anos (CC, art. 1.240; CF, art. 183); especial rural, até 50 hectares e 5 anos (CC, art. 1.239; CF, art. 191); bem móvel, 3 anos com justo título e boa-fé ou 5 sem eles (CC, arts. 1.260 e 1.261). A via extrajudicial está no art. 216-A da Lei 6.015/73.
+
+### Atraso e cancelamento de voo
+URL: https://honorifico.com.br/jurisprudencia/tema/atraso-de-voo
+Base legal: CDC, art. 14; Resolução 400/2016 da ANAC (assistência material a partir de 1 hora para comunicação, 2 horas para alimentação e 4 horas para hospedagem e traslado); Código Brasileiro de Aeronáutica, art. 251-A (dano moral depende de prova do prejuízo); Convenção de Montreal no transporte internacional, prevalecendo sobre o CDC nos danos materiais (Tema 210 do STF); Código Civil, art. 393, base do debate entre fortuito interno e externo.
+
+### Cartão consignado e RMC
+URL: https://honorifico.com.br/jurisprudencia/tema/cartao-consignado-rmc
+Base legal: CDC, arts. 6º, III, e 46 (dever de informação); CDC, art. 51, IV (cláusula abusiva); CDC, art. 42, parágrafo único (repetição em dobro); Estatuto do Idoso, art. 96; Leis 10.820/2003 e 14.431/2022 (desconto em folha e margem consignável).
+
+### Execução e penhora de salário
+URL: https://honorifico.com.br/jurisprudencia/tema/execucao-e-penhora
+Base legal: CPC, art. 833, IV (impenhorabilidade de verbas salariais) e §2º (exceção para alimentos e para o que exceder 50 salários mínimos); CPC, art. 529, §3º (desconto de até 50% em alimentos); CPC, art. 854 (bloqueio pelo SISBAJUD e 5 dias para comprovar impenhorabilidade); Lei 8.009/90 (bem de família); EREsp 1.874.222/DF do STJ (mitigação da impenhorabilidade preservado o mínimo existencial).
+
+## Landings de cálculo por situação
+
+- Rescisão por situação: /calculadoras/rescisao-trabalhista/demissao-sem-justa-causa, /pedido-de-demissao, /acordo-484a, /justa-causa e /contrato-de-experiencia, cada uma com as verbas devidas naquela modalidade.
+- Correção por índice: /calculadoras/correcao-monetaria-juros-lei-14905/ipca, /inpc, /igpm, /selic e /taxa-legal, cada uma com a série oficial do Banco Central e quando o índice se aplica.
+
 ## Modelos de minutas
 URL: https://honorifico.com.br/modelos-de-minutas
 
-Nove minutas editáveis e gratuitas, cada uma com base legal citada e checklist: petição inicial de cobrança (art. 319 do CPC), contestação cível (arts. 335 a 342 do CPC), reclamação trabalhista com pedidos líquidos (art. 840, §1º, da CLT), notificação extrajudicial, procuração ad judicia et extra (art. 105 do CPC), recurso de apelação (arts. 1.009 a 1.014 do CPC), contrato de honorários advocatícios, acordo extrajudicial com homologação (arts. 515, III, e 725, VIII, do CPC).
+Nove minutas editáveis e gratuitas, cada uma com base legal citada e checklist: petição inicial de cobrança (art. 319 do CPC), contestação cível (arts. 335 a 342 do CPC), reclamação trabalhista com pedidos líquidos (art. 840, §1º, da CLT), notificação extrajudicial, procuração ad judicia et extra (art. 105 do CPC), recurso de apelação (arts. 1.009 a 1.014 do CPC), contrato de honorários advocatícios, acordo extrajudicial com homologação (arts. 515, III, e 725, VIII, do CPC) e requerimento de transparência algorítmica.
+
+### Requerimento de transparência algorítmica
+URL: https://honorifico.com.br/modelos-de-minutas/requerimento-transparencia-algoritmica
+Requerimento para que a parte saiba se houve uso de ferramenta de inteligência artificial na elaboração de ato judicial e peça explicação dos critérios, com fundamento no dever de fundamentação (CF/88, art. 93, IX; CPC, art. 489, §1º), no contraditório (CPC, arts. 9º e 10) e na regulamentação do CNJ sobre uso de IA no Judiciário. Os artigos da resolução do CNJ devem ser conferidos no texto oficial vigente antes de citados.
 
 ## Recursos com IA (requerem conta)
 
@@ -156,4 +197,4 @@ R: Não. As respostas são informativas e orientam a procurar um profissional pa
 
 ---
 
-Última revisão deste documento: setembro de 2026.
+Última revisão deste documento: outubro de 2026.
