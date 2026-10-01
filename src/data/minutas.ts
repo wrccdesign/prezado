@@ -478,6 +478,73 @@ OAB/[UF] nº [___]               OAB/[UF] nº [___]`,
       },
     ],
   },
+  {
+    slug: "requerimento-transparencia-algoritmica",
+    title: "Requerimento de transparência algorítmica",
+    category: "Processual",
+    shortDescription:
+      "Requerimento nos autos para pedir a informação sobre uso de inteligência artificial no ato judicial, o modelo utilizado e o registro de uso, com reanálise sob supervisão humana.",
+    metaDescription:
+      "Modelo editável de requerimento de transparência algorítmica com base na CF, art. 93, IX, no CPC, arts. 11 e 489, § 1º, e na Resolução CNJ 615/2025.",
+    keywords: [
+      "requerimento transparência algorítmica",
+      "petição inteligência artificial tribunal",
+      "resolução 615 CNJ petição",
+      "impugnação decisão automatizada",
+    ],
+    baseLegal: [
+      "CF, art. 93, IX: publicidade e fundamentação das decisões",
+      "CF, art. 5º, LIV e LV: devido processo legal, contraditório e ampla defesa",
+      "CPC, art. 11: publicidade e motivação dos atos judiciais",
+      "CPC, art. 489, § 1º: fundamentação que enfrenta os argumentos da parte",
+      "Resolução CNJ 615/2025: governança, transparência e supervisão humana do uso de IA no Judiciário (conferir artigos no texto compilado em atos.cnj.jus.br)",
+      "Resolução CNJ 674/2026: alteração da composição do Comitê de IA do CNJ",
+    ],
+    checklist: [
+      "Identificar o ato com indício de automação (despacho padronizado, triagem, decisão que não enfrenta os fatos do caso)",
+      "Apontar quais argumentos e provas não foram enfrentados (CPC, art. 489, § 1º)",
+      "Verificar se o sistema do tribunal informa, na interface, os modelos de IA em uso",
+      "Conferir os artigos da Resolução CNJ 615/2025 no texto compilado antes de citar número de artigo",
+      "Avaliar se o caso pede, em paralelo, embargos de declaração dentro do prazo",
+    ],
+    sections: [
+      {
+        heading: "Endereçamento",
+        body: `EXCELENTÍSSIMO(A) SENHOR(A) DOUTOR(A) JUIZ(ÍZA) DE DIREITO DA [nº] VARA [CÍVEL/JUIZADO] DA COMARCA DE [Cidade/UF]
+
+Processo nº [número CNJ]`,
+      },
+      {
+        heading: "Qualificação e preâmbulo",
+        body: `[NOME DA PARTE REQUERENTE], já qualificada nos autos do processo em epígrafe, em que contende com [NOME DA PARTE ADVERSA], por seu(sua) advogado(a) que esta subscreve, vem, respeitosamente, à presença de Vossa Excelência apresentar
+
+REQUERIMENTO DE TRANSPARÊNCIA ALGORÍTMICA
+
+com fundamento no art. 93, IX, da Constituição Federal, nos arts. 11 e 489, § 1º, do Código de Processo Civil e nas diretrizes da Resolução CNJ nº 615/2025, pelas razões a seguir.`,
+      },
+      {
+        heading: "I. Dos fatos",
+        body: `1. No ato proferido no evento/fls. [___], verifica-se [decisão/despacho/certidão] de teor padronizado, que não enfrenta as particularidades fáticas e as provas apresentadas no evento/fls. [___], em especial [indicar os argumentos e documentos não enfrentados].
+2. A estrutura do ato indica possível uso de ferramenta automatizada de triagem, agrupamento ou geração de texto integrada ao sistema processual, sem indicação pública da ferramenta empregada.`,
+      },
+      {
+        heading: "II. Do direito",
+        body: `3. O art. 93, IX, da Constituição exige publicidade e fundamentação de todas as decisões judiciais.
+4. O art. 11 do CPC reafirma essa exigência, e o art. 489, § 1º, considera não fundamentada a decisão que deixa de enfrentar os argumentos capazes de infirmar a conclusão adotada.
+5. A Resolução CNJ nº 615/2025 estabelece diretrizes para o uso de inteligência artificial no Poder Judiciário, entre elas a supervisão humana efetiva, a transparência sobre os modelos em uso e o registro da utilização de IA nos sistemas. [Citar os artigos aplicáveis conforme o texto compilado.]
+6. O uso de ferramenta automatizada em apoio à atividade judicante deve ser auditável pelas partes, como condição do contraditório e da ampla defesa (CF, art. 5º, LIV e LV).`,
+      },
+      {
+        heading: "III. Dos pedidos",
+        body: `Ante o exposto, requer:
+a) seja certificado nos autos se houve uso de sistema de inteligência artificial, classificação automatizada ou geração automática de texto na elaboração do ato do evento/fls. [___];
+b) em caso positivo, seja informado o modelo ou ferramenta utilizada e juntado o registro de uso correspondente, nos termos da Resolução CNJ nº 615/2025;
+c) a reanálise dos argumentos e provas do evento/fls. [___] sob supervisão humana direta, com enfrentamento individualizado dos pontos suscitados (CPC, art. 489, § 1º);
+d) a reabertura ou concessão de prazo para manifestação após os esclarecimentos, sem prejuízo dos recursos cabíveis.`,
+      },
+      { heading: "Fecho", body: FECHO },
+    ],
+  },
 ];
 
 export const MINUTA_CATEGORIES = Array.from(new Set(MINUTAS.map((m) => m.category)));
