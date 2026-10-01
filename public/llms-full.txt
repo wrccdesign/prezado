@@ -124,7 +124,7 @@ Nove minutas editáveis e gratuitas, cada uma com base legal citada e checklist:
 
 ### Requerimento de transparência algorítmica
 URL: https://honorifico.com.br/modelos-de-minutas/requerimento-transparencia-algoritmica
-Requerimento para que a parte saiba se houve uso de ferramenta de inteligência artificial na elaboração de ato judicial e peça explicação dos critérios, com fundamento no dever de fundamentação (CF/88, art. 93, IX; CPC, art. 489, §1º), no contraditório (CPC, arts. 9º e 10) e na regulamentação do CNJ sobre uso de IA no Judiciário. Os artigos da resolução do CNJ devem ser conferidos no texto oficial vigente antes de citados.
+Requerimento para que a parte saiba se houve uso de ferramenta de inteligência artificial na elaboração de ato judicial e peça explicação dos critérios, informando o modelo e o registro de uso, com reanálise sob supervisão humana. Fundamentos: CF/88, art. 93, IX, e art. 5º, LIV e LV; CPC, arts. 11 e 489, §1º; Resolução CNJ 615/2025, cujos artigos devem ser conferidos no texto compilado oficial antes de citados.
 
 ## Recursos com IA (requerem conta)
 
