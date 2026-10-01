@@ -28,7 +28,10 @@ Versão detalhada, com fórmulas, base legal e perguntas respondidas: /llms-full
 - [Jurisprudência sobre atraso e cancelamento de voo](/jurisprudencia/tema/atraso-de-voo): Fortuito interno e externo, Resolução 400 da ANAC e valor do dano moral, com decisões reais.
 - [Jurisprudência sobre cartão consignado e RMC](/jurisprudencia/tema/cartao-consignado-rmc): Reserva de margem consignável, nulidade, conversão em empréstimo e prazo, com decisões reais.
 - [Jurisprudência sobre execução e penhora de salário](/jurisprudencia/tema/execucao-e-penhora): Art. 833 do CPC, mitigação da impenhorabilidade e bloqueio pelo SISBAJUD, com decisões reais.
+- [Rescisão por situação](/calculadoras/rescisao-trabalhista/demissao-sem-justa-causa): Verbas devidas em dispensa sem justa causa, pedido de demissão, acordo do art. 484-A, justa causa e contrato de experiência.
+- [Correção por índice](/calculadoras/correcao-monetaria-juros-lei-14905/ipca): Páginas para IPCA, INPC, IGP-M, Selic e Taxa Legal, com a série oficial do Banco Central.
 - [Modelos de Minutas](/modelos-de-minutas): Nove minutas editáveis com base legal citada.
+- [Requerimento de transparência algorítmica](/modelos-de-minutas/requerimento-transparencia-algoritmica): Modelo para pedir informação sobre uso de IA em ato judicial, com base na CF, art. 93, IX, no CPC, art. 489, §1º, e na Resolução CNJ 615/2025.
 - [Comparativo](/comparativo): Diferenças entre o Honorífico, assistentes de IA generalistas, portais de jurisprudência e sistemas de gestão.
 - [Planos](/planos): Gratuito, Profissional (R$ 49/mês) e Escritório, com 7 dias de teste sem cartão.
 - [Mapa do Site](/mapa-do-site): Todas as páginas públicas.
