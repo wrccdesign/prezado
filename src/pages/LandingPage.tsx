@@ -115,11 +115,11 @@ export default function LandingPage() {
         <div className="container mx-auto px-4 sm:px-6">
           <div className="grid gap-12 lg:grid-cols-12 lg:items-center">
             <div className="lg:col-span-7">
-              <h1 className="text-display-hero text-navy max-w-[12ch]">
-                Dê-me os fatos,<br className="hidden md:block" /> eu te dou o <span className="text-gold">direito</span>.
+              <h1 className="text-display-hero text-navy max-w-[18ch]">
+                Do fato ao fundamento,<br className="hidden md:block" /> com a fonte oficial<br className="hidden md:block" /> e o cálculo em anexo.
               </h1>
-              <p className="text-body-serif text-navy/80 max-w-[52ch] mt-7">
-                Diagnóstico, petição e precedente, sempre com fonte verificável antes de você protocolar.
+              <p className="text-body-serif text-navy/75 max-w-[52ch] mt-7">
+                Precedente real do acervo do CNJ, com link para o tribunal. Quando a decisão não existe, a resposta diz que não encontrou.
               </p>
               <form
                 onSubmit={(e) => {
@@ -144,33 +144,19 @@ export default function LandingPage() {
                   Buscar
                 </Button>
               </form>
-              <div className="mt-5 grid max-w-[580px] grid-cols-2 gap-2 sm:grid-cols-4">
-                {heroShortcuts.map(({ label, href, icon: Icon }) => {
-                  const shortcutClassName =
-                    "group flex min-h-[88px] flex-col justify-between gap-3 rounded-lg border border-cream-dark bg-white p-3 text-sm font-medium leading-snug text-navy transition-colors duration-150 hover:border-gold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 focus-visible:ring-offset-cream";
-                  const content = (
-                    <>
-                      <Icon aria-hidden="true" className="h-5 w-5 text-navy/70 transition-colors duration-150 group-hover:text-gold" strokeWidth={1.75} />
-                      <span>{label}</span>
-                    </>
-                  );
-
+              <div className="mt-5 flex max-w-[600px] flex-wrap gap-2">
+                {heroShortcuts.map(({ label, href }) => {
+                  const chip =
+                    "inline-flex items-center rounded border border-navy/25 px-3 py-1.5 text-sm font-medium text-navy transition-colors duration-150 hover:border-navy hover:bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 focus-visible:ring-offset-cream";
                   return href.startsWith("#") ? (
-                    <a key={href} href={href} className={shortcutClassName}>
-                      {content}
-                    </a>
+                    <a key={href} href={href} className={chip}>{label}</a>
                   ) : (
-                    <Link key={href} to={href} className={shortcutClassName}>
-                      {content}
-                    </Link>
+                    <Link key={href} to={href} className={chip}>{label}</Link>
                   );
                 })}
               </div>
-              <p className="text-note text-navy/60 mt-5 max-w-[60ch]">
-                Print de conversa, foto de documento ou PDF: lemos o texto e devolvemos a análise.
-              </p>
-              <p className="text-note text-navy/60 mt-2 max-w-[60ch]">
-                Três buscas por dia sem conta, no acervo já indexado. A conta grátis libera a consulta ao vivo no CNJ e começa com 7 dias do plano Profissional, sem cartão.
+              <p className="text-note text-navy/60 mt-6 max-w-[60ch]">
+                Três buscas por dia sem conta. A conta grátis começa com 7 dias do plano Profissional, sem cartão.
               </p>
 
             </div>
@@ -184,18 +170,18 @@ export default function LandingPage() {
                   <span>{heroDecision.tipo}</span>
                 </div>
                 <p className="font-mono text-sm text-navy/70 mt-1">{heroDecision.numeroCnj}</p>
-                <p className="font-serif text-lg leading-relaxed mt-6 line-clamp-5">{heroDecision.ementa}</p>
+                <p className="font-serif text-lg leading-relaxed mt-6 line-clamp-4">{heroDecision.ementa}</p>
                 <p className="text-note text-navy/60 mt-3">{heroDecision.relatoria}</p>
-                <div className="mt-5 pt-4 border-t border-cream-dark flex items-center justify-between text-note">
+                <div className="mt-5 pt-4 border-t border-cream-dark flex items-center justify-between gap-4 text-note">
                   <a
                     href={heroDecision.sourceUrl}
                     target="_blank"
                     rel="noopener"
                     className="font-medium underline underline-offset-4"
                   >
-                    Ver fonte no CNJ
+                    Ver fonte no tribunal
                   </a>
-                  <span className="text-navy/60">Resultado de consulta real</span>
+                  <span className="text-navy/60">Registro verificado via DataJud</span>
                 </div>
               </article>
             </div>
