@@ -6,6 +6,13 @@ export interface ExportSection {
   body: string; // use \n for line breaks / bullet lines
 }
 
+export const TRANSPARENCY_NOTE =
+  "Nota de transparência: documento elaborado com apoio de inteligência artificial. Precedentes e normas citados foram conferidos em fontes oficiais (DataJud/CNJ, tribunais e legislação compilada) e o texto passou por revisão humana integral, sob responsabilidade técnica do subscritor.";
+
+export interface ExportOptions {
+  transparencyNote?: boolean;
+}
+
 export function slugify(s: string) {
   return s
     .normalize("NFD")
@@ -25,7 +32,7 @@ function triggerDownload(blob: Blob, filename: string) {
   URL.revokeObjectURL(url);
 }
 
-export function exportToPDF(title: string, sections: ExportSection[], filename: string) {
+export function exportToPDF(title: string, sections: ExportSection[], filename: string, options: ExportOptions = {}) {
   const doc = new jsPDF({ unit: "pt", format: "a4" });
   const pageWidth = doc.internal.pageSize.getWidth();
   const pageHeight = doc.internal.pageSize.getHeight();
@@ -78,10 +85,26 @@ export function exportToPDF(title: string, sections: ExportSection[], filename: 
     y += 10;
   }
 
+  if (options.transparencyNote) {
+    doc.setDrawColor(200);
+    ensureSpace(60);
+    doc.line(marginX, y, marginX + contentWidth, y);
+    y += 14;
+    doc.setFont("helvetica", "italic");
+    doc.setFontSize(9);
+    doc.setTextColor(90);
+    for (const line of doc.splitTextToSize(TRANSPARENCY_NOTE, contentWidth)) {
+      ensureSpace(12);
+      doc.text(line, marginX, y);
+      y += 12;
+    }
+    doc.setTextColor(0);
+  }
+
   doc.save(filename);
 }
 
-export async function exportToDOCX(title: string, sections: ExportSection[], filename: string) {
+export async function exportToDOCX(title: string, sections: ExportSection[], filename: string, options: ExportOptions = {}) {
   const children: Paragraph[] = [];
 
   children.push(
@@ -114,6 +137,14 @@ export async function exportToDOCX(title: string, sections: ExportSection[], fil
       children.push(new Paragraph({ children: [new TextRun({ text: line, size: 22 })] }));
     }
     children.push(new Paragraph({ children: [new TextRun("")] }));
+  }
+
+  if (options.transparencyNote) {
+    children.push(
+      new Paragraph({
+        children: [new TextRun({ text: TRANSPARENCY_NOTE, italics: true, color: "555555", size: 18 })],
+      }),
+    );
   }
 
   const doc = new Document({ sections: [{ children }] });
