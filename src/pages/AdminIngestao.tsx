@@ -90,6 +90,10 @@ const QUERIES_SUGERIDAS = [
   "golpe pix responsabilidade banco",
   "execução título impenhorabilidade",
   "penhora conta corrente",
+  "arrendamento rural",
+  "parceria agrícola",
+  "cédula de produto rural",
+  "crédito rural alongamento",
 ];
 
 
