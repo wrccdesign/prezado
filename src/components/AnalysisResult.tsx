@@ -109,6 +109,7 @@ export function AnalysisResult({
 
 }) {
   const { toast } = useToast();
+  const [withNote, setWithNote] = useState(false);
   const [openItems, setOpenItems] = useState<Record<string, boolean>>({});
   const clarifications = esclarecimentos ?? {};
   const canClarify = !!onEsclarecimentoChange && !!onReanalyze;
@@ -235,7 +236,7 @@ export function AnalysisResult({
 
   const handleExportPDF = () => {
     try {
-      exportToPDF(title, buildSections(), `${baseName}.pdf`);
+      exportToPDF(title, buildSections(), `${baseName}.pdf`, { transparencyNote: withNote });
       toast({ title: "PDF gerado" });
     } catch {
       toast({ title: "Erro ao gerar PDF", variant: "destructive" });
@@ -244,7 +245,7 @@ export function AnalysisResult({
 
   const handleExportDOCX = async () => {
     try {
-      await exportToDOCX(title, buildSections(), `${baseName}.docx`);
+      await exportToDOCX(title, buildSections(), `${baseName}.docx`, { transparencyNote: withNote });
       toast({ title: "Word gerado" });
     } catch {
       toast({ title: "Erro ao gerar Word", variant: "destructive" });
@@ -578,6 +579,12 @@ export function AnalysisResult({
                 : "Salvar no histórico"}
           </Button>
         )}
+        <div className="basis-full">
+        <label className="flex items-start gap-2 text-[0.9375rem] leading-relaxed text-muted-foreground cursor-pointer">
+          <input type="checkbox" className="mt-1 h-4 w-4 accent-primary" checked={withNote} onChange={(e) => setWithNote(e.target.checked)} />
+          Incluir nota de transparência sobre uso de IA, conferência de fontes oficiais e revisão humana
+        </label>
+        </div>
         <Button variant="outline" onClick={handleExportPDF}>
           <FileDown className="mr-2 h-4 w-4" />
           Exportar PDF

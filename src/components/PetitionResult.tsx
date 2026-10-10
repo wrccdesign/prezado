@@ -17,6 +17,7 @@ import {
   hasLetterhead,
   type PetitionBranding,
 } from "@/lib/petitionBranding";
+import { TRANSPARENCY_NOTE } from "@/lib/exportDocument";
 import { CitationCheck, type CitationReport } from "@/components/CitationCheck";
 
 const EMPTY_BRANDING: PetitionBranding = {
@@ -124,6 +125,7 @@ export function PetitionResult({ text, petitionType, onNewPetition, citationRepo
   const { isLawyer } = useUserProfile();
 
   const [editedText, setEditedText] = useState(text);
+  const [withNote, setWithNote] = useState(false);
   const [branding, setBranding] = useState<PetitionBranding>(EMPTY_BRANDING);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -268,6 +270,14 @@ export function PetitionResult({ text, petitionType, onNewPetition, citationRepo
       doc.text(sig, pageWidth / 2, y, { align: "center" }); y += 5.5;
     }
 
+    if (withNote) {
+      y += 8;
+      doc.setFont("times", "italic"); doc.setFontSize(9);
+      for (const nl of doc.splitTextToSize(TRANSPARENCY_NOTE, usableWidth)) {
+        checkPage(5); doc.text(nl, mLeft, y); y += 4.5;
+      }
+    }
+
 
     doc.save(`${baseFilename}.pdf`);
     toast({ title: "Documento baixado com sucesso!" });
@@ -305,6 +315,12 @@ export function PetitionResult({ text, petitionType, onNewPetition, citationRepo
       docParagraphs.push(new Paragraph({
         children: [new TextRun({ text: sig, font: "Times New Roman", size: 24 })],
         alignment: AlignmentType.CENTER, spacing: { after: 80 },
+      }));
+    }
+    if (withNote) {
+      docParagraphs.push(new Paragraph({
+        children: [new TextRun({ text: TRANSPARENCY_NOTE, font: "Times New Roman", size: 18, italics: true })],
+        alignment: AlignmentType.JUSTIFIED, spacing: { before: 360 },
       }));
     }
 
@@ -419,6 +435,10 @@ export function PetitionResult({ text, petitionType, onNewPetition, citationRepo
               )}
             </p>
           )}
+<label className="flex items-start gap-2 text-[0.9375rem] leading-relaxed text-muted-foreground cursor-pointer">
+            <input type="checkbox" className="mt-1 h-4 w-4 accent-primary" checked={withNote} onChange={(e) => setWithNote(e.target.checked)} />
+            Incluir nota de transparência sobre uso de IA, conferência de fontes oficiais e revisão humana
+          </label>
           <div className="flex flex-wrap gap-3">
             <Button onClick={handleDownloadPDF} className="bg-[hsl(220,60%,30%)] hover:bg-[hsl(220,60%,25%)] text-white" size="lg">
               <FileText className="mr-2 h-5 w-5" />
