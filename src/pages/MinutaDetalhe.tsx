@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { AppHeader } from "@/components/AppHeader";
 import { AppFooter } from "@/components/AppFooter";
@@ -9,7 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, CheckCircle, Copy, Download, FileDown, Sparkles } from "lucide-react";
 import { getMinuta, minutaToPlainText, MINUTAS } from "@/data/minutas";
 import { ROUTE_CONTENT } from "@/seo/routeContent";
-import { exportToPDF, exportToDOCX, slugify } from "@/lib/exportDocument";
+import { exportToPDF, exportToDOCX, slugify, TRANSPARENCY_NOTE } from "@/lib/exportDocument";
 import { useToast } from "@/hooks/use-toast";
 import NotFound from "./NotFound";
 
@@ -59,6 +60,7 @@ export default function MinutaDetalhe() {
   const { slug } = useParams();
   const minuta = getMinuta(slug);
   const { toast } = useToast();
+  const [withNote, setWithNote] = useState(false);
 
   if (!minuta) return <NotFound />;
 
@@ -67,7 +69,7 @@ export default function MinutaDetalhe() {
 
   const handleCopy = async () => {
     try {
-      await navigator.clipboard.writeText(minutaToPlainText(minuta));
+      await navigator.clipboard.writeText(minutaToPlainText(minuta) + (withNote ? `\n\n${TRANSPARENCY_NOTE}` : ""));
       toast({ title: "Modelo copiado", description: "O texto está na área de transferência." });
     } catch {
       toast({ title: "Não foi possível copiar", variant: "destructive" });
@@ -137,19 +139,23 @@ export default function MinutaDetalhe() {
           <Badge variant="secondary">{minuta.category}</Badge>
           <h1 className="text-2xl sm:text-4xl font-bold font-serif text-foreground">{minuta.title}</h1>
           <p className="text-base text-muted-foreground">{minuta.shortDescription}</p>
+          <label className="flex items-start gap-2 text-[0.9375rem] leading-relaxed text-muted-foreground cursor-pointer">
+          <input type="checkbox" className="mt-1 h-4 w-4 accent-primary" checked={withNote} onChange={(e) => setWithNote(e.target.checked)} />
+          Incluir nota de transparência sobre uso de IA, conferência de fontes oficiais e revisão humana
+        </label>
           <div className="flex flex-wrap gap-2">
             <Button onClick={handleCopy} variant="outline" size="sm">
               <Copy className="mr-2 h-4 w-4" /> Copiar texto
             </Button>
             <Button
-              onClick={() => exportToPDF(minuta.title, sections, filename)}
+              onClick={() => exportToPDF(minuta.title, sections, filename, { transparencyNote: withNote })}
               variant="outline"
               size="sm"
             >
               <FileDown className="mr-2 h-4 w-4" /> PDF
             </Button>
             <Button
-              onClick={() => exportToDOCX(minuta.title, sections, filename)}
+              onClick={() => exportToDOCX(minuta.title, sections, filename, { transparencyNote: withNote })}
               variant="outline"
               size="sm"
             >
