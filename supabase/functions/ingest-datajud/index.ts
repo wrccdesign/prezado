@@ -1,7 +1,7 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { requireUser } from "../_shared/auth.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-import { generateEmbedding } from "../_shared/embeddings.ts";
+import { generateEmbeddings } from "../_shared/embeddings.ts";
 import { aiChatTool } from "../_shared/ai.ts";
 
 const corsHeaders = {
@@ -136,6 +136,26 @@ function buildDecisionData(metadata: any, source: any, tribunal: string, externa
   };
 }
 
+// deno-lint-ignore no-explicit-any
+async function embedPending(supabase: any, items: { externalId: string; text: string }[], userId: string) {
+  try {
+    const vectors = await generateEmbeddings(items.map((i) => i.text), {
+      functionName: "ingest-datajud",
+      userId,
+    });
+    await Promise.all(
+      items.map((item, idx) =>
+        supabase
+          .from("decisions")
+          .update({ embedding: `[${vectors[idx].join(",")}]` })
+          .eq("external_id", item.externalId),
+      ),
+    );
+  } catch (e) {
+    console.warn(`[ingest-datajud] embeddings adiados para o backfill (${items.length}):`, e instanceof Error ? e.message : e);
+  }
+}
+
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
@@ -231,6 +251,7 @@ serve(async (req) => {
     let updated = 0;
     let skipped = 0;
     const errors: string[] = [];
+    const pendingEmbeddings: { externalId: string; text: string }[] = [];
     // Dois hits do DataJud podem trazer o mesmo numero_processo: o upsert
     // atualizaria a linha e a contagem inflaria. Deduplicamos no lote.
     const seenNumeros = new Set<string>();
@@ -347,23 +368,22 @@ serve(async (req) => {
         }
 
 
-        // Generate embedding (non-blocking)
-        try {
-          const embText = [decisionData.ementa, decisionData.resumo_ia].filter(Boolean).join(" ");
-          if (embText.length >= 20) {
-            const embedding = await generateEmbedding(embText);
-            const embeddingStr = `[${embedding.join(",")}]`;
-            await supabase
-              .from("decisions")
-              .update({ embedding: embeddingStr })
-              .eq("external_id", externalId);
-          }
-        } catch (embErr) {
-          console.error(`Embedding error for ${externalId}:`, embErr);
-        }
+        // Embedding fica fora do caminho síncrono: coletado e enviado em lote no fim.
+        const embText = [decisionData.ementa, decisionData.resumo_ia].filter(Boolean).join(" ");
+        if (embText.length >= 20) pendingEmbeddings.push({ externalId, text: embText });
       } catch (e) {
         errors.push(`Erro processando ${externalId}: ${e instanceof Error ? e.message : "desconhecido"}`);
       }
+    }
+
+    // Um único lote para a Voyage, em segundo plano. Se falhar (ex.: 429),
+    // a linha fica com embedding NULL e o backfill-embeddings completa depois.
+    if (pendingEmbeddings.length > 0) {
+      const task = embedPending(supabase, pendingEmbeddings, _auth.userId);
+      // deno-lint-ignore no-explicit-any
+      const runtime = (globalThis as any).EdgeRuntime;
+      if (runtime?.waitUntil) runtime.waitUntil(task);
+      else task.catch(() => {});
     }
 
     return new Response(JSON.stringify({
@@ -371,9 +391,9 @@ serve(async (req) => {
       updated,
       skipped,
       errors,
+      embeddings_pending: pendingEmbeddings.length,
       total_hits: datajudData.hits?.total?.value || hits.length,
     }), {
-
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } catch (e) {
