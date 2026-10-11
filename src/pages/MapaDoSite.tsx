@@ -105,6 +105,7 @@ const plataforma = [
   { to: "/jurisprudencia/tema/atraso-de-voo", label: "Jurisprudência sobre atraso e cancelamento de voo" },
   { to: "/jurisprudencia/tema/cartao-consignado-rmc", label: "Jurisprudência sobre cartão consignado e RMC" },
   { to: "/jurisprudencia/tema/execucao-e-penhora", label: "Jurisprudência sobre execução e penhora de salário" },
+  { to: "/jurisprudencia/tema/contratos-agrarios", label: "Jurisprudência sobre arrendamento rural e CPR" },
   { to: "/diagnostico", label: "Diagnóstico jurídico" },
   { to: "/peticao", label: "Gerador de petições" },
   { to: "/chat", label: "Chat jurídico" },

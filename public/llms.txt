@@ -28,6 +28,7 @@ Versão detalhada, com fórmulas, base legal e perguntas respondidas: /llms-full
 - [Jurisprudência sobre atraso e cancelamento de voo](/jurisprudencia/tema/atraso-de-voo): Fortuito interno e externo, Resolução 400 da ANAC e valor do dano moral, com decisões reais.
 - [Jurisprudência sobre cartão consignado e RMC](/jurisprudencia/tema/cartao-consignado-rmc): Reserva de margem consignável, nulidade, conversão em empréstimo e prazo, com decisões reais.
 - [Jurisprudência sobre execução e penhora de salário](/jurisprudencia/tema/execucao-e-penhora): Art. 833 do CPC, mitigação da impenhorabilidade e bloqueio pelo SISBAJUD, com decisões reais.
+- [Jurisprudência sobre arrendamento rural e CPR](/jurisprudencia/tema/contratos-agrarios): Notificação de retomada, renovação automática, despejo, preço em produto e execução de cédula de produto rural, com decisões reais do TJMG e do TJPR.
 - [Rescisão por situação](/calculadoras/rescisao-trabalhista/demissao-sem-justa-causa): Verbas devidas em dispensa sem justa causa, pedido de demissão, acordo do art. 484-A, justa causa e contrato de experiência.
 - [Correção por índice](/calculadoras/correcao-monetaria-juros-lei-14905/ipca): Páginas para IPCA, INPC, IGP-M, Selic e Taxa Legal, com a série oficial do Banco Central.
 - [Modelos de Minutas](/modelos-de-minutas): Nove minutas editáveis com base legal citada.
