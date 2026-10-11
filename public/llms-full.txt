@@ -112,6 +112,10 @@ Base legal: CDC, arts. 6º, III, e 46 (dever de informação); CDC, art. 51, IV 
 URL: https://honorifico.com.br/jurisprudencia/tema/execucao-e-penhora
 Base legal: CPC, art. 833, IV (impenhorabilidade de verbas salariais) e §2º (exceção para alimentos e para o que exceder 50 salários mínimos); CPC, art. 529, §3º (desconto de até 50% em alimentos); CPC, art. 854 (bloqueio pelo SISBAJUD e 5 dias para comprovar impenhorabilidade); Lei 8.009/90 (bem de família); EREsp 1.874.222/DF do STJ (mitigação da impenhorabilidade preservado o mínimo existencial).
 
+### Arrendamento rural e cédula de produto rural
+URL: https://honorifico.com.br/jurisprudencia/tema/contratos-agrarios
+Base legal: Estatuto da Terra, art. 95, IV e V (renovação automática sem notificação seis meses antes do fim; preferência do arrendatário); Decreto 59.566/66, arts. 18 (preço em dinheiro), 22 (notificação de retomada) e 32 (hipóteses de despejo); Lei 8.929/94, com alterações da Lei 13.986/2020 (cédula de produto rural física e financeira).
+
 ## Landings de cálculo por situação
 
 - Rescisão por situação: /calculadoras/rescisao-trabalhista/demissao-sem-justa-causa, /pedido-de-demissao, /acordo-484a, /justa-causa e /contrato-de-experiencia, cada uma com as verbas devidas naquela modalidade.
