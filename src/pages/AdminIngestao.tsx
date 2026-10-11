@@ -293,7 +293,16 @@ export default function AdminIngestao() {
           body: { tribunal, query: query.trim(), size: parseInt(size) },
         });
 
-        if (error) throw error;
+        if (error) {
+          // Mostra a mensagem real da função em vez do genérico "non-2xx".
+          let detail = error.message;
+          const ctx = (error as { context?: Response }).context;
+          if (ctx && typeof ctx.json === "function") {
+            const body = await ctx.json().catch(() => null);
+            if (body?.error) detail = body.error;
+          }
+          throw new Error(detail);
+        }
 
         setResults((prev) =>
           prev.map((r, idx) =>
