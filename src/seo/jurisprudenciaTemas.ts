@@ -757,4 +757,142 @@ export const JURISPRUDENCIA_TEMAS: JurisprudenciaTema[] = [
       },
     ],
   },
+  {
+    slug: "contratos-agrarios",
+    title: "Jurisprudência sobre arrendamento rural e cédula de produto rural",
+    description:
+      "O arrendamento rural é regido pelo Estatuto da Terra (Lei 4.504/64) e pelo Decreto 59.566/66, normas de ordem pública que protegem o arrendatário. A cédula de produto rural (CPR) é título de crédito da Lei 8.929/94, usado para financiar a safra. Nos tribunais, os pontos que mais decidem casos são a notificação prévia para retomar o imóvel, o preço fixado em produto e a exigibilidade da CPR na execução.",
+    seoTitle: "Arrendamento rural e CPR: jurisprudência com decisões reais",
+    seoDescription:
+      "Acórdãos reais do TJMG e do TJPR sobre arrendamento rural, notificação de retomada, despejo, preço em sacas e cédula de produto rural, com número do processo, relator e link para a fonte oficial.",
+    query: "arrendamento rural cédula de produto rural",
+    legislacao: [
+      { norma: "Estatuto da Terra, art. 95, IV e V", conteudo: "Renovação automática do arrendamento se o arrendador não notificar o arrendatário até seis meses antes do fim do contrato; direito de preferência do arrendatário na renovação." },
+      { norma: "Decreto 59.566/66, art. 22", conteudo: "Disciplina a notificação de retomada e o prazo de seis meses antes do vencimento do contrato." },
+      { norma: "Decreto 59.566/66, art. 32", conteudo: "Lista as hipóteses de despejo, entre elas o término do prazo após notificação e a falta de pagamento, com possibilidade de purgação da mora." },
+      { norma: "Decreto 59.566/66, art. 18", conteudo: "O preço do arrendamento deve ser ajustado em quantia fixa de dinheiro; a fixação em produtos é vedada, embora o pagamento em frutos seja admitido pelo equivalente." },
+      { norma: "Lei 8.929/94 (com alterações da Lei 13.986/2020)", conteudo: "Institui a cédula de produto rural, física e financeira, como título líquido, certo e exigível pela quantidade e qualidade do produto ou pelo valor nela previsto." },
+    ],
+    paragraphs: [
+      {
+        heading: "A notificação decide a retomada",
+        body: "Sem notificação enviada até seis meses antes do fim do prazo, o contrato se renova automaticamente e o arrendador não consegue a reintegração de posse. Os tribunais também examinam o conteúdo: a notificação que não declara a intenção de retomar ou de não renovar não produz esse efeito. Antes de propor despejo ou reintegração, confira a data de envio, a prova do recebimento e o texto da notificação.",
+      },
+      {
+        heading: "Preço em sacas e risco climático",
+        body: "A vedação do art. 18 do Decreto 59.566/66 não impede, na prática, que as decisões reconheçam o direito às prestações fixadas em produto quando o arrendatário usou o imóvel e não pagou. A geada e a estiagem, por sua vez, costumam ser tratadas como risco inerente à atividade agrícola, o que afasta a revisão pela teoria da imprevisão sem prova específica do desequilíbrio.",
+      },
+      {
+        heading: "CPR na execução",
+        body: "A cédula de produto rural é título não causal: a defesa nos embargos precisa provar o vício concreto, e a simples alegação de que a dívida nasceu de outro negócio não basta. Na CPR financeira, as decisões discutem a apresentação do título original e o alongamento da dívida rural, que depende de prova do requerimento administrativo prévio.",
+      },
+    ],
+    decisoes: [
+      {
+        id: "a7598a41-781b-439f-a43c-14bb0a631032",
+        tribunal: "TJPR",
+        tipo: "Acórdão",
+        numero: "0000361-74.2017.8.16.0042",
+        relator: "Sigurd Roberto Bengtsson",
+        data: "2019-08-15",
+        ementa:
+          "Apelação cível. Ação de reintegração de posse com pedido liminar. Contrato de arrendamento rural. Ausência de notificação do arrendatário enviada com antecedência de seis meses do término do contrato com a finalidade de rescindi-lo. Renovação automática do arrendamento. Inteligência do art. 95, IV, do Estatuto da Terra. Impossibilidade de discutir a rescisão contratual na ação de reintegração de posse.",
+        fonte: "https://portal.tjpr.jus.br/jurisprudencia/j/4100000007938571/Ac%C3%B3rd%C3%A3o-0000361-74.2017.8.16.0042",
+      },
+      {
+        id: "b394c358-895f-4cc2-8457-48b62b74b492",
+        tribunal: "TJPR",
+        tipo: "Acórdão",
+        numero: "0037104-10.2020.8.16.0000",
+        relator: "Marcelo Gobbo Dalla Dea",
+        data: "2021-07-28",
+        ementa:
+          "Agravo de instrumento. Ação de interdito proibitório. Contrato de arrendamento rural. Plantação de soja. Tutela de urgência. Probabilidade do direito e perigo de dano configurados. Notificação extrajudicial que não informou a intenção de rescisão do contrato de arrendamento rural. Recurso provido.",
+        fonte: "https://portal.tjpr.jus.br/jurisprudencia/j/4100000014318041/Ac%C3%B3rd%C3%A3o-0037104-10.2020.8.16.0000",
+      },
+      {
+        id: "d4d1a0d6-ea62-4eab-bc17-bfe1fcec8ec8",
+        tribunal: "TJMG",
+        tipo: "Acórdão",
+        numero: "1.0000.21.258893-3/001",
+        relator: "Adriano de Mesquita Carneiro",
+        data: "2022-08-24",
+        ementa:
+          "Agravo de instrumento. Ação de despejo c/c cobrança. Arrendamento rural. Tutela de urgência. Hipóteses do art. 32 do Decreto 59.566/66. Falta de pagamento e possibilidade de purgação da mora. Término do contrato e necessidade de notificação. Alteração da destinação do imóvel que exige dilação probatória. Decisão mantida.",
+        fonte: "https://www5.tjmg.jus.br/jurisprudencia/relatorioEspelhoAcordao.do?inteiroTeor=true&ano=21&ttriCodigo=1&codigoOrigem=0000&numero=258893&sequencial=001&sequencialAcordao=0",
+      },
+      {
+        id: "62965e56-4071-4637-96a6-c3f2bd04c2a3",
+        tribunal: "TJMG",
+        tipo: "Acórdão",
+        numero: "1.0000.23.296171-4/004",
+        relator: "Fernando Lins",
+        data: "2025-10-09",
+        ementa:
+          "Apelação cível. Ação de cobrança, rescisão contratual e despejo. Contrato de parceria agrícola convertido em arrendamento rural. Aluguel fixado em quantidade de produtos agrícolas. Inadimplemento dos arrendatários. Direito às prestações inadimplidas. Resolução do negócio. Ordem de despejo concedida.",
+        fonte: "https://www5.tjmg.jus.br/jurisprudencia/relatorioEspelhoAcordao.do?inteiroTeor=true&ano=23&ttriCodigo=1&codigoOrigem=0000&numero=296171&sequencial=004&sequencialAcordao=0",
+      },
+      {
+        id: "7d32ded3-b8e2-420f-9bdc-ef812a145b5b",
+        tribunal: "TJMG",
+        tipo: "Acórdão",
+        numero: "1.0000.22.091216-6/002",
+        relator: "João Cancio",
+        data: "2025-11-11",
+        ementa:
+          "Direito civil. Apelação cível. Arrendamento rural. Inadimplemento contratual. Geada. Risco climático inerente à atividade agrícola. Impossibilidade de revisão contratual pela teoria da imprevisão. Indenização por benfeitorias não comprovadas. Recurso desprovido.",
+        fonte: "https://www5.tjmg.jus.br/jurisprudencia/relatorioEspelhoAcordao.do?inteiroTeor=true&ano=22&ttriCodigo=1&codigoOrigem=0000&numero=091216&sequencial=002&sequencialAcordao=0",
+      },
+      {
+        id: "49e5201b-f016-4e50-bb7d-8dbc142a69a8",
+        tribunal: "TJMG",
+        tipo: "Acórdão",
+        numero: "1.0000.25.044516-0/001",
+        relator: "Shirley Fenzi Bertão",
+        data: "2025-06-04",
+        ementa:
+          "Direito processual civil. Apelação cível. Embargos à execução. Cédula de produto rural. Título executivo extrajudicial. Título não causal. Inexistência de nulidade ou excesso de execução. Ausência de prova da ilegitimidade da dívida. Recurso desprovido.",
+        fonte: "https://www5.tjmg.jus.br/jurisprudencia/relatorioEspelhoAcordao.do?inteiroTeor=true&ano=25&ttriCodigo=1&codigoOrigem=0000&numero=044516&sequencial=001&sequencialAcordao=0",
+      },
+      {
+        id: "46f42888-ab16-48e0-a1e9-1abb1fd9dc35",
+        tribunal: "TJPR",
+        tipo: "Acórdão",
+        numero: "0002773-76.2007.8.16.0058",
+        relator: "Jucimar Novochadlo",
+        data: "2019-06-26",
+        ementa:
+          "Embargos à execução. Cédula de produto rural financeira (CPR-F), nota promissória rural e contrato particular de fornecimento de insumo. Alegação de cerceamento de defesa na prova pericial. Aval como garantia formal, que não se presume. Mantida a legitimidade passiva da executada por ser emitente da cédula.",
+        fonte: "https://portal.tjpr.jus.br/jurisprudencia/j/4100000009435981/Ac%C3%B3rd%C3%A3o-0002773-76.2007.8.16.0058",
+      },
+    ],
+    ferramentas: [
+      { to: "/modelos-de-minutas/notificacao-extrajudicial", label: "Redigir a notificação de retomada" },
+      { to: "/calculadoras/correcao-monetaria-juros-lei-14905", label: "Atualizar o valor do arrendamento em atraso" },
+      { to: "/calculadoras/operacoes-datas", label: "Contar os seis meses antes do fim do contrato" },
+      { to: "/diagnostico", label: "Descrever o caso no Diagnóstico" },
+    ],
+    faq: [
+      {
+        question: "Preciso notificar o arrendatário para retomar o imóvel no fim do contrato?",
+        answer: "Sim. Pelo art. 95, IV, do Estatuto da Terra e pelo art. 22 do Decreto 59.566/66, a notificação deve ser feita até seis meses antes do vencimento. Sem ela, o contrato se renova automaticamente, como decidiu o TJPR no processo 0000361-74.2017.8.16.0042.",
+      },
+      {
+        question: "Qualquer notificação serve?",
+        answer: "Não. A notificação precisa declarar a intenção de retomar o imóvel ou de não renovar o contrato. Uma notificação genérica, que não informa essa intenção, foi considerada insuficiente pelo TJPR no processo 0037104-10.2020.8.16.0000.",
+      },
+      {
+        question: "O arrendamento pode ser pago em sacas de soja?",
+        answer: "O art. 18 do Decreto 59.566/66 exige preço em dinheiro e veda a fixação em produtos. Ainda assim, há decisões que reconhecem o direito às prestações fixadas em produto quando houve uso do imóvel e inadimplemento. O risco está na liquidação: convém prever no contrato o critério de conversão em dinheiro.",
+      },
+      {
+        question: "Geada ou seca justificam a revisão do contrato?",
+        answer: "Em regra, não. O TJMG tratou a geada como risco inerente à atividade agrícola e negou a revisão pela teoria da imprevisão no processo 1.0000.22.091216-6/002. A revisão depende de prova de um desequilíbrio que fuja ao risco normal da safra.",
+      },
+      {
+        question: "Como se defender de uma execução de CPR?",
+        answer: "Por embargos à execução. Como a CPR é título não causal, a defesa precisa provar o vício concreto, como pagamento, excesso ou nulidade formal. Na CPR financeira, também se discute a exigência do título original nos autos.",
+      },
+    ],
+  },
 ];
