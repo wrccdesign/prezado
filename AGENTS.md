@@ -1,0 +1,1 @@
+- Full-text search on `decisions` uses the stored generated column `search_tsv` (GIN-indexed); never recompute to_tsvector inside queries, because ranking over full_text blows the 3s anon statement timeout.

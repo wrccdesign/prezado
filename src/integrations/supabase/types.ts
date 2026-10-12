@@ -382,6 +382,7 @@ export type Database = {
           resumo_ia: string | null
           reu_recorrido: string | null
           score_utilidade: number | null
+          search_tsv: unknown
           source: string
           source_url: string | null
           temas_juridicos: string[] | null
@@ -419,6 +420,7 @@ export type Database = {
           resumo_ia?: string | null
           reu_recorrido?: string | null
           score_utilidade?: number | null
+          search_tsv?: unknown
           source?: string
           source_url?: string | null
           temas_juridicos?: string[] | null
@@ -456,6 +458,7 @@ export type Database = {
           resumo_ia?: string | null
           reu_recorrido?: string | null
           score_utilidade?: number | null
+          search_tsv?: unknown
           source?: string
           source_url?: string | null
           temas_juridicos?: string[] | null
