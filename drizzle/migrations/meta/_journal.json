@@ -1,0 +1,13 @@
+{
+  "version": "7",
+  "dialect": "postgresql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "7",
+      "when": 1791775734481,
+      "tag": "0000_decisions_stored_tsvector",
+      "breakpoints": true
+    }
+  ]
+}
