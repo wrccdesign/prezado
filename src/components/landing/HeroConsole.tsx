@@ -73,7 +73,7 @@ function Ementa({ texto, destaque }: { texto: string; destaque: string }) {
   return (
     <>
       {texto.slice(0, i)}
-      <mark className="bg-cream text-navy underline decoration-gold/60 decoration-2 underline-offset-4 px-0.5">
+      <mark className="bg-gold/15 text-navy px-0.5 rounded-sm">
         {destaque}
       </mark>
       {texto.slice(i + destaque.length)}
@@ -125,20 +125,24 @@ export function HeroConsole() {
         aria-live="polite"
         className="bg-white text-navy border border-cream-dark border-t-[3px] border-t-gold rounded-lg overflow-hidden"
       >
+        <div className="flex items-center justify-between gap-3 px-6 md:px-7 py-2 border-b border-cream-dark bg-cream/50 text-note text-navy/60">
+          <span>Registro público do Judiciário, CNJ/DataJud</span>
+          <span className="shrink-0 whitespace-nowrap inline-flex items-center gap-1.5 rounded border border-success/30 px-1.5 py-0.5 text-success">
+            <svg viewBox="0 0 12 12" className="h-3 w-3" aria-hidden="true"><path d="M2.5 6.2l2.2 2.2 4.8-4.9" fill="none" stroke="currentColor" strokeWidth="1.5" /></svg>
+            Fonte verificada
+          </span>
+        </div>
         <header className="px-6 md:px-7 pt-5 pb-4 border-b border-cream-dark">
           <div className="flex items-start justify-between gap-4 text-sm font-medium">
-            <span>{caso.tribunal}</span>
-            <span className="inline-flex items-center gap-1.5 text-navy/70">
-              <span className="h-1.5 w-1.5 rounded-full bg-success" aria-hidden />
-              Fonte oficial
-            </span>
+            <span className="font-serif text-lg font-semibold leading-tight">{caso.tribunal}</span>
+            <span className="text-navy/60 font-normal">{caso.tipo}</span>
           </div>
           <div className="mt-1 flex items-center gap-3">
             <span className="font-mono text-sm text-navy/70">{caso.numeroCnj}</span>
             <button
               type="button"
               onClick={copiar}
-              className="text-note text-navy/60 hover:text-navy transition-colors duration-150 underline underline-offset-2"
+              className="rounded border border-cream-dark px-1.5 py-0.5 text-note text-navy/65 hover:border-navy/40 hover:text-navy transition-colors duration-150"
             >
               {copiado ? "Copiado" : "Copiar"}
             </button>
@@ -146,8 +150,8 @@ export function HeroConsole() {
         </header>
 
         <div className="px-6 md:px-7 py-5">
-          <p className="text-note text-navy/60 mb-2">{caso.tipo}, trecho da ementa</p>
-          <p className="font-serif text-[1.0625rem] leading-relaxed line-clamp-5">
+          <p className="text-note text-navy/60 mb-2">Trecho da ementa</p>
+          <p key={caso.id} className="font-serif text-[1.0625rem] leading-[1.6] line-clamp-5 border-l-2 border-cream-dark pl-4 animate-in fade-in duration-150 motion-reduce:animate-none">
             <Ementa texto={caso.ementa} destaque={caso.destaque} />
           </p>
           <p className="text-note text-navy/60 mt-3">{caso.relatoria}</p>

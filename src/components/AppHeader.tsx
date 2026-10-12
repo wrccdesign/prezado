@@ -61,8 +61,9 @@ function NavButton({ item, active, onClick, locked }: { item: NavItem; active: b
     <button
       onClick={onClick}
       aria-label={item.label}
-      className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
-        active ? "bg-cream/10 text-cream" : "text-cream/72 hover:text-cream hover:bg-cream/5"
+      aria-current={active ? "page" : undefined}
+      className={`relative inline-flex items-center gap-1.5 px-3 h-16 text-[0.9375rem] font-medium transition-colors duration-150 after:absolute after:inset-x-3 after:bottom-0 after:h-px after:transition-colors ${
+        active ? "text-cream after:bg-gold" : "text-cream/72 hover:text-cream after:bg-transparent"
       }`}
     >
       {item.label}
@@ -194,8 +195,8 @@ export function AppHeader() {
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <button
-          className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
-            groupActive(tools) ? "bg-cream/10 text-cream" : "text-cream/72 hover:text-cream hover:bg-cream/5"
+          className={`relative inline-flex items-center gap-1.5 px-3 h-16 text-[0.9375rem] font-medium transition-colors duration-150 after:absolute after:inset-x-3 after:bottom-0 after:h-px ${
+            groupActive(tools) ? "text-cream after:bg-gold" : "text-cream/72 hover:text-cream after:bg-transparent"
           }`}
         >
           Ferramentas
@@ -256,13 +257,13 @@ export function AppHeader() {
     <div className="flex items-center gap-2">
       <button
         onClick={() => navigate("/auth")}
-        className="px-3 py-1.5 rounded-md text-sm font-medium text-cream/72 hover:text-cream hover:bg-cream/5 transition-colors"
+        className="h-9 px-4 rounded text-[0.9375rem] font-medium text-cream border border-cream/25 hover:border-cream/60 transition-colors duration-150"
       >
         Entrar
       </button>
       <button
         onClick={() => navigate("/auth?mode=signup")}
-        className="px-3 py-1.5 rounded-md text-sm font-medium bg-gold text-navy hover:bg-gold-light transition-colors"
+        className="h-9 px-4 rounded text-[0.9375rem] font-medium bg-gold text-navy hover:bg-gold-light transition-colors duration-150"
       >
         Criar conta grátis
       </button>
@@ -295,9 +296,9 @@ export function AppHeader() {
 
   return (
     <>
-    <header className="sticky top-0 z-50 bg-navy border-b border-gold/12">
+    <header className="sticky top-0 z-50 bg-navy border-b border-cream/10">
 
-      <div className="container flex h-14 sm:h-16 items-center justify-between px-4">
+      <div className="container max-w-[1120px] flex h-14 sm:h-16 items-center justify-between px-4 sm:px-6">
         <button onClick={() => navigate("/")} className="flex items-center flex-shrink-0">
           <Logo className="h-8 sm:h-9" />
         </button>
@@ -310,7 +311,7 @@ export function AppHeader() {
           {toolsMenu}
           {!user && <NavButton item={planosItem} active={isActive(planosItem.path)} onClick={() => navigate(planosItem.path)} />}
           {fontScaleMenu()}
-          <div className="w-px h-6 bg-cream/10 mx-1" />
+          <div className="w-px h-5 bg-cream/15 mx-3" />
           {user ? accountMenu : guestActions}
         </nav>
 
@@ -322,7 +323,7 @@ export function AppHeader() {
           {toolsMenu}
           {!user && <NavButton item={planosItem} active={isActive(planosItem.path)} onClick={() => navigate(planosItem.path)} />}
           {fontScaleMenu()}
-          <div className="w-px h-6 bg-cream/10 mx-1" />
+          <div className="w-px h-5 bg-cream/15 mx-3" />
           {user ? accountMenu : guestActions}
 
         </nav>
