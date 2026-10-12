@@ -9,6 +9,7 @@ import { SEO } from "@/components/SEO";
 import { CorrecaoCalc } from "@/components/calculators/CorrecaoCalc";
 import { savePeticaoPrefill } from "@/lib/peticaoPrefill";
 import { FonteTable } from "@/components/FonteTable";
+import { HeroConsole } from "@/components/landing/HeroConsole";
 
 // Registro real da tabela `decisions`, id 2247d42f-1f63-44e9-b884-eda515070ff6
 const heroDecision = {
@@ -162,28 +163,7 @@ export default function LandingPage() {
             </div>
 
             <div className="lg:col-span-5 lg:pl-4">
-              <article
-                className="bg-white text-navy border border-cream-dark border-t-[3px] border-t-gold rounded-lg overflow-hidden lg:-mr-6 p-6 md:p-8"
-              >
-                <div className="flex items-start justify-between gap-4 font-sans font-medium text-sm">
-                  <span>{heroDecision.tribunal}</span>
-                  <span>{heroDecision.tipo}</span>
-                </div>
-                <p className="font-mono text-sm text-navy/70 mt-1">{heroDecision.numeroCnj}</p>
-                <p className="font-serif text-lg leading-relaxed mt-6 line-clamp-4">{heroDecision.ementa}</p>
-                <p className="text-note text-navy/60 mt-3">{heroDecision.relatoria}</p>
-                <div className="mt-5 pt-4 border-t border-cream-dark flex items-center justify-between gap-4 text-note">
-                  <a
-                    href={heroDecision.sourceUrl}
-                    target="_blank"
-                    rel="noopener"
-                    className="font-medium underline underline-offset-4"
-                  >
-                    Ver fonte no tribunal
-                  </a>
-                  <span className="text-navy/60">Registro verificado via DataJud</span>
-                </div>
-              </article>
+              <HeroConsole />
             </div>
           </div>
         </div>
