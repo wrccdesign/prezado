@@ -112,8 +112,8 @@ export default function LandingPage() {
       <AppHeader />
 
       {/* HERO */}
-      <section className="bg-cream text-navy py-12 md:py-20 lg:py-24">
-        <div className="container mx-auto px-4 sm:px-6">
+      <section className="bg-cream text-navy py-12 md:py-20 lg:py-24 border-b border-cream-dark">
+        <div className="container max-w-[1120px] mx-auto px-4 sm:px-6">
           <div className="grid gap-12 lg:grid-cols-12 lg:items-center">
             <div className="lg:col-span-7">
               <h1 className="text-display-hero text-navy max-w-[18ch]">
@@ -128,27 +128,28 @@ export default function LandingPage() {
                   const q = heroQuery.trim();
                   if (q) navigate(`/jurisprudencia?q=${encodeURIComponent(q)}`);
                 }}
-                className="mt-9 flex flex-col gap-2 max-w-[580px] sm:flex-row"
+                className="mt-9 flex max-w-[580px] items-stretch rounded border border-navy/30 bg-white focus-within:border-navy transition-colors duration-150"
               >
                 <Input
                   value={heroQuery}
                   onChange={(e) => setHeroQuery(e.target.value)}
                   placeholder="Descreva a situação ou cole o número CNJ"
                   aria-label="Buscar processo ou decisão"
-                  className="h-12 bg-white text-navy border border-navy/20 rounded-md placeholder:text-navy/50 font-sans focus-visible:ring-gold flex-1"
+                  className="h-14 flex-1 border-0 bg-transparent rounded-none px-4 text-base text-navy placeholder:text-navy/45 font-sans focus-visible:ring-0 focus-visible:ring-offset-0"
                 />
                 <Button
                   type="submit"
                   size="lg"
-                  className="h-12 bg-gold text-navy hover:bg-gold-light font-medium rounded-md px-7"
+                  className="m-1.5 h-auto bg-gold text-navy hover:bg-gold-light font-medium rounded px-6"
                 >
                   Buscar
                 </Button>
               </form>
-              <div className="mt-5 flex max-w-[600px] flex-wrap gap-2">
+              <p className="text-note text-navy/55 mt-6 mb-2">Ou comece por</p>
+              <div className="flex max-w-[600px] flex-wrap gap-2">
                 {heroShortcuts.map(({ label, href }) => {
                   const chip =
-                    "inline-flex items-center rounded border border-navy/25 px-3 py-1.5 text-sm font-medium text-navy transition-colors duration-150 hover:border-navy hover:bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 focus-visible:ring-offset-cream";
+                    "inline-flex items-center rounded border border-navy/20 bg-cream px-3 py-1.5 text-sm font-medium text-navy/85 transition-colors duration-150 hover:border-navy hover:bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 focus-visible:ring-offset-cream";
                   return href.startsWith("#") ? (
                     <a key={href} href={href} className={chip}>{label}</a>
                   ) : (
@@ -156,7 +157,7 @@ export default function LandingPage() {
                   );
                 })}
               </div>
-              <p className="text-note text-navy/60 mt-6 max-w-[60ch]">
+              <p className="text-note text-navy/60 mt-8 max-w-[60ch] border-t border-cream-dark pt-4">
                 Três buscas por dia sem conta. A conta grátis começa com 7 dias do plano Profissional, sem cartão.
               </p>
 
