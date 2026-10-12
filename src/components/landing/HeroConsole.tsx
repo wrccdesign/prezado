@@ -127,7 +127,7 @@ export function HeroConsole() {
       >
         <div className="flex items-center justify-between gap-3 px-6 md:px-7 py-2 border-b border-cream-dark bg-cream/50 text-note text-navy/60">
           <span>Registro público do Judiciário, CNJ/DataJud</span>
-          <span className="inline-flex items-center gap-1.5 rounded border border-success/30 px-1.5 py-0.5 text-success">
+          <span className="shrink-0 whitespace-nowrap inline-flex items-center gap-1.5 rounded border border-success/30 px-1.5 py-0.5 text-success">
             <svg viewBox="0 0 12 12" className="h-3 w-3" aria-hidden="true"><path d="M2.5 6.2l2.2 2.2 4.8-4.9" fill="none" stroke="currentColor" strokeWidth="1.5" /></svg>
             Fonte verificada
           </span>
