@@ -29,6 +29,10 @@ function applyMeta(template: string, meta: RouteMeta) {
       `<meta name="description" content="${description}" />`,
     ],
     [
+      /<meta\s+property="og:type"[^>]*>/i,
+      `<meta property="og:type" content="${ogType}" />`,
+    ],
+    [
       /<meta\s+property="og:title"[^>]*>/i,
       `<meta property="og:title" content="${title}" />`,
     ],

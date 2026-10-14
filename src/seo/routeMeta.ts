@@ -20,6 +20,8 @@ export type RouteMeta = {
   title: string;
   description: string;
   ogImage: string;
+  /** Open Graph type; "article" em páginas de conteúdo (temas e minutas). */
+  ogType?: "website" | "article";
   /** JSON-LD injetado no HTML estático da rota (plugin static-route-meta). */
   jsonLd?: Record<string, unknown>[];
 };

@@ -11,10 +11,12 @@ interface SEOProps {
   /** Path (relative to the site root) of a 1200x630 social share image. */
   image?: string;
   imageAlt?: string;
+  /** Open Graph type; "article" em páginas de conteúdo (temas e minutas). */
+  ogType?: "website" | "article";
   jsonLd?: Record<string, unknown> | Record<string, unknown>[];
 }
 
-export function SEO({ title, description, path, image, imageAlt, jsonLd }: SEOProps) {
+export function SEO({ title, description, path, image, imageAlt, ogType, jsonLd }: SEOProps) {
   // Rotas públicas mapeadas usam sempre a mesma meta do HTML estático
   // gerado no build (src/seo/routeMeta.ts), para não divergirem.
   const routeMeta = getRouteMeta(path);
@@ -22,6 +24,7 @@ export function SEO({ title, description, path, image, imageAlt, jsonLd }: SEOPr
   const finalDescription = routeMeta?.description ?? description;
   const url = `${SITE_URL}${path}`;
   const imageUrl = `${SITE_URL}${routeMeta?.ogImage || image || DEFAULT_IMAGE}`;
+  const finalOgType = ogType ?? routeMeta?.ogType ?? "website";
   // O HTML estático já traz o JSON-LD da rota; ao hidratar, o Helmet assume
   // a emissão para que a navegação client-side continue correta.
   useEffect(() => {
