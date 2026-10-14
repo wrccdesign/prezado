@@ -189,6 +189,7 @@ export const ROUTE_META: RouteMeta[] = [
     description:
       "Modelo editável de petição inicial de cobrança pelo procedimento comum (art. 319 do CPC), com fatos, fundamentação, pedidos, valor da causa e checklist.",
     ogImage: OG_DEFAULT, // TODO: OG própria
+    ogType: "article",
   },
   {
     path: "/modelos-de-minutas/requerimento-transparencia-algoritmica",
@@ -196,6 +197,7 @@ export const ROUTE_META: RouteMeta[] = [
     description:
       "Modelo editável de requerimento para pedir informação sobre uso de IA em ato judicial, com base na CF, no CPC e na Resolução CNJ 615/2025.",
     ogImage: OG_DEFAULT,
+    ogType: "article",
   },
   {
     path: "/modelos-de-minutas/contestacao-civel",
@@ -203,6 +205,7 @@ export const ROUTE_META: RouteMeta[] = [
     description:
       "Modelo editável de contestação cível (arts. 335 a 342 do CPC) com preliminares, prescrição, impugnação específica dos fatos, pedidos finais e checklist.",
     ogImage: OG_DEFAULT, // TODO: OG própria
+    ogType: "article",
   },
   {
     path: "/modelos-de-minutas/reclamacao-trabalhista",
@@ -210,6 +213,7 @@ export const ROUTE_META: RouteMeta[] = [
     description:
       "Modelo editável de reclamação trabalhista com pedidos líquidos (art. 840, §1º, da CLT), verbas rescisórias, horas extras e requerimentos processuais.",
     ogImage: OG_DEFAULT, // TODO: OG própria
+    ogType: "article",
   },
   {
     path: "/modelos-de-minutas/notificacao-extrajudicial",
@@ -217,6 +221,7 @@ export const ROUTE_META: RouteMeta[] = [
     description:
       "Modelo editável de notificação extrajudicial para constituição em mora, com prazo para cumprimento, advertência sobre medidas judiciais e checklist de envio.",
     ogImage: OG_DEFAULT, // TODO: OG própria
+    ogType: "article",
   },
   {
     path: "/modelos-de-minutas/procuracao-ad-judicia",
@@ -224,6 +229,7 @@ export const ROUTE_META: RouteMeta[] = [
     description:
       "Modelo editável de procuração ad judicia et extra com poderes especiais do art. 105 do CPC, para representação judicial e extrajudicial do cliente.",
     ogImage: OG_DEFAULT, // TODO: OG própria
+    ogType: "article",
   },
   {
     path: "/modelos-de-minutas/recurso-apelacao",
@@ -231,6 +237,7 @@ export const ROUTE_META: RouteMeta[] = [
     description:
       "Modelo editável de recurso de apelação (arts. 1.009 a 1.014 do CPC): petição de interposição, razões recursais, preliminares e pedido de reforma.",
     ogImage: OG_DEFAULT, // TODO: OG própria
+    ogType: "article",
   },
   {
     path: "/modelos-de-minutas/contrato-prestacao-servicos-advocaticios",
@@ -238,6 +245,7 @@ export const ROUTE_META: RouteMeta[] = [
     description:
       "Modelo editável de contrato de honorários advocatícios: objeto, honorários fixos e de êxito, reembolso de despesas, hipóteses de rescisão e foro eleito.",
     ogImage: OG_DEFAULT, // TODO: OG própria
+    ogType: "article",
   },
   {
     path: "/modelos-de-minutas/acordo-extrajudicial-homologacao",
@@ -245,6 +253,7 @@ export const ROUTE_META: RouteMeta[] = [
     description:
       "Modelo editável de acordo extrajudicial com petição conjunta de homologação judicial (arts. 515, III, e 725, VIII, do CPC), com cláusulas e checklist.",
     ogImage: OG_DEFAULT, // TODO: OG própria
+    ogType: "article",
   },
   {
     path: "/chatgpt-juridico",
@@ -405,6 +414,7 @@ export const ROUTE_META: RouteMeta[] = [
     title: `${t.seoTitle} | Honorífico`,
     description: t.seoDescription,
     ogImage: "/og/jurisprudencia.jpg",
+    ogType: "article",
     jsonLd: [
       {
         "@context": "https://schema.org",
