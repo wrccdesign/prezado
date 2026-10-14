@@ -42,7 +42,7 @@ export function SEO({ title, description, path, image, imageAlt, ogType, jsonLd 
       <meta property="og:title" content={finalTitle} />
       <meta property="og:description" content={finalDescription} />
       <meta property="og:url" content={url} />
-      <meta property="og:type" content="website" />
+      <meta property="og:type" content={finalOgType} />
       <meta property="og:site_name" content="Honorífico" />
       <meta property="og:locale" content="pt_BR" />
       <meta property="og:image" content={imageUrl} />

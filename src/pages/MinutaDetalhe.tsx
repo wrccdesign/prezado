@@ -125,6 +125,7 @@ export default function MinutaDetalhe() {
         title={`${minuta.title} — Modelo Editável | Honorífico`}
         description={minuta.metaDescription}
         path={`/modelos-de-minutas/${minuta.slug}`}
+        ogType="article"
         jsonLd={jsonLd}
       />
       <main className="container py-8 sm:py-12 px-4 sm:px-6 space-y-8">
