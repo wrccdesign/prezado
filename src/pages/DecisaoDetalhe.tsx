@@ -13,6 +13,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Send, Loader2, Check } from "lucide-react";
 import { formatCitation } from "@/lib/citation";
 import { SEO } from "@/components/SEO";
+import { SITE_URL } from "@/seo/routeMeta";
 import { formatDateBR } from "@/lib/date";
 
 type Msg = { role: "user" | "assistant"; content: string };
@@ -294,6 +295,48 @@ export default function DecisaoDetalhe() {
     decision.comarca_pequena ? "interior" : null,
   ].filter(Boolean).join(", ");
 
+  const jsonLd: Record<string, unknown>[] = [
+    {
+      "@context": "https://schema.org",
+      "@type": "Article",
+      headline:
+        [decision.tribunal, decision.tipo_decisao, decision.numero_processo].filter(Boolean).join(", ") ||
+        "Decisão judicial",
+      description:
+        (decision.ementa || decision.resumo_ia || "").replace(/\s+/g, " ").slice(0, 300) || undefined,
+      datePublished: decision.data_decisao ?? undefined,
+      inLanguage: "pt-BR",
+      url: `${SITE_URL}/decisao/${decision.id}`,
+      mainEntityOfPage: `${SITE_URL}/decisao/${decision.id}`,
+      author: decision.tribunal
+        ? { "@type": "Organization", name: decision.tribunal }
+        : { "@type": "Organization", name: "Honorífico", url: SITE_URL },
+      publisher: { "@type": "Organization", name: "Honorífico", url: SITE_URL },
+      identifier: decision.numero_processo ?? undefined,
+      ...(decision.temas_juridicos?.length
+        ? { about: decision.temas_juridicos.map((t) => ({ "@type": "Thing", name: t })) }
+        : {}),
+      ...(decision.legislacao_citada?.length
+        ? { citation: decision.legislacao_citada.map((l) => ({ "@type": "Legislation", name: l })) }
+        : {}),
+      ...(decision.source_url ? { isBasedOn: decision.source_url } : {}),
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      itemListElement: [
+        { "@type": "ListItem", position: 1, name: "Início", item: `${SITE_URL}/` },
+        { "@type": "ListItem", position: 2, name: "Jurisprudência", item: `${SITE_URL}/jurisprudencia` },
+        {
+          "@type": "ListItem",
+          position: 3,
+          name: decision.numero_processo || "Decisão",
+          item: `${SITE_URL}/decisao/${decision.id}`,
+        },
+      ],
+    },
+  ];
+
   return (
     <div className="min-h-screen flex flex-col bg-cream text-navy font-sans">
       <AppHeader />
@@ -305,6 +348,7 @@ export default function DecisaoDetalhe() {
             .slice(0, 155)
         }
         path={`/decisao/${decision.id}`}
+        jsonLd={jsonLd}
       />
       <main className="flex-1 flex flex-col lg:flex-row">
         <div className="flex-1 overflow-y-auto">
