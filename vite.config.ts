@@ -18,6 +18,7 @@ function escapeHtml(value: string) {
 function applyMeta(template: string, meta: RouteMeta) {
   const url = `${SITE_URL}${meta.path}`;
   const image = `${SITE_URL}${meta.ogImage}`;
+  const ogType = meta.ogType ?? "website";
   const title = escapeHtml(meta.title);
   const description = escapeHtml(meta.description);
 
@@ -26,6 +27,10 @@ function applyMeta(template: string, meta: RouteMeta) {
     [
       /<meta\s+name="description"[^>]*>/i,
       `<meta name="description" content="${description}" />`,
+    ],
+    [
+      /<meta\s+property="og:type"[^>]*>/i,
+      `<meta property="og:type" content="${ogType}" />`,
     ],
     [
       /<meta\s+property="og:title"[^>]*>/i,

@@ -17,7 +17,7 @@ export default function JurisprudenciaTemaLanding() {
 
   return (
     <div className="flex min-h-screen flex-col bg-cream">
-      <SEO title={tema.seoTitle} description={tema.seoDescription} path={jurisTemaPath(tema.slug)} />
+      <SEO title={tema.seoTitle} description={tema.seoDescription} path={jurisTemaPath(tema.slug)} ogType="article" />
       <AppHeader />
 
       <main className="flex-1 text-navy">
