@@ -168,11 +168,11 @@ serve(async (req) => {
     }
 
     // Await FTS results
-    const { data: ftsResults, error: dbError } = await ftsPromise;
-    if (dbError) {
-      console.error("DB search error:", dbError);
-      throw new Error("Erro na busca no banco de dados");
-    }
+    const { data: ftsData, error: dbError } = await ftsPromise;
+    // Timeout ou falha no FTS não derruba a busca: seguimos com vetorial,
+    // súmulas e DataJud ao vivo (ou lista vazia) em vez de responder 500.
+    if (dbError) console.error("DB search error (degradando):", dbError);
+    const ftsResults = dbError ? [] : ftsData;
 
     // Step 4: Merge results using weighted RRF (Reciprocal Rank Fusion)
     // k_fts=30 (lower k = higher weight), k_vec=60 (higher k = lower weight)
