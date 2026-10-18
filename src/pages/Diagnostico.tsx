@@ -20,6 +20,7 @@ import { format } from "date-fns";
 import { notifyUsageConsumed } from "@/hooks/useUsage";
 import { formatDateBR } from "@/lib/date";
 import { CitationCheck, type CitationReport } from "@/components/CitationCheck";
+import { ReviewBlock, type OutputReview } from "@/components/ReviewBlock";
 import { useIsAdmin } from "@/hooks/useIsAdmin";
 import { savePeticaoPrefill, tipoAcaoFromDiagnostico, valorInformadoNosFatos } from "@/lib/peticaoPrefill";
 
@@ -107,6 +108,7 @@ export default function Diagnostico({ embedded = false }: { embedded?: boolean }
   const [result, setResult] = useState<Diagnostico | null>(null);
   const [citations, setCitations] = useState<Citation[]>([]);
   const [citationReport, setCitationReport] = useState<CitationReport | null>(null);
+  const [review, setReview] = useState<OutputReview | null>(null);
   const [teaserAvailable, setTeaserAvailable] = useState(false);
   const [teaserUsedThisSession, setTeaserUsedThisSession] = useState(false);
 
@@ -218,6 +220,7 @@ export default function Diagnostico({ embedded = false }: { embedded?: boolean }
       setResult(data.diagnostico);
       setCitations(Array.isArray(data.citations) ? data.citations : []);
       setCitationReport(data.citation_report ?? null);
+      setReview(data.review ?? null);
       notifyUsageConsumed();
 
       // Consumir o teaser do mês se aplicável
@@ -618,6 +621,7 @@ export default function Diagnostico({ embedded = false }: { embedded?: boolean }
                   </ul>
                 )}
                 <CitationCheck report={citationReport} />
+                <ReviewBlock review={review} />
               </CardContent>
             </Card>
 
