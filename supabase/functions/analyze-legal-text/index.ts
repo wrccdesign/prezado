@@ -2,6 +2,7 @@ import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { analiseFreeRounds, burstLimitMessage, checkRateLimit, extractEnv, monthlyLimitMessage } from "../_shared/rate-limit.ts";
 import { aiChatText, aiChatTool, AIError } from "../_shared/ai.ts";
+import { revisarCampos } from "../_shared/output-review.ts";
 
 
 const corsHeaders = {
@@ -531,6 +532,16 @@ Responda sempre em português brasileiro.${legislationContext}${iterationBlock}`
 
     if (!result) throw new Error("A IA não retornou uma análise válida");
 
+    // Revisão automática de saída: corrige o verificável em código e sinaliza o resto.
+    const { obj: resultRevisado, review } = await revisarCampos(
+      result as Record<string, unknown>,
+      ["resumo", "tipo_de_causa", "jurisdicao_competente", "pontos_fracos", "riscos_processuais", "direcionamentos"],
+      { fatos: text },
+      { functionName: "analyze-legal-text", userId: user.id, environment: env },
+    );
+    Object.assign(result, resultRevisado);
+
+
 
     // Add fixed portals (never dynamic)
     result.portais_relevantes = [
@@ -557,6 +568,7 @@ Responda sempre em português brasileiro.${legislationContext}${iterationBlock}`
         // rodadas de refino já usadas neste caso (a rodada 1 é a análise original)
         rodadas_usadas: Math.max(0, rodada - 1),
         cobrou_cota: metered !== false,
+        review,
       }),
       { headers: { ...corsHeaders, "Content-Type": "application/json" } },
     );
