@@ -16,6 +16,7 @@ import { Progress } from "@/components/ui/progress";
 import { AppFooter } from "@/components/AppFooter";
 import { SEO } from "@/components/SEO";
 import type { LegalAnalysis } from "@/types/analysis";
+import type { OutputReview } from "@/components/ReviewBlock";
 
 const SESSION_KEY = "honorifico:analise-em-andamento";
 
@@ -31,6 +32,7 @@ export default function Index({ embedded = false }: { embedded?: boolean }) {
   const [parseProgress, setParseProgress] = useState(0);
   const [parseStage, setParseStage] = useState("");
   const [result, setResult] = useState<LegalAnalysis | null>(null);
+  const [review, setReview] = useState<OutputReview | null>(null);
   const [analyzedText, setAnalyzedText] = useState("");
   const [saveState, setSaveState] = useState<"idle" | "saving" | "saved">("idle");
   const [showPreview, setShowPreview] = useState(false);
@@ -334,6 +336,7 @@ export default function Index({ embedded = false }: { embedded?: boolean }) {
 
       setAnalyzedText((data.input_text as string) ?? currentText);
       setResult(data.result as LegalAnalysis);
+      setReview((data.review as OutputReview) ?? null);
       setRodada((data.rodada as number) ?? (refine ? rodada + 1 : 1));
       if (typeof data.rodadas_incluidas === "number") setRodadasIncluidas(data.rodadas_incluidas);
 
@@ -382,6 +385,7 @@ export default function Index({ embedded = false }: { embedded?: boolean }) {
     setText("");
     setFileName(null);
     setResult(null);
+    setReview(null);
     setAnalyzedText("");
     setSaveState("idle");
     setShowPreview(false);
@@ -425,6 +429,7 @@ export default function Index({ embedded = false }: { embedded?: boolean }) {
         )}
         <AnalysisResult
           result={result}
+          review={review}
           onNewAnalysis={handleNewAnalysis}
           onSave={user ? handleSaveAnalysis : undefined}
           saveState={saveState}
