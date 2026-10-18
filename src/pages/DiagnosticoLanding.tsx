@@ -5,7 +5,6 @@ import { SEO } from "@/components/SEO";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
-  ArrowRight,
   Building2,
   ClipboardList,
   DollarSign,
@@ -102,7 +101,7 @@ export default function DiagnosticoLanding() {
             <div className="flex flex-wrap items-center gap-3 pt-1">
               <Button asChild size="lg">
                 <Link to="/auth?mode=signup">
-                  Criar conta grátis <ArrowRight className="ml-2 h-4 w-4" />
+                  Criar conta grátis
                 </Link>
               </Button>
               <Button asChild variant="outline" size="lg">
@@ -229,7 +228,7 @@ export default function DiagnosticoLanding() {
             <div className="flex flex-wrap items-center justify-center gap-3 pt-1">
               <Button asChild size="lg">
                 <Link to="/auth?mode=signup">
-                  Criar conta grátis <ArrowRight className="ml-2 h-4 w-4" />
+                  Criar conta grátis
                 </Link>
               </Button>
               <Button asChild variant="outline" size="lg">

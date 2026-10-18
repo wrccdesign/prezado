@@ -87,20 +87,13 @@ Deno.serve(async (req) => {
       // benefício anunciado — fica fora do painel de uso.
       actions: [
         ...Object.keys(limits)
-          .filter((action) => action !== "diagnostico_completo_free")
+          .filter((action) => action !== "diagnostico_completo_free" && !UNMETERED_ACTIONS.has(action) && Object.hasOwn(ACTION_LABELS, action))
           .map((action) => ({
             action,
-            label: ACTION_LABELS[action] ?? action,
-            used: admin_ ? counts[action] ?? 0 : Math.min(counts[action] ?? 0, limits[action]),
+            label: ACTION_LABELS[action],
+            used: admin_ || limits[action] < 0 ? counts[action] ?? 0 : Math.min(counts[action] ?? 0, limits[action]),
             limit: admin_ ? UNLIMITED : limits[action],
           })),
-        // Ações sem cota mensal aparecem como ilimitadas (limit = -1).
-        ...[...UNMETERED_ACTIONS].map((action) => ({
-          action,
-          label: ACTION_LABELS[action] ?? action,
-          used: counts[action] ?? 0,
-          limit: UNLIMITED,
-        })),
       ],
 
     });

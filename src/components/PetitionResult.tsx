@@ -20,6 +20,7 @@ import {
 import { TRANSPARENCY_NOTE } from "@/lib/exportDocument";
 import { useIsAdmin } from "@/hooks/useIsAdmin";
 import { CitationCheck, type CitationReport } from "@/components/CitationCheck";
+import { cleanPetitionText, cleanDocumentText } from "@/lib/documentText";
 
 const EMPTY_BRANDING: PetitionBranding = {
   fullName: null, oabNumber: null, oabState: null, officeName: null,
@@ -129,7 +130,7 @@ export function PetitionResult({ text, petitionType, onNewPetition, citationRepo
   const isEscritorio = sub.isEscritorio || isAdmin;
   const { isLawyer } = useUserProfile();
 
-  const [editedText, setEditedText] = useState(text);
+  const [editedText, setEditedText] = useState(() => cleanPetitionText(text));
   const [withNote, setWithNote] = useState(false);
   const [branding, setBranding] = useState<PetitionBranding>(EMPTY_BRANDING);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -165,7 +166,7 @@ export function PetitionResult({ text, petitionType, onNewPetition, citationRepo
   };
 
   const handleDownloadPDF = () => {
-    const parsed = parsePetitionLines(editedText);
+    const parsed = parsePetitionLines(cleanPetitionText(editedText));
     const doc = new jsPDF({ unit: "mm", format: "a4" });
     const pageWidth = doc.internal.pageSize.getWidth();
     const pageHeight = doc.internal.pageSize.getHeight();
@@ -233,7 +234,18 @@ export function PetitionResult({ text, petitionType, onNewPetition, citationRepo
       if (y + needed > pageHeight - mBottom - 12) { doc.addPage(); addPageHeaderFooter(doc); y = mTop; }
     };
 
-    for (const line of parsed) {
+    const closingStart = parsed.findIndex((line) => line.type === "closing");
+    // Reserve the entire closing block plus the added signature before printing
+    // its first line, rather than moving only the signature to the next page.
+    const signature = signatureLines(branding).map(cleanDocumentText);
+    doc.setFont("times", "normal"); doc.setFontSize(12);
+    const closingHeight = closingStart < 0 ? 0 : parsed.slice(closingStart).reduce((height, line) => {
+      const width = line.type === "body" ? usableWidth - bodyIndent : usableWidth;
+      return height + (line.type === "empty" ? 4 : doc.splitTextToSize(line.text.trim(), width).length * 6);
+    }, 0) + 16 + signature.length * 6;
+
+    for (const [index, line] of parsed.entries()) {
+      if (index === closingStart) checkPage(closingHeight);
       const trimmed = line.text.trim();
       if (line.type === "empty") { y += 4; continue; }
       if (line.type === "header") {
@@ -253,8 +265,11 @@ export function PetitionResult({ text, petitionType, onNewPetition, citationRepo
         continue;
       }
       if (line.type === "closing") {
-        doc.setFont("times", "normal"); doc.setFontSize(12); checkPage(6);
-        doc.text(trimmed, pageWidth - mRight, y, { align: "right" }); y += 6; continue;
+        doc.setFont("times", "normal"); doc.setFontSize(12);
+        for (const wl of doc.splitTextToSize(trimmed, usableWidth)) {
+          checkPage(6); doc.text(wl, pageWidth - mRight, y, { align: "right" }); y += 6;
+        }
+        continue;
       }
       doc.setFont("times", "normal"); doc.setFontSize(12);
       const bodyWidth = usableWidth - bodyIndent;
@@ -267,10 +282,10 @@ export function PetitionResult({ text, petitionType, onNewPetition, citationRepo
       }
     }
 
-    y += 10; checkPage(30);
+    checkPage(16 + signature.length * 6); y += 10;
     doc.setFont("times", "normal"); doc.setFontSize(12);
     doc.text("___________________________________________", pageWidth / 2, y, { align: "center" }); y += 6;
-    for (const sig of signatureLines(branding)) {
+    for (const sig of signature) {
       checkPage(6);
       doc.text(sig, pageWidth / 2, y, { align: "center" }); y += 5.5;
     }
@@ -289,7 +304,7 @@ export function PetitionResult({ text, petitionType, onNewPetition, citationRepo
   };
 
   const handleDownloadDocx = async () => {
-    const parsed = parsePetitionLines(editedText);
+    const parsed = parsePetitionLines(cleanPetitionText(editedText));
     const docParagraphs: Paragraph[] = [];
 
     for (const line of parsed) {
@@ -308,14 +323,14 @@ export function PetitionResult({ text, petitionType, onNewPetition, citationRepo
         continue;
       }
       if (line.type === "closing") {
-        docParagraphs.push(new Paragraph({ children: [new TextRun({ text: trimmed, font: "Times New Roman", size: 24 })], alignment: AlignmentType.RIGHT, spacing: { line: 360 } }));
+        docParagraphs.push(new Paragraph({ children: [new TextRun({ text: trimmed, font: "Times New Roman", size: 24 })], alignment: AlignmentType.RIGHT, keepNext: true, keepLines: true, spacing: { line: 360 } }));
         continue;
       }
       docParagraphs.push(new Paragraph({ children: [new TextRun({ text: trimmed, font: "Times New Roman", size: 24 })], alignment: AlignmentType.JUSTIFIED, spacing: { line: 360 }, indent: { firstLine: 709 } }));
     }
 
-    docParagraphs.push(new Paragraph({ children: [], spacing: { before: 400 } }));
-    docParagraphs.push(new Paragraph({ children: [new TextRun({ text: "___________________________________________", font: "Times New Roman", size: 24 })], alignment: AlignmentType.CENTER }));
+    docParagraphs.push(new Paragraph({ children: [], keepNext: true, spacing: { before: 400 } }));
+    docParagraphs.push(new Paragraph({ children: [new TextRun({ text: "___________________________________________", font: "Times New Roman", size: 24 })], keepNext: true, alignment: AlignmentType.CENTER }));
     for (const sig of signatureLines(branding)) {
       docParagraphs.push(new Paragraph({
         children: [new TextRun({ text: sig, font: "Times New Roman", size: 24 })],
@@ -445,11 +460,11 @@ export function PetitionResult({ text, petitionType, onNewPetition, citationRepo
             Incluir nota de transparência sobre uso de IA, conferência de fontes oficiais e revisão humana
           </label>
           <div className="flex flex-wrap gap-3">
-            <Button onClick={handleDownloadPDF} className="bg-[hsl(220,60%,30%)] hover:bg-[hsl(220,60%,25%)] text-white" size="lg">
+            <Button onClick={handleDownloadPDF} variant="outline" size="lg">
               <FileText className="mr-2 h-5 w-5" />
               Baixar PDF
             </Button>
-            <Button onClick={handleDownloadDocx} className="bg-[hsl(210,70%,55%)] hover:bg-[hsl(210,70%,48%)] text-white" size="lg">
+            <Button onClick={handleDownloadDocx} variant="outline" size="lg">
               <FileDown className="mr-2 h-5 w-5" />
               Baixar DOCX
             </Button>

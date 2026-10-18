@@ -115,7 +115,7 @@ Use a ferramenta diagnostico_juridico para estruturar a resposta.${groundingBloc
                   },
                   estimativa_custos_ganhos: {
                     type: "string",
-                    description: "Fale APENAS de custos processuais verificáveis: gratuidade no Juizado Especial Cível para causas até 20 salários mínimos, dispensa de advogado até 20 salários mínimos, custas e honorários de sucumbência em caso de derrota, possibilidade de justiça gratuita. PROIBIDO citar qualquer faixa de valor de indenização em reais (ex.: 'entre R$ 5.000,00 e R$ 15.000,00'): esse número não vem de fonte oficial. Sobre quanto a pessoa pode receber, diga explicitamente que o valor depende do caso concreto, das provas e do entendimento do juízo, sem estimar cifras."
+                    description: "Fale APENAS de custos processuais verificáveis, sem afirmar valores. No Juizado Especial Cível não há custas em primeiro grau, ressalvada a litigância de má-fé. Recorrer exige preparo (custas do recurso); quem perde o recurso pode pagar custas e honorários. A gratuidade de justiça isenta dessas despesas, não as gera. Não confunda a dispensa de advogado até 20 salários mínimos com a isenção de custas em primeiro grau. PROIBIDO estimar valores de indenização. Sobre quanto a pessoa pode receber, diga que o valor depende do caso concreto, das provas e do entendimento do juízo, sem estimar cifras."
                   },
                   onde_entrar: {
                     type: "string",

@@ -1,5 +1,6 @@
 import jsPDF from "jspdf";
 import { Document, Packer, Paragraph, TextRun, HeadingLevel } from "docx";
+import { cleanDocumentText } from "./documentText";
 
 export interface ExportSection {
   heading: string;
@@ -33,6 +34,8 @@ function triggerDownload(blob: Blob, filename: string) {
 }
 
 export function exportToPDF(title: string, sections: ExportSection[], filename: string, options: ExportOptions = {}) {
+  title = cleanDocumentText(title);
+  sections = sections.map((s) => ({ heading: cleanDocumentText(s.heading), body: cleanDocumentText(s.body) }));
   const doc = new jsPDF({ unit: "pt", format: "a4" });
   const pageWidth = doc.internal.pageSize.getWidth();
   const pageHeight = doc.internal.pageSize.getHeight();
@@ -105,6 +108,8 @@ export function exportToPDF(title: string, sections: ExportSection[], filename: 
 }
 
 export async function exportToDOCX(title: string, sections: ExportSection[], filename: string, options: ExportOptions = {}) {
+  title = cleanDocumentText(title);
+  sections = sections.map((s) => ({ heading: cleanDocumentText(s.heading), body: cleanDocumentText(s.body) }));
   const children: Paragraph[] = [];
 
   children.push(

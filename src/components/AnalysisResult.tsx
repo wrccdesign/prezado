@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Separator } from "@/components/ui/separator";
 import {
-  Scale, AlertTriangle, Clock, ExternalLink, Copy, ChevronRight,
+  Scale, AlertTriangle, Clock, ExternalLink, Copy,
   BookOpen, MapPin, ListOrdered, Globe, FileDown, FileText,
   AlertCircle, Gavel, CheckCircle2, ShieldAlert, BookMarked, Save,
   MessageSquarePlus, Loader2, RefreshCw, Pencil
@@ -227,7 +227,7 @@ export function AnalysisResult({
   };
 
   const baseName = `analise-${slugify(result.tipo_de_causa)}-${format(new Date(), "yyyy-MM-dd")}`;
-  const title = `Análise Jurídica — ${result.tipo_de_causa}`;
+  const title = `Análise Jurídica: ${result.tipo_de_causa}`;
 
   const handleExportPDF = () => {
     try {
@@ -590,7 +590,6 @@ export function AnalysisResult({
         </Button>
         {onNewAnalysis && (
           <Button onClick={onNewAnalysis}>
-            <ChevronRight className="mr-2 h-4 w-4" />
             Nova Análise
           </Button>
         )}

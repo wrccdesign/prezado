@@ -39,6 +39,8 @@ export function CitationCheck({ report }: { report?: CitationReport | null }) {
   }
 
   const naoEncontrados = report.items.filter((i) => i.status === "nao_encontrado");
+  const naoVerificaveis = report.items.filter((i) => i.status === "nao_verificavel");
+  const tipoLabel = { artigo: "Artigo de lei", sumula: "Súmula", processo: "Processo" };
 
   return (
     <div className="mt-6 border-t border-cream-dark pt-4">
@@ -48,6 +50,16 @@ export function CitationCheck({ report }: { report?: CitationReport | null }) {
           Não localizado no nosso acervo: {naoEncontrados.map((i) => i.texto).join(", ")}. Confira na
           fonte oficial antes de usar.
         </p>
+      )}
+      {naoVerificaveis.length > 0 && (
+        <div className="mt-2 text-note text-navy/70">
+          <p>Estas referências não foram conferidas nesta verificação. Artigos de lei e súmulas não são decisões do acervo. Confira o texto na fonte oficial antes de usar.</p>
+          <ul className="mt-1 list-disc pl-5">
+            {naoVerificaveis.map((item, index) => (
+              <li key={`${item.tipo}-${index}`}>{tipoLabel[item.tipo]}: {item.texto}</li>
+            ))}
+          </ul>
+        </div>
       )}
     </div>
   );

@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { ArrowRight, FileText, Search, Sparkles } from "lucide-react";
+import { FileText, Search, Sparkles } from "lucide-react";
 import { MINUTAS, MINUTA_CATEGORIES } from "@/data/minutas";
 
 export default function ModelosMinutas() {
@@ -137,7 +137,7 @@ export default function ModelosMinutas() {
                 <p className="text-sm text-muted-foreground">{m.shortDescription}</p>
                 <Button asChild variant="outline" className="w-full">
                   <Link to={`/modelos-de-minutas/${m.slug}`}>
-                    Abrir modelo <ArrowRight className="ml-2 h-4 w-4" />
+                    Abrir modelo
                   </Link>
                 </Button>
               </CardContent>
