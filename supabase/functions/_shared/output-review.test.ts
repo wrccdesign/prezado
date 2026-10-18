@@ -17,16 +17,23 @@ Deno.test("valorPorExtenso: 5.000 -> cinco mil reais (nunca 'um mil')", () => {
   assertEquals(valorPorExtenso(5000), "cinco mil reais");
 });
 
-Deno.test("valorPorExtenso: 5.480 usa o padrão com vírgula", () => {
-  assertEquals(valorPorExtenso(5480), "cinco mil, quatrocentos e oitenta reais");
+Deno.test("valorPorExtenso: 5.480 sem vírgula (padrão dos tribunais)", () => {
+  assertEquals(valorPorExtenso(5480), "cinco mil quatrocentos e oitenta reais");
 });
 
 Deno.test("valorPorExtenso: 1.250,37 com centavos", () => {
-  assertEquals(valorPorExtenso(1250.37), "mil, duzentos e cinquenta reais e trinta e sete centavos");
+  assertEquals(valorPorExtenso(1250.37), "mil duzentos e cinquenta reais e trinta e sete centavos");
 });
 
 Deno.test("valorPorExtenso: 1.000.000 -> um milhão de reais", () => {
   assertEquals(valorPorExtenso(1_000_000), "um milhão de reais");
+});
+
+Deno.test("valorPorExtenso: resto menor que 100 ou centena redonda usa 'e'", () => {
+  assertEquals(valorPorExtenso(1100), "mil e cem reais");
+  assertEquals(valorPorExtenso(2050), "dois mil e cinquenta reais");
+  assertEquals(valorPorExtenso(1_001_000), "um milhão e mil reais");
+  assertEquals(valorPorExtenso(2_500_000), "dois milhões e quinhentos mil reais");
 });
 
 Deno.test("valorPorExtenso: 0,50 -> cinquenta centavos", () => {
@@ -55,6 +62,13 @@ Deno.test("corrige extenso errado e mantém o número", () => {
 
 Deno.test("não altera extenso já correto", () => {
   const entrada = "R$ 5.000,00 (cinco mil reais)";
+  const { texto, correcoes } = corrigirValoresPorExtenso(entrada);
+  assertEquals(texto, entrada);
+  assertEquals(correcoes, []);
+});
+
+Deno.test("aceita a forma com vírgula como equivalente", () => {
+  const entrada = "R$ 5.480,00 (cinco mil, quatrocentos e oitenta reais)";
   const { texto, correcoes } = corrigirValoresPorExtenso(entrada);
   assertEquals(texto, entrada);
   assertEquals(correcoes, []);
@@ -97,6 +111,25 @@ Deno.test("não sinaliza gênero quando o texto usa 'a Autora'", () => {
   assertEquals(pontos.some((p) => p.includes("Autor")), false);
 });
 
+Deno.test("gênero: 'fui para Lisboa' não é marca de gênero", () => {
+  const saida = "O Autor pleiteia a reparação.";
+  const pontos = verificarFidelidadeFatos(saida, { fatos: "Fui para Lisboa em janeiro." });
+  assertEquals(pontos.some((p) => p.includes("Autor")), false);
+});
+
+Deno.test("gênero: 'fui ao banco e fui cobrado' indica masculino", () => {
+  const saida = "A Autora pleiteia a devolução dos valores.";
+  const pontos = verificarFidelidadeFatos(saida, { fatos: "Fui ao banco e fui cobrado indevidamente." });
+  assertEquals(pontos.some((p) => p.includes("a Autora")), true);
+});
+
+Deno.test("gênero: marca em terceira pessoa não decide", () => {
+  const saida = "A Autora pleiteia a reparação.";
+  const pontos = verificarFidelidadeFatos(saida, { fatos: "Fui realocada e meu marido foi demitido." });
+  // A marca de primeira pessoa é feminina; "foi demitido" (terceira pessoa) não conta.
+  assertEquals(pontos.some((p) => p.includes("a Autora")), false);
+});
+
 // --- gramaticaSegura (trava) ---
 
 Deno.test("trava descarta correção que mexe em número", () => {
@@ -121,4 +154,11 @@ Deno.test("trava aceita correção pequena de ortografia", () => {
   const antes = "A autora trabalho na empresa por cinco anos.";
   const depois = "A autora trabalhou na empresa por cinco anos.";
   assertEquals(gramaticaSegura(antes, depois), true);
+});
+
+Deno.test("trava rejeita 3 palavras trocadas em 20, mesmo com mesmo tamanho", () => {
+  const antes = "A autora trabalhou na empresa por cinco anos sem registro formal em carteira assinada.";
+  // Mesmo número de caracteres aproximado, 3 palavras trocadas (20% das palavras).
+  const depois = "A autora prestou labor na empresa por cinco anos sem vínculo formal em carteira anotada.";
+  assertEquals(gramaticaSegura(antes, depois), false);
 });
