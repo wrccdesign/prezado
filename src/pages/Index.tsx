@@ -298,6 +298,7 @@ export default function Index({ embedded = false }: { embedded?: boolean }) {
     setSaveState("idle");
     if (!refine) {
       setResult(null);
+      setReview(null);
       setEsclarecimentos({});
       setEsclarecimentoResumo("");
       setEsclarecimentoDirecionamentos("");
