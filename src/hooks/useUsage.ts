@@ -11,7 +11,7 @@ export interface UsageAction {
 }
 
 export interface UsageSummaryData {
-  plan: "free" | "profissional" | "escritorio";
+  plan: "free" | "profissional" | "escritorio" | "admin";
   environment: "sandbox" | "live";
   /** Início do mês-calendário (America/Sao_Paulo). */
   period_start: string;

@@ -20,6 +20,7 @@ import { format } from "date-fns";
 import { notifyUsageConsumed } from "@/hooks/useUsage";
 import { formatDateBR } from "@/lib/date";
 import { CitationCheck, type CitationReport } from "@/components/CitationCheck";
+import { useIsAdmin } from "@/hooks/useIsAdmin";
 import { savePeticaoPrefill, tipoAcaoFromDiagnostico } from "@/lib/peticaoPrefill";
 
 interface Diagnostico {
@@ -86,11 +87,21 @@ const URGENCIA_CONFIG = {
 };
 
 const TEASER_ACTION = "diagnostico_completo_free";
+/** Cota mensal de diagnóstico do plano gratuito (espelha PLAN_LIMITS.free.diagnostico no servidor). */
+const FREE_DIAGNOSTICO_MES = 1;
+
+/** Início do mês-calendário em America/Sao_Paulo (UTC-3), igual ao servidor. */
+function saoPauloMonthStartISO(now: Date = new Date()): string {
+  const offset = 3 * 60 * 60 * 1000;
+  const local = new Date(now.getTime() - offset);
+  return new Date(Date.UTC(local.getUTCFullYear(), local.getUTCMonth(), 1) + offset).toISOString();
+}
 
 export default function Diagnostico({ embedded = false }: { embedded?: boolean }) {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { isPro } = useSubscription();
+  const { isAdmin } = useIsAdmin();
   const [situacao, setSituacao] = useState("");
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<Diagnostico | null>(null);
@@ -99,28 +110,41 @@ export default function Diagnostico({ embedded = false }: { embedded?: boolean }
   const [teaserAvailable, setTeaserAvailable] = useState(false);
   const [teaserUsedThisSession, setTeaserUsedThisSession] = useState(false);
 
-  // Verificar se o usuário free já usou o teaser diário
+  const [quotaExhausted, setQuotaExhausted] = useState(false);
+
+  // Teaser do plano gratuito: um diagnóstico completo por mês (mesma janela
+  // mensal do servidor). Se a cota de diagnóstico do mês já acabou, o selo não
+  // aparece, porque não há diagnóstico disponível.
   useEffect(() => {
-    if (!user || isPro) {
+    if (!user || isPro || isAdmin) {
       setTeaserAvailable(false);
       return;
     }
     const checkTeaser = async () => {
-      const startOfDay = new Date();
-      startOfDay.setHours(0, 0, 0, 0);
-      const { count } = await supabase
-        .from("usage_tracking")
-        .select("*", { count: "exact", head: true })
-        .eq("user_id", user.id)
-        .eq("action", TEASER_ACTION)
-        .gte("created_at", startOfDay.toISOString());
-      setTeaserAvailable((count ?? 0) === 0);
+      const inicioMes = saoPauloMonthStartISO();
+      const [teaser, diag] = await Promise.all([
+        supabase
+          .from("usage_tracking")
+          .select("*", { count: "exact", head: true })
+          .eq("user_id", user.id)
+          .eq("action", TEASER_ACTION)
+          .gte("created_at", inicioMes),
+        supabase
+          .from("usage_tracking")
+          .select("*", { count: "exact", head: true })
+          .eq("user_id", user.id)
+          .eq("action", "diagnostico")
+          .gte("created_at", inicioMes),
+      ]);
+      const esgotado = (diag.count ?? 0) >= FREE_DIAGNOSTICO_MES;
+      setQuotaExhausted(esgotado);
+      setTeaserAvailable(!esgotado && (teaser.count ?? 0) === 0);
     };
     checkTeaser();
-  }, [user, isPro]);
+  }, [user, isPro, isAdmin]);
 
   // Free tem tudo desbloqueado se: é pro OU tem teaser disponível OU acabou de usar o teaser nesta sessão
-  const fullAccess = isPro || teaserAvailable || teaserUsedThisSession;
+  const fullAccess = isPro || isAdmin || teaserAvailable || teaserUsedThisSession;
   const locked = !fullAccess;
 
   const handleAnalyze = async () => {
@@ -173,9 +197,11 @@ export default function Diagnostico({ embedded = false }: { embedded?: boolean }
           return;
         }
         if (response.status === 429 && data?.limit_reached) {
+          setTeaserAvailable(false);
+          setQuotaExhausted(true);
           toast({
-            title: "Limite diário atingido",
-            description: data.error || "Você atingiu o limite de diagnósticos do plano gratuito.",
+            title: "Limite do mês atingido",
+            description: data.error || "Você atingiu o limite de diagnósticos do seu plano neste mês.",
             variant: "destructive",
             action: (
               <Button variant="outline" size="sm" onClick={() => navigate("/planos")}>
@@ -194,8 +220,8 @@ export default function Diagnostico({ embedded = false }: { embedded?: boolean }
       setCitationReport(data.citation_report ?? null);
       notifyUsageConsumed();
 
-      // Consumir teaser diário se aplicável
-      if (!isPro && teaserAvailable && user) {
+      // Consumir o teaser do mês se aplicável
+      if (!isPro && !isAdmin && teaserAvailable && user) {
         await supabase.from("usage_tracking").insert({
           user_id: user.id,
           action: TEASER_ACTION,
@@ -341,10 +367,10 @@ export default function Diagnostico({ embedded = false }: { embedded?: boolean }
                   </p>
                 </>
               )}
-              {!isPro && teaserAvailable && (
+              {!isPro && !isAdmin && teaserAvailable && !quotaExhausted && (
                 <div className="inline-flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1.5 text-xs font-medium text-primary">
                   <Sparkles className="h-3.5 w-3.5" />
-                  Seu diagnóstico completo grátis de hoje está disponível
+                  Seu diagnóstico completo grátis deste mês está disponível
                 </div>
               )}
             </div>
@@ -402,7 +428,7 @@ export default function Diagnostico({ embedded = false }: { embedded?: boolean }
               {!isPro && teaserUsedThisSession && (
                 <Badge variant="outline" className="text-xs">
                   <Sparkles className="h-3 w-3 mr-1" />
-                  Diagnóstico completo grátis de hoje
+                  Diagnóstico completo grátis deste mês
                 </Badge>
               )}
             </div>
