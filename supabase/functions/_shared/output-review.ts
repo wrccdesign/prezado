@@ -339,9 +339,10 @@ export async function revisarSaida(
 const SEPARADOR = "\n§§§\n";
 
 /**
- * Revisa uma lista de campos de texto com UMA passada de gramática conjunta
- * (separador interno). Se o modelo quebrar a estrutura, a gramática é
- * descartada e ficam só as correções verificáveis em código.
+ * Revisa campos de texto de um resultado estruturado (strings e arrays de
+ * strings) com UMA passada de gramática conjunta (separador interno). Se o
+ * modelo quebrar a estrutura, a gramática é descartada e ficam só as
+ * correções verificáveis em código.
  */
 export async function revisarCampos<T extends Record<string, unknown>>(
   obj: T,
@@ -350,43 +351,72 @@ export async function revisarCampos<T extends Record<string, unknown>>(
   meta: AIUsageMeta,
 ): Promise<{ obj: T; review: OutputReview }> {
   const correcoes: string[] = [];
-  const pontos: string[] = [];
   const resultado: Record<string, unknown> = { ...obj };
 
-  // 1. Valores por extenso, campo a campo (verificável em código).
-  const textos: string[] = [];
-  const indiceCampos: number[] = [];
-  campos.forEach((campo, i) => {
+  // Unidades de texto: cada string e cada item de array vira uma unidade.
+  // `mapa` guarda onde cada unidade volta no objeto.
+  const unidades: string[] = [];
+  const mapa: Array<{ campo: string; indice: number | null }> = [];
+
+  for (const campo of campos) {
     const valor = obj[campo];
     if (typeof valor === "string" && valor.trim()) {
       const { texto, correcoes: c } = corrigirValoresPorExtenso(valor);
       correcoes.push(...c);
-      resultado[campo] = texto;
-      textos.push(texto);
-      indiceCampos.push(i);
-    }
-  });
-
-  // 2. Passada de gramática única sobre os campos de texto.
-  if (textos.length > 0) {
-    const junto = textos.join(SEPARADOR);
-    const revisado = await passadaGramatica(junto, meta);
-    const partes = revisado.split(SEPARADOR);
-    if (partes.length === textos.length) {
-      partes.forEach((parte, k) => {
-        resultado[campos[indiceCampos[k]]] = parte;
+      unidades.push(texto);
+      mapa.push({ campo, indice: null });
+    } else if (Array.isArray(valor)) {
+      const itens = valor.filter((v): v is string => typeof v === "string" && !!v.trim());
+      const itensCorrigidos = itens.map((item) => {
+        const { texto, correcoes: c } = corrigirValoresPorExtenso(item);
+        correcoes.push(...c);
+        return texto;
       });
-    } else {
-      console.warn(`[output-review] gramática descartada: estrutura quebrada (${meta.functionName})`);
+      resultado[campo] = itensCorrigidos;
+      itensCorrigidos.forEach((item, indice) => {
+        unidades.push(item);
+        mapa.push({ campo, indice });
+      });
     }
   }
 
-  // 3. Fidelidade aos fatos sobre o texto final.
-  const textoFinal = campos
-    .map((c) => resultado[c])
-    .filter((v): v is string => typeof v === "string")
-    .join("\n");
-  pontos.push(...verificarFidelidadeFatos(textoFinal, ctx));
+  // Passada de gramática única sobre todas as unidades.
+  if (unidades.length > 0) {
+    const junto = unidades.join(SEPARADOR);
+    const revisado = await passadaGramatica(junto, meta);
+    const partes = revisado.split(SEPARADOR);
+    if (partes.length === unidades.length) {
+      partes.forEach((parte, k) => {
+        const { campo, indice } = mapa[k];
+        if (indice === null) {
+          resultado[campo] = parte;
+        } else {
+          (resultado[campo] as string[])[indice] = parte;
+        }
+      });
+    } else {
+      console.warn(`[output-review] gramática descartada: estrutura quebrada (${meta.functionName})`);
+      // Recoloca as unidades sem gramática (mas com extenso corrigido).
+      unidades.forEach((unidade, k) => {
+        const { campo, indice } = mapa[k];
+        if (indice === null) {
+          resultado[campo] = unidade;
+        } else {
+          (resultado[campo] as string[])[indice] = unidade;
+        }
+      });
+    }
+  }
+
+  // Fidelidade aos fatos sobre o texto final.
+  const textoFinal = unidades.length > 0
+    ? campos
+        .map((c) => resultado[c])
+        .flatMap((v) => (Array.isArray(v) ? v : [v]))
+        .filter((v): v is string => typeof v === "string")
+        .join("\n")
+    : "";
+  const pontos = verificarFidelidadeFatos(textoFinal, ctx);
 
   return {
     obj: resultado as T,
