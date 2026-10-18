@@ -87,11 +87,21 @@ const URGENCIA_CONFIG = {
 };
 
 const TEASER_ACTION = "diagnostico_completo_free";
+/** Cota mensal de diagnóstico do plano gratuito (espelha PLAN_LIMITS.free.diagnostico no servidor). */
+const FREE_DIAGNOSTICO_MES = 1;
+
+/** Início do mês-calendário em America/Sao_Paulo (UTC-3), igual ao servidor. */
+function saoPauloMonthStartISO(now: Date = new Date()): string {
+  const offset = 3 * 60 * 60 * 1000;
+  const local = new Date(now.getTime() - offset);
+  return new Date(Date.UTC(local.getUTCFullYear(), local.getUTCMonth(), 1) + offset).toISOString();
+}
 
 export default function Diagnostico({ embedded = false }: { embedded?: boolean }) {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { isPro } = useSubscription();
+  const { isAdmin } = useIsAdmin();
   const [situacao, setSituacao] = useState("");
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<Diagnostico | null>(null);

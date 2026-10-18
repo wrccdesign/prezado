@@ -124,7 +124,7 @@ export function UsageSummary() {
               );
             })}
 
-            {data.plan !== "escritorio" && (
+            {data.plan !== "escritorio" && data.plan !== "admin" && (
               <Button asChild variant="outline" size="sm" className="mt-2">
                 <Link to="/planos">Aumentar meus limites</Link>
               </Button>
