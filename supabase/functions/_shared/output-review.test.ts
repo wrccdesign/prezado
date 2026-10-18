@@ -159,6 +159,6 @@ Deno.test("trava aceita correção pequena de ortografia", () => {
 Deno.test("trava rejeita 3 palavras trocadas em 20, mesmo com mesmo tamanho", () => {
   const antes = "A autora trabalhou na empresa por cinco anos sem registro formal em carteira assinada.";
   // Mesmo número de caracteres aproximado, 3 palavras trocadas (20% das palavras).
-  const depois = "A autora prestou serviços na empresa por cinco anos sem vínculo formal em carteira anotada.";
+  const depois = "A autora prestou labor na empresa por cinco anos sem vínculo formal em carteira anotada.";
   assertEquals(gramaticaSegura(antes, depois), false);
 });
