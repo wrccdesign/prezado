@@ -5,6 +5,19 @@
  */
 const KEY = "honorifico:peticao-prefill";
 
+/** Decreto 12.797/2025, vigente em 2026. Não reutilizar em outro ano. */
+export function salarioMinimoVigente(now = new Date()): number | undefined {
+  return now.getFullYear() === 2026 ? 1621 : undefined;
+}
+
+/** Só utiliza valor monetário explícito e único; não estima dano moral. */
+export function valorInformadoNosFatos(fatos: string): number | undefined {
+  const amounts = [...fatos.matchAll(/R\$\s*(\d+(?:\.\d{3})*(?:,\d{1,2})?)/gi)]
+    .map((match) => Number(match[1].replace(/\./g, "").replace(",", ".")));
+  const unique = [...new Set(amounts)];
+  return unique.length === 1 && Number.isFinite(unique[0]) ? unique[0] : undefined;
+}
+
 export interface PeticaoPrefill {
   /** Total apurado pela calculadora. Ausente quando a origem é o Diagnóstico. */
   valor?: number;
@@ -68,14 +81,17 @@ export function prefillLinha(p: PeticaoPrefill): string {
 }
 
 /** Converte a sugestão livre do Diagnóstico para um tipo de ação do formulário. */
-export function tipoAcaoFromDiagnostico(sugestao?: string, area?: string): { tipoAcao?: string; varaJuizo?: string } {
+export function tipoAcaoFromDiagnostico(sugestao?: string, area?: string, valor?: number, salarioMinimo = salarioMinimoVigente()): { tipoAcao?: string; varaJuizo?: string } {
   const t = `${sugestao ?? ""} ${area ?? ""}`.toLowerCase();
+  const juizado = typeof valor === "number" && Number.isFinite(valor) && valor > 0 &&
+    typeof salarioMinimo === "number" && salarioMinimo > 0 && valor <= 40 * salarioMinimo;
+  const varaCivil = juizado ? "Juizado Especial Cível" : "Cível";
   if (/trabalh/.test(t)) return { tipoAcao: "Reclamação trabalhista", varaJuizo: "Trabalho" };
   if (/alimento|pens[aã]o/.test(t)) return { tipoAcao: "Ação de alimentos", varaJuizo: "Família" };
   if (/despejo|loca[cç]/.test(t)) return { tipoAcao: "Ação de despejo", varaJuizo: "Cível" };
-  if (/cobran/.test(t)) return { tipoAcao: "Ação de cobrança", varaJuizo: "Cível" };
-  if (/revis/.test(t)) return { tipoAcao: "Revisão contratual", varaJuizo: "Cível" };
-  if (/consum/.test(t)) return { tipoAcao: "Indenização por danos morais e/ou materiais", varaJuizo: "Consumidor" };
-  if (/indeniz|dano|civil/.test(t)) return { tipoAcao: "Indenização por danos morais e/ou materiais", varaJuizo: "Cível" };
+  if (/cobran/.test(t)) return { tipoAcao: "Ação de cobrança", varaJuizo: varaCivil };
+  if (/revis/.test(t)) return { tipoAcao: "Revisão contratual", varaJuizo: varaCivil };
+  if (/consum/.test(t)) return { tipoAcao: "Indenização por danos morais e/ou materiais", varaJuizo: juizado ? "Juizado Especial Cível" : "Consumidor" };
+  if (/indeniz|dano|civil/.test(t)) return { tipoAcao: "Indenização por danos morais e/ou materiais", varaJuizo: varaCivil };
   return {};
 }

@@ -13,7 +13,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useSubscription } from "@/hooks/useSubscription";
 
 import { AppFooter } from "@/components/AppFooter";
-import { Search, ArrowRight, MessageCircle, Loader2, Stethoscope, Sparkles, Lock, FileDown, FileText, BookOpen } from "lucide-react";
+import { Search, MessageCircle, Loader2, Stethoscope, Sparkles, Lock, FileDown, FileText, BookOpen } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { exportToPDF, exportToDOCX, type ExportSection } from "@/lib/exportDocument";
 import { format } from "date-fns";
@@ -21,7 +21,7 @@ import { notifyUsageConsumed } from "@/hooks/useUsage";
 import { formatDateBR } from "@/lib/date";
 import { CitationCheck, type CitationReport } from "@/components/CitationCheck";
 import { useIsAdmin } from "@/hooks/useIsAdmin";
-import { savePeticaoPrefill, tipoAcaoFromDiagnostico } from "@/lib/peticaoPrefill";
+import { savePeticaoPrefill, tipoAcaoFromDiagnostico, valorInformadoNosFatos } from "@/lib/peticaoPrefill";
 
 interface Diagnostico {
   o_que_esta_acontecendo: string;
@@ -243,7 +243,7 @@ export default function Diagnostico({ embedded = false }: { embedded?: boolean }
       return;
     }
     savePeticaoPrefill({
-      ...tipoAcaoFromDiagnostico(result.tipo_peticao_sugerida, result.area_do_direito),
+      ...tipoAcaoFromDiagnostico(result.tipo_peticao_sugerida, result.area_do_direito, valorInformadoNosFatos(situacao)),
       fatos: situacao.trim(),
       origem: "Diagnóstico",
     });
@@ -425,7 +425,7 @@ export default function Diagnostico({ embedded = false }: { embedded?: boolean }
               <Badge className={`${URGENCIA_CONFIG[result.urgencia].color} text-xs px-2.5 py-1`}>
                 Urgência {URGENCIA_CONFIG[result.urgencia].label}
               </Badge>
-              {!isPro && teaserUsedThisSession && (
+              {!isPro && !isAdmin && teaserUsedThisSession && (
                 <Badge variant="outline" className="text-xs">
                   <Sparkles className="h-3 w-3 mr-1" />
                   Diagnóstico completo grátis deste mês
@@ -533,7 +533,6 @@ export default function Diagnostico({ embedded = false }: { embedded?: boolean }
                   </p>
                   <Button size="lg" onClick={() => navigate("/planos")} className="mt-2">
                     Ver planos
-                    <ArrowRight className="ml-2 h-4 w-4" />
                   </Button>
                 </CardContent>
               </Card>
@@ -548,7 +547,7 @@ export default function Diagnostico({ embedded = false }: { embedded?: boolean }
                 className="h-12 text-sm"
                 variant={locked ? "outline" : "default"}
               >
-                {locked ? <Lock className="mr-2 h-4 w-4" /> : <ArrowRight className="mr-2 h-4 w-4" />}
+                {locked && <Lock className="mr-2 h-4 w-4" />}
                 {locked ? "Gerar petição (Profissional)" : "Gerar petição para este caso"}
               </Button>
               <Button
