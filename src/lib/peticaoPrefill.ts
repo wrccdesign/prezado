@@ -6,8 +6,8 @@
 const KEY = "honorifico:peticao-prefill";
 
 export interface PeticaoPrefill {
-  /** Total apurado pela calculadora. */
-  valor: number;
+  /** Total apurado pela calculadora. Ausente quando a origem é o Diagnóstico. */
+  valor?: number;
   dataInicial?: string;
   dataFinal?: string;
   indice?: string;
@@ -37,7 +37,10 @@ export function consumePeticaoPrefill(): PeticaoPrefill | null {
     if (!raw) return null;
     sessionStorage.removeItem(KEY);
     const parsed = JSON.parse(raw) as PeticaoPrefill;
-    return typeof parsed?.valor === "number" ? parsed : null;
+    if (!parsed || typeof parsed !== "object") return null;
+    const temValor = typeof parsed.valor === "number";
+    const temFatos = typeof parsed.fatos === "string" && parsed.fatos.trim().length > 0;
+    return temValor || temFatos ? parsed : null;
   } catch {
     return null;
   }
@@ -55,10 +58,24 @@ export function formatBRL(v: number) {
 
 export function prefillLinha(p: PeticaoPrefill): string {
   if (p.pedidos) return p.pedidos;
+  if (typeof p.valor !== "number") return "";
   const valor = formatBRL(p.valor);
   const inicio = mesLabel(p.dataInicial);
   const fim = mesLabel(p.dataFinal);
   const periodo = inicio && fim ? `, período de ${inicio} a ${fim}` : "";
   const indice = p.indice ? `, índice ${p.indice.toUpperCase()}` : "";
   return `Valor atualizado: ${valor}${periodo}${indice}, conforme memória de cálculo em anexo.`;
+}
+
+/** Converte a sugestão livre do Diagnóstico para um tipo de ação do formulário. */
+export function tipoAcaoFromDiagnostico(sugestao?: string, area?: string): { tipoAcao?: string; varaJuizo?: string } {
+  const t = `${sugestao ?? ""} ${area ?? ""}`.toLowerCase();
+  if (/trabalh/.test(t)) return { tipoAcao: "Reclamação trabalhista", varaJuizo: "Trabalho" };
+  if (/alimento|pens[aã]o/.test(t)) return { tipoAcao: "Ação de alimentos", varaJuizo: "Família" };
+  if (/despejo|loca[cç]/.test(t)) return { tipoAcao: "Ação de despejo", varaJuizo: "Cível" };
+  if (/cobran/.test(t)) return { tipoAcao: "Ação de cobrança", varaJuizo: "Cível" };
+  if (/revis/.test(t)) return { tipoAcao: "Revisão contratual", varaJuizo: "Cível" };
+  if (/consum/.test(t)) return { tipoAcao: "Indenização por danos morais e/ou materiais", varaJuizo: "Consumidor" };
+  if (/indeniz|dano|civil/.test(t)) return { tipoAcao: "Indenização por danos morais e/ou materiais", varaJuizo: "Cível" };
+  return {};
 }

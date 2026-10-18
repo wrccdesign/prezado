@@ -20,6 +20,7 @@ import { format } from "date-fns";
 import { notifyUsageConsumed } from "@/hooks/useUsage";
 import { formatDateBR } from "@/lib/date";
 import { CitationCheck, type CitationReport } from "@/components/CitationCheck";
+import { savePeticaoPrefill, tipoAcaoFromDiagnostico } from "@/lib/peticaoPrefill";
 
 interface Diagnostico {
   o_que_esta_acontecendo: string;
@@ -215,6 +216,11 @@ export default function Diagnostico({ embedded = false }: { embedded?: boolean }
       navigate("/planos");
       return;
     }
+    savePeticaoPrefill({
+      ...tipoAcaoFromDiagnostico(result.tipo_peticao_sugerida, result.area_do_direito),
+      fatos: situacao.trim(),
+      origem: "Diagnóstico",
+    });
     navigate("/peticao", {
       state: {
         fromDiagnostico: true,

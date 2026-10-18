@@ -72,12 +72,16 @@ export default function Petition() {
     const prefill = consumePeticaoPrefill();
     if (!prefill) return;
     const linha = prefillLinha(prefill);
-    setPedidos((atual) => (atual ? `${atual}\n${linha}` : linha));
+    if (linha) setPedidos((atual) => (atual ? `${atual}\n${linha}` : linha));
     if (prefill.tipoAcao && TIPO_ACAO.includes(prefill.tipoAcao)) setTipoAcao(prefill.tipoAcao);
     if (prefill.varaJuizo && VARA_JUIZO.includes(prefill.varaJuizo)) setVaraJuizo(prefill.varaJuizo);
     if (prefill.fatos) setFatos((atual) => (atual ? `${atual}\n${prefill.fatos}` : prefill.fatos!));
     setOrigemCalculo(prefill.origem ?? null);
-    toast({ title: "Cálculo importado", description: linha });
+    toast(
+      linha
+        ? { title: "Cálculo importado", description: linha }
+        : { title: "Fatos importados", description: `Origem: ${prefill.origem ?? "Diagnóstico"}. Revise antes de gerar.` },
+    );
   }, [toast]);
 
 
