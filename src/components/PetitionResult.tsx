@@ -442,11 +442,11 @@ export function PetitionResult({ text, petitionType, onNewPetition, citationRepo
           <div className="flex flex-wrap gap-3">
             <Button onClick={handleDownloadPDF} className="bg-[hsl(220,60%,30%)] hover:bg-[hsl(220,60%,25%)] text-white" size="lg">
               <FileText className="mr-2 h-5 w-5" />
-              📄 Baixar PDF
+              Baixar PDF
             </Button>
             <Button onClick={handleDownloadDocx} className="bg-[hsl(210,70%,55%)] hover:bg-[hsl(210,70%,48%)] text-white" size="lg">
               <FileDown className="mr-2 h-5 w-5" />
-              📝 Baixar DOCX
+              Baixar DOCX
             </Button>
           </div>
           <CitationCheck report={citationReport} />

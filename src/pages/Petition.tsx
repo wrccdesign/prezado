@@ -40,7 +40,7 @@ const VARA_JUIZO = [
   "Trabalho",
   "Federal",
   "Família",
-  "Juizado Especial",
+  "Juizado Especial Cível",
   "Outro",
 ];
 

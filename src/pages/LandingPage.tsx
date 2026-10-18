@@ -40,7 +40,7 @@ const etapas = [
     title: "Análise de documentos",
     body: "Cole a petição ou a decisão e veja pontos fracos, riscos processuais e a fundamentação que faltou.",
     cta: "Analisar um documento",
-    href: "/auth",
+    href: "/analise",
   },
   {
     title: "Consulta processual",

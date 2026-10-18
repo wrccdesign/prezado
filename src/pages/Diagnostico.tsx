@@ -391,7 +391,6 @@ export default function Diagnostico({ embedded = false }: { embedded?: boolean }
             <div className="flex items-center gap-3 flex-wrap">
               <h2 className="text-xl sm:text-2xl font-bold font-serif text-foreground">Seu Diagnóstico</h2>
               <Badge className={`${URGENCIA_CONFIG[result.urgencia].color} text-xs px-2.5 py-1`}>
-                <Zap className="h-3 w-3 mr-1" />
                 Urgência {URGENCIA_CONFIG[result.urgencia].label}
               </Badge>
               {!isPro && teaserUsedThisSession && (
@@ -406,8 +405,7 @@ export default function Diagnostico({ embedded = false }: { embedded?: boolean }
             <Card>
               <CardHeader className="pb-3">
                 <CardTitle className="text-base flex items-center gap-2">
-                  <Search className="h-4 w-4 text-primary" />
-                  🔍 O que está acontecendo
+                  O que está acontecendo
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -418,8 +416,7 @@ export default function Diagnostico({ embedded = false }: { embedded?: boolean }
             <Card>
               <CardHeader className="pb-3">
                 <CardTitle className="text-base flex items-center gap-2">
-                  <Scale className="h-4 w-4 text-primary" />
-                  ⚖️ Qual é o seu direito
+                  Qual é o seu direito
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -432,8 +429,7 @@ export default function Diagnostico({ embedded = false }: { embedded?: boolean }
               <Card>
                 <CardHeader className="pb-3">
                   <CardTitle className="text-base flex items-center gap-2">
-                    <ClipboardList className="h-4 w-4 text-primary" />
-                    📋 O que você pode fazer
+                    O que você pode fazer
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
@@ -455,8 +451,7 @@ export default function Diagnostico({ embedded = false }: { embedded?: boolean }
               <Card>
                 <CardHeader className="pb-3">
                   <CardTitle className="text-base flex items-center gap-2">
-                    <DollarSign className="h-4 w-4 text-primary" />
-                    💰 Quanto pode custar / ganhar
+                    Quanto pode custar / ganhar
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
@@ -469,8 +464,7 @@ export default function Diagnostico({ embedded = false }: { embedded?: boolean }
               <Card>
                 <CardHeader className="pb-3">
                   <CardTitle className="text-base flex items-center gap-2">
-                    <Building2 className="h-4 w-4 text-primary" />
-                    🏛️ Onde buscar ajuda
+                    Onde buscar ajuda
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
@@ -483,8 +477,7 @@ export default function Diagnostico({ embedded = false }: { embedded?: boolean }
               <Card className={result.urgencia === "alta" ? "border-destructive/30" : ""}>
                 <CardHeader className="pb-3">
                   <CardTitle className="text-base flex items-center gap-2">
-                    <Zap className="h-4 w-4 text-primary" />
-                    ⚡ Sobre a urgência
+                    Sobre a urgência
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
@@ -599,7 +592,7 @@ export default function Diagnostico({ embedded = false }: { embedded?: boolean }
 
 
             <p className="text-[0.9375rem] text-muted-foreground text-center leading-relaxed">
-              ⚠️ Este diagnóstico é uma orientação inicial gerada por inteligência artificial.
+              Este diagnóstico é uma orientação inicial gerada por inteligência artificial.
               Não substitui a consulta com um advogado. Para casos urgentes, procure assistência jurídica presencial.
             </p>
           </div>

@@ -33,7 +33,7 @@ Estruture sua resposta nos seguintes blocos:
 ### LEI ENCONTRADA
 - Nome oficial da lei
 - Número e data de publicação
-- Status: ✅ Vigente | ⚠️ Parcialmente alterada | ❌ Revogada
+- Status: Vigente, parcialmente alterada ou revogada
 
 ### DISPOSITIVOS RELEVANTES
 - Cite os artigos mais relevantes para a consulta do usuário
@@ -66,10 +66,10 @@ Destaque artigos citados em **negrito** para fácil identificação visual.
 ## INDICADOR DE CONFIABILIDADE
 Ao final de TODA resposta, inclua um indicador de confiabilidade:
 
-📊 **Confiabilidade da resposta:**
-- 🟢 **Alta** — Baseada em legislação vigente consolidada e jurisprudência pacificada
-- 🟡 **Média** — Tema com interpretações divergentes ou legislação recente
-- 🔴 **Baixa** — Tema sem legislação específica ou com posicionamentos conflitantes
+**Confiabilidade da resposta:**
+- **Alta** — Baseada em legislação vigente consolidada e jurisprudência pacificada
+- **Média** — Tema com interpretações divergentes ou legislação recente
+- **Baixa** — Tema sem legislação específica ou com posicionamentos conflitantes
 
 Escolha o nível adequado e justifique brevemente.
 
@@ -85,7 +85,7 @@ Ao final absoluto de TODA resposta, após o indicador de confiabilidade, adicion
 - NUNCA afirme que uma lei existe se não tiver certeza da sua vigência atual.
 - NUNCA gere URLs dinâmicas. Use apenas os portais fixos listados acima.
 - Sempre que citar um artigo de lei, indique: nome da lei + número + ano + artigo. Se tiver dúvida sobre o número exato, prefira menção genérica ("o CDC protege...") em vez de inventar.
-- Se não tiver certeza sobre a atualização de uma norma, sinalize: "⚠️ Verifique a redação atualizada em planalto.gov.br"
+- Se não tiver certeza sobre a atualização de uma norma, sinalize: "Verifique a redação atualizada em planalto.gov.br"
 - Para legislação estadual ou municipal, informe que a busca cobre apenas legislação federal.
 - NUNCA substitua o advogado: sempre oriente o usuário a consultar um profissional para seu caso concreto.
 
@@ -129,7 +129,7 @@ serve(async (req) => {
 
     const disclaimerInstruction = isLawyer
       ? ""
-      : "\n\nIMPORTANTE: Ao final de TODA resposta, inclua: \"⚠️ Esta orientação é informativa. Consulte um advogado para seu caso específico.\"";
+      : "\n\nIMPORTANTE: Ao final de TODA resposta, inclua: \"Esta orientação é informativa. Consulte um advogado para seu caso específico.\"";
 
     // Grounding: fetch relevant decisions for the LAST user message
     const lastUser = [...messages].reverse().find((m: any) => m.role === "user");
