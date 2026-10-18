@@ -49,7 +49,14 @@ describe("regras de apresentação do uso", () => {
 
 describe("fidelidade dos documentos e recentes", () => {
   it("remove emojis preservando acentos, dinheiro e quebras", () => {
-    expect(cleanDocumentText("⚠️ IMPORTANTE\nInteligência artificial, R$ 480.\nAnálise — Civil")).toBe(" IMPORTANTE\nInteligência artificial, R$ 480.\nAnálise : Civil");
+    expect(cleanDocumentText("⚠️ IMPORTANTE\nInteligência artificial, R$ 480.\nAnálise — Civil")).toBe(" IMPORTANTE\nInteligência artificial, R$ 480.\nAnálise, Civil");
+  });
+  it("travessão vira vírgula e meia-risca vira hífen, nunca dois-pontos", () => {
+    expect(cleanDocumentText("art. 219 — contagem")).toBe("art. 219, contagem");
+    expect(cleanDocumentText("Curitiba–Lisboa")).toBe("Curitiba-Lisboa");
+    expect(cleanDocumentText("10–12")).toBe("10-12");
+    expect(cleanDocumentText("vigência 2024–2026, art. 219 — contagem")).toBe("vigência 2024-2026, art. 219, contagem");
+    expect(cleanDocumentText("Curitiba–Lisboa, 10–12, art. 219 — contagem")).not.toContain(":");
   });
   it("remove só título DO FECHO, preserva fecho", () => {
     expect(cleanPetitionText("DO FECHO\nNestes termos, pede deferimento.\nAssinatura")).toBe("\nNestes termos, pede deferimento.\nAssinatura");
