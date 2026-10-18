@@ -293,16 +293,48 @@ function multisetIgual(a: string[], b: string[]): boolean {
   return true;
 }
 
+function palavrasDe(texto: string): string[] {
+  return texto.toLowerCase().match(/[\wçáéíóúâêôãõü]+/g) ?? [];
+}
+
+/** Número de palavras alteradas entre dois textos (diff por LCS). */
+function palavrasAlteradas(a: string[], b: string[]): number {
+  const n = a.length;
+  const m = b.length;
+  if (n === 0 || m === 0) return Math.max(n, m);
+  // LCS com duas linhas.
+  let prev = new Array<number>(m + 1).fill(0);
+  let curr = new Array<number>(m + 1).fill(0);
+  for (let i = 1; i <= n; i++) {
+    for (let j = 1; j <= m; j++) {
+      curr[j] = a[i - 1] === b[j - 1]
+        ? prev[j - 1] + 1
+        : Math.max(prev[j], curr[j - 1]);
+    }
+    [prev, curr] = [curr, prev.fill(0)];
+  }
+  const lcs = prev[m];
+  return Math.max(n, m) - lcs;
+}
+
 /**
  * Trava da passada de gramática: a correção é aceita só se preservar todos os
  * tokens protegidos (números, datas, siglas, processos, artigos, súmulas,
- * temas) e mudar no máximo 3% dos caracteres.
+ * temas) e alterar no máximo 3% das palavras (com tolerância de uma palavra
+ * em textos curtos, onde 3% seria zero). Reescritas longas também caem pela
+ * variação de tamanho.
  */
 export function gramaticaSegura(antes: string, depois: string): boolean {
   if (!antes || !depois) return false;
   const variacao = Math.abs(depois.length - antes.length) / antes.length;
   if (variacao > 0.03) return false;
-  return multisetIgual(tokensProtegidos(antes), tokensProtegidos(depois));
+  if (!multisetIgual(tokensProtegidos(antes), tokensProtegidos(depois))) return false;
+  const pa = palavrasDe(antes);
+  const pb = palavrasDe(depois);
+  if (pa.length === 0) return false;
+  const alteradas = palavrasAlteradas(pa, pb);
+  const limite = Math.max(1, Math.floor(pa.length * 0.03));
+  return alteradas <= limite;
 }
 
 const GRAMMAR_PROMPT = `Corrija APENAS erros de ortografia e de concordância verbal e nominal do texto abaixo.
