@@ -76,13 +76,9 @@ function extensoInteiro(n: number): string {
   }
 
   // Padrão escolhido: vírgula separando o grupo de milhares/milhões do resto
-  // quando o resto é centena redonda ou menor que 100 ("cinco mil, quatrocentos...").
-  if (partes.length > 1) {
-    const ultimo = partes[partes.length - 1];
-    const restoEhCentenaOuMenor = resto > 0 && (resto < 100 || resto % 100 === 0);
-    if (restoEhCentenaOuMenor) {
-      return `${partes.slice(0, -1).join(" e ")}, ${ultimo}`;
-    }
+  // ("cinco mil, quatrocentos e oitenta reais").
+  if (partes.length > 1 && resto > 0) {
+    return `${partes.slice(0, -1).join(" e ")}, ${partes[partes.length - 1]}`;
   }
   return partes.join(" e ");
 }
@@ -234,10 +230,10 @@ export function verificarFidelidadeFatos(saida: string, ctx: ReviewContext): str
   }
 
   const genero = generoDosFatos(base);
-  if (genero === "f" && /\bo Autor\b/.test(saida) && !/\ba Autora\b/.test(saida)) {
+  if (genero === "f" && /\bo autor\b/i.test(saida) && !/\ba autora\b/i.test(saida)) {
     pontos.push("Os fatos indicam pessoa do sexo feminino, mas o texto usa \"o Autor\". Confira a concordância.");
   }
-  if (genero === "m" && /\ba Autora\b/.test(saida) && !/\bo Autor\b/.test(saida)) {
+  if (genero === "m" && /\ba autora\b/i.test(saida) && !/\bo autor\b/i.test(saida)) {
     pontos.push("Os fatos indicam pessoa do sexo masculino, mas o texto usa \"a Autora\". Confira a concordância.");
   }
 
