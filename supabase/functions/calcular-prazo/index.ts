@@ -126,7 +126,7 @@ serve(async (req) => {
     if (dow === 0) return "Domingo";
     if (dow === 6) return "Sábado";
     const f = feriadoMap.get(iso(d));
-    if (f) return `${rotuloTipo[f.tipo] ?? "Feriado"} — ${f.descricao}`;
+    if (f) return `${rotuloTipo[f.tipo] ?? "Feriado"}: ${f.descricao}`;
     if (materia !== "penal" && noRecesso(d)) {
       return "Recesso forense (art. 220 do CPC)";
     }
@@ -176,7 +176,7 @@ serve(async (req) => {
     // empurram o vencimento para frente (não se aplica ao processo penal).
     while (contados < dias) {
       if (materia !== "penal" && noRecesso(cursor)) {
-        registrar(cursor, "Recesso forense — contagem suspensa (art. 220 do CPC)");
+        registrar(cursor, "Recesso forense, contagem suspensa (art. 220 do CPC)");
       } else {
         contados++;
       }
@@ -209,10 +209,10 @@ serve(async (req) => {
       contagem,
       dias_excluidos: diasExcluidos,
       base_legal: [
-        "CPC, art. 219 — contagem em dias úteis (matéria cível); CLT, art. 775 (trabalhista).",
-        "CPC, art. 224, §1º — exclui-se o dia do começo e inclui-se o do vencimento; prorrogação para o primeiro dia útil.",
-        "CPC, art. 224, §§2º e 3º, e Lei 11.419/2006, art. 4º, §§3º e 4º — publicação no primeiro dia útil seguinte à disponibilização.",
-        "CPC, art. 220 — suspensão dos prazos entre 20/12 e 20/01 (não aplicável ao processo penal).",
+        "CPC, art. 219: contagem em dias úteis (matéria cível); CLT, art. 775 (trabalhista).",
+        "CPC, art. 224, §1º: exclui-se o dia do começo e inclui-se o do vencimento; prorrogação para o primeiro dia útil.",
+        "CPC, art. 224, §§2º e 3º, e Lei 11.419/2006, art. 4º, §§3º e 4º: publicação no primeiro dia útil seguinte à disponibilização.",
+        "CPC, art. 220: suspensão dos prazos entre 20/12 e 20/01 (não aplicável ao processo penal).",
       ],
     }),
     { headers: { ...corsHeaders, "Content-Type": "application/json" } },
