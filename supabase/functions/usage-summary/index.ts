@@ -1,6 +1,8 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import {
   PLAN_LIMITS,
+  ADMIN_PLAN,
+  isAdminUser,
   UNLIMITED,
   UNMETERED_ACTIONS,
   extractEnv,
@@ -53,8 +55,9 @@ Deno.serve(async (req) => {
       p_user_id: user.id,
       p_env: env,
     });
-    const plan = (planData as string) || "free";
-    const limits = PLAN_LIMITS[plan] || PLAN_LIMITS.free;
+    const admin_ = await isAdminUser(admin, user.id);
+    const plan = admin_ ? ADMIN_PLAN : (planData as string) || "free";
+    const limits = PLAN_LIMITS[plan] || PLAN_LIMITS.escritorio;
 
     // Mês de uso em America/Sao_Paulo, igual ao checkRateLimit.
     const { data: rows } = await admin
@@ -88,8 +91,8 @@ Deno.serve(async (req) => {
           .map((action) => ({
             action,
             label: ACTION_LABELS[action] ?? action,
-            used: Math.min(counts[action] ?? 0, limits[action]),
-            limit: limits[action],
+            used: admin_ ? counts[action] ?? 0 : Math.min(counts[action] ?? 0, limits[action]),
+            limit: admin_ ? UNLIMITED : limits[action],
           })),
         // Ações sem cota mensal aparecem como ilimitadas (limit = -1).
         ...[...UNMETERED_ACTIONS].map((action) => ({

@@ -117,6 +117,28 @@ export function formatRenewal(date: Date = saoPauloMonthEnd()): string {
   return `${dd}/${mm}`;
 }
 
+/** Plano sintético devolvido para administradores. */
+export const ADMIN_PLAN = "admin";
+
+type RoleClient = {
+  from: (table: string) => any;
+};
+
+/** Consulta server-side do papel admin. Falha de consulta conta como não-admin. */
+export async function isAdminUser(supabase: RoleClient, userId: string): Promise<boolean> {
+  try {
+    const { data, error } = await supabase
+      .from("user_roles")
+      .select("role")
+      .eq("user_id", userId)
+      .eq("role", "admin")
+      .maybeSingle();
+    return !error && !!data;
+  } catch {
+    return false;
+  }
+}
+
 export async function checkRateLimit(
   userId: string,
   action: string,
@@ -145,6 +167,14 @@ export async function checkRateLimit(
 
   const supabase = createClient(supabaseUrl, supabaseServiceKey);
   const renewsAt = saoPauloMonthEnd().toISOString();
+
+  // Admin (papel em user_roles, lido com a service key, nunca de dado do cliente):
+  // sem cota mensal e sem trava de rajada. O uso continua registrado com a
+  // mesma action, para as métricas.
+  if (await isAdminUser(supabase, userId)) {
+    await supabase.from("usage_tracking").insert({ user_id: userId, action });
+    return { allowed: true, used: 0, limit: UNLIMITED, plan: ADMIN_PLAN, renewsAt, metered: false };
+  }
 
   const { data: planData } = await supabase.rpc("get_user_plan", {
     p_user_id: userId,
@@ -214,34 +244,41 @@ export async function checkRateLimit(
 
 }
 
-const ACTION_NOUNS: Record<string, string> = {
-  search: "buscas",
-  chat: "mensagens de chat",
-  diagnostico: "diagnósticos",
-  diagnostico_completo_free: "diagnósticos completos",
-  peticao: "petições",
-  analise: "análises",
-  documento: "leituras de documento",
-  calculo: "cálculos",
+/** Substantivo de cada ação, no singular e no plural. */
+export const ACTION_NOUNS: Record<string, { one: string; many: string; fem: boolean }> = {
+  search: { one: "busca", many: "buscas", fem: true },
+  chat: { one: "mensagem de chat", many: "mensagens de chat", fem: true },
+  diagnostico: { one: "diagnóstico", many: "diagnósticos", fem: false },
+  diagnostico_completo_free: { one: "diagnóstico completo", many: "diagnósticos completos", fem: false },
+  peticao: { one: "petição", many: "petições", fem: true },
+  analise: { one: "análise", many: "análises", fem: true },
+  documento: { one: "leitura de documento", many: "leituras de documento", fem: true },
+  calculo: { one: "cálculo", many: "cálculos", fem: false },
 };
 
-/** Mensagem padrão de cota mensal estourada. */
+/** "1 diagnóstico", "2 diagnósticos". */
+export function countNoun(action: string, n: number): string {
+  const noun = ACTION_NOUNS[action] ?? { one: "uso", many: "usos", fem: false };
+  return `${n} ${n === 1 ? noun.one : noun.many}`;
+}
+
+/** Mensagem padrão de cota mensal estourada. O botão "Ver planos" leva a /planos. */
 export function monthlyLimitMessage(action: string, limit: number, plan: string): string {
   if (limit === 0) {
-    return "Este recurso não está disponível no seu plano. Faça upgrade em /planos para liberar.";
+    return "Este recurso não está disponível no seu plano. Veja os planos para liberar.";
   }
-  const noun = ACTION_NOUNS[action] ?? "usos";
+  const noun = ACTION_NOUNS[action] ?? { one: "uso", many: "usos", fem: false };
+  const possessivo = limit === 1 ? (noun.fem ? "sua" : "seu") : (noun.fem ? "suas" : "seus");
   const upgradePlan = plan === "profissional" ? "escritorio" : "profissional";
   const upgradeLabel = upgradePlan === "escritorio" ? "Escritório" : "Profissional";
   const upgradeLimit = PLAN_LIMITS[upgradePlan]?.[action];
   const upgradeHint = plan === "escritorio" || upgradeLimit === undefined || upgradeLimit <= limit
     ? ""
-    : ` O plano ${upgradeLabel} libera ${upgradeLimit} ${noun} por mês — veja em /planos.`;
-  return `Você usou suas ${limit} ${noun} deste mês (plano ${plan}). O limite renova em ${formatRenewal()}.${upgradeHint}`;
+    : ` O plano ${upgradeLabel} libera ${countNoun(action, upgradeLimit)} por mês.`;
+  return `Você usou ${possessivo} ${countNoun(action, limit)} deste mês (plano ${plan}). O limite renova em ${formatRenewal()}.${upgradeHint}`;
 }
 
-/** Mensagem da trava de rajada — situação diferente de cota mensal esgotada. */
+/** Mensagem da trava de rajada, situação diferente de cota mensal esgotada. */
 export function burstLimitMessage(): string {
-  return `Muitas requisições em pouco tempo (limite de ${BURST_LIMIT_PER_HOUR} por hora). Aguarde alguns minutos — sua cota mensal continua disponível.`;
+  return `Muitas requisições em pouco tempo (limite de ${BURST_LIMIT_PER_HOUR} por hora). Aguarde alguns minutos. Sua cota mensal continua disponível.`;
 }
-
