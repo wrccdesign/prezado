@@ -20,6 +20,7 @@ import {
 import { TRANSPARENCY_NOTE } from "@/lib/exportDocument";
 import { useIsAdmin } from "@/hooks/useIsAdmin";
 import { CitationCheck, type CitationReport } from "@/components/CitationCheck";
+import { ReviewBlock, type OutputReview } from "@/components/ReviewBlock";
 import { cleanPetitionText, cleanDocumentText } from "@/lib/documentText";
 
 const EMPTY_BRANDING: PetitionBranding = {
@@ -33,6 +34,7 @@ interface PetitionResultProps {
   petitionType: string;
   onNewPetition: () => void;
   citationReport?: CitationReport | null;
+  review?: OutputReview | null;
 }
 
 type LineType = "header" | "section-title" | "party" | "body" | "closing" | "empty";
@@ -120,7 +122,7 @@ function brandingNoticeText(
 }
 
 
-export function PetitionResult({ text, petitionType, onNewPetition, citationReport }: PetitionResultProps) {
+export function PetitionResult({ text, petitionType, onNewPetition, citationReport, review }: PetitionResultProps) {
   const { toast } = useToast();
   const { user } = useAuth();
   const sub = useSubscription();
@@ -470,6 +472,7 @@ export function PetitionResult({ text, petitionType, onNewPetition, citationRepo
             </Button>
           </div>
           <CitationCheck report={citationReport} />
+          <ReviewBlock review={review} />
         </CardContent>
       </Card>
     </div>

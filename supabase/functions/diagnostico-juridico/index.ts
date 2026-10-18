@@ -4,6 +4,7 @@ import { burstLimitMessage, checkRateLimit, extractEnv, monthlyLimitMessage } fr
 import { fetchGroundingContext, buildGroundingBlock, fetchGroundingSumulas, buildSumulasBlock } from "../_shared/grounding.ts";
 import { aiChatTool, AIError } from "../_shared/ai.ts";
 import { buildCitationReport } from "../_shared/citation-check.ts";
+import { revisarCampos } from "../_shared/output-review.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -154,14 +155,26 @@ Use a ferramenta diagnostico_juridico para estruturar a resposta.${groundingBloc
 
     if (!diagnostico) throw new Error("Não foi possível gerar o diagnóstico");
 
+    // Revisão automática de saída: corrige o verificável em código e sinaliza o resto.
+    const { obj: diagnosticoRevisado, review } = await revisarCampos(
+      diagnostico as Record<string, unknown>,
+      [
+        "o_que_esta_acontecendo", "qual_seu_direito", "o_que_voce_pode_fazer",
+        "estimativa_custos_ganhos", "onde_entrar", "explicacao_urgencia",
+        "area_do_direito", "tipo_peticao_sugerida",
+      ],
+      { fatos: situacao },
+      { functionName: "diagnostico-juridico", userId: user.id, environment: env },
+    );
+
     const citationReport = await buildCitationReport(
-      Object.values(diagnostico ?? {})
+      Object.values(diagnosticoRevisado ?? {})
         .map((v) => (Array.isArray(v) ? v.join("\n") : String(v ?? "")))
         .join("\n"),
       supabase,
     );
 
-    return new Response(JSON.stringify({ diagnostico, citations: grounding, citation_report: citationReport }), {
+    return new Response(JSON.stringify({ diagnostico: diagnosticoRevisado, citations: grounding, citation_report: citationReport, review }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } catch (e) {

@@ -5,6 +5,7 @@ import { fetchGroundingContext, describeDecision, fetchGroundingSumulas, buildSu
 import { searchLegislation, type NormaResumo } from "../_shared/legislation-search.ts";
 import { aiChatText, AIError } from "../_shared/ai.ts";
 import { buildCitationReport } from "../_shared/citation-check.ts";
+import { revisarSaida } from "../_shared/output-review.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -295,6 +296,12 @@ INSTRUÇÕES: Com base nos fatos acima, INFIRA e SUGIRA toda a fundamentação j
     });
     if (!generatedText) throw new Error("A IA não retornou um texto válido");
 
+    // Revisão automática de saída: corrige o verificável em código e sinaliza o resto.
+    const { texto: textoRevisado, review } = await revisarSaida(
+      generatedText,
+      { fatos, pedidos },
+      { functionName: "generate-petition", userId: user.id, environment: env },
+    );
 
     const formData = { tipo_acao, vara_juizo, fatos, pedidos, autor, reu, fundamentos, comarca };
 
@@ -302,13 +309,13 @@ INSTRUÇÕES: Com base nos fatos acima, INFIRA e SUGIRA toda a fundamentação j
       user_id: user.id,
       petition_type: tipo_acao || "Petição Inicial",
       form_data: formData,
-      generated_text: generatedText,
+      generated_text: textoRevisado,
     });
     if (insertError) console.error("Insert error:", insertError);
 
-    const citationReport = await buildCitationReport(generatedText, supabase);
+    const citationReport = await buildCitationReport(textoRevisado, supabase);
 
-    return new Response(JSON.stringify({ generated_text: generatedText, citation_report: citationReport }), {
+    return new Response(JSON.stringify({ generated_text: textoRevisado, citation_report: citationReport, review }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } catch (e) {

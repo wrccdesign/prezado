@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { exportToPDF, exportToDOCX, slugify, type ExportSection } from "@/lib/exportDocument";
+import { ReviewBlock, type OutputReview } from "@/components/ReviewBlock";
 import { format } from "date-fns";
 
 
@@ -67,6 +68,7 @@ const FIXED_SOURCES = [
 
 export function AnalysisResult({
   result,
+  review,
   onNewAnalysis,
   onSave,
   saveState,
@@ -83,6 +85,7 @@ export function AnalysisResult({
   reanalyzing = false,
 }: {
   result: LegalAnalysis;
+  review?: OutputReview | null;
   onNewAnalysis?: () => void;
   onSave?: () => void | Promise<void>;
   saveState?: "idle" | "saving" | "saved";
@@ -252,6 +255,7 @@ export function AnalysisResult({
 
   return (
     <div className="space-y-6 animate-fade-in">
+      <ReviewBlock review={review} />
       {/* Hero Section - Tipo e Status */}
       <div className="rounded-xl border bg-gradient-to-br from-primary/5 via-background to-background p-6">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
