@@ -9,6 +9,7 @@ import { SEO } from "@/components/SEO";
 import { LegalDisclaimer } from "@/components/LegalDisclaimer";
 import { PetitionResult } from "@/components/PetitionResult";
 import { type CitationReport } from "@/components/CitationCheck";
+import { type OutputReview } from "@/components/ReviewBlock";
 import { PeticaoStepperFlow } from "@/components/petition/PeticaoStepperFlow";
 
 import { Button } from "@/components/ui/button";
@@ -56,6 +57,7 @@ export default function Petition() {
   const [loading, setLoading] = useState(false);
   const [generatedText, setGeneratedText] = useState<string | null>(null);
   const [citationReport, setCitationReport] = useState<CitationReport | null>(null);
+  const [review, setReview] = useState<OutputReview | null>(null);
 
   const [tipoAcao, setTipoAcao] = useState("");
   const [varaJuizo, setVaraJuizo] = useState("");
@@ -116,6 +118,7 @@ export default function Petition() {
 
       setGeneratedText(data.generated_text);
       setCitationReport(data.citation_report ?? null);
+      setReview(data.review ?? null);
       notifyUsageConsumed();
       toast({ title: "Petição gerada com sucesso!" });
     } catch (err: any) {
@@ -158,7 +161,7 @@ export default function Petition() {
       <SEO title="Geração de Petições com IA — Honorífico" description="Gere petições jurídicas fundamentadas em segundos. Download em PDF e DOCX, prontas para protocolo." path="/peticao" />
         <LegalDisclaimer />
         <main className="container max-w-4xl py-8">
-          <PetitionResult text={generatedText} petitionType={tipoAcao} onNewPetition={handleNewPetition} citationReport={citationReport} />
+          <PetitionResult text={generatedText} petitionType={tipoAcao} onNewPetition={handleNewPetition} citationReport={citationReport} review={review} />
         </main>
       </div>
     );

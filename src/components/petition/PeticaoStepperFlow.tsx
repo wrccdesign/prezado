@@ -11,6 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useToast } from "@/hooks/use-toast";
 import { PetitionResult } from "@/components/PetitionResult";
 import { type CitationReport } from "@/components/CitationCheck";
+import { type OutputReview } from "@/components/ReviewBlock";
 import { notifyUsageConsumed } from "@/hooks/useUsage";
 import { ArrowLeft, ExternalLink, FileSignature, Loader2, Plus, X } from "lucide-react";
 
@@ -83,6 +84,7 @@ export function PeticaoStepperFlow({ tipoAcaoOptions, varaJuizoOptions, initial 
 
   const [generatedText, setGeneratedText] = useState<string | null>(null);
   const [citationReport, setCitationReport] = useState<CitationReport | null>(null);
+  const [review, setReview] = useState<OutputReview | null>(null);
 
   const handleError = (err: any, fallbackTitle: string) => {
     const is429 = err?.context?.status === 429 || err?.status === 429 || /limite/i.test(err?.message ?? "");
@@ -168,6 +170,7 @@ export function PeticaoStepperFlow({ tipoAcaoOptions, varaJuizoOptions, initial 
       });
       setGeneratedText(data.generated_text);
       setCitationReport(data.citation_report ?? null);
+      setReview(data.review ?? null);
       notifyUsageConsumed();
       setStep(5);
       toast({ title: "Petição gerada com sucesso!" });
@@ -190,7 +193,7 @@ export function PeticaoStepperFlow({ tipoAcaoOptions, varaJuizoOptions, initial 
   };
 
   if (generatedText) {
-    return <PetitionResult text={generatedText} petitionType={tipoAcao} onNewPetition={reset} citationReport={citationReport} />;
+    return <PetitionResult text={generatedText} petitionType={tipoAcao} onNewPetition={reset} citationReport={citationReport} review={review} />;
   }
 
   return (
