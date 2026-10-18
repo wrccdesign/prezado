@@ -62,6 +62,7 @@ export const ANALISE_FREE_ROUNDS: Record<string, number> = {
   free: 1,
   profissional: 5,
   escritorio: 10,
+  admin: 10,
 };
 
 export function analiseFreeRounds(plan: string): number {
