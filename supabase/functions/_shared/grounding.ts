@@ -30,14 +30,29 @@ export interface GroundingDecision {
 
 export type NaturezaFonte = "precedente" | "julgado" | "relacionado";
 
-/** Três níveis de fonte, conforme o teor efetivamente disponível. */
+/** Tipos que nunca servem de apoio: não decidem o mérito da tese. */
+const TIPO_EXCLUIDO = /interlocut|homolog/i;
+/** Sem ementa, só sentença com resultado registrado pode aparecer, e apenas como caso análogo. */
+const TIPO_SENTENCA = /senten/i;
+
+/**
+ * Três níveis de fonte, conforme o teor efetivamente disponível.
+ * Decisão interlocutória e homologação nunca são precedente nem julgado.
+ */
 export function classifyNatureza(
   ementa: string | null | undefined,
   resultado: string | null | undefined,
+  tipoDecisao?: string | null,
 ): NaturezaFonte {
+  if (tipoDecisao && TIPO_EXCLUIDO.test(tipoDecisao)) return "relacionado";
   if ((ementa ?? "").trim().length >= 50) return "precedente";
-  if (resultado) return "julgado";
+  if (resultado && tipoDecisao && TIPO_SENTENCA.test(tipoDecisao)) return "julgado";
   return "relacionado";
+}
+
+/** Filtro mínimo: só entra no contexto o que pode ser citado. */
+export function isUsableSource(d: Pick<GroundingDecision, "natureza">): boolean {
+  return d.natureza !== "relacionado";
 }
 
 function toGroundingDecision(d: Record<string, unknown>): GroundingDecision {
@@ -56,7 +71,7 @@ function toGroundingDecision(d: Record<string, unknown>): GroundingDecision {
     tipo_decisao: (d.tipo_decisao as string | null) ?? null,
     orgao_julgador: (d.orgao_julgador as string | null) ?? null,
     source_url: (d.source_url as string | null) ?? null,
-    natureza: classifyNatureza((d.ementa as string | null) ?? null, resultado),
+    natureza: classifyNatureza((d.ementa as string | null) ?? null, resultado, (d.tipo_decisao as string | null) ?? null),
   };
 }
 
@@ -125,7 +140,7 @@ export async function fetchGroundingContext(
     const { data: vec } = await supabase.rpc("search_decisions_vector", {
       query_embedding: embedding,
       match_threshold: 0.35,
-      match_count: limit,
+      match_count: limit * 3,
       only_julgados: onlyJulgados,
     });
     if (Array.isArray(vec)) {
@@ -145,14 +160,15 @@ export async function fetchGroundingContext(
     try {
       const { data: fts } = await supabase.rpc("search_decisions", {
         search_query: query.slice(0, 200),
-        result_limit: limit - results.length,
+        result_limit: limit * 3,
         filter_only_julgados: onlyJulgados ? true : null,
       });
       if (Array.isArray(fts)) {
         for (const d of fts) {
           if (!seen.has(d.id)) {
             seen.add(d.id);
-            results.push(toGroundingDecision(d));
+            const g = toGroundingDecision(d);
+            if (isUsableSource(g)) results.push(g);
           }
           if (results.length >= limit) break;
         }
@@ -196,7 +212,7 @@ Natureza: ${
     d.natureza === "precedente"
       ? "precedente (há ementa oficial; pode fundamentar tese)"
       : d.natureza === "julgado"
-        ? "julgado sem ementa (só pode ser mencionado como caso análogo)"
+        ? "caso análogo (sentença sem ementa; só pode ser mencionada como caso análogo)"
         : "relacionado (sem resultado e sem teor; não pode ser citado)"
   }
 Resultado: ${resultado}
@@ -207,7 +223,7 @@ ${corpo}`;
 const REGRAS_CITACAO = `## REGRAS DE CITAÇÃO
 - Ao citar uma decisão, use o formato exato: "conforme [tipo_decisao] do [tribunal], processo [número], resultado [resultado]".
 - Fonte marcada como "precedente" (tem ementa oficial): pode sustentar tese jurídica.
-- Fonte marcada como "julgado sem ementa": só pode ser mencionada como caso análogo, na forma "em caso análogo, o [tribunal] julgou [resultado] pedido semelhante (processo [número])". É PROIBIDO usá-la para afirmar entendimento consolidado, jurisprudência pacífica, entendimento do tribunal ou qualquer tese atribuída ao tribunal.
+- Fonte marcada como "caso análogo": só pode ser mencionada na forma "caso análogo: [tipo_decisao] do [tribunal], processo [número]". É PROIBIDO escrever que o tribunal "julgou procedente pedido semelhante", atribuir a ela fatos que não constam do contexto, ou usá-la para afirmar entendimento consolidado, jurisprudência pacífica ou tese do tribunal.
 - Fonte marcada como "relacionado": não pode ser citada de forma alguma.
 - Trechos marcados como RESUMO DE METADADOS não são texto oficial da decisão. Não os apresente como ementa nem os cite entre aspas como se fossem transcrição.
 - Legislação (CF, CLT, CDC, CC, CPC, CP): pode citar artigos que você tenha CERTEZA. Se houver dúvida sobre o número exato, cite genericamente ("o CDC protege contra cobrança indevida" em vez de arriscar "art. 42").
