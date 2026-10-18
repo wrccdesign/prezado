@@ -1,7 +1,7 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { burstLimitMessage, checkRateLimit, extractEnv, monthlyLimitMessage } from "../_shared/rate-limit.ts";
-import { fetchGroundingContext, describeDecision, fetchGroundingSumulas, buildSumulasBlock, classifyNatureza, type GroundingDecision } from "../_shared/grounding.ts";
+import { fetchGroundingContext, describeDecision, fetchGroundingSumulas, buildSumulasBlock, classifyNatureza, isUsableSource, type GroundingDecision } from "../_shared/grounding.ts";
 import { searchLegislation, type NormaResumo } from "../_shared/legislation-search.ts";
 import { aiChatText, AIError } from "../_shared/ai.ts";
 import { buildCitationReport } from "../_shared/citation-check.ts";
@@ -66,7 +66,7 @@ ${precedents.map((p, i) => describeDecision(p, i + 1)).join("\n\n")}
 
 Formato obrigatório de citação: "conforme [tipo_decisao] do [tribunal], processo [número], resultado [resultado]".
 - Fonte "precedente" (com ementa oficial) pode sustentar tese jurídica.
-- Fonte "julgado sem ementa" só pode ser mencionada como caso análogo: "em caso análogo, o [tribunal] julgou [resultado] pedido semelhante (processo [número])". É PROIBIDO usá-la para afirmar entendimento consolidado, jurisprudência pacífica ou tese do tribunal.
+- Fonte "caso análogo" (sentença sem ementa) só pode ser mencionada na forma "caso análogo: [tipo_decisao] do [tribunal], processo [número]". É PROIBIDO escrever que o tribunal "julgou procedente pedido semelhante" ou usá-la para afirmar entendimento consolidado, jurisprudência pacífica ou tese do tribunal.
 - Fonte "relacionado" não pode ser citada.
 Trechos marcados como RESUMO DE METADADOS não são texto oficial da decisão; não os transcreva como ementa.`
     : `\n\nATENÇÃO: Não foram encontrados precedentes específicos no nosso banco para este caso. NÃO invente números de processo, ementas ou súmulas. Baseie a fundamentação apenas na legislação.`;
@@ -186,8 +186,9 @@ serve(async (req) => {
           .in("id", approvedPrecedentIds);
         precedents = ((data ?? []) as Array<Record<string, unknown>>).map((d) => ({
           ...d,
-          natureza: classifyNatureza(d.ementa as string | null, d.resultado as string | null),
+          natureza: classifyNatureza(d.ementa as string | null, d.resultado as string | null, d.tipo_decisao as string | null),
         })) as GroundingDecision[];
+        precedents = precedents.filter(isUsableSource);
       } else {
         precedents = [];
       }
@@ -217,7 +218,7 @@ O advogado NÃO precisa fornecer os fundamentos — isso é trabalho da IA.
 - Sempre que citar um artigo de lei, use o formato: "nos termos do art. X da Lei nº Y/ANO...". Se tiver QUALQUER dúvida sobre o número exato do artigo, prefira redação genérica ("com base nos princípios do CDC sobre cobrança indevida").
 - Precedentes jurisprudenciais: você SÓ pode citar decisões listadas em "PRECEDENTES DISPONÍVEIS" abaixo, sempre no formato "conforme [tipo_decisao] do [tribunal], processo [número], resultado [resultado]". Se nenhum se aplicar, NÃO inclua seção de precedentes.
 - Fonte "precedente" (com ementa oficial) pode sustentar tese jurídica.
-- Fonte "julgado sem ementa" só pode ser mencionada como caso análogo: "em caso análogo, o [tribunal] julgou [resultado] pedido semelhante (processo [número])". É PROIBIDO usá-la para afirmar entendimento consolidado, jurisprudência pacífica ou tese do tribunal.
+- Fonte "caso análogo" (sentença sem ementa) só pode ser mencionada na forma "caso análogo: [tipo_decisao] do [tribunal], processo [número]". É PROIBIDO escrever que o tribunal "julgou procedente pedido semelhante" ou usá-la para afirmar entendimento consolidado, jurisprudência pacífica ou tese do tribunal.
 - Fonte "relacionado" não pode ser citada.
 - Súmulas: cite apenas as listadas em "SÚMULAS DISPONÍVEIS", quando houver. Fora dessa lista, não cite súmula por número.
 - Se não tiver certeza sobre a atualização de uma norma, sinalize: "verifique a redação vigente no Planalto (planalto.gov.br)".

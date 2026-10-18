@@ -46,9 +46,6 @@ function SectionCard({
     <Card className={`overflow-hidden transition-all hover:shadow-md ${variantClasses[variant]}`}>
       <CardHeader className="pb-3 space-y-1">
         <CardTitle className="flex items-center gap-2.5 text-lg font-semibold">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10">
-            <Icon className="h-4 w-4 text-primary" />
-          </div>
           {title}
         </CardTitle>
         {description && (
@@ -64,7 +61,6 @@ function SectionCard({
 const FIXED_SOURCES = [
   { nome: "STJ Jurisprudência", url: "https://scon.stj.jus.br/SCON/" },
   { nome: "STF Jurisprudência", url: "https://jurisprudencia.stf.jus.br/" },
-  { nome: "JusBrasil", url: "https://www.jusbrasil.com.br/jurisprudencia" },
   { nome: "Planalto (Legislação)", url: "https://www.planalto.gov.br" },
   { nome: "CNJ", url: "https://www.cnj.jus.br" },
 ];
@@ -184,7 +180,6 @@ export function AnalysisResult({
         body: [
           `Complexidade: ${result.complexidade}`,
           `Urgência: ${result.urgencia ? "Sim" : "Não"}`,
-          `Prazo estimado: ${result.prazo_estimado}`,
         ].join("\n"),
       },
     ];
@@ -283,10 +278,6 @@ export function AnalysisResult({
                 Urgente
               </Badge>
             )}
-            <Badge variant="outline" className="px-3 py-1.5 text-sm">
-              <Clock className="mr-1.5 h-3.5 w-3.5" />
-              {result.prazo_estimado}
-            </Badge>
             {rodada > 1 && (
               <Badge variant="outline" className="px-3 py-1.5 text-sm">
                 Rodada {rodada}

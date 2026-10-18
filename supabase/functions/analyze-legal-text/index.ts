@@ -449,7 +449,7 @@ Responda sempre em português brasileiro.${legislationContext}${iterationBlock}`
                   pontos_fracos: {
                     type: "array",
                     items: { type: "string" },
-                    description: "Pontos fracos e vulnerabilidades identificados no texto que podem ser contestados pela parte contrária",
+                    description: "Pontos fracos e vulnerabilidades identificados no texto. Cada item DEVE começar dizendo de qual parte é o ponto fraco, no formato \"Da [parte]: ...\" (ex.: \"Da companhia aérea: ...\", \"Do autor: ...\"). Nunca liste ponto fraco sem indicar a parte.",
                   },
                   fundamentacao_sugerida: {
                     type: "array",
@@ -488,7 +488,6 @@ Responda sempre em português brasileiro.${legislationContext}${iterationBlock}`
                   },
                   complexidade: { type: "string", enum: ["simples", "moderado", "complexo"] },
                   urgencia: { type: "boolean", description: "Se o caso requer atenção urgente" },
-                  prazo_estimado: { type: "string", description: "Prazo estimado para resolução" },
                   itens_resolvidos: {
                     type: "array",
                     description: "Somente em rodadas de refinamento: itens da análise anterior que o esclarecimento do usuário sanou. Vazio na primeira análise.",
@@ -520,7 +519,7 @@ Responda sempre em português brasileiro.${legislationContext}${iterationBlock}`
                 required: [
                   "tipo_de_causa", "resumo", "pontos_fracos", "fundamentacao_sugerida",
                   "legislacao_aplicavel", "riscos_processuais", "jurisdicao_competente",
-                  "direcionamentos", "complexidade", "urgencia", "prazo_estimado",
+                  "direcionamentos", "complexidade", "urgencia",
                 ],
                 additionalProperties: false,
               },
@@ -537,7 +536,6 @@ Responda sempre em português brasileiro.${legislationContext}${iterationBlock}`
     result.portais_relevantes = [
       { nome: "STJ Jurisprudência", url: "https://scon.stj.jus.br/SCON/" },
       { nome: "STF Jurisprudência", url: "https://jurisprudencia.stf.jus.br/" },
-      { nome: "JusBrasil", url: "https://www.jusbrasil.com.br/jurisprudencia" },
       { nome: "Planalto (Legislação)", url: "https://www.planalto.gov.br" },
       { nome: "CNJ", url: "https://www.cnj.jus.br" },
     ];

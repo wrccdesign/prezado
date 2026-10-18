@@ -40,7 +40,7 @@ const VARA_JUIZO = [
   "Trabalho",
   "Federal",
   "Família",
-  "Juizado Especial",
+  "Juizado Especial Cível",
   "Outro",
 ];
 
@@ -72,12 +72,16 @@ export default function Petition() {
     const prefill = consumePeticaoPrefill();
     if (!prefill) return;
     const linha = prefillLinha(prefill);
-    setPedidos((atual) => (atual ? `${atual}\n${linha}` : linha));
+    if (linha) setPedidos((atual) => (atual ? `${atual}\n${linha}` : linha));
     if (prefill.tipoAcao && TIPO_ACAO.includes(prefill.tipoAcao)) setTipoAcao(prefill.tipoAcao);
     if (prefill.varaJuizo && VARA_JUIZO.includes(prefill.varaJuizo)) setVaraJuizo(prefill.varaJuizo);
     if (prefill.fatos) setFatos((atual) => (atual ? `${atual}\n${prefill.fatos}` : prefill.fatos!));
     setOrigemCalculo(prefill.origem ?? null);
-    toast({ title: "Cálculo importado", description: linha });
+    toast(
+      linha
+        ? { title: "Cálculo importado", description: linha }
+        : { title: "Fatos importados", description: `Origem: ${prefill.origem ?? "Diagnóstico"}. Revise antes de gerar.` },
+    );
   }, [toast]);
 
 
@@ -177,7 +181,7 @@ export default function Petition() {
           )}
           {origemCalculo && (
             <p className="mt-2 text-sm text-muted-foreground">
-              Dados importados da {origemCalculo}. Você pode editar qualquer campo antes de gerar.
+              Dados importados ({origemCalculo}). Você pode editar qualquer campo antes de gerar.
             </p>
           )}
 
