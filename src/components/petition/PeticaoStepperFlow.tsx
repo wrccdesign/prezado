@@ -12,7 +12,7 @@ import { useToast } from "@/hooks/use-toast";
 import { PetitionResult } from "@/components/PetitionResult";
 import { type CitationReport } from "@/components/CitationCheck";
 import { notifyUsageConsumed } from "@/hooks/useUsage";
-import { ArrowLeft, ArrowRight, ExternalLink, FileSignature, Loader2, Plus, X } from "lucide-react";
+import { ArrowLeft, ExternalLink, FileSignature, Loader2, Plus, X } from "lucide-react";
 
 interface Norma {
   codigo: string;
@@ -280,7 +280,7 @@ export function PeticaoStepperFlow({ tipoAcaoOptions, varaJuizoOptions, initial 
             </div>
 
             <Button className="h-auto min-h-11 w-full whitespace-normal py-3" size="lg" onClick={goEnquadramento} disabled={loading}>
-              {loading ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : <ArrowRight className="mr-2 h-5 w-5" />}
+              {loading && <Loader2 className="mr-2 h-5 w-5 animate-spin" />}
               {loading ? "Analisando..." : "Continuar para o enquadramento"}
             </Button>
           </CardContent>
@@ -350,7 +350,7 @@ export function PeticaoStepperFlow({ tipoAcaoOptions, varaJuizoOptions, initial 
                 <ArrowLeft className="mr-2 h-4 w-4" /> Voltar
               </Button>
               <Button className="h-auto min-h-10 flex-1 whitespace-normal py-2" onClick={goFundamentacao} disabled={loading || keywords.length === 0}>
-                {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <ArrowRight className="mr-2 h-4 w-4" />}
+                {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 Buscar legislação
               </Button>
             </div>
@@ -403,7 +403,7 @@ export function PeticaoStepperFlow({ tipoAcaoOptions, varaJuizoOptions, initial 
                 <ArrowLeft className="mr-2 h-4 w-4" /> Voltar
               </Button>
               <Button className="h-auto min-h-10 flex-1 whitespace-normal py-2" onClick={goPrecedentes} disabled={loading}>
-                {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <ArrowRight className="mr-2 h-4 w-4" />}
+                {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 Buscar precedentes
               </Button>
             </div>

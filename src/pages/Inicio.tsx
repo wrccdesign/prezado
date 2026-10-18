@@ -10,6 +10,7 @@ import { LegalDisclaimer } from "@/components/LegalDisclaimer";
 import { UsageSummary } from "@/components/UsageSummary";
 import { formatDateBR } from "@/lib/date";
 import { useSubscription } from "@/hooks/useSubscription";
+import { firstDisplayName, analysisDisplayTitle } from "@/lib/recentAnalysis";
 import {
   BriefcaseBusiness,
   Calculator,
@@ -26,6 +27,7 @@ type Recente = {
   tipo: string;
   data: string;
   para: string;
+  arquivo?: string | null;
 };
 
 const ATALHOS = [
@@ -100,21 +102,22 @@ export default function Inicio() {
       (user?.user_metadata?.full_name as string | undefined) ||
       (user?.user_metadata?.name as string | undefined) ||
       "";
-    return nome.trim().split(" ")[0] || "";
+    return firstDisplayName(nome);
   })();
 
   useEffect(() => {
     let ativo = true;
     const carregar = async () => {
       const [analyses, petitions] = await Promise.all([
-        supabase.from("analyses").select("id, file_name, created_at").order("created_at", { ascending: false }).limit(3),
+        supabase.from("analyses").select("id, file_name, result, created_at").order("created_at", { ascending: false }).limit(3),
         supabase.from("petitions").select("id, petition_type, created_at").order("created_at", { ascending: false }).limit(3),
       ]);
 
       const itens: Recente[] = [
         ...(analyses.data ?? []).map((a) => ({
           id: `a-${a.id}`,
-          titulo: a.file_name || "Texto analisado",
+          titulo: analysisDisplayTitle(a.result),
+          arquivo: a.file_name,
           tipo: "Análise",
           data: a.created_at,
           para: "/historico",
@@ -241,6 +244,7 @@ export default function Inicio() {
                   >
                     <RecentIcon aria-hidden="true" className="h-5 w-5 text-navy/60 transition-colors duration-150 group-hover:text-gold" strokeWidth={1.75} />
                     <span className="line-clamp-1 text-base font-medium text-navy md:mt-5 md:line-clamp-2">{r.titulo}</span>
+                    {r.arquivo && <span className="col-start-2 mt-1 line-clamp-1 break-all text-note text-navy/50">{r.arquivo}</span>}
                     <span className="col-start-2 mt-1 text-note text-navy/55 tabular-nums md:mt-auto md:pt-3">{r.tipo}, {formatDateBR(r.data)}</span>
                   </Link>
                 </li>

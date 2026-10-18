@@ -18,7 +18,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { AlertTriangle, ArrowUpCircle, ExternalLink, Loader2, Receipt } from "lucide-react";
+import { AlertTriangle, ExternalLink, Loader2, Receipt } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useUserProfile } from "@/contexts/UserProfileContext";
@@ -281,10 +281,8 @@ export default function Conta() {
                           disabled={busy !== null}
                           className="h-auto min-h-10 whitespace-normal text-left"
                         >
-                          {busy === "change-plan" ? (
+                          {busy === "change-plan" && (
                             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                          ) : (
-                            <ArrowUpCircle className="mr-2 h-4 w-4" />
                           )}
                           Mudar para Escritório na próxima cobrança
                         </Button>

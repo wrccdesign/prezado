@@ -3,6 +3,8 @@ import { Gauge, Lock, Loader2 } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useUsage, type UsageAction } from "@/hooks/useUsage";
+import { useIsAdmin } from "@/hooks/useIsAdmin";
+import { visibleUsageActions, canIncreaseLimits } from "@/lib/usagePresentation";
 
 const isUnlimited = (a: UsageAction) => a.limit < 0;
 
@@ -25,6 +27,7 @@ function formatRenewal(iso: string | undefined) {
 /** Versão compacta usada no menu do avatar. */
 export function UsageSummaryCompact({ onNavigate }: { onNavigate?: () => void }) {
   const { data, isLoading } = useUsage();
+  const { isAdmin } = useIsAdmin();
 
   if (isLoading) {
     return (
@@ -42,7 +45,7 @@ export function UsageSummaryCompact({ onNavigate }: { onNavigate?: () => void })
       </p>
 
       <ul className="space-y-1.5">
-        {data.actions.map((a) => (
+        {visibleUsageActions(data.actions, isAdmin).map((a) => (
           <li key={a.action} className="flex items-center justify-between gap-3 text-note">
             <span className="truncate text-white/60">{a.label}</span>
             {isUnlimited(a) ? (
@@ -73,6 +76,7 @@ export function UsageSummaryCompact({ onNavigate }: { onNavigate?: () => void })
 /** Versão completa usada na página Minha conta. */
 export function UsageSummary() {
   const { data, isLoading } = useUsage();
+  const { isAdmin, loading: adminLoading } = useIsAdmin();
 
   return (
     <Card>
@@ -95,7 +99,7 @@ export function UsageSummary() {
           <p className="text-sm text-muted-foreground">Não foi possível carregar seu uso.</p>
         ) : (
           <div className="space-y-4">
-            {data.actions.map((a) => {
+            {visibleUsageActions(data.actions, isAdmin).map((a) => {
               const pct = isUnlimited(a) ? 100 : a.limit > 0 ? Math.min((a.used / a.limit) * 100, 100) : 100;
               return (
                 <div key={a.action}>
@@ -114,17 +118,17 @@ export function UsageSummary() {
 
                     )}
                   </div>
-                  <div className="mt-1.5 h-2 w-full overflow-hidden rounded-full bg-muted">
+                  {!isUnlimited(a) && <div className="mt-1.5 h-2 w-full overflow-hidden rounded-full bg-muted">
                     <div
                       className={`h-full rounded-full transition-all ${isUnlimited(a) ? "bg-primary/40" : a.limit === 0 ? "bg-muted-foreground/30" : barColor(a)}`}
                       style={{ width: `${pct}%` }}
                     />
-                  </div>
+                  </div>}
                 </div>
               );
             })}
 
-            {data.plan !== "escritorio" && data.plan !== "admin" && (
+            {!adminLoading && canIncreaseLimits(data.plan, isAdmin) && (
               <Button asChild variant="outline" size="sm" className="mt-2">
                 <Link to="/planos">Aumentar meus limites</Link>
               </Button>
