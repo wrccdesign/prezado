@@ -22,7 +22,7 @@ Deno.test("valorPorExtenso: 5.480 usa o padrão com vírgula", () => {
 });
 
 Deno.test("valorPorExtenso: 1.250,37 com centavos", () => {
-  assertEquals(valorPorExtenso(1250.37), "mil duzentos e cinquenta reais e trinta e sete centavos");
+  assertEquals(valorPorExtenso(1250.37), "mil, duzentos e cinquenta reais e trinta e sete centavos");
 });
 
 Deno.test("valorPorExtenso: 1.000.000 -> um milhão de reais", () => {
