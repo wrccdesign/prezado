@@ -227,7 +227,7 @@ export function AnalysisResult({
   };
 
   const baseName = `analise-${slugify(result.tipo_de_causa)}-${format(new Date(), "yyyy-MM-dd")}`;
-  const title = `Análise Jurídica — ${result.tipo_de_causa}`;
+  const title = `Análise Jurídica: ${result.tipo_de_causa}`;
 
   const handleExportPDF = () => {
     try {
