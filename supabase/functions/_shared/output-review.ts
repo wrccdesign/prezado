@@ -58,36 +58,48 @@ function extensoAte999(n: number): string {
 
 function extensoInteiro(n: number): string {
   if (n === 0) return "zero";
-  const partes: string[] = [];
   const milhoes = Math.floor(n / 1_000_000);
   const milhares = Math.floor((n % 1_000_000) / 1000);
   const resto = n % 1000;
 
+  // Grupos na ordem, com o valor que cada um representa.
+  const grupos: Array<{ texto: string; valor: number }> = [];
   if (milhoes > 0) {
-    const m = extensoInteiro(milhoes);
-    partes.push(milhoes === 1 ? "um milhão" : `${m} milhões`);
+    grupos.push({
+      texto: milhoes === 1 ? "um milhão" : `${extensoInteiro(milhoes)} milhões`,
+      valor: milhoes * 1_000_000,
+    });
   }
   if (milhares > 0) {
     // "mil", nunca "um mil"
-    partes.push(milhares === 1 ? "mil" : `${extensoAte999(milhares)} mil`);
+    grupos.push({
+      texto: milhares === 1 ? "mil" : `${extensoAte999(milhares)} mil`,
+      valor: milhares * 1000,
+    });
   }
   if (resto > 0) {
-    partes.push(extensoAte999(resto));
+    grupos.push({ texto: extensoAte999(resto), valor: resto });
   }
 
-  // Padrão escolhido: vírgula separando o grupo de milhares/milhões do resto
-  // ("cinco mil, quatrocentos e oitenta reais").
-  if (partes.length > 1 && resto > 0) {
-    return `${partes.slice(0, -1).join(" e ")}, ${partes[partes.length - 1]}`;
+  // Regra do português: " e " entre o grupo e o resto quando o resto for
+  // menor que 100 ou centena redonda; nos demais casos, só espaço, sem
+  // vírgula ("cinco mil quatrocentos e oitenta", "mil e cem").
+  let out = grupos[0].texto;
+  let acumulado = grupos[0].valor;
+  for (let i = 1; i < grupos.length; i++) {
+    const restante = n - acumulado;
+    const usaE = restante < 100 || restante % 100 === 0;
+    out += (usaE ? " e " : " ") + grupos[i].texto;
+    acumulado += grupos[i].valor;
   }
-  return partes.join(" e ");
+  return out;
 }
 
 /**
  * Valor monetário por extenso em pt-BR.
  * 480 -> "quatrocentos e oitenta reais"; 5000 -> "cinco mil reais";
- * 5480 -> "cinco mil, quatrocentos e oitenta reais"; 1 -> "um real";
- * 0.5 -> "cinquenta centavos"; 1000000 -> "um milhão de reais".
+ * 5480 -> "cinco mil quatrocentos e oitenta reais"; 1100 -> "mil e cem reais";
+ * 1 -> "um real"; 0.5 -> "cinquenta centavos"; 1000000 -> "um milhão de reais".
  */
 export function valorPorExtenso(valor: number): string {
   if (!Number.isFinite(valor) || valor < 0) return "";
@@ -130,6 +142,8 @@ function normalizarExtenso(s: string): string {
     .toLowerCase()
     .replace(/\s+/g, " ")
     .replace(/[(),.;]/g, "")
+    // A forma com vírgula e a forma com " e " após mil/milhão são equivalentes.
+    .replace(/\b(mil|milhão|milhões) e\b/g, "$1")
     .trim();
 }
 
@@ -191,12 +205,20 @@ function anosDeLeis(texto: string): Set<string> {
   return out;
 }
 
-const MARCAS_FEMININO = /\b(fui|estou|sou|era|fiquei|fui sendo|me senti|me considero)\s+[\wç]+a\b|\b(realocada|demitida|demissionada|contratada|contratante|empregada|lesada|enganada|cobrada|prejudicada|afastada|grávida|gestante|mulher|esposa|mãe)\b/i;
-const MARCAS_MASCULINO = /\b(fui|estou|sou|era|fiquei)\s+[\wç]+o\b|\b(realocado|demitido|contratado|empregado|lesado|enganado|prejudicado|afastado|marido|pai|homem)\b/i;
+// Particípios e adjetivos explícitos, só em primeira pessoa ("fui X",
+// "estou X", "fiquei X", "sou X", "era X"). Padrões genéricos como
+// "fui ...a" casariam "fui para Lisboa" e "era uma reunião".
+const PARTICIPIOS_F = "realocada|demitida|contratada|cobrada|lesada|prejudicada|afastada|impedida|atendida";
+const PARTICIPIOS_M = "realocado|demitido|contratado|cobrado|lesado|prejudicado|afastado|impedido|atendido";
+const MARCAS_FEMININO = new RegExp(`\\b(fui|estou|fiquei|sou|era)\\s+(${PARTICIPIOS_F})\\b`, "i");
+const MARCAS_MASCULINO = new RegExp(`\\b(fui|estou|fiquei|sou|era)\\s+(${PARTICIPIOS_M})\\b`, "i");
 
 function generoDosFatos(fatos: string): "f" | "m" | null {
-  if (MARCAS_FEMININO.test(fatos)) return "f";
-  if (MARCAS_MASCULINO.test(fatos)) return "m";
+  const f = MARCAS_FEMININO.test(fatos);
+  const m = MARCAS_MASCULINO.test(fatos);
+  if (f && m) return null;
+  if (f) return "f";
+  if (m) return "m";
   return null;
 }
 
