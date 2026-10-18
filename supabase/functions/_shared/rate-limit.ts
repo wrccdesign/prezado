@@ -153,6 +153,8 @@ export async function checkRateLimit(
      * valendo). Usado pelos refinamentos incluídos na análise.
      */
     skipMeteringFor?: (plan: string) => boolean;
+    /** Só para testes: cliente já construído. */
+    client?: any;
   },
 ): Promise<{
   allowed: boolean;
@@ -166,7 +168,7 @@ export async function checkRateLimit(
   metered?: boolean;
 }> {
 
-  const supabase = createClient(supabaseUrl, supabaseServiceKey);
+  const supabase = options?.client ?? createClient(supabaseUrl, supabaseServiceKey);
   const renewsAt = saoPauloMonthEnd().toISOString();
 
   // Admin (papel em user_roles, lido com a service key, nunca de dado do cliente):
