@@ -20,7 +20,8 @@ export interface LegalAnalysis {
   portais_relevantes: Array<{ nome: string; url: string }>;
   complexidade: "simples" | "moderado" | "complexo";
   urgencia: boolean;
-  prazo_estimado: string;
+  /** Campo legado: análises antigas do histórico ainda podem tê-lo. Não é mais gerado nem exibido. */
+  prazo_estimado?: string;
   itens_resolvidos?: ItemPosicionado[];
   itens_mantidos?: ItemPosicionado[];
 }
