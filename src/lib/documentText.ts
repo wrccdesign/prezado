@@ -2,7 +2,9 @@
 export function cleanDocumentText(text: string): string {
   return text
     .replace(/[\p{Extended_Pictographic}\p{Regional_Indicator}\uFE0F\u200D\u20E3]/gu, "")
-    .replace(/[—–]/g, ":")
+    // Travessão entre trechos vira vírgula; meia-risca (intervalos, ligações) vira hífen simples.
+    .replace(/[ \t]+—[ \t]+/g, ", ")
+    .replace(/[—–]/g, "-")
     .replace(/\r\n?/g, "\n");
 }
 
