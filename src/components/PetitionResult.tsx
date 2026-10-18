@@ -18,6 +18,7 @@ import {
   type PetitionBranding,
 } from "@/lib/petitionBranding";
 import { TRANSPARENCY_NOTE } from "@/lib/exportDocument";
+import { useIsAdmin } from "@/hooks/useIsAdmin";
 import { CitationCheck, type CitationReport } from "@/components/CitationCheck";
 
 const EMPTY_BRANDING: PetitionBranding = {
@@ -121,7 +122,11 @@ function brandingNoticeText(
 export function PetitionResult({ text, petitionType, onNewPetition, citationReport }: PetitionResultProps) {
   const { toast } = useToast();
   const { user } = useAuth();
-  const { isPro, isEscritorio } = useSubscription();
+  const sub = useSubscription();
+  const { isAdmin } = useIsAdmin();
+  // Admin tem acesso total: assinatura e timbre como no Escritório.
+  const isPro = sub.isPro || isAdmin;
+  const isEscritorio = sub.isEscritorio || isAdmin;
   const { isLawyer } = useUserProfile();
 
   const [editedText, setEditedText] = useState(text);

@@ -130,7 +130,7 @@ export async function requireQuotaOrGuest(
     return new Response(
       JSON.stringify({
         error: windowMs >= 24 * 60 * 60 * 1000
-          ? "Você usou suas consultas gratuitas de demonstração. Crie sua conta grátis para continuar — são 7 dias com todos os recursos do plano Profissional."
+          ? "Você usou suas consultas gratuitas de demonstração. Crie sua conta grátis para continuar. São 7 dias com todos os recursos do plano Profissional."
           : `Muitas requisições em pouco tempo (limite de ${guestLimit} por hora). Aguarde alguns minutos ou crie sua conta grátis.`,
         guest_limit: true,
         upgrade_url: "/auth",

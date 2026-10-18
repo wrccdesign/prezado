@@ -174,7 +174,7 @@ const ISENCOES: Array<{ flag: keyof CustasInput; texto: string }> = [
   {
     flag: "justica_gratuita",
     texto:
-      "Beneficiário da justiça gratuita — isento do recolhimento (art. 5º, LXXIV, da CF e art. 98 do CPC).",
+      "Beneficiário da justiça gratuita: isento do recolhimento (art. 5º, LXXIV, da CF e art. 98 do CPC).",
   },
   {
     flag: "parte_isenta",
@@ -237,7 +237,7 @@ export function calcularCustas(
   memoria.push({
     rotulo: "Regra aplicada",
     detalhe:
-      `${descreverRegra(regra)} — vigência a partir de ${formatarData(regra.vigencia_inicio)}` +
+      `${descreverRegra(regra)}, vigência a partir de ${formatarData(regra.vigencia_inicio)}` +
       (regra.vigencia_fim ? ` até ${formatarData(regra.vigencia_fim)}` : "") +
       `. Selecionada pela data do ato (${formatarData(dataAto)}).`,
     valor: null,
@@ -246,7 +246,7 @@ export function calcularCustas(
   memoria.push({
     rotulo: `${unidade.codigo} aplicada`,
     detalhe:
-      `${unidade.codigo} ${unidade.ano} = ${moeda(uf)} — valor vigente no primeiro dia do mês do recolhimento (${formatarData(referencia)}).`,
+      `${unidade.codigo} ${unidade.ano} = ${moeda(uf)}, valor vigente no primeiro dia do mês do recolhimento (${formatarData(referencia)}).`,
     valor: uf,
   });
 
@@ -358,7 +358,7 @@ export function calcularCustas(
     memoria.push({
 
       rotulo: "Litisconsórcio ativo voluntário",
-      detalhe: `${qtdAutores} autores — ${gruposExcedentes} grupo(s) de 10 (ou fração) excedente(s) × 10 ${unidade.codigo} = ${moeda(acrescimo)}`,
+      detalhe: `${qtdAutores} autores: ${gruposExcedentes} grupo(s) de 10 (ou fração) excedente(s) × 10 ${unidade.codigo} = ${moeda(acrescimo)}`,
       valor: acrescimo,
     });
     valorDevido = r2(valorDevido + acrescimo);

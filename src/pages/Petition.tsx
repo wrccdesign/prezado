@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import { useIsAdmin } from "@/hooks/useIsAdmin";
 import { consumePeticaoPrefill, prefillLinha } from "@/lib/peticaoPrefill";
 
 import { supabase } from "@/integrations/supabase/client";
@@ -47,7 +48,9 @@ const VARA_JUIZO = [
 export default function Petition() {
   const { toast } = useToast();
   const navigate = useNavigate();
-  const { isEscritorio } = useSubscription();
+  const { isEscritorio: assinanteEscritorio } = useSubscription();
+  const { isAdmin } = useIsAdmin();
+  const isEscritorio = assinanteEscritorio || isAdmin;
   const { profileData, isLawyer } = useUserProfile();
   const [modo, setModo] = useState<"direto" | "etapas">("direto");
   const [loading, setLoading] = useState(false);

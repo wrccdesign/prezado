@@ -22,6 +22,7 @@ import { AlertTriangle, ArrowUpCircle, ExternalLink, Loader2, Receipt } from "lu
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useUserProfile } from "@/contexts/UserProfileContext";
+import { useIsAdmin } from "@/hooks/useIsAdmin";
 import { useSubscription } from "@/hooks/useSubscription";
 import { LetterheadCard } from "@/components/LetterheadCard";
 import { toast } from "sonner";
@@ -87,7 +88,9 @@ function formatMoney(value: number) {
 export default function Conta() {
   const { user } = useAuth();
   const { isLawyer } = useUserProfile();
-  const { isEscritorio, isTrial, trialEndsAt } = useSubscription();
+  const { isEscritorio: assinanteEscritorio, isTrial, trialEndsAt } = useSubscription();
+  const { isAdmin } = useIsAdmin();
+  const isEscritorio = assinanteEscritorio || isAdmin;
   const trialEndLabel = trialEndsAt
     ? new Date(trialEndsAt).toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit" })
     : null;

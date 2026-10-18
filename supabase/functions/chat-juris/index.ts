@@ -67,9 +67,9 @@ Destaque artigos citados em **negrito** para fácil identificação visual.
 Ao final de TODA resposta, inclua um indicador de confiabilidade:
 
 **Confiabilidade da resposta:**
-- **Alta** — Baseada em legislação vigente consolidada e jurisprudência pacificada
-- **Média** — Tema com interpretações divergentes ou legislação recente
-- **Baixa** — Tema sem legislação específica ou com posicionamentos conflitantes
+- **Alta**: baseada em legislação vigente consolidada e jurisprudência pacificada
+- **Média**: tema com interpretações divergentes ou legislação recente
+- **Baixa**: tema sem legislação específica ou com posicionamentos conflitantes
 
 Escolha o nível adequado e justifique brevemente.
 

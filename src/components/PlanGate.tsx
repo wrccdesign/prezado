@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { Lock, Crown, Building2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useSubscription, type PlanId } from "@/hooks/useSubscription";
+import { useIsAdmin } from "@/hooks/useIsAdmin";
 
 interface PlanGateProps {
   requiredPlan: "profissional" | "escritorio";
@@ -20,9 +21,11 @@ const PLAN_LABEL: Record<"profissional" | "escritorio", string> = {
 
 export function usePlanAccess(required: "profissional" | "escritorio") {
   const { planId, isLoading } = useSubscription();
+  const { isAdmin, loading: adminLoading } = useIsAdmin();
   const currentTier = PLAN_ORDER[planId] ?? 0;
   const requiredTier = PLAN_ORDER[required] ?? 1;
-  return { allowed: currentTier >= requiredTier, loading: isLoading, planId };
+  // Admin (papel em user_roles) tem acesso total, como no servidor.
+  return { allowed: isAdmin || currentTier >= requiredTier, loading: isLoading || adminLoading, planId };
 }
 
 export function PlanGate({
