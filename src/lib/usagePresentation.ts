@@ -4,7 +4,7 @@ export const USAGE_LABELS: Record<string, string> = {
 };
 
 export function visibleUsageActions<T extends { action: string; label: string; limit: number }>(actions: T[], isAdmin = false): T[] {
-  return actions.filter((a) => Object.hasOwn(USAGE_LABELS, a.action))
+  return actions.filter((a) => Object.prototype.hasOwnProperty.call(USAGE_LABELS, a.action))
     .map((a) => ({ ...a, label: USAGE_LABELS[a.action], limit: isAdmin ? -1 : a.limit }));
 }
 
