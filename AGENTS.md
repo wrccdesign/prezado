@@ -2,3 +2,4 @@
 - Route PDF/DOCX text through `documentText` sanitizers before layout; legacy/generated emojis must not break built-in document fonts.
 - Usage presentation uses a known-action allowlist and independently resolved admin role; stale plan responses must not expose internal actions or admin upgrade prompts.
 - Recent analysis titles derive from saved result metadata, leaving filenames as secondary context; storage names remain untouched.
+- All Petição/Análise/Diagnóstico output passes through `_shared/output-review.ts` before reaching the user: it fixes only code-verifiable issues (valor por extenso, guarded grammar pass) and flags the rest; never rewrites legal content.
