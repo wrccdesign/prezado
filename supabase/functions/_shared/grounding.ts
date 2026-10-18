@@ -121,6 +121,29 @@ ${linhas}
 Cite súmula APENAS se ela estiver nesta lista. Nenhuma outra súmula pode ser citada por número.`;
 }
 
+/**
+ * Função pura: converte linhas brutas do banco, descarta repetidas e as que não
+ * podem ser citadas ("relacionado"), e acrescenta em `target` até `limit`.
+ * Usada tanto na busca vetorial quanto no fallback FTS.
+ */
+export function collectUsable(
+  target: GroundingDecision[],
+  seen: Set<string>,
+  rows: unknown,
+  limit: number,
+): GroundingDecision[] {
+  if (!Array.isArray(rows)) return target;
+  for (const raw of rows as Array<Record<string, unknown>>) {
+    if (target.length >= limit) break;
+    const id = raw?.id as string | undefined;
+    if (!id || seen.has(id)) continue;
+    seen.add(id);
+    const g = toGroundingDecision(raw);
+    if (isUsableSource(g)) target.push(g);
+  }
+  return target;
+}
+
 export async function fetchGroundingContext(
   query: string,
   supabaseUrl: string,
@@ -143,19 +166,12 @@ export async function fetchGroundingContext(
       match_count: limit * 3,
       only_julgados: onlyJulgados,
     });
-    if (Array.isArray(vec)) {
-      for (const d of vec) {
-        if (!seen.has(d.id)) {
-          seen.add(d.id);
-          results.push(toGroundingDecision(d));
-        }
-      }
-    }
+    collectUsable(results, seen, vec, limit);
   } catch (e) {
     console.warn("Vector grounding failed:", e instanceof Error ? e.message : e);
   }
 
-  // 2. Full-text fallback if vector returned little
+  // 2. Full-text fallback se, já filtradas, sobraram menos de 3 fontes utilizáveis
   if (results.length < 3) {
     try {
       const { data: fts } = await supabase.rpc("search_decisions", {
@@ -163,16 +179,7 @@ export async function fetchGroundingContext(
         result_limit: limit * 3,
         filter_only_julgados: onlyJulgados ? true : null,
       });
-      if (Array.isArray(fts)) {
-        for (const d of fts) {
-          if (!seen.has(d.id)) {
-            seen.add(d.id);
-            const g = toGroundingDecision(d);
-            if (isUsableSource(g)) results.push(g);
-          }
-          if (results.length >= limit) break;
-        }
-      }
+      collectUsable(results, seen, fts, limit);
     } catch (e) {
       console.warn("FTS grounding failed:", e instanceof Error ? e.message : e);
     }
