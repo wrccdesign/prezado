@@ -85,6 +85,7 @@ export function AppFooter() {
 
           <div className="col-span-2 sm:col-span-3 lg:col-span-1">
             <h4 className="font-sans font-medium text-cream text-sm mb-4">Sobre</h4>
+            <Link to="/sobre" className="inline-block text-sm text-cream/50 hover:text-gold transition-colors mb-4">Quem faz o Honorífico</Link>
             <div className="mb-3">
               <Logo className="h-7" />
             </div>
