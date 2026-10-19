@@ -321,6 +321,13 @@ export const ROUTE_META: RouteMeta[] = [
     ogImage: OG_DEFAULT, // TODO: OG própria
   },
   {
+    path: "/sobre",
+    title: "Quem faz o Honorífico",
+    description:
+      "Conheça quem está por trás do Honorífico e como a plataforma trabalha: fonte rastreável, transparência quando não encontra decisão e conferência automática.",
+    ogImage: OG_DEFAULT,
+  },
+  {
     path: "/termos",
     title: "Termos e condições de uso | Honorífico",
     description:
