@@ -1,5 +1,4 @@
-export const WAGNER_FULL_NAME = "Wagner Rosati da Costa Carvalho";
-export const WAGNER_NAME = WAGNER_FULL_NAME.split(" ")[0];
+export const WAGNER_FULL_NAME = "Wagner Rosati";
 
 import { Link } from "react-router-dom";
 import { AppHeader } from "@/components/AppHeader";
@@ -7,6 +6,7 @@ import { AppFooter } from "@/components/AppFooter";
 import { SEO } from "@/components/SEO";
 import { Button } from "@/components/ui/button";
 import antonioPhoto from "@/assets/equipe/antonio-paulo-da-costa-carvalho.webp";
+import wagnerPhoto from "@/assets/equipe/wagner-rosati.webp";
 
 const description = "Conheça quem está por trás do Honorífico e como a plataforma trabalha: fonte rastreável, transparência quando não encontra decisão e conferência automática.";
 
@@ -22,7 +22,7 @@ function TeamMember({ name, credential, role, text, photo }: TeamMemberProps) {
   return (
     <div className="border-t border-cream-dark pt-6">
       {photo && (
-        <img src={photo} alt={name} width={240} height={300} className="mb-6 aspect-[4/5] w-60 max-w-full rounded-lg object-cover" />
+        <img src={photo} alt={name} width={240} height={300} className="mb-6 aspect-[4/5] w-60 max-w-full rounded-lg object-cover object-[center_30%]" />
       )}
       <h3 className="text-h3 text-navy">{name}</h3>
       {credential && <p className="text-reading text-navy/70 mt-1">{credential}</p>}
@@ -55,7 +55,7 @@ export default function Sobre() {
           <div className="container max-w-[1120px] mx-auto px-4 sm:px-6">
             <h2 className="text-h2 text-navy">As pessoas por trás da plataforma</h2>
             <div className="grid gap-12 md:grid-cols-2 mt-10">
-              <TeamMember name={WAGNER_NAME} role="Criador do Honorífico" text="Designer de produto há mais de 20 anos. Criou o Honorífico para que advogados, estudantes e qualquer pessoa com uma dúvida jurídica tenham respostas claras, com a fonte à vista." />
+              <TeamMember name={WAGNER_FULL_NAME} role="Criador do Honorífico" photo={wagnerPhoto} text="Profissional de UX/UI Design com mais de 20 anos de experiência no desenvolvimento de produtos digitais, unindo design, tecnologia e inovação. Atua na criação de experiências digitais intuitivas e acessíveis, com experiência recente no uso de inteligência artificial para desenvolver soluções que simplificam tarefas complexas e aproximam a tecnologia das necessidades reais das pessoas." />
               <TeamMember name="Antônio Paulo da Costa Carvalho" credential="Advogado, OAB/SP 29.106" role="Conteúdo jurídico e metodologia" photo={antonioPhoto} text="Mestre em Direito, com título de Master Universitario em Teorias Críticas del Derecho y la Democracia en Iberoamérica pela Universidad Internacional de Andalucía, Espanha (1999), e mestre em Instituições Jurídico-Políticas pela UFSC (2002). Foi Defensor Público em Mato Grosso do Sul (1982 a 1984) e Juiz de Direito em Mato Grosso, nas comarcas de Sinop, Rondonópolis e Cuiabá (1985 a 1997). Acompanha o conteúdo jurídico e o método de verificação de fontes da plataforma." />
             </div>
           </div>

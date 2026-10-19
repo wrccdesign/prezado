@@ -1,4 +1,5 @@
 # Correções do teste admin
+- [x] /sobre e home: nome público Wagner Rosati, foto dele em 4:5 com rosto alinhado, texto novo, duas fotos lado a lado.
 - [x] Página pública /sobre, foto e integrações na home, rodapé e mapas do site.
 - [x] Verificar testes e apresentação desktop/mobile da página da equipe.
 - [x] Diagnóstico: selo, custos e botões (1–3).

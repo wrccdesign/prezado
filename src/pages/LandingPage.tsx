@@ -10,8 +10,9 @@ import { CorrecaoCalc } from "@/components/calculators/CorrecaoCalc";
 import { savePeticaoPrefill } from "@/lib/peticaoPrefill";
 import { FonteTable } from "@/components/FonteTable";
 import { HeroConsole } from "@/components/landing/HeroConsole";
-import { WAGNER_NAME } from "@/pages/Sobre";
+import { WAGNER_FULL_NAME } from "@/pages/Sobre";
 import antonioPhoto from "@/assets/equipe/antonio-paulo-da-costa-carvalho.webp";
+import wagnerPhoto from "@/assets/equipe/wagner-rosati.webp";
 
 // Registro real da tabela `decisions`, id 2247d42f-1f63-44e9-b884-eda515070ff6
 const heroDecision = {
@@ -302,10 +303,13 @@ export default function LandingPage() {
       <section className="bg-cream text-navy py-14 md:py-20">
         <div className="container max-w-[1120px] mx-auto px-4 sm:px-6">
           <div className="flex flex-col sm:flex-row gap-6 sm:items-center border-t border-cream-dark pt-8">
-            <img src={antonioPhoto} alt="Antônio Paulo da Costa Carvalho" width={96} height={120} loading="lazy" className="aspect-[4/5] w-24 shrink-0 rounded-lg object-cover" />
+            <div className="flex gap-4 shrink-0">
+              <img src={wagnerPhoto} alt="Wagner Rosati" width={96} height={120} loading="lazy" className="aspect-[4/5] w-24 rounded-lg object-cover object-[center_30%]" />
+              <img src={antonioPhoto} alt="Antônio Paulo da Costa Carvalho" width={96} height={120} loading="lazy" className="aspect-[4/5] w-24 rounded-lg object-cover object-[center_30%]" />
+            </div>
             <div>
               <h2 className="text-h2 text-navy">Quem faz o Honorífico</h2>
-              <p className="text-reading text-navy/70 max-w-[60ch] mt-3">Criado por {WAGNER_NAME}, com o conteúdo jurídico acompanhado por Antônio Paulo da Costa Carvalho, advogado (OAB/SP 29.106) e Juiz de Direito aposentado.</p>
+              <p className="text-reading text-navy/70 max-w-[60ch] mt-3">Criado por {WAGNER_FULL_NAME}, com o conteúdo jurídico acompanhado por Antônio Paulo da Costa Carvalho, advogado (OAB/SP 29.106) e Juiz de Direito aposentado.</p>
               <Link to="/sobre" className="inline-block mt-4 text-navy underline underline-offset-4 hover:text-gold">Conhecer a equipe</Link>
             </div>
           </div>
