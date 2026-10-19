@@ -3,3 +3,4 @@
 - Usage presentation uses a known-action allowlist and independently resolved admin role; stale plan responses must not expose internal actions or admin upgrade prompts.
 - Recent analysis titles derive from saved result metadata, leaving filenames as secondary context; storage names remain untouched.
 - All Petição/Análise/Diagnóstico output passes through `_shared/output-review.ts` before reaching the user: it fixes only code-verifiable issues (valor por extenso, guarded grammar pass) and flags the rest; never rewrites legal content.
+- Keep the creator's full-name constant at the top of the Sobre page and reuse it in the landing team section, so both presentations stay synchronized; team portraits are optional and render no fallback.
