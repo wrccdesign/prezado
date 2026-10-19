@@ -1,6 +1,6 @@
 # Correções do teste admin
-- [ ] Página pública /sobre, foto e integrações na home, rodapé e mapas do site.
-- [ ] Verificar testes e apresentação desktop/mobile da página da equipe.
+- [x] Página pública /sobre, foto e integrações na home, rodapé e mapas do site.
+- [x] Verificar testes e apresentação desktop/mobile da página da equipe.
 - [x] Diagnóstico: selo, custos e botões (1–3).
 - [x] Petição: instruções, exportação, citações e vara (4–10).
 - [x] Análise: título da exportação (11).
