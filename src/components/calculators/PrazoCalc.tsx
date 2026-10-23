@@ -76,6 +76,7 @@ function gerarICS(dataVencimento: string, dataPublicacao: string, tipoPrazo: str
 
 export function PrazoCalc() {
   const [dataReferencia, setDataReferencia] = useState("");
+  const [erroForm, setErroForm] = useState<string | null>(null);
   const [processoEletronico, setProcessoEletronico] = useState(true);
   const [tipoPrazo, setTipoPrazo] = useState("contestacao");
   const [diasPersonalizado, setDiasPersonalizado] = useState("");
@@ -165,9 +166,10 @@ export function PrazoCalc() {
 
   const calcular = async () => {
     if (!dataReferencia || !diasPrazo) {
-      toast({ title: "Informe a data e o prazo em dias", variant: "destructive" });
+      setErroForm(!dataReferencia ? "Informe a data de referência." : "Informe o prazo em dias.");
       return;
     }
+    setErroForm(null);
     setLoading(true);
     setResult(null);
     try {
@@ -245,13 +247,13 @@ export function PrazoCalc() {
     <div className="space-y-6">
       <div className="grid gap-4 sm:grid-cols-2">
         <div className="space-y-2">
-          <Label>Data de referência</Label>
-          <Input className="h-11" type="date" value={dataReferencia} onChange={e => setDataReferencia(e.target.value)} />
+          <Label htmlFor="prazo-data-de-referencia">Data de referência</Label>
+          <Input id="prazo-data-de-referencia" className="h-11" type="date" value={dataReferencia} onChange={e => setDataReferencia(e.target.value)} />
         </div>
         <div className="space-y-2">
-          <Label>Processo</Label>
+          <Label htmlFor="prazo-processo">Processo</Label>
           <Select value={processoEletronico ? "eletronico" : "fisico"} onValueChange={v => setProcessoEletronico(v === "eletronico")}>
-            <SelectTrigger><SelectValue /></SelectTrigger>
+            <SelectTrigger id="prazo-processo"><SelectValue /></SelectTrigger>
             <SelectContent>
               <SelectItem value="eletronico">Eletrônico (disponibilização no DJe)</SelectItem>
               <SelectItem value="fisico">Físico (publicação/intimação)</SelectItem>
@@ -259,9 +261,9 @@ export function PrazoCalc() {
           </Select>
         </div>
         <div className="space-y-2">
-          <Label>Tipo de Prazo</Label>
+          <Label htmlFor="prazo-tipo-de-prazo">Tipo de Prazo</Label>
           <Select value={tipoPrazo} onValueChange={onTipoPrazoChange}>
-            <SelectTrigger><SelectValue /></SelectTrigger>
+            <SelectTrigger id="prazo-tipo-de-prazo"><SelectValue /></SelectTrigger>
             <SelectContent>
               {PRAZOS_TIPO.map(p => (
                 <SelectItem key={p.id} value={p.id}>
@@ -273,14 +275,14 @@ export function PrazoCalc() {
         </div>
         {tipoPrazo === "personalizado" && (
           <div className="space-y-2">
-            <Label>Prazo em dias</Label>
-            <Input className="h-11" type="number" inputMode="numeric" min={1} placeholder="Ex: 10" value={diasPersonalizado} onChange={e => setDiasPersonalizado(e.target.value)} />
+            <Label htmlFor="prazo-prazo-em-dias">Prazo em dias</Label>
+            <Input id="prazo-prazo-em-dias" className="h-11" type="number" inputMode="numeric" min={1} placeholder="Ex: 10" value={diasPersonalizado} onChange={e => setDiasPersonalizado(e.target.value)} />
           </div>
         )}
         <div className="space-y-2">
-          <Label>Matéria</Label>
+          <Label htmlFor="prazo-materia">Matéria</Label>
           <Select value={materia} onValueChange={v => { setMateria(v); setContagem(v === "penal" ? "corridos" : "uteis"); }}>
-            <SelectTrigger><SelectValue /></SelectTrigger>
+            <SelectTrigger id="prazo-materia"><SelectValue /></SelectTrigger>
             <SelectContent>
               <SelectItem value="civel">Cível (CPC, art. 219)</SelectItem>
               <SelectItem value="trabalhista">Trabalhista (CLT, art. 775)</SelectItem>
@@ -289,9 +291,9 @@ export function PrazoCalc() {
           </Select>
         </div>
         <div className="space-y-2">
-          <Label>Contagem</Label>
+          <Label htmlFor="prazo-contagem">Contagem</Label>
           <Select value={contagem} onValueChange={setContagem}>
-            <SelectTrigger><SelectValue /></SelectTrigger>
+            <SelectTrigger id="prazo-contagem"><SelectValue /></SelectTrigger>
             <SelectContent>
               <SelectItem value="uteis">Dias úteis</SelectItem>
               <SelectItem value="corridos">Dias corridos</SelectItem>
@@ -299,18 +301,18 @@ export function PrazoCalc() {
           </Select>
         </div>
         <div className="space-y-2">
-          <Label>Estado</Label>
+          <Label htmlFor="prazo-estado">Estado</Label>
           <Select value={uf} onValueChange={setUf}>
-            <SelectTrigger><SelectValue /></SelectTrigger>
+            <SelectTrigger id="prazo-estado"><SelectValue /></SelectTrigger>
             <SelectContent>
               {UFS.map(u => <SelectItem key={u} value={u}>{u}</SelectItem>)}
             </SelectContent>
           </Select>
         </div>
         <div className="space-y-2">
-          <Label>Município (feriados locais)</Label>
+          <Label htmlFor="prazo-municipio-feriados-locais">Município (feriados locais)</Label>
           <Select value={codigoIbge || "__todos__"} onValueChange={setCodigoIbge} disabled={carregandoMunicipios || municipios.length === 0}>
-            <SelectTrigger>
+            <SelectTrigger id="prazo-municipio-feriados-locais">
               <SelectValue placeholder={carregandoMunicipios ? "Carregando..." : "Selecione o município"} />
             </SelectTrigger>
             <SelectContent>
@@ -320,9 +322,9 @@ export function PrazoCalc() {
           </Select>
         </div>
         <div className="space-y-2">
-          <Label>Tribunal (suspensões forenses)</Label>
+          <Label htmlFor="prazo-tribunal-suspensoes-forenses">Tribunal (suspensões forenses)</Label>
           <Select value={tribunal || "__nenhum__"} onValueChange={setTribunal}>
-            <SelectTrigger>
+            <SelectTrigger id="prazo-tribunal-suspensoes-forenses">
               <SelectValue placeholder="Selecione o tribunal" />
             </SelectTrigger>
             <SelectContent>
@@ -332,9 +334,9 @@ export function PrazoCalc() {
           </Select>
         </div>
         <div className="space-y-2">
-          <Label>Vara / Unidade judiciária</Label>
+          <Label htmlFor="prazo-vara-unidade-judiciaria">Vara / Unidade judiciária</Label>
           <Select value={vara || "__nao__"} onValueChange={setVara}>
-            <SelectTrigger><SelectValue placeholder="Selecione a vara" /></SelectTrigger>
+            <SelectTrigger id="prazo-vara-unidade-judiciaria"><SelectValue placeholder="Selecione a vara" /></SelectTrigger>
             <SelectContent>
               <SelectItem value="__nao__">Não especificar</SelectItem>
               {VARAS.map(v => <SelectItem key={v} value={v}>{v}</SelectItem>)}
@@ -344,7 +346,8 @@ export function PrazoCalc() {
 
       </div>
 
-      <Button onClick={calcular} className="h-11 w-full sm:w-auto" disabled={loading || !dataReferencia || !diasPrazo}>
+      {erroForm && <p role="alert" className="text-note text-destructive">{erroForm}</p>}
+      <Button onClick={calcular} className="h-11 w-full sm:w-auto" disabled={loading}>
         {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
         Calcular Prazo
       </Button>

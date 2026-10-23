@@ -160,7 +160,7 @@ export default function Inicio() {
     <div className="flex min-h-screen flex-col bg-background">
       <AppHeader />
       <SEO
-        title="Início — Honorífico"
+        title="Início | Honorífico"
         description="Por onde começar: seu caso, jurisprudência, petição, chat e calculadoras."
         path="/"
       />

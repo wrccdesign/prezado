@@ -34,10 +34,10 @@ export const MINUTAS: Minuta[] = [
       "Modelo editável de petição inicial de cobrança (procedimento comum, art. 319 do CPC). Estrutura completa com fatos, direito, pedidos e valor da causa.",
     keywords: ["petição inicial de cobrança", "modelo petição cobrança", "ação de cobrança CPC"],
     baseLegal: [
-      "CPC, art. 319 — requisitos da petição inicial",
-      "CPC, art. 292 — valor da causa",
-      "Código Civil, arts. 389 e 395 — inadimplemento, juros e correção",
-      "Lei 14.905/2024 — correção pelo IPCA e juros pela taxa legal",
+      "CPC, art. 319: requisitos da petição inicial",
+      "CPC, art. 292: valor da causa",
+      "Código Civil, arts. 389 e 395: inadimplemento, juros e correção",
+      "Lei 14.905/2024: correção pelo IPCA e juros pela taxa legal",
     ],
     checklist: [
       "Qualificação completa das partes (CPF/CNPJ, endereço, e-mail)",
@@ -60,19 +60,19 @@ AÇÃO DE COBRANÇA (procedimento comum)
 em face de [NOME DO RÉU], [qualificação completa], inscrito(a) no CPF/CNPJ sob o nº [___], com endereço em [endereço completo], pelos fatos e fundamentos a seguir expostos.`,
       },
       {
-        heading: "I — Dos fatos",
+        heading: "I. Dos fatos",
         body: `1. Em [data], as partes celebraram [contrato/negócio jurídico], por meio do qual o(a) Autor(a) [descrever a prestação cumprida].
 2. Em contrapartida, o(a) Réu(é) obrigou-se ao pagamento de R$ [valor], com vencimento em [data].
-3. Ocorre que, apesar de [notificações/cobranças/tentativas de composição — descrever], o débito permanece integralmente em aberto até a presente data, conforme documentos anexos (docs. [__]).`,
+3. Ocorre que, apesar de [notificações/cobranças/tentativas de composição: descrever], o débito permanece integralmente em aberto até a presente data, conforme documentos anexos (docs. [__]).`,
       },
       {
-        heading: "II — Do direito",
+        heading: "II. Do direito",
         body: `4. O art. 389 do Código Civil estabelece que, não cumprida a obrigação, responde o devedor por perdas e danos, juros, atualização monetária e honorários advocatícios.
 5. Tratando-se de obrigação positiva e líquida com termo certo, a mora é automática (CC, art. 397), incidindo juros e correção desde o vencimento.
 6. Com a vigência da Lei 14.905/2024, a correção monetária observa o IPCA e os juros legais correspondem à taxa legal (Selic deduzido o IPCA), na forma do art. 406 do Código Civil.`,
       },
       {
-        heading: "III — Dos pedidos",
+        heading: "III. Dos pedidos",
         body: `Ante o exposto, requer:
 a) a citação do(a) Réu(é), no endereço indicado, para responder aos termos da presente ação;
 b) a procedência do pedido, condenando-se o(a) Réu(é) ao pagamento de R$ [valor], acrescido de correção monetária e juros na forma da lei, desde o vencimento;
@@ -95,10 +95,10 @@ Dá-se à causa o valor de R$ [valor].`,
       "Modelo editável de contestação cível (CPC, arts. 335 a 342): preliminares, prescrição, impugnação específica dos fatos e pedidos finais.",
     keywords: ["modelo de contestação", "contestação cível CPC", "peça de defesa"],
     baseLegal: [
-      "CPC, art. 335 — prazo de 15 dias úteis",
-      "CPC, art. 337 — preliminares",
-      "CPC, art. 341 — ônus da impugnação específica",
-      "CPC, art. 336 — princípio da eventualidade",
+      "CPC, art. 335: prazo de 15 dias úteis",
+      "CPC, art. 337: preliminares",
+      "CPC, art. 341: ônus da impugnação específica",
+      "CPC, art. 336: princípio da eventualidade",
     ],
     checklist: [
       "Conferir o termo inicial do prazo (art. 335, I a III)",
@@ -123,22 +123,22 @@ CONTESTAÇÃO
 pelas razões de fato e de direito a seguir aduzidas.`,
       },
       {
-        heading: "I — Preliminares",
-        body: `1. [Ex.: incompetência relativa/absoluta; inépcia da inicial; ilegitimidade passiva; falta de interesse processual; ausência de pressuposto processual] — CPC, art. 337, [inciso].
+        heading: "I. Preliminares",
+        body: `1. [Ex.: incompetência relativa/absoluta; inépcia da inicial; ilegitimidade passiva; falta de interesse processual; ausência de pressuposto processual]: CPC, art. 337, [inciso].
 2. Fundamentar objetivamente e requerer a consequência processual pertinente (extinção sem resolução de mérito, remessa dos autos ao juízo competente etc.).`,
       },
       {
-        heading: "II — Prejudicial de mérito: prescrição/decadência",
+        heading: "II. Prejudicial de mérito: prescrição/decadência",
         body: `3. O direito perseguido está sujeito ao prazo de [__] anos (CC, art. [___]), cujo termo inicial ocorreu em [data]. Ajuizada a ação apenas em [data], impõe-se o reconhecimento da prescrição, com resolução do mérito (CPC, art. 487, II).`,
       },
       {
-        heading: "III — Do mérito",
+        heading: "III. Do mérito",
         body: `4. Impugnam-se especificamente os fatos narrados na inicial (CPC, art. 341): [rebater item a item].
 5. [Fundamentação jurídica da defesa, com indicação de dispositivos legais e, se houver, precedentes vinculantes efetivamente verificados no processo].
 6. Subsidiariamente, caso superadas as teses acima, requer-se [redução do valor, compensação, afastamento de juros/multa, reconhecimento de culpa concorrente etc.].`,
       },
       {
-        heading: "IV — Dos pedidos",
+        heading: "IV. Dos pedidos",
         body: `Ante o exposto, requer:
 a) o acolhimento das preliminares, com a extinção do feito sem resolução do mérito;
 b) sucessivamente, o reconhecimento da prescrição;
@@ -159,10 +159,10 @@ e) a produção de provas [documental, testemunhal, pericial], protestando pela 
       "Modelo editável de reclamação trabalhista com pedidos líquidos (CLT, art. 840, §1º), verbas rescisórias, horas extras e requerimentos processuais.",
     keywords: ["modelo reclamação trabalhista", "petição inicial trabalhista", "pedidos líquidos CLT"],
     baseLegal: [
-      "CLT, art. 840, §1º — pedido certo, determinado e com indicação de valor",
-      "CLT, arts. 477 e 467 — verbas rescisórias e multa",
-      "CLT, art. 59 — horas extras",
-      "Lei 13.467/2017 — reforma trabalhista",
+      "CLT, art. 840, §1º: pedido certo, determinado e com indicação de valor",
+      "CLT, arts. 477 e 467: verbas rescisórias e multa",
+      "CLT, art. 59: horas extras",
+      "Lei 13.467/2017: reforma trabalhista",
     ],
     checklist: [
       "CTPS, contrato, holerites, cartões de ponto e TRCT",
@@ -180,37 +180,37 @@ e) a produção de provas [documental, testemunhal, pericial], protestando pela 
         heading: "Qualificação",
         body: `[NOME DO RECLAMANTE], [nacionalidade], [estado civil], [função], CPF nº [___], CTPS nº [___], residente na [endereço], vem, por seu(sua) advogado(a), propor
 
-RECLAMAÇÃO TRABALHISTA — rito [ordinário/sumaríssimo]
+RECLAMAÇÃO TRABALHISTA: rito [ordinário/sumaríssimo]
 
 em face de [NOME DA RECLAMADA], CNPJ nº [___], com sede em [endereço].`,
       },
       {
-        heading: "I — Do contrato de trabalho",
+        heading: "I. Do contrato de trabalho",
         body: `1. O(A) Reclamante foi admitido(a) em [data], na função de [___], mediante última remuneração de R$ [valor], com jornada contratual de [___].
 2. O contrato foi encerrado em [data], por [modalidade de rescisão].`,
       },
       {
-        heading: "II — Das irregularidades",
-        body: `3. [Ex.: horas extras habituais não pagas — descrever jornada real e comparar com a contratual].
+        heading: "II. Das irregularidades",
+        body: `3. [Ex.: horas extras habituais não pagas: descrever jornada real e comparar com a contratual].
 4. [Ex.: ausência de pagamento das verbas rescisórias no prazo do art. 477, §6º, da CLT, ensejando a multa do §8º].
 5. [Ex.: FGTS não recolhido; intervalos suprimidos; acúmulo de função; adicional de insalubridade/periculosidade].`,
       },
       {
-        heading: "III — Dos pedidos (com valores)",
+        heading: "III. Dos pedidos (com valores)",
         body: `Requer a condenação da Reclamada ao pagamento de:
-a) aviso prévio — R$ [__];
-b) férias proporcionais + 1/3 — R$ [__];
-c) 13º salário proporcional — R$ [__];
-d) FGTS + multa de 40% — R$ [__];
-e) horas extras e reflexos — R$ [__];
-f) multa do art. 477, §8º, da CLT — R$ [__];
+a) aviso prévio: R$ [__];
+b) férias proporcionais + 1/3: R$ [__];
+c) 13º salário proporcional: R$ [__];
+d) FGTS + multa de 40%: R$ [__];
+e) horas extras e reflexos: R$ [__];
+f) multa do art. 477, §8º, da CLT: R$ [__];
 g) honorários advocatícios de sucumbência;
 h) juros e correção monetária na forma da lei.
 
 Valor total da causa: R$ [__].`,
       },
       {
-        heading: "IV — Requerimentos",
+        heading: "IV. Requerimentos",
         body: `Requer a notificação da Reclamada, a concessão dos benefícios da justiça gratuita (CLT, art. 790, §3º), a produção de prova documental, testemunhal e pericial, e a expedição de ofícios a [órgãos], se necessário.`,
       },
       { heading: "Fecho", body: FECHO },
@@ -226,9 +226,9 @@ Valor total da causa: R$ [__].`,
       "Modelo editável de notificação extrajudicial para constituição em mora, com prazo para cumprimento e advertência sobre medidas judiciais.",
     keywords: ["modelo notificação extrajudicial", "constituição em mora", "notificação de cobrança"],
     baseLegal: [
-      "Código Civil, art. 397, parágrafo único — mora mediante interpelação",
-      "Código Civil, art. 473 — resilição unilateral mediante denúncia",
-      "Lei 6.015/1973, art. 160 — notificação por cartório de títulos e documentos",
+      "Código Civil, art. 397, parágrafo único: mora mediante interpelação",
+      "Código Civil, art. 473: resilição unilateral mediante denúncia",
+      "Lei 6.015/1973, art. 160: notificação por cartório de títulos e documentos",
     ],
     checklist: [
       "Escolher meio com prova de recebimento (AR, cartório de RTD ou e-mail com confirmação)",
@@ -277,9 +277,9 @@ Sendo o que se apresenta para o momento, reiteramos votos de consideração.`,
       "Modelo editável de procuração ad judicia et extra com poderes especiais (CPC, art. 105) para representação judicial e extrajudicial.",
     keywords: ["modelo de procuração", "procuração ad judicia", "poderes especiais CPC 105"],
     baseLegal: [
-      "CPC, art. 105 — poderes gerais e especiais",
-      "CPC, art. 287 — juntada da procuração com a inicial",
-      "EOAB, art. 5º — representação do cliente",
+      "CPC, art. 105: poderes gerais e especiais",
+      "CPC, art. 287: juntada da procuração com a inicial",
+      "EOAB, art. 5º: representação do cliente",
     ],
     checklist: [
       "Qualificação completa do outorgante (CPC, art. 287)",
@@ -321,10 +321,10 @@ _______________________________
       "Modelo editável de recurso de apelação (CPC, arts. 1.009 a 1.014): interposição, razões, preliminares e pedido de reforma.",
     keywords: ["modelo de apelação", "razões de apelação", "recurso CPC 1009"],
     baseLegal: [
-      "CPC, art. 1.009 — cabimento da apelação",
-      "CPC, art. 1.003, §5º — prazo de 15 dias úteis",
-      "CPC, art. 1.010 — requisitos das razões",
-      "CPC, art. 1.007 — preparo",
+      "CPC, art. 1.009: cabimento da apelação",
+      "CPC, art. 1.003, §5º: prazo de 15 dias úteis",
+      "CPC, art. 1.010: requisitos das razões",
+      "CPC, art. 1.007: preparo",
     ],
     checklist: [
       "Comprovante de preparo ou pedido de gratuidade",
@@ -347,7 +347,7 @@ RECURSO DE APELAÇÃO
 requerendo o recebimento e o processamento nos efeitos legais, com posterior remessa ao Egrégio Tribunal [___], conforme razões anexas. Comprovante de preparo em anexo.`,
       },
       {
-        heading: "Razões — síntese da demanda",
+        heading: "Razões: síntese da demanda",
         body: `EGRÉGIO TRIBUNAL,
 COLENDA CÂMARA,
 ÍNCLITOS JULGADORES,
@@ -355,7 +355,7 @@ COLENDA CÂMARA,
 1. Trata-se de ação [tipo], na qual o(a) Apelante postulou [___]. A r. sentença julgou [procedente/improcedente] o pedido, sob o fundamento de que [___].`,
       },
       {
-        heading: "Razões — do mérito recursal",
+        heading: "Razões: do mérito recursal",
         body: `2. A r. sentença merece reforma porque [expor o erro de fato ou de direito, indicando o dispositivo violado].
 3. [Demonstrar a prova dos autos que contraria a conclusão adotada, com referência a IDs/folhas].
 4. Para fins de prequestionamento, tem-se por violados os arts. [___], que devem ser expressamente apreciados.`,
@@ -379,9 +379,9 @@ Subsidiariamente, requer a anulação da sentença por [vício], com retorno dos
       "Modelo editável de contrato de honorários advocatícios: objeto, honorários fixos e de êxito, despesas, rescisão e foro.",
     keywords: ["contrato de honorários advocatícios", "modelo contrato advogado", "honorários de êxito"],
     baseLegal: [
-      "Lei 8.906/1994 (EOAB), arts. 22 a 26 — honorários",
-      "Código de Ética e Disciplina da OAB — arts. 48 a 54",
-      "Código Civil, arts. 593 e ss. — prestação de serviços",
+      "Lei 8.906/1994 (EOAB), arts. 22 a 26: honorários",
+      "Código de Ética e Disciplina da OAB: arts. 48 a 54",
+      "Código Civil, arts. 593 e ss.: prestação de serviços",
     ],
     checklist: [
       "Delimitar o objeto e as instâncias abrangidas",
@@ -397,28 +397,28 @@ Subsidiariamente, requer a anulação da sentença por [vício], com retorno dos
 CONTRATADO(A): [nome do(a) advogado(a) ou sociedade], OAB/[UF] nº [___] ou CNPJ [___], endereço [___].`,
       },
       {
-        heading: "Cláusula 1ª — Objeto",
+        heading: "Cláusula 1ª: Objeto",
         body: `O(A) Contratado(a) prestará serviços advocatícios consistentes em [descrever: propositura/defesa em ação ___, atuação em [instâncias], consultoria em ___], com atuação limitada ao objeto ora descrito.`,
       },
       {
-        heading: "Cláusula 2ª — Honorários",
+        heading: "Cláusula 2ª: Honorários",
         body: `2.1. Honorários fixos: R$ [valor], pagos em [__] parcelas de R$ [__], vencendo a primeira em [data].
 2.2. Honorários de êxito: [__]% sobre o proveito econômico efetivamente obtido, devidos na data do levantamento/recebimento.
 2.3. Os honorários de sucumbência pertencem ao(à) Contratado(a), nos termos do art. 23 do EOAB.
 2.4. Em caso de atraso, incidirá multa de 2% e juros de mora na forma da lei, com correção pelo IPCA.`,
       },
       {
-        heading: "Cláusula 3ª — Despesas",
+        heading: "Cláusula 3ª: Despesas",
         body: `Custas, taxas, diligências, honorários periciais e deslocamentos correm por conta do(a) Contratante, mediante prévio aviso e comprovação.`,
       },
       {
-        heading: "Cláusula 4ª — Vigência e rescisão",
+        heading: "Cláusula 4ª: Vigência e rescisão",
         body: `4.1. O contrato vigora até o trânsito em julgado do processo ou a conclusão do serviço contratado.
 4.2. A revogação do mandato antes do término não afasta o pagamento dos honorários proporcionais ao trabalho já realizado.
 4.3. A renúncia observará o art. 5º, §3º, do EOAB.`,
       },
       {
-        heading: "Cláusula 5ª — Foro",
+        heading: "Cláusula 5ª: Foro",
         body: `Fica eleito o foro da Comarca de [Cidade/UF] para dirimir controvérsias.
 
 [Cidade/UF], [data].
@@ -438,9 +438,9 @@ Contratante                     Contratado(a)`,
       "Modelo editável de acordo extrajudicial com petição conjunta de homologação judicial (CPC, arts. 515, III, e 725, VIII).",
     keywords: ["modelo de acordo extrajudicial", "homologação de acordo", "petição conjunta"],
     baseLegal: [
-      "CPC, art. 515, III — acordo homologado como título executivo judicial",
-      "CPC, art. 725, VIII — homologação de autocomposição extrajudicial",
-      "Código Civil, art. 840 — transação",
+      "CPC, art. 515, III: acordo homologado como título executivo judicial",
+      "CPC, art. 725, VIII: homologação de autocomposição extrajudicial",
+      "Código Civil, art. 840: transação",
     ],
     checklist: [
       "Objeto do acordo descrito com precisão e valores",

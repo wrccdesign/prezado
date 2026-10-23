@@ -20,7 +20,7 @@ const calculadoras = [
   {
     to: "/calculadoras/correcao-monetaria-juros-lei-14905/inpc",
     label: "Correção pelo INPC",
-    hint: "Débitos trabalhistas e previdenciários, com a série oficial do Banco Central.",
+    hint: "Benefícios e atrasados previdenciários, com a série oficial do Banco Central.",
   },
   {
     to: "/calculadoras/correcao-monetaria-juros-lei-14905/igpm",
@@ -149,7 +149,7 @@ export default function MapaDoSite() {
     <div className="min-h-screen bg-background flex flex-col">
       <AppHeader />
       <SEO
-        title="Mapa do Site — Honorífico"
+        title="Mapa do Site | Honorífico"
         description="Navegue por todas as páginas do Honorífico: as sete calculadoras jurídicas, jurisprudência, petições, modelos de minutas, planos e páginas legais."
         path="/mapa-do-site"
         jsonLd={{

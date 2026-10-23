@@ -198,7 +198,7 @@ export function PeticaoStepperFlow({ tipoAcaoOptions, varaJuizoOptions, initial 
 
   return (
     <div className="space-y-6">
-      {/* Indicador de progresso — mesmo padrão da seção "Do fato ao fundamento" */}
+      {/* Indicador de progresso, mesmo padrão da seção "Do fato ao fundamento" */}
       <ol className="relative grid grid-cols-5 gap-2">
         <div
           aria-hidden
@@ -229,7 +229,7 @@ export function PeticaoStepperFlow({ tipoAcaoOptions, varaJuizoOptions, initial 
         })}
       </ol>
 
-      {/* Etapa 1 — Caso */}
+      {/* Etapa 1, Caso */}
       {step === 1 && (
         <Card>
           <CardHeader>
@@ -290,7 +290,7 @@ export function PeticaoStepperFlow({ tipoAcaoOptions, varaJuizoOptions, initial 
         </Card>
       )}
 
-      {/* Etapa 2 — Enquadramento */}
+      {/* Etapa 2, Enquadramento */}
       {step === 2 && (
         <Card>
           <CardHeader>
@@ -361,7 +361,7 @@ export function PeticaoStepperFlow({ tipoAcaoOptions, varaJuizoOptions, initial 
         </Card>
       )}
 
-      {/* Etapa 3 — Fundamentação */}
+      {/* Etapa 3, Fundamentação */}
       {step === 3 && (
         <Card>
           <CardHeader>
@@ -414,7 +414,7 @@ export function PeticaoStepperFlow({ tipoAcaoOptions, varaJuizoOptions, initial 
         </Card>
       )}
 
-      {/* Etapa 4 — Precedentes */}
+      {/* Etapa 4, Precedentes */}
       {step === 4 && (
         <Card>
           <CardHeader>
@@ -426,7 +426,7 @@ export function PeticaoStepperFlow({ tipoAcaoOptions, varaJuizoOptions, initial 
               <div className="rounded-lg border p-4" style={{ borderColor: "hsl(var(--gold) / 0.4)", backgroundColor: "hsl(var(--gold) / 0.06)" }}>
                 <p className="text-reading text-foreground">
                   Não encontramos decisões no nosso banco para este caso. A petição será fundamentada apenas na legislação
-                  aprovada — a IA nunca inventa um precedente para preencher esta etapa.
+                  aprovada, a IA nunca inventa um precedente para preencher esta etapa.
                 </p>
               </div>
             ) : (
@@ -481,7 +481,7 @@ export function PeticaoStepperFlow({ tipoAcaoOptions, varaJuizoOptions, initial 
               </Button>
             </div>
             <p className="text-[0.9375rem] leading-relaxed text-muted-foreground">
-              As etapas de revisão não consomem sua cota de petições — só a geração final consome.
+              As etapas de revisão não consomem sua cota de petições, só a geração final consome.
             </p>
           </CardContent>
         </Card>

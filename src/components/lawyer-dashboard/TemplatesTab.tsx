@@ -173,7 +173,7 @@ export function TemplatesTab() {
                 <SelectContent>
                   {petitions.map((p) => (
                     <SelectItem key={p.id} value={p.id}>
-                      {TYPE_OPTIONS.find(t => t.value === p.petition_type)?.label || p.petition_type} — {format(new Date(p.created_at), "dd/MM/yyyy")}
+                      {TYPE_OPTIONS.find(t => t.value === p.petition_type)?.label || p.petition_type}, {format(new Date(p.created_at), "dd/MM/yyyy")}
                     </SelectItem>
                   ))}
                 </SelectContent>

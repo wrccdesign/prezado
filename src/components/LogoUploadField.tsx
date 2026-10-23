@@ -47,7 +47,7 @@ export function LogoUploadField({ userId, value, onChange, inputId = "logo-uploa
     const file = e.target.files?.[0];
     e.target.value = "";
     if (!file || !userId) return;
-    // O jsPDF só desenha PNG e JPEG — SVG quebraria só na hora da exportação.
+    // O jsPDF só desenha PNG e JPEG, SVG quebraria só na hora da exportação.
     if (!["image/png", "image/jpeg"].includes(file.type)) {
       toast({
         title: "Formato não aceito",

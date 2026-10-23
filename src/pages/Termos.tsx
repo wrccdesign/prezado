@@ -4,7 +4,7 @@ export default function Termos() {
   return (
     <LegalPageLayout
       title="Termos e Condições"
-      description="Termos e Condições de uso da plataforma Honorífico — IA jurídica brasileira."
+      description="Termos e condições de uso da plataforma Honorífico, IA jurídica brasileira."
       path="/termos"
       updatedAt="10 de julho de 2026"
     >
@@ -16,15 +16,15 @@ export default function Termos() {
         compreendido e concordado com estes Termos. Se você não concorda, não utilize o Serviço.
       </p>
       <p>
-        <strong>Identificação do Vendedor:</strong> Honorífico — entidade sediada na Irlanda. Contato:{" "}
+        <strong>Identificação do Vendedor:</strong> Honorífico, entidade sediada na Irlanda. Contato:{" "}
         <a href="mailto:contato@honorifico.com.br">contato@honorifico.com.br</a>.
       </p>
 
 
       <h2>1. Sobre o Serviço</h2>
       <p>
-        O Honorífico é uma plataforma de software que utiliza inteligência artificial para auxiliar advogados
-        e cidadãos brasileiros em pesquisas jurídicas, geração de rascunhos de petições, diagnóstico jurídico
+        O Honorífico é uma plataforma de software que utiliza inteligência artificial para auxiliar profissionais do
+        direito e pessoas que buscam entender uma situação jurídica no Brasil, em pesquisas jurídicas, geração de rascunhos de petições, diagnóstico jurídico
         preliminar, cálculos e consultas informativas sobre legislação brasileira.
       </p>
       <p>
@@ -61,8 +61,8 @@ export default function Termos() {
       </p>
       <p>
         As condições comerciais completas de pagamento, cancelamento e reembolso estão descritas na nossa
-        <a href="/reembolso">Política de Reembolso</a>. Assinaturas são renovadas automaticamente conforme a
-        periodicidade contratada até o cancelamento, que pode ser feito a qualquer momento em
+        <a href="/reembolso">Política de Reembolso</a>. O plano mensal no cartão renova automaticamente até o cancelamento; o plano anual é
+        pagamento único, sem renovação automática. O cancelamento pode ser feito a qualquer momento em
         <a href="/conta">Minha conta</a>.
       </p>
 
@@ -81,7 +81,7 @@ export default function Termos() {
         O Serviço utiliza modelos de IA generativa para produzir texto. Você reconhece e concorda que:
       </p>
       <ul>
-        <li>Os resultados gerados por IA <strong>podem conter imprecisões, omissões ou erros</strong>, inclusive citações incorretas de artigos, súmulas ou decisões — apesar dos nossos esforços para minimizar isso via <em>grounding</em> em nossa base indexada;</li>
+        <li>Os resultados gerados por IA <strong>podem conter imprecisões, omissões ou erros</strong>, inclusive citações incorretas de artigos, súmulas ou decisões, apesar dos nossos esforços para minimizar isso via <em>grounding</em> em nossa base indexada;</li>
         <li>Você é responsável por revisar, validar e adaptar o conteúdo antes de qualquer uso profissional, protocolo judicial ou tomada de decisão;</li>
         <li>Você é responsável pelos <em>prompts</em> que envia e por ter os direitos necessários sobre qualquer conteúdo, documento ou dado que carregar;</li>
         <li>Podemos moderar, filtrar ou recusar respostas para prompts que violem estes Termos, e podemos suspender contas por uso abusivo.</li>

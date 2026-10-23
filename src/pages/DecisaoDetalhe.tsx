@@ -343,7 +343,7 @@ export default function DecisaoDetalhe() {
     <div className="min-h-screen flex flex-col bg-cream text-navy font-sans">
       <AppHeader />
       <SEO
-        title={`${decision.numero_processo || "Decisão"}${decision.tribunal ? ` — ${decision.tribunal}` : ""} | Honorífico`}
+        title={`${decision.numero_processo || "Decisão"}${decision.tribunal ? `, ${decision.tribunal}` : ""} | Honorífico`}
         description={
           (decision.ementa || decision.resumo_ia || "Decisão judicial com ementa, metadados e análise por IA no Honorífico.")
             .replace(/\s+/g, " ")

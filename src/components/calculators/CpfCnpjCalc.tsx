@@ -88,9 +88,9 @@ export function CpfCnpjCalc() {
     <div className="space-y-6">
       <div className="grid gap-4 sm:grid-cols-2">
         <div className="space-y-2">
-          <Label>Tipo</Label>
+          <Label htmlFor="doc-tipo">Tipo</Label>
           <Select value={tipo} onValueChange={v => handleTipoChange(v as "cpf" | "cnpj")}>
-            <SelectTrigger><SelectValue /></SelectTrigger>
+            <SelectTrigger id="doc-tipo"><SelectValue /></SelectTrigger>
             <SelectContent>
               <SelectItem value="cpf">CPF</SelectItem>
               <SelectItem value="cnpj">CNPJ</SelectItem>
@@ -98,8 +98,8 @@ export function CpfCnpjCalc() {
           </Select>
         </div>
         <div className="space-y-2">
-          <Label>Número</Label>
-          <Input className="h-11"
+          <Label htmlFor="doc-numero">Número</Label>
+          <Input id="doc-numero" className="h-11"
             inputMode="numeric"
             placeholder={exemplo}
             value={tipo === "cpf" ? formatarCpf(valor) : formatarCnpj(valor)}

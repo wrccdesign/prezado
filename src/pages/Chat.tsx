@@ -209,13 +209,13 @@ export default function Chat() {
   return (
     <div className="flex min-h-screen flex-col bg-background">
       <AppHeader />
-      <SEO title="Chat Jurídico com IA — Honorífico" description="Converse com a IA jurídica do Honorífico sobre qualquer tema do Direito brasileiro, com respostas fundamentadas." path="/chat" />
+      <SEO title="Chat Jurídico com IA | Honorífico" description="Converse com a IA jurídica do Honorífico sobre qualquer tema do Direito brasileiro, com respostas fundamentadas." path="/chat" />
       <LegalDisclaimer />
       <main className="flex flex-1 flex-col container max-w-3xl py-4">
         <div className="mb-4">
           <h2 className="text-xl font-bold text-foreground">Chat Jurídico</h2>
           <p className="text-xs text-muted-foreground">
-            {isLawyer ? "Modo Advogado — respostas técnicas" : "Modo Cidadão — linguagem acessível"}
+            {isLawyer ? "Modo Advogado: respostas técnicas" : "Modo Cidadão: linguagem acessível"}
           </p>
         </div>
 

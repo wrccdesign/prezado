@@ -370,7 +370,7 @@ export default function AdminIngestao() {
             {ingestStale && (
               <p className="mt-0.5">
                 {daysSinceSuccess !== null
-                  ? `Há ${daysSinceSuccess} dias sem ingestão — verifique os logs do cron.`
+                  ? `Há ${daysSinceSuccess} dias sem ingestão, verifique os logs do cron.`
                   : "Verifique os logs do cron de ingestão."}
               </p>
             )}

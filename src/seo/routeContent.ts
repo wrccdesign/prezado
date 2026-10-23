@@ -1,6 +1,6 @@
 // Conteúdo textual de cada rota pública, injetado no HTML gerado no build
 // (plugin "static-route-meta" em vite.config.ts) para que robôs que não
-// executam JavaScript — incluindo os das IAs de busca — leiam o conteúdo.
+// executam JavaScript, incluindo os das IAs de busca, leiam o conteúdo.
 // Ao hidratar, o React substitui esse bloco pela aplicação real.
 // TypeScript puro: sem React e sem APIs de browser, roda também em Node.
 
@@ -285,7 +285,7 @@ export const ROUTE_CONTENT: Record<string, RouteContent> = {
       "Consulte processos e andamentos nos dados públicos do CNJ, com número no padrão CNJ, tribunal, órgão julgador, classe, assuntos e movimentações, e link para a fonte no tribunal.",
     bullets: [
       "Acervo de ementas em expansão, com resumo por IA identificado como tal.",
-      "Sem conta, são permitidas 3 buscas por dia.",
+      "Sem conta, cada busca mostra até 3 decisões.",
       "Nenhum número de processo ou precedente é gerado por IA: o que aparece vem do acervo consultável.",
     ],
   },

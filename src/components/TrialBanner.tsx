@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { Sparkles, X } from "lucide-react";
 import { useSubscription } from "@/hooks/useSubscription";
 
-/** Perdas reais ao voltar ao gratuito — números iguais aos do PLAN_LIMITS. */
+/** Perdas reais ao voltar ao gratuito, números iguais aos do PLAN_LIMITS. */
 const PERDAS = [
   "Petições com IA deixam de estar disponíveis",
   "Buscas de jurisprudência caem de 400 para 20 por mês",
@@ -52,7 +52,7 @@ export function TrialBanner() {
       >
         <div className="container flex flex-wrap items-center justify-center gap-x-2 gap-y-1 px-4 py-2 text-center">
           <Sparkles className="h-4 w-4 text-gold" />
-          <span className="font-medium">Teste Profissional — {label}.</span>
+          <span className="font-medium">Teste Profissional, {label}.</span>
           <span className="text-muted-foreground">
             Nada será cobrado: a conta volta sozinha ao plano Gratuito.
           </span>
@@ -91,7 +91,7 @@ export function TrialBanner() {
               to="/planos"
               className="mt-3 inline-block text-sm font-semibold text-gold hover:underline"
             >
-              Manter os limites — ver planos
+              Manter os limites, ver planos
             </Link>
           </div>
         </div>

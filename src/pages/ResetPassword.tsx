@@ -50,7 +50,7 @@ export default function ResetPassword() {
 
   return (
     <main className="flex min-h-screen items-center justify-center bg-navy px-4 py-8">
-      <SEO title="Redefinir senha — Honorífico" description="Crie uma nova senha para acessar sua conta Honorífico." path="/reset-password" />
+      <SEO title="Redefinir senha | Honorífico" description="Crie uma nova senha para acessar sua conta Honorífico." path="/reset-password" />
       <div className="w-full max-w-md">
         <Logo className="mx-auto mb-6 h-12" />
         <Card>

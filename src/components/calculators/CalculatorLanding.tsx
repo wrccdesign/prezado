@@ -162,11 +162,7 @@ export function CalculatorLanding({
             <section className="border-t border-cream-dark pt-10">
               <h2 className="text-h2 text-navy">Como funciona</h2>
               <div className="mt-4 max-w-[68ch] space-y-4 text-body-serif text-navy/80 [&_a]:text-navy [&_a]:underline [&_a]:underline-offset-4 [&_h2]:text-h3 [&_h2]:text-navy [&_h2]:mt-8">
-                <p>
-                  O cálculo é livre, sem conta. Todos os cálculos são executados nos servidores do
-                  Honorífico e acompanham a memória de cálculo ou a lista de dias não computados,
-                  quando aplicável.
-                </p>
+                <p>O cálculo é livre, sem conta.</p>
                 {content}
               </div>
             </section>

@@ -49,9 +49,12 @@ interface Resultado {
 
 import { UsarNaPeticaoButton } from "@/components/calculators/shared/UsarNaPeticaoButton";
 
+const pctBR = (v: number) => `${v.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}%`;
+const fatorBR = (v: number) => v.toLocaleString("pt-BR", { minimumFractionDigits: 6, maximumFractionDigits: 6 });
+
 const REGIME_LABEL: Record<LinhaMemoria["regime"], string> = {
   pre_14905: "regime anterior",
-  transicao_14905: "transição (Lei 14.905/2024 em 30–31/08/2024)",
+  transicao_14905: "transição (Lei 14.905/2024 em 30 e 31/08/2024)",
   pos_14905: "Lei 14.905/2024",
 };
 
@@ -90,6 +93,7 @@ export function CorrecaoCalc({ onUsarValor, usarValorLabel = "Usar este valor", 
   const p = (k: string) => searchParams.get(k) ?? "";
 
   const [valor, setValor] = useState(p("valor"));
+  const [erroForm, setErroForm] = useState<string | null>(null);
   const [dataInicial, setDataInicial] = useState(p("data_inicial"));
   const [dataFinal, setDataFinal] = useState(p("data_final"));
   const [indice, setIndice] = useState(p("indice") || "ipca");
@@ -133,10 +137,12 @@ export function CorrecaoCalc({ onUsarValor, usarValorLabel = "Usar este valor", 
   ]);
 
   const calcular = useCallback(async () => {
-    if (!valor || !dataInicial || !dataFinal) {
-      toast({ title: "Preencha valor e datas", variant: "destructive" });
-      return;
-    }
+    const faltas: string[] = [];
+    if (!valor || !(parseFloat(valor) > 0)) faltas.push("Informe um valor positivo");
+    if (!dataInicial || !dataFinal) faltas.push("Informe as datas inicial e final");
+    else if (dataFinal <= dataInicial) faltas.push("A data final deve ser posterior à data inicial");
+    setErroForm(faltas.length ? faltas.join(". ") + "." : null);
+    if (faltas.length) return;
     setLoading(true);
     setResult(null);
     try {
@@ -245,7 +251,7 @@ export function CorrecaoCalc({ onUsarValor, usarValorLabel = "Usar este valor", 
       body: r.memoria
         .map(
           l =>
-            `${mesLabel(l.mes_ref)} | ${l.indice_utilizado.toUpperCase()} ${l.variacao_percentual.toFixed(2)}% | fator acum. ${l.fator_acumulado.toFixed(6)} | saldo ${fmt(l.saldo_corrigido)} | juros do mês ${fmt(l.juros_do_mes)} | juros acum. ${fmt(l.juros_acumulados)} | ${REGIME_LABEL[l.regime]}`,
+            `${mesLabel(l.mes_ref)} | ${l.indice_utilizado.toUpperCase()} ${pctBR(l.variacao_percentual)} | fator acum. ${fatorBR(l.fator_acumulado)} | saldo ${fmt(l.saldo_corrigido)} | juros do mês ${fmt(l.juros_do_mes)} | juros acum. ${fmt(l.juros_acumulados)} | ${REGIME_LABEL[l.regime]}`,
         )
         .join("\n"),
     },
@@ -275,30 +281,30 @@ export function CorrecaoCalc({ onUsarValor, usarValorLabel = "Usar este valor", 
     <div className="space-y-6">
       <div className="grid gap-4 sm:grid-cols-2">
         <div className="space-y-2">
-          <Label>Valor Original (R$)</Label>
-          <Input className="h-11" type="number" inputMode="decimal" placeholder="10000" value={valor} onChange={e => setValor(e.target.value)} />
+          <Label htmlFor="correcao-valor-original-r">Valor Original (R$)</Label>
+          <Input id="correcao-valor-original-r" className="h-11" type="number" inputMode="decimal" placeholder="10000" value={valor} onChange={e => setValor(e.target.value)} />
         </div>
         <div className="space-y-2">
-          <Label>Índice de Correção</Label>
+          <Label htmlFor="correcao-indice-de-correcao">Índice de Correção</Label>
           <Select value={indice} onValueChange={setIndice}>
-            <SelectTrigger><SelectValue /></SelectTrigger>
+            <SelectTrigger id="correcao-indice-de-correcao"><SelectValue /></SelectTrigger>
             <SelectContent>
               {INDICES.map(i => <SelectItem key={i.id} value={i.id}>{i.label}</SelectItem>)}
             </SelectContent>
           </Select>
         </div>
         <div className="space-y-2">
-          <Label>Data Inicial</Label>
-          <Input className="h-11" type="date" value={dataInicial} onChange={e => setDataInicial(e.target.value)} />
+          <Label htmlFor="correcao-data-inicial">Data Inicial</Label>
+          <Input id="correcao-data-inicial" className="h-11" type="date" value={dataInicial} onChange={e => setDataInicial(e.target.value)} />
         </div>
         <div className="space-y-2">
-          <Label>Data Final</Label>
-          <Input className="h-11" type="date" value={dataFinal} onChange={e => setDataFinal(e.target.value)} />
+          <Label htmlFor="correcao-data-final">Data Final</Label>
+          <Input id="correcao-data-final" className="h-11" type="date" value={dataFinal} onChange={e => setDataFinal(e.target.value)} />
         </div>
         <div className="space-y-2">
-          <Label>Regime de Juros de Mora</Label>
+          <Label htmlFor="correcao-regime-de-juros-de-mora">Regime de Juros de Mora</Label>
           <Select value={regimeJuros} onValueChange={setRegimeJuros}>
-            <SelectTrigger><SelectValue /></SelectTrigger>
+            <SelectTrigger id="correcao-regime-de-juros-de-mora"><SelectValue /></SelectTrigger>
             <SelectContent>
               <SelectItem value="legal_14905">Juros legais (Lei 14.905/2024)</SelectItem>
               <SelectItem value="taxa_fixa">Taxa fixa mensal</SelectItem>
@@ -308,9 +314,9 @@ export function CorrecaoCalc({ onUsarValor, usarValorLabel = "Usar este valor", 
         </div>
         {regimeJuros !== "nenhum" && (
           <div className="space-y-2">
-            <Label>Tipo de juros</Label>
+            <Label htmlFor="correcao-tipo-de-juros">Tipo de juros</Label>
             <Select value={tipoJuros} onValueChange={setTipoJuros}>
-              <SelectTrigger><SelectValue /></SelectTrigger>
+              <SelectTrigger id="correcao-tipo-de-juros"><SelectValue /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="simples">Simples (sobre saldo corrigido)</SelectItem>
                 <SelectItem value="compostos">Compostos (capitalizados mês a mês)</SelectItem>
@@ -321,14 +327,14 @@ export function CorrecaoCalc({ onUsarValor, usarValorLabel = "Usar este valor", 
         {regimeJuros === "taxa_fixa" && (
 
           <div className="space-y-2">
-            <Label>Taxa de juros mensal (%)</Label>
-            <Input className="h-11" type="number" inputMode="decimal" step="0.1" value={taxaFixa} onChange={e => setTaxaFixa(e.target.value)} />
+            <Label htmlFor="correcao-taxa-de-juros-mensal">Taxa de juros mensal (%)</Label>
+            <Input id="correcao-taxa-de-juros-mensal" className="h-11" type="number" inputMode="decimal" step="0.1" value={taxaFixa} onChange={e => setTaxaFixa(e.target.value)} />
           </div>
         )}
         <div className="space-y-2">
           <Label>Cálculo pro rata die</Label>
           <div className="flex items-center gap-3 pt-1">
-            <Switch checked={proRata} onCheckedChange={setProRata} />
+            <Switch aria-label="Cálculo pro rata die" checked={proRata} onCheckedChange={setProRata} />
             <span className="text-reading text-navy/70">
               {proRata ? "Proporcional nos meses parciais" : "Meses inteiros"}
             </span>
@@ -338,7 +344,7 @@ export function CorrecaoCalc({ onUsarValor, usarValorLabel = "Usar este valor", 
           <div className="space-y-2">
             <Label>Manter o índice escolhido após 30/08/2024</Label>
             <div className="flex items-center gap-3 pt-1">
-              <Switch checked={manterIndiceContratual} onCheckedChange={setManterIndiceContratual} />
+              <Switch aria-label="Manter o índice escolhido após 30/08/2024" checked={manterIndiceContratual} onCheckedChange={setManterIndiceContratual} />
               <span className="text-reading text-navy/70">
                 {manterIndiceContratual
                   ? "Índice contratual mantido (art. 389, § único, CC, norma supletiva)"
@@ -349,19 +355,19 @@ export function CorrecaoCalc({ onUsarValor, usarValorLabel = "Usar este valor", 
         )}
 
         <div className="space-y-2">
-          <Label>Multa (%)</Label>
-          <Input className="h-11" type="number" inputMode="decimal" step="0.1" placeholder="2" value={multa} onChange={e => setMulta(e.target.value)} />
+          <Label htmlFor="correcao-multa">Multa (%)</Label>
+          <Input id="correcao-multa" className="h-11" type="number" inputMode="decimal" step="0.1" placeholder="2" value={multa} onChange={e => setMulta(e.target.value)} />
         </div>
         <div className="space-y-2">
           <Label>A multa incide também sobre os juros?</Label>
           <div className="flex items-center gap-3 pt-1">
-            <Switch checked={multaSobreJuros} onCheckedChange={setMultaSobreJuros} />
+            <Switch aria-label="A multa incide também sobre os juros?" checked={multaSobreJuros} onCheckedChange={setMultaSobreJuros} />
             <span className="text-reading text-navy/70">{multaSobreJuros ? "Sim" : "Não"}</span>
           </div>
         </div>
         <div className="space-y-2">
-          <Label>Honorários (%)</Label>
-          <Input className="h-11" type="number" inputMode="decimal" step="0.1" placeholder="10" value={honorarios} onChange={e => setHonorarios(e.target.value)} />
+          <Label htmlFor="correcao-honorarios">Honorários (%)</Label>
+          <Input id="correcao-honorarios" className="h-11" type="number" inputMode="decimal" step="0.1" placeholder="10" value={honorarios} onChange={e => setHonorarios(e.target.value)} />
         </div>
       </div>
 
@@ -374,16 +380,17 @@ export function CorrecaoCalc({ onUsarValor, usarValorLabel = "Usar este valor", 
         </CollapsibleTrigger>
         <CollapsibleContent className="grid gap-4 sm:grid-cols-2 pt-3">
           <div className="space-y-2">
-            <Label>Início dos juros</Label>
-            <Input className="h-11" type="date" value={jurosInicio} onChange={e => setJurosInicio(e.target.value)} />
+            <Label htmlFor="correcao-inicio-dos-juros">Início dos juros</Label>
+            <Input id="correcao-inicio-dos-juros" className="h-11" type="date" value={jurosInicio} onChange={e => setJurosInicio(e.target.value)} />
           </div>
           <div className="space-y-2">
-            <Label>Fim dos juros</Label>
-            <Input className="h-11" type="date" value={jurosFim} onChange={e => setJurosFim(e.target.value)} />
+            <Label htmlFor="correcao-fim-dos-juros">Fim dos juros</Label>
+            <Input id="correcao-fim-dos-juros" className="h-11" type="date" value={jurosFim} onChange={e => setJurosFim(e.target.value)} />
           </div>
         </CollapsibleContent>
       </Collapsible>
 
+      {erroForm && <p role="alert" className="text-note text-destructive">{erroForm}</p>}
       <Button onClick={calcular} disabled={loading} className="h-11 w-full sm:w-auto">
         {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
         Calcular Atualização
@@ -494,9 +501,9 @@ export function CorrecaoCalc({ onUsarValor, usarValorLabel = "Usar este valor", 
                     {result.memoria.map(l => (
                       <TableRow key={l.mes_ref}>
                         <TableCell className="font-medium">{mesLabel(l.mes_ref)}</TableCell>
-                        <TableCell className="text-note">{l.indice_utilizado}</TableCell>
-                        <TableCell className="text-right">{l.variacao_percentual.toFixed(2)}%</TableCell>
-                        <TableCell className="text-right">{l.fator_acumulado.toFixed(6)}</TableCell>
+                        <TableCell className="text-note">{l.indice_utilizado.toUpperCase()}</TableCell>
+                        <TableCell className="text-right">{pctBR(l.variacao_percentual)}</TableCell>
+                        <TableCell className="text-right">{fatorBR(l.fator_acumulado)}</TableCell>
                         <TableCell className="text-right">{fmt(l.saldo_corrigido)}</TableCell>
                         <TableCell className="text-right">{fmt(l.juros_do_mes)}</TableCell>
                         <TableCell className="text-right">{fmt(l.juros_acumulados)}</TableCell>

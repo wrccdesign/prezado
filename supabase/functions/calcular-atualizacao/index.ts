@@ -341,7 +341,7 @@ serve(async (req) => {
       fonte: "Banco Central do Brasil, Sistema Gerenciador de Séries Temporais (SGS)",
       ultima_sincronizacao: syncRow?.sincronizado_em ?? null,
       base_legal: [
-        `Arts. 389 e 406 do Código Civil, com redação da Lei 14.905/2024 (vigência em ${VIGENCIA_14905}).`,
+        `Arts. 389 e 406 do Código Civil, com redação da Lei 14.905/2024 (vigência em 30/08/2024).`,
         "Res. CMN 5.171/2024: a taxa legal aplicável aos dias 30 e 31/08/2024 é a divulgada para agosto/2024; agosto/2024 é calculado pro rata die como mês de transição.",
         manterIndiceContratual
           ? "Art. 389, parágrafo único, do CC (norma supletiva): mantido o índice contratual/específico também após a vigência da Lei 14.905/2024."

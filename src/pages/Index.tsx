@@ -219,7 +219,7 @@ export default function Index({ embedded = false }: { embedded?: boolean }) {
       setText(extracted);
       setShowPreview(true);
       notifyUsageConsumed();
-      const ocrNote = data.ocr && !isImage ? " (via OCR — documento escaneado)" : "";
+      const ocrNote = data.ocr && !isImage ? " (via OCR, documento escaneado)" : "";
       const partialNote = data.partial
         ? typeof data.pages_read === "number" && typeof data.pages_total === "number"
           ? ` Leitura parcial: ${data.pages_read} de ${data.pages_total} páginas.`
@@ -467,11 +467,11 @@ export default function Index({ embedded = false }: { embedded?: boolean }) {
       {!embedded && <LegalDisclaimer />}
       {!embedded && (
         <SEO
-          title="Análise de documento com IA — Honorífico"
+          title="Análise de documento com IA | Honorífico"
           description="Envie um documento ou cole um texto e receba análise jurídica estruturada com direitos, riscos e próximos passos."
           path="/analise"
           image="/og/home.jpg"
-          imageAlt="Honorífico — IA jurídica brasileira"
+          imageAlt="Honorífico: IA jurídica brasileira"
         />
       )}
       <main className={embedded ? "py-2" : "container max-w-3xl py-8 sm:py-12 px-4 sm:px-6"}>

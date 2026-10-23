@@ -346,7 +346,7 @@ export default function Diagnostico({ embedded = false }: { embedded?: boolean }
     <div className={embedded ? "" : "flex min-h-screen flex-col bg-background"}>
       {!embedded && <AppHeader />}
       {!embedded && (
-        <SEO title="Diagnóstico Jurídico com IA — Honorífico" description="Descreva sua situação em linguagem simples e receba diagnóstico jurídico estruturado: direitos, riscos e próximos passos." path="/diagnostico" />
+        <SEO title="Diagnóstico jurídico com IA | Honorífico" description="Descreva sua situação em linguagem simples e receba diagnóstico jurídico estruturado: direitos, riscos e próximos passos." path="/diagnostico" />
       )}
       {!embedded && <LegalDisclaimer />}
 
@@ -366,7 +366,7 @@ export default function Diagnostico({ embedded = false }: { embedded?: boolean }
                   <p className="text-base sm:text-lg text-muted-foreground max-w-lg mx-auto leading-relaxed">
                     Descreva sua situação em linguagem simples.
                     <br />
-                    <span className="text-base">Não precisa saber termos jurídicos — eu entendo você.</span>
+                    <span className="text-base">Não precisa saber termos jurídicos. Descreva com as suas palavras.</span>
                   </p>
                 </>
               )}
@@ -436,7 +436,7 @@ export default function Diagnostico({ embedded = false }: { embedded?: boolean }
               )}
             </div>
 
-            {/* SEMPRE VISÍVEIS — 2 primeiros cards */}
+            {/* SEMPRE VISÍVEIS, 2 primeiros cards */}
             <Card>
               <CardHeader className="pb-3">
                 <CardTitle className="text-base flex items-center gap-2">
@@ -459,7 +459,7 @@ export default function Diagnostico({ embedded = false }: { embedded?: boolean }
               </CardContent>
             </Card>
 
-            {/* BLOQUEÁVEIS — 4 cards restantes */}
+            {/* BLOQUEÁVEIS, 4 cards restantes */}
             <PaywallBlur locked={locked}>
               <Card>
                 <CardHeader className="pb-3">
@@ -576,7 +576,7 @@ export default function Diagnostico({ embedded = false }: { embedded?: boolean }
               </div>
             )}
 
-            {/* Fontes consultadas — sempre visíveis, fora do paywall */}
+            {/* Fontes consultadas, sempre visíveis, fora do paywall */}
             <Card>
               <CardHeader className="pb-3">
                 <CardTitle className="text-base flex items-center gap-2">

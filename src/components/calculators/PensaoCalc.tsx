@@ -11,6 +11,10 @@ import jsPDF from "jspdf";
 import { useGuestExportGate } from "@/components/calculators/shared/GuestExportGate";
 import { UsarNaPeticaoButton } from "@/components/calculators/shared/UsarNaPeticaoButton";
 
+function pct(v: number) {
+  return `${v.toLocaleString("pt-BR", { minimumFractionDigits: 1, maximumFractionDigits: 1 })}%`;
+}
+
 function fmt(v: number) {
   return v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 }
@@ -38,14 +42,16 @@ export function PensaoCalc() {
   const [outrasObrigacoes, setOutrasObrigacoes] = useState(false);
   const [padrao, setPadrao] = useState<Padrao>("medio");
   const [result, setResult] = useState<Resultado | null>(null);
+  const [erros, setErros] = useState<Record<string, string>>({});
 
   const calcular = () => {
-    const r = parseFloat(renda) || 0;
-    const f = Math.max(1, parseInt(filhos) || 1);
-    if (r <= 0) {
-      toast.error("Informe a renda líquida do alimentante.");
-      return;
-    }
+    const r = parseFloat(renda);
+    const f = parseInt(filhos, 10);
+    const e: Record<string, string> = {};
+    if (!renda || Number.isNaN(r) || r <= 0) e.renda = "Informe a renda líquida, maior que zero.";
+    if (!filhos || Number.isNaN(f) || f < 1) e.filhos = "Informe ao menos 1 filho.";
+    setErros(e);
+    if (Object.keys(e).length) { setResult(null); return; }
 
     let baseMin: number, baseSug: number, baseMax: number;
     if (f === 1) { baseMin = 0.15; baseSug = 0.20; baseMax = 0.25; }
@@ -107,9 +113,9 @@ export function PensaoCalc() {
     doc.setFontSize(10);
     const linhas = [
       ["Descrição", "Valor", "% da Renda"],
-      ["Valor Mínimo", fmt(result.minimo), `${result.percentualMin.toFixed(1)}%`],
-      ["Valor Sugerido", fmt(result.sugerido), `${result.percentualSug.toFixed(1)}%`],
-      ["Valor Máximo", fmt(result.maximo), `${result.percentualMax.toFixed(1)}%`],
+      ["Valor Mínimo", fmt(result.minimo), `${pct(result.percentualMin)}`],
+      ["Valor Sugerido", fmt(result.sugerido), `${pct(result.percentualSug)}`],
+      ["Valor Máximo", fmt(result.maximo), `${pct(result.percentualMax)}`],
       ["Por Filho (sugerido)", fmt(result.porFilhoSug), ""],
     ];
 
@@ -135,17 +141,19 @@ export function PensaoCalc() {
     <div className="space-y-6">
       <div className="grid gap-4 sm:grid-cols-2">
         <div className="space-y-2">
-          <Label>Renda Líquida do Alimentante (R$)</Label>
-          <Input className="h-11" type="number" inputMode="decimal" placeholder="5000" value={renda} onChange={e => setRenda(e.target.value)} />
+          <Label htmlFor="pensao-renda">Renda líquida do alimentante (R$)</Label>
+          <Input id="pensao-renda" aria-invalid={!!erros.renda} className="h-11" type="number" inputMode="decimal" placeholder="5000" value={renda} onChange={e => setRenda(e.target.value)} />
+          {erros.renda && <p className="text-note text-destructive">{erros.renda}</p>}
         </div>
         <div className="space-y-2">
-          <Label>Número de Filhos</Label>
-          <Input className="h-11" type="number" inputMode="numeric" min={1} placeholder="1" value={filhos} onChange={e => setFilhos(e.target.value)} />
+          <Label htmlFor="pensao-filhos">Número de filhos</Label>
+          <Input id="pensao-filhos" aria-invalid={!!erros.filhos} className="h-11" type="number" inputMode="numeric" min={1} placeholder="1" value={filhos} onChange={e => setFilhos(e.target.value)} />
+          {erros.filhos && <p className="text-note text-destructive">{erros.filhos}</p>}
         </div>
         <div className="space-y-2">
-          <Label>Os filhos moram com o alimentante?</Label>
+          <Label htmlFor="pensao-moradia">Os filhos moram com o alimentante?</Label>
           <Select value={moradia} onValueChange={(v) => setMoradia(v as Moradia)}>
-            <SelectTrigger><SelectValue /></SelectTrigger>
+            <SelectTrigger id="pensao-moradia"><SelectValue /></SelectTrigger>
             <SelectContent>
               <SelectItem value="nao">Não</SelectItem>
               <SelectItem value="sim">Sim</SelectItem>
@@ -154,9 +162,9 @@ export function PensaoCalc() {
           </Select>
         </div>
         <div className="space-y-2">
-          <Label>Padrão de vida da família</Label>
+          <Label htmlFor="pensao-padrao">Padrão de vida da família</Label>
           <Select value={padrao} onValueChange={(v) => setPadrao(v as Padrao)}>
-            <SelectTrigger><SelectValue /></SelectTrigger>
+            <SelectTrigger id="pensao-padrao"><SelectValue /></SelectTrigger>
             <SelectContent>
               <SelectItem value="baixa">Baixa renda</SelectItem>
               <SelectItem value="medio">Médio</SelectItem>
@@ -179,7 +187,7 @@ export function PensaoCalc() {
             <div className="p-5 text-center space-y-1">
               <p className="text-reading text-navy/70">Valor Sugerido</p>
               <p className="text-3xl text-navy tabular">{fmt(result.sugerido)}</p>
-              <p className="text-note text-navy/70">({result.percentualSug.toFixed(1)}% da renda)</p>
+              <p className="text-note text-navy/70">({pct(result.percentualSug)} da renda)</p>
             </div>
           </div>
 
@@ -193,9 +201,9 @@ export function PensaoCalc() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                <TableRow><TableCell>Faixa Mínima</TableCell><TableCell className="text-right">{fmt(result.minimo)}</TableCell><TableCell className="text-right">{result.percentualMin.toFixed(1)}%</TableCell></TableRow>
-                <TableRow className="border-t border-navy/20"><TableCell>Valor Sugerido</TableCell><TableCell className="text-right">{fmt(result.sugerido)}</TableCell><TableCell className="text-right">{result.percentualSug.toFixed(1)}%</TableCell></TableRow>
-                <TableRow><TableCell>Faixa Máxima</TableCell><TableCell className="text-right">{fmt(result.maximo)}</TableCell><TableCell className="text-right">{result.percentualMax.toFixed(1)}%</TableCell></TableRow>
+                <TableRow><TableCell>Faixa Mínima</TableCell><TableCell className="text-right">{fmt(result.minimo)}</TableCell><TableCell className="text-right">{pct(result.percentualMin)}</TableCell></TableRow>
+                <TableRow className="border-t border-navy/20"><TableCell>Valor Sugerido</TableCell><TableCell className="text-right">{fmt(result.sugerido)}</TableCell><TableCell className="text-right">{pct(result.percentualSug)}</TableCell></TableRow>
+                <TableRow><TableCell>Faixa Máxima</TableCell><TableCell className="text-right">{fmt(result.maximo)}</TableCell><TableCell className="text-right">{pct(result.percentualMax)}</TableCell></TableRow>
                 <TableRow><TableCell>Valor por Filho (sugerido)</TableCell><TableCell className="text-right">{fmt(result.porFilhoSug)}</TableCell><TableCell className="text-right"></TableCell></TableRow>
               </TableBody>
             </Table>
@@ -205,7 +213,7 @@ export function PensaoCalc() {
             <div className="p-5 text-reading text-navy/70 space-y-2">
               <p className="font-medium text-foreground">Como o juiz calcula a pensão?</p>
               <p>O valor da pensão alimentícia é definido pelo juiz com base no <strong>binômio necessidade × possibilidade</strong> (art. 1.694 do Código Civil).</p>
-              <p>Na prática, a jurisprudência do STJ costuma fixar entre <strong>15% e 30%</strong> da renda líquida por filho.</p>
+              <p>Não há percentual fixado em lei. As faixas desta calculadora são uma referência de partida, aplicadas sobre a renda total para todos os filhos, e o juiz decide caso a caso.</p>
             </div>
           </div>
 
@@ -229,10 +237,10 @@ export function PensaoCalc() {
                 fatos: [
                   `Renda líquida informada do alimentante: ${fmt(parseFloat(renda) || 0)}.`,
                   `Número de filhos: ${Math.max(1, parseInt(filhos) || 1)}.`,
-                  `Faixa de referência: de ${fmt(result.minimo)} (${result.percentualMin.toFixed(1)}%) a ${fmt(result.maximo)} (${result.percentualMax.toFixed(1)}%) da renda.`,
-                  `Valor sugerido: ${fmt(result.sugerido)}, equivalente a ${result.percentualSug.toFixed(1)}% da renda.`,
+                  `Faixa de referência: de ${fmt(result.minimo)} (${pct(result.percentualMin)}) a ${fmt(result.maximo)} (${pct(result.percentualMax)}) da renda.`,
+                  `Valor sugerido: ${fmt(result.sugerido)}, equivalente a ${pct(result.percentualSug)} da renda.`,
                 ].join(" "),
-                pedidos: `Fixação de alimentos no valor mensal de ${fmt(result.sugerido)}, equivalente a ${result.percentualSug.toFixed(1)}% da renda líquida do alimentante, conforme demonstrativo em anexo.`,
+                pedidos: `Fixação de alimentos no valor mensal de ${fmt(result.sugerido)}, equivalente a ${pct(result.percentualSug)} da renda líquida do alimentante, conforme demonstrativo em anexo.`,
               }}
             />
           </div>
