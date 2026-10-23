@@ -93,6 +93,7 @@ export function CorrecaoCalc({ onUsarValor, usarValorLabel = "Usar este valor", 
   const p = (k: string) => searchParams.get(k) ?? "";
 
   const [valor, setValor] = useState(p("valor"));
+  const [erroForm, setErroForm] = useState<string | null>(null);
   const [dataInicial, setDataInicial] = useState(p("data_inicial"));
   const [dataFinal, setDataFinal] = useState(p("data_final"));
   const [indice, setIndice] = useState(p("indice") || "ipca");
@@ -389,6 +390,7 @@ export function CorrecaoCalc({ onUsarValor, usarValorLabel = "Usar este valor", 
         </CollapsibleContent>
       </Collapsible>
 
+      {erroForm && <p role="alert" className="text-note text-destructive">{erroForm}</p>}
       <Button onClick={calcular} disabled={loading} className="h-11 w-full sm:w-auto">
         {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
         Calcular Atualização
