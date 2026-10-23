@@ -21,7 +21,7 @@ function fmt(v: number) {
   return v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 }
 
-type TipoDemissao = "sem_justa_causa" | "com_justa_causa" | "pedido_demissao" | "acordo_mutuo";
+import { calcularRescisao, type ResultadoRescisao, type TipoDemissao } from "@/lib/rescisao";
 
 const TIPO_LABEL: Record<TipoDemissao, string> = {
   sem_justa_causa: "dispensa sem justa causa",
@@ -30,7 +30,6 @@ const TIPO_LABEL: Record<TipoDemissao, string> = {
   acordo_mutuo: "acordo mútuo (art. 484-A da CLT)",
 };
 
-interface Verba { label: string; valor: number; }
 
 export function RescisaoCalc() {
   const { requireAccount } = useGuestExportGate();
@@ -43,58 +42,25 @@ export function RescisaoCalc() {
   const [horasExtras, setHorasExtras] = useState("");
   const [possuiComissoes, setPossuiComissoes] = useState(false);
   const [comissoes, setComissoes] = useState("");
-  const [verbas, setVerbas] = useState<Verba[] | null>(null);
+  const [periodosVencidos, setPeriodosVencidos] = useState("0");
+  const [res, setRes] = useState<ResultadoRescisao | null>(null);
 
   const calcular = () => {
     const sal = parseFloat(salario) || 0;
     if (!sal || !admissao || !demissao) { toast.error("Preencha salário, data de admissão e demissão."); return; }
     if (demissao <= admissao) { toast.error("A data de demissão deve ser posterior à admissão."); return; }
-
     const he = parseFloat(horasExtras) || 0;
     const com = possuiComissoes ? (parseFloat(comissoes) || 0) : 0;
-    const remuneracao = sal + he + com;
-    const diffMs = demissao.getTime() - admissao.getTime();
-    const totalDays = diffMs / (1000 * 60 * 60 * 24);
-    const anosCompletos = Math.floor(totalDays / 365);
-    const diasTrabMes = demissao.getDate();
-    const saldoSalario = (remuneracao / 30) * diasTrabMes;
-
-    let avisoPrevio = 0;
-    if (tipo === "sem_justa_causa") { avisoPrevio = (remuneracao / 30) * Math.min(30 + anosCompletos * 3, 90); }
-    else if (tipo === "acordo_mutuo") { avisoPrevio = ((remuneracao / 30) * Math.min(30 + anosCompletos * 3, 90)) / 2; }
-
-    const meses13 = demissao.getMonth() + 1;
-    const decimoTerceiro = tipo !== "com_justa_causa" ? (remuneracao / 12) * meses13 : 0;
-
-    const totalMonths = Math.floor(totalDays / 30);
-    const mesesFerias = totalMonths % 12;
-    let feriasProporcionais = 0, tercoFeriasProporcionais = 0;
-    if (tipo !== "com_justa_causa") { feriasProporcionais = (remuneracao / 12) * mesesFerias; tercoFeriasProporcionais = feriasProporcionais / 3; }
-
-    const periodosCompletos = Math.floor(totalMonths / 12);
-    let feriasVencidas = 0, tercoFeriasVencidas = 0;
-    if (periodosCompletos >= 1) { feriasVencidas = remuneracao; tercoFeriasVencidas = remuneracao / 3; }
-
-    const fgtsMes = remuneracao * 0.08;
-    const fgts = possuiFgts ? (parseFloat(saldoFgts) || 0) : 0;
-    let multaFgts = 0;
-    if (tipo === "sem_justa_causa") multaFgts = (fgts + fgtsMes) * 0.4;
-    else if (tipo === "acordo_mutuo") multaFgts = (fgts + fgtsMes) * 0.2;
-
-    setVerbas([
-      { label: "Saldo de Salário", valor: saldoSalario },
-      { label: "Aviso Prévio Indenizado", valor: avisoPrevio },
-      { label: "13º Salário Proporcional", valor: decimoTerceiro },
-      { label: "Férias Proporcionais", valor: feriasProporcionais },
-      { label: "1/3 Férias Proporcionais", valor: tercoFeriasProporcionais },
-      { label: "Férias Vencidas", valor: feriasVencidas },
-      { label: "1/3 Férias Vencidas", valor: tercoFeriasVencidas },
-      { label: "FGTS do Mês da Rescisão", valor: fgtsMes },
-      { label: "Multa FGTS", valor: multaFgts },
-    ]);
+    setRes(calcularRescisao({
+      remuneracao: sal + he + com,
+      admissao, demissao, tipo,
+      saldoFgts: possuiFgts && saldoFgts !== "" ? (parseFloat(saldoFgts) || 0) : null,
+      periodosVencidosNaoGozados: parseInt(periodosVencidos, 10) || 0,
+    }));
   };
 
-  const total = verbas ? verbas.reduce((a, b) => a + b.valor, 0) : 0;
+  const verbas = res?.verbas ?? null;
+  const total = res?.totalBruto ?? 0;
 
   const gerarPDF = () => {
     if (!verbas) return;
@@ -109,9 +75,11 @@ export function RescisaoCalc() {
     doc.setFontSize(11); doc.text("Verba", 14, y); doc.text("Valor (R$)", 140, y);
     y += 2; doc.line(14, y, 196, y); y += 6;
     doc.setFontSize(10);
-    verbas.forEach((v) => { doc.text(v.label, 14, y); doc.text(fmt(v.valor), 140, y); y += 7; });
+    verbas.forEach((v) => { doc.text(v.label, 14, y); doc.text(fmt(v.valor), 140, y); y += 5; doc.setFontSize(7); doc.text(doc.splitTextToSize(v.formula, 180), 14, y); doc.setFontSize(10); y += 7; });
     y += 2; doc.line(14, y, 196, y); y += 7;
-    doc.setFontSize(12); doc.text("TOTAL ESTIMADO", 14, y); doc.text(fmt(total), 140, y);
+    doc.setFontSize(12); doc.text("TOTAL BRUTO ESTIMADO", 14, y); doc.text(fmt(total), 140, y);
+    y += 10; doc.setFontSize(10); doc.text("Depósitos na conta do FGTS", 14, y); y += 7;
+    res!.fgts.forEach((v) => { doc.text(v.label, 14, y); doc.text(fmt(v.valor), 140, y); y += 7; });
     y += 14; doc.setFontSize(8); doc.text("Cálculo estimado. Consulte um advogado trabalhista para valores exatos.", 14, y);
 
     doc.save("rescisao-trabalhista-honorifico.pdf");
@@ -147,6 +115,7 @@ export function RescisaoCalc() {
           <div className="flex items-center gap-3"><Switch id="rescisao-comissoes" checked={possuiComissoes} onCheckedChange={setPossuiComissoes} /><Label htmlFor="rescisao-comissoes">Possui comissões?</Label></div>
           {possuiComissoes && (<div className="space-y-2"><Label htmlFor="rescisao-comissoes-valor">Média Mensal de Comissões (R$)</Label><Input id="rescisao-comissoes-valor" className="h-11" type="number" inputMode="decimal" placeholder="0" value={comissoes} onChange={e => setComissoes(e.target.value)} /></div>)}
         </div>
+        <div className="space-y-2"><Label htmlFor="rescisao-ferias-vencidas">Períodos de férias vencidas não gozadas</Label><Input id="rescisao-ferias-vencidas" className="h-11" type="number" inputMode="numeric" min={0} max={5} value={periodosVencidos} onChange={e => setPeriodosVencidos(e.target.value)} /></div>
         <div className="space-y-4 sm:col-span-2">
           <div className="flex items-center gap-3"><Switch id="rescisao-fgts" checked={possuiFgts} onCheckedChange={setPossuiFgts} /><Label htmlFor="rescisao-fgts">Possui saldo de FGTS?</Label></div>
           {possuiFgts && (<div className="space-y-2 max-w-xs"><Label htmlFor="rescisao-fgts-saldo">Saldo Estimado do FGTS (R$)</Label><Input id="rescisao-fgts-saldo" className="h-11" type="number" inputMode="decimal" placeholder="15000" value={saldoFgts} onChange={e => setSaldoFgts(e.target.value)} /></div>)}
@@ -162,12 +131,25 @@ export function RescisaoCalc() {
               <Table>
                 <TableHeader><TableRow><TableHead>Verba</TableHead><TableHead className="text-right">Valor</TableHead></TableRow></TableHeader>
                 <TableBody>
-                  {verbas.map((v) => (<TableRow key={v.label}><TableCell>{v.label}</TableCell><TableCell className="text-right font-medium">{fmt(v.valor)}</TableCell></TableRow>))}
-                  <TableRow className="border-t-2"><TableCell className="text-base ">Total Líquido Estimado</TableCell><TableCell className="text-right text-base text-navy tabular">{fmt(total)}</TableCell></TableRow>
+                  {verbas.map((v) => (<TableRow key={v.label}><TableCell><div>{v.label}</div><div className="text-note text-navy/60">{v.formula}</div></TableCell><TableCell className="text-right font-medium tabular align-top">{fmt(v.valor)}</TableCell></TableRow>))}
+                  <TableRow className="border-t-2"><TableCell className="text-base ">Total bruto estimado</TableCell><TableCell className="text-right text-base text-navy tabular">{fmt(total)}</TableCell></TableRow>
                 </TableBody>
               </Table>
             </div>
           </div>
+          <div className="rounded-lg border border-cream-dark bg-white">
+            <div className="p-5 space-y-2">
+              <h3 className="text-h3 text-navy">Depósitos na conta do FGTS</h3>
+              <p className="text-note text-navy/60">Não entram no total acima: são depositados na conta vinculada do trabalhador.</p>
+              <Table>
+                <TableBody>
+                  {res!.fgts.map((v) => (<TableRow key={v.label}><TableCell><div>{v.label}</div><div className="text-note text-navy/60">{v.formula}</div></TableCell><TableCell className="text-right font-medium tabular align-top">{fmt(v.valor)}</TableCell></TableRow>))}
+                </TableBody>
+              </Table>
+              {res!.saldoFgtsEstimado && (<p className="text-note text-navy/70">Saldo do FGTS estimado pelos meses trabalhados. Informe o saldo real do extrato para um valor mais preciso.</p>)}
+            </div>
+          </div>
+          <p className="text-note text-navy/60">Valores brutos, sem desconto de INSS e IRRF. Aviso prévio projetado até {format(res!.dataProjetada, "dd/MM/yyyy")} (art. 487, § 1º, da CLT).</p>
           <div className="flex flex-col sm:flex-row gap-3 items-start">
             <Button onClick={() => requireAccount(gerarPDF, "baixar o relatório em PDF")} variant="outline" className="gap-2">Gerar Relatório PDF</Button>
             <UsarNaPeticaoButton

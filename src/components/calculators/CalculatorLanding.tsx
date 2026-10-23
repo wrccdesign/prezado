@@ -151,7 +151,7 @@ export function CalculatorLanding({
         </div>
 
         <div className="mt-12 grid gap-12 lg:grid-cols-3">
-          <div className="space-y-12 lg:col-span-2">
+          <div className="min-w-0 space-y-12 lg:col-span-2">
             <section>
               <h2 className="text-h3 text-navy">Calcule agora</h2>
               <div className="mt-5 rounded-lg border border-cream-dark bg-white p-5 sm:p-6">

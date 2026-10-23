@@ -261,7 +261,9 @@ serve(async (req) => {
           metadata.relator = null;
         }
 
-        const sourceUrl = source.numeroProcesso
+        // Só o STJ tem a consulta em processo.stj.jus.br; nos demais tribunais o link fica vazio
+        // e a interface orienta a consulta pelo nº CNJ no portal de origem.
+        const sourceUrl = source.numeroProcesso && (normalizeTribunal(metadata.tribunal) || tribunalUpper) === "STJ"
           ? `https://processo.stj.jus.br/processo/pesquisa/?tipoPesquisa=tipoPesquisaNumeroUnico&termo=${source.numeroProcesso}`
           : null;
 

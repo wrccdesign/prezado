@@ -354,7 +354,7 @@ export function PrazoCalc() {
           <div className={"rounded-lg border border-cream-dark bg-white " + bgPrazo}>
             <div className="p-5 space-y-3">
               <p className="text-reading text-navy/70">Data de vencimento do prazo:</p>
-              <p className={cn("text-2xl capitalize", corPrazo)}>
+              <p className={cn("text-2xl", corPrazo)}>
                 {format(parseISO(result.data_vencimento), "EEEE, dd 'de' MMMM 'de' yyyy", { locale: ptBR })}
               </p>
               <div className={cn("text-reading font-medium", corPrazo)}>

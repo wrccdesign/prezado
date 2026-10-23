@@ -37,10 +37,10 @@ export default function PrazoProcessualLanding() {
           </p>
           <h2 className="text-h3 text-navy">Dias úteis, dias corridos e suspensões</h2>
           <p>
-            Prazos processuais civis correm em dias úteis (art. 219 do CPC); prazos materiais,
-            penais e da maioria dos procedimentos trabalhistas correm em dias corridos. Além dos
-            fins de semana, ficam de fora feriados nacionais, estaduais e municipais, o recesso de
-            20/12 a 20/01 (art. 220) e as suspensões próprias de cada tribunal. O resultado lista
+            Prazos processuais civis (art. 219 do CPC) e trabalhistas (art. 775 da CLT) correm em
+            dias úteis; prazos materiais e penais correm em dias corridos. Além dos fins de semana,
+            ficam de fora feriados nacionais, estaduais e municipais, a suspensão dos prazos de
+            20/12 a 20/01 (art. 220 do CPC) e as suspensões próprias de cada tribunal. O resultado lista
             todos os dias descartados, com o motivo de cada um.
           </p>
         </>

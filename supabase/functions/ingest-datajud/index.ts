@@ -102,7 +102,9 @@ function getDatajudEndpoint(tribunal: string): string {
 
 // Build upsert data, preferring non-null new values over existing nulls
 function buildDecisionData(metadata: any, source: any, tribunal: string, externalId: string) {
-  const sourceUrl = source.numeroProcesso
+  // Só o STJ tem a consulta em processo.stj.jus.br; nos demais tribunais o link fica vazio
+  // e a interface orienta a consulta pelo nº CNJ no portal de origem.
+  const sourceUrl = source.numeroProcesso && String(tribunal).toUpperCase() === "STJ"
     ? `https://processo.stj.jus.br/processo/pesquisa/?tipoPesquisa=tipoPesquisaNumeroUnico&termo=${source.numeroProcesso}`
     : null;
 
