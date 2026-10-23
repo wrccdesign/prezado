@@ -513,6 +513,7 @@ export default function Planos() {
         <div className="mt-8 space-y-1 text-note text-navy/60">
           <p>Pagamentos processados de forma segura. Cancele a qualquer momento.</p>
           <p>Limites são renovados mensalmente, no primeiro dia de cada mês (horário de Brasília).</p>
+          <p>Sem conta, cada busca de jurisprudência mostra até 3 decisões.</p>
         </div>
 
         <FaqSection items={faqItems} className="mt-14 max-w-3xl" />

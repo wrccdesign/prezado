@@ -285,7 +285,7 @@ export const ROUTE_CONTENT: Record<string, RouteContent> = {
       "Consulte processos e andamentos nos dados públicos do CNJ, com número no padrão CNJ, tribunal, órgão julgador, classe, assuntos e movimentações, e link para a fonte no tribunal.",
     bullets: [
       "Acervo de ementas em expansão, com resumo por IA identificado como tal.",
-      "Sem conta, são permitidas 3 buscas por dia.",
+      "Sem conta, cada busca mostra até 3 decisões.",
       "Nenhum número de processo ou precedente é gerado por IA: o que aparece vem do acervo consultável.",
     ],
   },

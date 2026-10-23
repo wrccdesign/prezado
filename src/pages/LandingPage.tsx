@@ -163,7 +163,7 @@ export default function LandingPage() {
                 })}
               </div>
               <p className="text-note text-navy/60 mt-8 max-w-[60ch] border-t border-cream-dark pt-4">
-                Três buscas por dia sem conta. A conta grátis começa com 7 dias do plano Profissional, sem cartão.
+                Sem conta, cada busca mostra até 3 decisões. A conta grátis começa com 7 dias do plano Profissional, sem cartão.
               </p>
 
             </div>
