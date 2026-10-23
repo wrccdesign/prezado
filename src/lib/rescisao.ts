@@ -62,16 +62,23 @@ export function avosDesde(inicio: Date, fim: Date) {
   return Math.min(12, meses + (resto >= 15 ? 1 : 0));
 }
 
-/** Avos do 13º no ano da data projetada (Lei 4.090/1962, art. 1º, §2º): mês com 15 dias ou mais conta. */
-export function avos13(admissao: Date, fim: Date) {
+/**
+ * Avos do 13º (Lei 4.090/1962, art. 1º, §2º): mês com 15 dias ou mais conta.
+ * Conta desde o ano de `desdeAno` (ano da demissão) até a data projetada, para que
+ * a projeção do aviso para o ano seguinte não apague os avos do ano da demissão.
+ */
+export function avos13(admissao: Date, fim: Date, desdeAno: number = fim.getFullYear()) {
   let avos = 0;
-  for (let m = 0; m <= fim.getMonth(); m++) {
-    const ini = new Date(fim.getFullYear(), m, 1);
-    const fimMes = new Date(fim.getFullYear(), m + 1, 0);
-    const a = admissao > ini ? admissao : ini;
-    const b = fim < fimMes ? fim : fimMes;
-    if (b < a) continue;
-    if (diasEntre(a, b) + 1 >= 15) avos += 1;
+  for (let ano = desdeAno; ano <= fim.getFullYear(); ano++) {
+    const ultimoMes = ano === fim.getFullYear() ? fim.getMonth() : 11;
+    for (let m = 0; m <= ultimoMes; m++) {
+      const ini = new Date(ano, m, 1);
+      const fimMes = new Date(ano, m + 1, 0);
+      const a = admissao > ini ? admissao : ini;
+      const b = fim < fimMes ? fim : fimMes;
+      if (b < a) continue;
+      if (diasEntre(a, b) + 1 >= 15) avos += 1;
+    }
   }
   return avos;
 }
@@ -91,7 +98,7 @@ export function calcularRescisao(e: EntradaRescisao): ResultadoRescisao {
   const avisoBase = (rem / 30) * diasAviso;
   const avisoPrevio = r2(tipo === "acordo_mutuo" ? avisoBase / 2 : avisoBase);
 
-  const n13 = justa ? 0 : avos13(admissao, dataProjetada);
+  const n13 = justa ? 0 : avos13(admissao, dataProjetada, demissao.getFullYear());
   const decimo = r2((rem / 12) * n13);
 
   const periodos = anosCompletos(admissao, dataProjetada);
