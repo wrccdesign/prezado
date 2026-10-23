@@ -346,7 +346,7 @@ export default function Diagnostico({ embedded = false }: { embedded?: boolean }
     <div className={embedded ? "" : "flex min-h-screen flex-col bg-background"}>
       {!embedded && <AppHeader />}
       {!embedded && (
-        <SEO title="Diagnóstico Jurídico com IA — Honorífico" description="Descreva sua situação em linguagem simples e receba diagnóstico jurídico estruturado: direitos, riscos e próximos passos." path="/diagnostico" />
+        <SEO title="Diagnóstico jurídico com IA | Honorífico" description="Descreva sua situação em linguagem simples e receba diagnóstico jurídico estruturado: direitos, riscos e próximos passos." path="/diagnostico" />
       )}
       {!embedded && <LegalDisclaimer />}
 
@@ -366,7 +366,7 @@ export default function Diagnostico({ embedded = false }: { embedded?: boolean }
                   <p className="text-base sm:text-lg text-muted-foreground max-w-lg mx-auto leading-relaxed">
                     Descreva sua situação em linguagem simples.
                     <br />
-                    <span className="text-base">Não precisa saber termos jurídicos — eu entendo você.</span>
+                    <span className="text-base">Não precisa saber termos jurídicos. Descreva com as suas palavras.</span>
                   </p>
                 </>
               )}
