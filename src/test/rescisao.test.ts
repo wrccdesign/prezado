@@ -39,4 +39,9 @@ describe("rescisão trabalhista", () => {
     expect(val(r, "Férias vencidas")).toBe(6000);
     expect(calcularRescisao(base).verbas.some((v) => v.label === "Férias vencidas")).toBe(false);
   });
+  it("demissão em 10/12 com aviso projetado para janeiro mantém 12/12 do ano", () => {
+    const r = calcularRescisao({ ...base, admissao: new Date(2024, 11, 1), demissao: new Date(2025, 11, 10) });
+    expect(r.dataProjetada.getFullYear()).toBe(2026);
+    expect(val(r, "13º salário proporcional")).toBe(3000);
+  });
 });
