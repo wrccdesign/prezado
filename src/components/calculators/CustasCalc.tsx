@@ -143,6 +143,7 @@ export function CustasCalc() {
   const [salvando, setSalvando] = useState(false);
   const [result, setResult] = useState<Resultado | null>(null);
   const [memoriaAberta, setMemoriaAberta] = useState(false);
+  const [baseNegativa, setBaseNegativa] = useState(false);
   const [correcaoAberta, setCorrecaoAberta] = useState(false);
 
   const atoInfo = ATOS.find(a => a.id === ato) ?? null;
@@ -151,6 +152,10 @@ export function CustasCalc() {
 
   const calcular = async () => {
     if (!ato) return;
+    if (baseNegativa) {
+      toast({ title: "Valor negativo não é aceito", description: "Apague o campo e informe um valor positivo.", variant: "destructive" });
+      return;
+    }
     if (atoInfo?.baseLabel && valorBaseNum <= 0) {
       toast({ title: "Informe o valor base", variant: "destructive" });
       return;
@@ -366,6 +371,7 @@ export function CustasCalc() {
                 placeholder="10.000,00"
                 value={valorBase}
                 onChange={setValorBase}
+                onNegativeChange={setBaseNegativa}
               />
             </div>
           )}
