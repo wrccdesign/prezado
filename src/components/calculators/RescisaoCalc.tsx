@@ -96,9 +96,9 @@ export function RescisaoCalc() {
       <div className="grid gap-4 sm:grid-cols-2">
         <div className="space-y-2"><Label htmlFor="rescisao-salario">Salário Bruto Mensal (R$)</Label><Input id="rescisao-salario" className="h-11" type="number" inputMode="decimal" placeholder="5000" value={salario} onChange={e => setSalario(e.target.value)} /></div>
         <div className="space-y-2">
-          <Label>Tipo de Demissão</Label>
+          <Label htmlFor="rescisao-tipo">Tipo de demissão</Label>
           <Select value={tipo} onValueChange={(v) => setTipo(v as TipoDemissao)}>
-            <SelectTrigger><SelectValue /></SelectTrigger>
+            <SelectTrigger id="rescisao-tipo"><SelectValue /></SelectTrigger>
             <SelectContent>{Object.entries(tipoLabels).map(([k, v]) => (<SelectItem key={k} value={k}>{v}</SelectItem>))}</SelectContent>
           </Select>
         </div>
