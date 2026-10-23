@@ -103,12 +103,12 @@ export function RescisaoCalc() {
           </Select>
         </div>
         <div className="space-y-2">
-          <Label>Data de Admissão</Label>
-          <Popover><PopoverTrigger asChild><Button variant="outline" className={cn("w-full justify-start text-left font-normal", !admissao && "text-navy/60")}><CalendarIcon className="mr-2 h-4 w-4" />{admissao ? format(admissao, "dd/MM/yyyy") : "Selecione a data"}</Button></PopoverTrigger><PopoverContent className="w-auto p-0" align="start"><Calendar mode="single" selected={admissao} onSelect={setAdmissao} initialFocus className="p-3 pointer-events-auto" locale={ptBR} /></PopoverContent></Popover>
+          <Label htmlFor="rescisao-admissao">Data de admissão</Label>
+          <Input id="rescisao-admissao" className="h-11" type="date" min="1970-01-01" max={format(new Date(), "yyyy-MM-dd")} value={admissao ? format(admissao, "yyyy-MM-dd") : ""} onChange={e => setAdmissao(e.target.value ? new Date(`${e.target.value}T12:00:00`) : undefined)} />
         </div>
         <div className="space-y-2">
-          <Label>Data de Demissão</Label>
-          <Popover><PopoverTrigger asChild><Button variant="outline" className={cn("w-full justify-start text-left font-normal", !demissao && "text-navy/60")}><CalendarIcon className="mr-2 h-4 w-4" />{demissao ? format(demissao, "dd/MM/yyyy") : "Selecione a data"}</Button></PopoverTrigger><PopoverContent className="w-auto p-0" align="start"><Calendar mode="single" selected={demissao} onSelect={setDemissao} initialFocus className="p-3 pointer-events-auto" locale={ptBR} /></PopoverContent></Popover>
+          <Label htmlFor="rescisao-demissao">Data de saída</Label>
+          <Input id="rescisao-demissao" className="h-11" type="date" min="1970-01-01" value={demissao ? format(demissao, "yyyy-MM-dd") : ""} onChange={e => setDemissao(e.target.value ? new Date(`${e.target.value}T12:00:00`) : undefined)} />
         </div>
         <div className="space-y-2"><Label htmlFor="rescisao-horas-extras">Média de Horas Extras Mensais (R$)</Label><Input id="rescisao-horas-extras" className="h-11" type="number" inputMode="decimal" placeholder="0" value={horasExtras} onChange={e => setHorasExtras(e.target.value)} /></div>
         <div className="space-y-4">
