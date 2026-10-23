@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { Fragment, useEffect, useRef, useState } from "react";
 import { useNavigate, useSearchParams, Link } from "react-router-dom";
 import { AppHeader } from "@/components/AppHeader";
 import { SEO } from "@/components/SEO";
@@ -13,6 +13,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { notifyUsageConsumed } from "@/hooks/useUsage";
 import { formatDateBR } from "@/lib/date";
+import { buscarDecisoesCuradas, formatCnj, instanciaLabel, linkFonteConfiavel, relatorExibivel, sumulaRelevante } from "@/lib/jurisprudencia";
 
 interface Decision {
   id: string;
@@ -137,6 +138,9 @@ export default function Jurisprudencia() {
   const [instancia, setInstancia] = useState<string>("");
   const [comarcaPequena, setComarcaPequena] = useState(false);
 
+  const decisoes = results.filter((d) => !!d.ementa);
+  const andamentos = results.filter((d) => !d.ementa);
+
   const handleSearch = async (searchQuery?: string) => {
     const q = searchQuery || query;
     if (!q.trim()) return;
@@ -199,8 +203,19 @@ if (!res.ok) {
       const response = await res.json() as SearchResponse;
       notifyUsageConsumed();
       setGuestPreview(!!response.guest_preview);
-      setResults(response.results || []);
-      setSumulas(response.sumulas || []);
+      let found = response.results || [];
+      if (found.length === 0) {
+        // Sem retorno da busca principal: consulta as decisões curadas das páginas de tema.
+        found = buscarDecisoesCuradas(q).map((c) => ({
+          id: c.id, tribunal: c.tribunal, instancia: null, uf: null, comarca: null,
+          numero_processo: c.numero, data_decisao: c.data, relator: c.relator, orgao_julgador: null,
+          tipo_decisao: c.tipo, resultado: null, resultado_descricao: null, temas_juridicos: [],
+          ramos_direito: [], ementa: c.ementa, resumo_ia: null, comarca_pequena: false, upvotes: 0,
+          view_count: 0, score_utilidade: 0, source_url: c.fonte, created_at: c.data, rank: 0,
+        }));
+      }
+      setResults(found);
+      setSumulas((response.sumulas || []).filter((s) => sumulaRelevante(q, s.enunciado, s.area)));
       setAiExpansion(response.ai_expansion);
 
 
@@ -386,12 +401,16 @@ if (!res.ok) {
             <>
               <h2 className="sr-only">Resultados da busca</h2>
               <p className="text-note text-navy/70 mb-6">
-                {results.length === 0 ? "Nenhuma decisão encontrada." : `${results.length} decisão(ões) encontrada(s)`}
+                {decisoes.length === 0 && andamentos.length === 0
+                  ? "Nenhuma decisão encontrada."
+                  : decisoes.length === 0
+                    ? "Nenhuma decisão com ementa encontrada."
+                    : `${decisoes.length} ${decisoes.length === 1 ? "decisão encontrada" : "decisões encontradas"}`}
               </p>
             </>
           )}
 
-          {guestPreview && !loading && (
+          {guestPreview && !loading && results.length > 0 && (
             <div className="mb-8 border border-cream-dark bg-white rounded-lg p-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
               <div>
                 <p className="text-sm font-medium text-navy">Você está vendo uma prévia limitada</p>
@@ -440,12 +459,21 @@ if (!res.ok) {
           )}
 
           <div>
-            {results.map((d) => (
-              <article key={d.id} className="border-t border-cream-dark pt-5 pb-6">
+            {[...decisoes, ...andamentos].map((d, i) => (
+              <Fragment key={d.id}>
+              {i === decisoes.length && andamentos.length > 0 && (
+                <div className="mt-10 mb-2">
+                  <h2 className="text-h3 text-navy">Andamentos processuais</h2>
+                  <p className="text-note text-navy/60 mt-1">
+                    {andamentos.length} {andamentos.length === 1 ? "processo" : "processos"} sem ementa, só com dados de tramitação do CNJ. Não contam como decisão.
+                  </p>
+                </div>
+              )}
+              <article className="border-t border-cream-dark pt-5 pb-6">
                 <p className="text-sm font-medium text-navy">
                   {[
                     d.tribunal,
-                    d.instancia ? (d.instancia === "1grau" ? "1º Grau" : d.instancia === "2grau" ? "2º Grau" : "Superior") : null,
+                    instanciaLabel(d.instancia, d.tribunal),
                     d.data_decisao ? formatDateBR(d.data_decisao) : null,
                   ].filter(Boolean).join(", ")}
                   {!d.ementa ? " (andamento processual)" : ""}
@@ -474,13 +502,13 @@ if (!res.ok) {
 
                 {d.numero_processo && !d.numero_processo.includes('<UNKNOWN>') && (
                   <p className="font-mono text-note text-navy/70 mt-2">
-                    {d.numero_processo}
+                    {formatCnj(d.numero_processo)}
                   </p>
                 )}
 
                 <p className="text-note text-navy/60 mt-1">
                   {[
-                    d.relator ? `Rel. ${d.relator}` : null,
+                    relatorExibivel(d.relator) ? `Rel. ${relatorExibivel(d.relator)}` : null,
                     d.orgao_julgador,
                     d.comarca && d.uf ? `${d.comarca}/${d.uf}` : null,
                     d.resultado,
@@ -530,9 +558,9 @@ if (!res.ok) {
                     </button>
                   )}
 
-                  {d.source_url && (
+                  {linkFonteConfiavel(d.source_url, d.tribunal, d.numero_processo) ? (
                     <a
-                      href={d.source_url}
+                      href={linkFonteConfiavel(d.source_url, d.tribunal, d.numero_processo)!}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="text-navy underline underline-offset-4 hover:text-gold"
@@ -540,9 +568,12 @@ if (!res.ok) {
                     >
                       Ver no tribunal
                     </a>
-                  )}
+                  ) : d.numero_processo && !d.numero_processo.includes('<UNKNOWN>') ? (
+                    <span className="text-navy/60">Consulte pelo nº CNJ no portal do tribunal</span>
+                  ) : null}
                 </div>
               </article>
+              </Fragment>
             ))}
           </div>
 
