@@ -26,10 +26,12 @@ const heroDecision = {
     "https://portal.tjpr.jus.br/jurisprudencia/j/2100000036785951/Ac%C3%B3rd%C3%A3o-0035130-32.2024.8.16.0182",
 };
 
+// Linhas reais geradas pela calculadora: R$ 10.000,00 de 15/01/2024 a 30/09/2026, IPCA (SGS 433)
+// e juros pela Taxa Legal (SGS 29543) a partir da Lei 14.905/2024.
 const memoriaSample = [
-  { mes: "08/2024", indice: "IPCA", variacao: "-0,02%", fator: "1,012340", saldo: "R$ 10.123,40" },
-  { mes: "09/2024", indice: "Taxa Legal", variacao: "0,10%", fator: "1,013452", saldo: "R$ 10.134,52" },
-  { mes: "10/2024", indice: "Taxa Legal", variacao: "0,25%", fator: "1,015986", saldo: "R$ 10.159,86" },
+  { mes: "08/2024", indice: "IPCA", variacao: "-0,02%", fator: "1,028528", saldo: "R$ 10.285,28", juros: "R$ 100,23" },
+  { mes: "09/2024", indice: "IPCA", variacao: "0,44%", fator: "1,033053", saldo: "R$ 10.330,53", juros: "R$ 69,86" },
+  { mes: "10/2024", indice: "IPCA", variacao: "0,56%", fator: "1,038838", saldo: "R$ 10.388,38", juros: "R$ 73,16" },
 ];
 
 const etapas = [
@@ -234,7 +236,7 @@ export default function LandingPage() {
               <table className="w-full text-left text-base">
                 <thead>
                   <tr className="font-medium text-navy/70 bg-cream-dark/45 text-note">
-                    {["Mês", "Índice", "Variação", "Fator acum.", "Saldo corrigido"].map((h) => (
+                    {["Mês", "Índice", "Variação", "Fator acum.", "Saldo corrigido", "Juros do mês (Taxa Legal)"].map((h) => (
                       <th key={h} scope="col" className="whitespace-nowrap px-4 py-3 font-medium">{h}</th>
                     ))}
                   </tr>
@@ -247,6 +249,7 @@ export default function LandingPage() {
                       <td className="whitespace-nowrap px-4 py-3 tabular">{l.variacao}</td>
                       <td className="whitespace-nowrap px-4 py-3 tabular">{l.fator}</td>
                       <td className="whitespace-nowrap px-4 py-3 tabular">{l.saldo}</td>
+                      <td className="whitespace-nowrap px-4 py-3 tabular">{l.juros}</td>
                     </tr>
                   ))}
                 </tbody>
