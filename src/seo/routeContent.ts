@@ -1,6 +1,6 @@
 // Conteúdo textual de cada rota pública, injetado no HTML gerado no build
 // (plugin "static-route-meta" em vite.config.ts) para que robôs que não
-// executam JavaScript — incluindo os das IAs de busca — leiam o conteúdo.
+// executam JavaScript, incluindo os das IAs de busca, leiam o conteúdo.
 // Ao hidratar, o React substitui esse bloco pela aplicação real.
 // TypeScript puro: sem React e sem APIs de browser, roda também em Node.
 

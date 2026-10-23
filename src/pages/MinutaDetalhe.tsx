@@ -122,7 +122,7 @@ export default function MinutaDetalhe() {
     <div className="min-h-screen bg-background">
       <AppHeader />
       <SEO
-        title={`${minuta.title} — Modelo Editável | Honorífico`}
+        title={`${minuta.title}, Modelo Editável | Honorífico`}
         description={minuta.metaDescription}
         path={`/modelos-de-minutas/${minuta.slug}`}
         ogType="article"

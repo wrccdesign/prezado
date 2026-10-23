@@ -248,11 +248,11 @@ if (!res.ok) {
     <div className="min-h-screen flex flex-col bg-cream text-navy font-sans">
       <AppHeader />
       <SEO
-        title="Consulta processual e jurisprudência — Honorífico"
+        title="Consulta processual e jurisprudência | Honorífico"
         description="Consulte processos nos dados oficiais do CNJ, com link para a fonte no tribunal. Acervo de jurisprudência com ementa em expansão e resumo por IA."
         path="/jurisprudencia"
         image="/og/jurisprudencia.jpg"
-        imageAlt="Consulta processual com dados oficiais do CNJ — Honorífico"
+        imageAlt="Consulta processual com dados oficiais do CNJ | Honorífico"
 
         jsonLd={[
           {

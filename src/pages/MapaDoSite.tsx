@@ -149,7 +149,7 @@ export default function MapaDoSite() {
     <div className="min-h-screen bg-background flex flex-col">
       <AppHeader />
       <SEO
-        title="Mapa do Site — Honorífico"
+        title="Mapa do Site | Honorífico"
         description="Navegue por todas as páginas do Honorífico: as sete calculadoras jurídicas, jurisprudência, petições, modelos de minutas, planos e páginas legais."
         path="/mapa-do-site"
         jsonLd={{

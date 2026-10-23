@@ -436,7 +436,7 @@ export default function Diagnostico({ embedded = false }: { embedded?: boolean }
               )}
             </div>
 
-            {/* SEMPRE VISÍVEIS — 2 primeiros cards */}
+            {/* SEMPRE VISÍVEIS, 2 primeiros cards */}
             <Card>
               <CardHeader className="pb-3">
                 <CardTitle className="text-base flex items-center gap-2">
@@ -459,7 +459,7 @@ export default function Diagnostico({ embedded = false }: { embedded?: boolean }
               </CardContent>
             </Card>
 
-            {/* BLOQUEÁVEIS — 4 cards restantes */}
+            {/* BLOQUEÁVEIS, 4 cards restantes */}
             <PaywallBlur locked={locked}>
               <Card>
                 <CardHeader className="pb-3">
@@ -576,7 +576,7 @@ export default function Diagnostico({ embedded = false }: { embedded?: boolean }
               </div>
             )}
 
-            {/* Fontes consultadas — sempre visíveis, fora do paywall */}
+            {/* Fontes consultadas, sempre visíveis, fora do paywall */}
             <Card>
               <CardHeader className="pb-3">
                 <CardTitle className="text-base flex items-center gap-2">

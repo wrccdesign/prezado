@@ -141,7 +141,7 @@ export default function Auth() {
 
   return (
     <div className="flex min-h-screen items-center justify-center px-4 py-8 bg-navy">
-      <SEO title="Entrar ou Cadastrar — Honorífico" description="Acesse sua conta Honorífico ou crie um cadastro gratuito para usar as ferramentas de IA jurídica." path="/auth" />
+      <SEO title="Entrar ou Cadastrar | Honorífico" description="Acesse sua conta Honorífico ou crie um cadastro gratuito para usar as ferramentas de IA jurídica." path="/auth" />
       <div className="w-full max-w-md animate-fade-in">
         <div className="mb-8 text-center">
           <Logo className="h-12 mx-auto mb-4" />

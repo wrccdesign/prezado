@@ -31,7 +31,7 @@ const etapas = [
   {
     titulo: "A análise é montada em campos fixos",
     texto:
-      "O modelo responde em uma estrutura obrigatória — nada de texto solto — para que cada parte do diagnóstico venha sempre preenchida.",
+      "O modelo responde em uma estrutura obrigatória, nada de texto solto, para que cada parte do diagnóstico venha sempre preenchida.",
   },
   {
     titulo: "Você segue no fluxo",
@@ -62,7 +62,7 @@ export default function DiagnosticoLanding() {
     {
       "@context": "https://schema.org",
       "@type": "SoftwareApplication",
-      name: "Diagnóstico jurídico — Honorífico",
+      name: "Diagnóstico jurídico | Honorífico",
       applicationCategory: "BusinessApplication",
       operatingSystem: "Web",
       url: `${SITE_URL}/diagnostico`,
@@ -76,7 +76,7 @@ export default function DiagnosticoLanding() {
     <div className="flex min-h-screen flex-col bg-background">
       <AppHeader />
       <SEO
-        title="Diagnóstico jurídico do seu caso — Honorífico"
+        title="Diagnóstico jurídico do seu caso | Honorífico"
         description="Descreva o caso em linguagem comum e receba uma análise estruturada: direito envolvido, próximos passos, custos estimados, onde entrar e nível de urgência."
         path="/diagnostico"
         jsonLd={jsonLd}
@@ -170,8 +170,8 @@ export default function DiagnosticoLanding() {
               <p>
                 Antes de gerar qualquer texto, o sistema consulta o acervo de decisões do Honorífico: primeiro
                 por busca vetorial, que compara o sentido do relato com o das ementas indexadas, e depois por
-                busca textual quando a primeira retorna pouca coisa. As decisões encontradas — tribunal, número
-                do processo, comarca, data e trecho da ementa — entram no contexto da análise.
+                busca textual quando a primeira retorna pouca coisa. As decisões encontradas, tribunal, número
+                do processo, comarca, data e trecho da ementa, entram no contexto da análise.
               </p>
               <p>
                 A instrução dada ao modelo é restritiva: só pode citar jurisprudência que esteja nesse contexto.

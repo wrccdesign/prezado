@@ -98,11 +98,11 @@ export default function LandingPage() {
   return (
     <div className="min-h-screen font-sans">
       <SEO
-        title="Honorífico — do caso à petição, com fonte rastreável"
+        title="Honorífico: do caso à petição, com fonte rastreável"
         description="Plataforma jurídica para o advogado autônomo: diagnóstico, consulta processual no acervo do CNJ, análise de peças e petições. Cálculos pelas séries do Banco Central, com memória de cálculo em PDF ou Word."
         path="/"
         image="/og/home.jpg"
-        imageAlt="Honorífico — cálculos e prazos jurídicos com fonte oficial"
+        imageAlt="Honorífico: cálculos e prazos jurídicos com fonte oficial"
         jsonLd={{
           "@context": "https://schema.org",
           "@type": "SoftwareApplication",

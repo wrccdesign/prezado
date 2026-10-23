@@ -158,7 +158,7 @@ export default function Petition() {
     return (
       <div className="min-h-screen bg-background">
         <AppHeader />
-      <SEO title="Geração de Petições com IA — Honorífico" description="Gere petições jurídicas fundamentadas em segundos. Download em PDF e DOCX, prontas para protocolo." path="/peticao" />
+      <SEO title="Geração de Petições com IA | Honorífico" description="Gere petições jurídicas fundamentadas em segundos. Download em PDF e DOCX, prontas para protocolo." path="/peticao" />
         <LegalDisclaimer />
         <main className="container max-w-4xl py-8">
           <PetitionResult text={generatedText} petitionType={tipoAcao} onNewPetition={handleNewPetition} citationReport={citationReport} review={review} />

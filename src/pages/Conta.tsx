@@ -145,7 +145,7 @@ export default function Conta() {
     <div className="flex min-h-screen flex-col bg-background">
       <AppHeader />
       <SEO
-        title="Minha conta — Honorífico"
+        title="Minha conta | Honorífico"
         description="Gerencie sua assinatura Honorífico: plano atual, próxima cobrança, faturas, upgrade e cancelamento."
         path="/conta"
       />
@@ -178,7 +178,7 @@ export default function Conta() {
               <div className="rounded-lg border border-gold/40 bg-gold/10 p-4 text-reading">
                 <p className="font-heading text-base font-semibold text-foreground">
                   Teste grátis do Profissional
-                  {trialEndLabel ? ` — termina em ${trialEndLabel}` : ""}
+                  {trialEndLabel ? `, termina em ${trialEndLabel}` : ""}
                 </p>
                 <p className="mt-1 text-muted-foreground">
                   Nada será cobrado: não há cartão cadastrado e, quando o teste terminar, a conta

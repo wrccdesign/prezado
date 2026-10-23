@@ -39,7 +39,7 @@ export default function MeuCaso() {
     <div className="flex min-h-screen flex-col bg-background">
       <AppHeader />
       <SEO
-        title="Meu caso — Honorífico"
+        title="Meu caso | Honorífico"
         description="Envie um documento ou descreva sua situação e receba uma leitura jurídica com direitos, riscos e próximos passos."
         path={location.pathname.startsWith("/diagnostico") ? "/diagnostico" : "/analise"}
       />

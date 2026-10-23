@@ -4,14 +4,14 @@ export default function Privacidade() {
   return (
     <LegalPageLayout
       title="Aviso de Privacidade"
-      description="Aviso de Privacidade do Honorífico — como tratamos seus dados pessoais em conformidade com a LGPD."
+      description="Aviso de Privacidade do Honorífico: como tratamos seus dados pessoais em conformidade com a LGPD."
       path="/privacidade"
       updatedAt="10 de julho de 2026"
     >
       <p>
         Este Aviso descreve como o <strong>Honorífico</strong> ("nós"), entidade sediada na Irlanda, coleta,
         usa, compartilha e protege seus dados pessoais no uso da plataforma ("Serviço"), em conformidade com
-        a Lei Geral de Proteção de Dados Pessoais (Lei nº 13.709/2018 — LGPD) e com o Regulamento Geral de
+        a Lei Geral de Proteção de Dados Pessoais (Lei nº 13.709/2018, LGPD) e com o Regulamento Geral de
         Proteção de Dados da União Europeia (GDPR).
       </p>
 
@@ -48,7 +48,7 @@ export default function Privacidade() {
           <tr><td>Aplicar limites de uso, prevenir fraude e abuso, garantir segurança</td><td>Legítimo interesse (art. 7º, IX)</td></tr>
           <tr><td>Melhorar o Serviço, corrigir falhas, entender padrões de uso</td><td>Legítimo interesse (art. 7º, IX)</td></tr>
           <tr><td>Comunicações operacionais (fatura, alteração de plano, suporte)</td><td>Execução de contrato (art. 7º, V)</td></tr>
-          <tr><td>Comunicações de marketing (opcional)</td><td>Consentimento (art. 7º, I) — revogável a qualquer momento</td></tr>
+          <tr><td>Comunicações de marketing (opcional)</td><td>Consentimento (art. 7º, I), revogável a qualquer momento</td></tr>
           <tr><td>Cumprir ordens judiciais e obrigações legais</td><td>Obrigação legal (art. 7º, II)</td></tr>
         </tbody>
       </table>
@@ -66,10 +66,10 @@ export default function Privacidade() {
       <p>Compartilhamos dados estritamente necessários com os seguintes tipos de operadores:</p>
       <ul>
         <li><strong>Provedor de infraestrutura em nuvem</strong> (hospedagem, banco de dados, autenticação, armazenamento de arquivos).</li>
-        <li><strong>Provedor de modelos de IA</strong> — processamento dos prompts enviados por você para gerar respostas.</li>
-        <li><strong>Provedor de embeddings jurídicos</strong> — geração de representações vetoriais para busca semântica.</li>
-        <li><strong>Asaas</strong> — processamento de pagamentos, prevenção a fraudes e emissão de recibos. Consulte a <a href="https://www.asaas.com" target="_blank" rel="noopener noreferrer">Política de Privacidade do Asaas</a>.</li>
-        <li><strong>Autoridades públicas</strong> — quando exigido por lei, ordem judicial ou proteção de direitos.</li>
+        <li><strong>Provedor de modelos de IA</strong>, processamento dos prompts enviados por você para gerar respostas.</li>
+        <li><strong>Provedor de embeddings jurídicos</strong>, geração de representações vetoriais para busca semântica.</li>
+        <li><strong>Asaas</strong>, processamento de pagamentos, prevenção a fraudes e emissão de recibos. Consulte a <a href="https://www.asaas.com" target="_blank" rel="noopener noreferrer">Política de Privacidade do Asaas</a>.</li>
+        <li><strong>Autoridades públicas</strong>, quando exigido por lei, ordem judicial ou proteção de direitos.</li>
       </ul>
 
       <h2>6. Transferência internacional</h2>
