@@ -151,9 +151,9 @@ export function PensaoCalc() {
           {erros.filhos && <p className="text-note text-destructive">{erros.filhos}</p>}
         </div>
         <div className="space-y-2">
-          <Label>Os filhos moram com o alimentante?</Label>
+          <Label htmlFor="pensao-moradia">Os filhos moram com o alimentante?</Label>
           <Select value={moradia} onValueChange={(v) => setMoradia(v as Moradia)}>
-            <SelectTrigger><SelectValue /></SelectTrigger>
+            <SelectTrigger id="pensao-moradia"><SelectValue /></SelectTrigger>
             <SelectContent>
               <SelectItem value="nao">Não</SelectItem>
               <SelectItem value="sim">Sim</SelectItem>
@@ -162,9 +162,9 @@ export function PensaoCalc() {
           </Select>
         </div>
         <div className="space-y-2">
-          <Label>Padrão de vida da família</Label>
+          <Label htmlFor="pensao-padrao">Padrão de vida da família</Label>
           <Select value={padrao} onValueChange={(v) => setPadrao(v as Padrao)}>
-            <SelectTrigger><SelectValue /></SelectTrigger>
+            <SelectTrigger id="pensao-padrao"><SelectValue /></SelectTrigger>
             <SelectContent>
               <SelectItem value="baixa">Baixa renda</SelectItem>
               <SelectItem value="medio">Médio</SelectItem>

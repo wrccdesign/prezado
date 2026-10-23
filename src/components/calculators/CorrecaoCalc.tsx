@@ -49,9 +49,12 @@ interface Resultado {
 
 import { UsarNaPeticaoButton } from "@/components/calculators/shared/UsarNaPeticaoButton";
 
+const pctBR = (v: number) => `${v.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}%`;
+const fatorBR = (v: number) => v.toLocaleString("pt-BR", { minimumFractionDigits: 6, maximumFractionDigits: 6 });
+
 const REGIME_LABEL: Record<LinhaMemoria["regime"], string> = {
   pre_14905: "regime anterior",
-  transicao_14905: "transição (Lei 14.905/2024 em 30–31/08/2024)",
+  transicao_14905: "transição (Lei 14.905/2024 em 30 e 31/08/2024)",
   pos_14905: "Lei 14.905/2024",
 };
 
@@ -245,7 +248,7 @@ export function CorrecaoCalc({ onUsarValor, usarValorLabel = "Usar este valor", 
       body: r.memoria
         .map(
           l =>
-            `${mesLabel(l.mes_ref)} | ${l.indice_utilizado.toUpperCase()} ${l.variacao_percentual.toFixed(2)}% | fator acum. ${l.fator_acumulado.toFixed(6)} | saldo ${fmt(l.saldo_corrigido)} | juros do mês ${fmt(l.juros_do_mes)} | juros acum. ${fmt(l.juros_acumulados)} | ${REGIME_LABEL[l.regime]}`,
+            `${mesLabel(l.mes_ref)} | ${l.indice_utilizado.toUpperCase()} ${pctBR(l.variacao_percentual)} | fator acum. ${fatorBR(l.fator_acumulado)} | saldo ${fmt(l.saldo_corrigido)} | juros do mês ${fmt(l.juros_do_mes)} | juros acum. ${fmt(l.juros_acumulados)} | ${REGIME_LABEL[l.regime]}`,
         )
         .join("\n"),
     },
@@ -494,9 +497,9 @@ export function CorrecaoCalc({ onUsarValor, usarValorLabel = "Usar este valor", 
                     {result.memoria.map(l => (
                       <TableRow key={l.mes_ref}>
                         <TableCell className="font-medium">{mesLabel(l.mes_ref)}</TableCell>
-                        <TableCell className="text-note">{l.indice_utilizado}</TableCell>
-                        <TableCell className="text-right">{l.variacao_percentual.toFixed(2)}%</TableCell>
-                        <TableCell className="text-right">{l.fator_acumulado.toFixed(6)}</TableCell>
+                        <TableCell className="text-note">{l.indice_utilizado.toUpperCase()}</TableCell>
+                        <TableCell className="text-right">{pctBR(l.variacao_percentual)}</TableCell>
+                        <TableCell className="text-right">{fatorBR(l.fator_acumulado)}</TableCell>
                         <TableCell className="text-right">{fmt(l.saldo_corrigido)}</TableCell>
                         <TableCell className="text-right">{fmt(l.juros_do_mes)}</TableCell>
                         <TableCell className="text-right">{fmt(l.juros_acumulados)}</TableCell>
