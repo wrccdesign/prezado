@@ -20,7 +20,7 @@ import { PaymentTestModeBanner } from "@/components/PaymentTestModeBanner";
 import { Button } from "@/components/ui/button";
 import { useFontScale, type FontScale } from "@/hooks/useFontScale";
 
-import { useNavigate, useLocation } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 
 interface NavItem {
   path: string;
@@ -58,17 +58,21 @@ const accountNav: NavItem[] = [
 
 function NavButton({ item, active, onClick, locked }: { item: NavItem; active: boolean; onClick: () => void; compact?: boolean; locked?: boolean }) {
   return (
-    <button
-      onClick={onClick}
-      aria-label={item.label}
+    <Link
+      to={locked ? "/auth" : item.path}
+      onClick={(e) => {
+        if (e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return;
+        e.preventDefault();
+        onClick();
+      }}
       aria-current={active ? "page" : undefined}
       className={`relative inline-flex items-center gap-1.5 px-3 h-16 text-[0.9375rem] font-medium transition-colors duration-150 after:absolute after:inset-x-3 after:bottom-0 after:h-px after:transition-colors ${
         active ? "text-cream after:bg-gold" : "text-cream/72 hover:text-cream after:bg-transparent"
       }`}
     >
       {item.label}
-      {locked && <Lock className="h-3 w-3 opacity-50" />}
-    </button>
+      {locked && <Lock className="h-3 w-3 opacity-50" aria-hidden="true" />}
+    </Link>
   );
 }
 
@@ -299,9 +303,9 @@ export function AppHeader() {
     <header className="sticky top-0 z-50 bg-navy border-b border-cream/10">
 
       <div className="container max-w-[1120px] flex h-14 sm:h-16 items-center justify-between px-4 sm:px-6">
-        <button onClick={() => navigate("/")} className="flex items-center flex-shrink-0">
+        <Link to="/" aria-label="Página inicial do Honorífico" className="flex items-center flex-shrink-0">
           <Logo className="h-8 sm:h-9" />
-        </button>
+        </Link>
 
         {/* Desktop (lg+) */}
         <nav className="hidden lg:flex items-center gap-1">
