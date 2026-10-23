@@ -76,6 +76,7 @@ function gerarICS(dataVencimento: string, dataPublicacao: string, tipoPrazo: str
 
 export function PrazoCalc() {
   const [dataReferencia, setDataReferencia] = useState("");
+  const [erroForm, setErroForm] = useState<string | null>(null);
   const [processoEletronico, setProcessoEletronico] = useState(true);
   const [tipoPrazo, setTipoPrazo] = useState("contestacao");
   const [diasPersonalizado, setDiasPersonalizado] = useState("");
@@ -165,9 +166,10 @@ export function PrazoCalc() {
 
   const calcular = async () => {
     if (!dataReferencia || !diasPrazo) {
-      toast({ title: "Informe a data e o prazo em dias", variant: "destructive" });
+      setErroForm(!dataReferencia ? "Informe a data de referência." : "Informe o prazo em dias.");
       return;
     }
+    setErroForm(null);
     setLoading(true);
     setResult(null);
     try {
@@ -344,6 +346,7 @@ export function PrazoCalc() {
 
       </div>
 
+      {erroForm && <p role="alert" className="text-note text-destructive">{erroForm}</p>}
       <Button onClick={calcular} className="h-11 w-full sm:w-auto" disabled={loading}>
         {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
         Calcular Prazo

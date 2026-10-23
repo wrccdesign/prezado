@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { formatCents, onlyDigits } from "@/lib/currency";
 
@@ -23,15 +24,24 @@ export function CurrencyInput({
   className,
   ...rest
 }: CurrencyInputProps) {
+  const [negativo, setNegativo] = useState(false);
   return (
+    <>
     <Input
       id={id}
+      aria-invalid={negativo || undefined}
       inputMode="decimal"
       className={`h-11 ${className ?? ""}`}
       placeholder={placeholder}
       value={formatCents(value)}
-      onChange={e => onChange(onlyDigits(e.target.value))}
+      onChange={e => {
+        if (e.target.value.includes("-")) { setNegativo(true); return; }
+        setNegativo(false);
+        onChange(onlyDigits(e.target.value));
+      }}
       {...rest}
     />
+    {negativo && <p role="alert" className="text-note text-destructive">Valor negativo não é aceito. Informe um valor positivo.</p>}
+    </>
   );
 }
