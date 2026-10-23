@@ -97,10 +97,10 @@ export const CORRECAO_INDICES: CorrecaoIndice[] = [
     slug: "inpc",
     title: "Correção monetária pelo INPC",
     description:
-      "O INPC mede a inflação das famílias de renda mais baixa e é o índice usual para débitos trabalhistas e previdenciários, incluindo o reajuste dos benefícios do INSS. O cálculo usa a série 188 do Banco Central, mês a mês.",
+      "O INPC mede a inflação das famílias de renda mais baixa e é usado no reajuste dos benefícios do INSS e em atrasados previdenciários. Na Justiça do Trabalho, desde a ADC 58 do STF, o critério é IPCA-E e Selic, e após a Lei 14.905/2024 IPCA e taxa legal. O cálculo usa a série 188 do Banco Central, mês a mês.",
     seoTitle: "Calculadora de correção monetária pelo INPC",
     seoDescription:
-      "Atualize débitos trabalhistas e previdenciários pelo INPC com a série oficial do Banco Central, mês a mês, com memória de cálculo. Grátis, sem login.",
+      "Atualize débitos previdenciários e outros valores pelo INPC com a série oficial do Banco Central, mês a mês, com memória de cálculo. Grátis, sem login.",
     keywords: [
       "correção monetária INPC",
       "atualizar valor pelo INPC",
@@ -110,7 +110,7 @@ export const CORRECAO_INDICES: CorrecaoIndice[] = [
     ],
     features: [
       "Série oficial do INPC (SGS 188), sincronizada diariamente",
-      "Uso típico em verbas trabalhistas e benefícios previdenciários",
+      "Uso típico em benefícios previdenciários",
       "Fator acumulado mês a mês, com pró-rata nas pontas",
       "Juros somados conforme o regime aplicável ao período",
       "Memória de cálculo exportável em PDF e Word",
@@ -118,7 +118,7 @@ export const CORRECAO_INDICES: CorrecaoIndice[] = [
     paragraphs: [
       {
         heading: "Quando o INPC é o índice certo",
-        body: "O INPC é adotado no reajuste dos benefícios previdenciários que não são o salário mínimo e aparece com frequência em atrasados do INSS e em cálculos de liquidação na Justiça do Trabalho, conforme o critério fixado na decisão. Ele acompanha o consumo de famílias com renda de até cinco salários mínimos.",
+        body: "O INPC é adotado no reajuste dos benefícios previdenciários que não são o salário mínimo e aparece com frequência em atrasados do INSS. Na Justiça do Trabalho ele não é o critério geral desde a ADC 58 do STF; use o índice fixado na decisão. Ele acompanha o consumo de famílias com renda de até cinco salários mínimos.",
       },
       {
         heading: "Como o cálculo é feito",

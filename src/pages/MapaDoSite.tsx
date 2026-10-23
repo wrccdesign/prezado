@@ -20,7 +20,7 @@ const calculadoras = [
   {
     to: "/calculadoras/correcao-monetaria-juros-lei-14905/inpc",
     label: "Correção pelo INPC",
-    hint: "Débitos trabalhistas e previdenciários, com a série oficial do Banco Central.",
+    hint: "Benefícios e atrasados previdenciários, com a série oficial do Banco Central.",
   },
   {
     to: "/calculadoras/correcao-monetaria-juros-lei-14905/igpm",

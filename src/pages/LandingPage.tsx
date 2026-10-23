@@ -125,7 +125,7 @@ export default function LandingPage() {
                 Do fato ao fundamento,<br className="hidden md:block" /> com a fonte oficial<br className="hidden md:block" /> e o cálculo em anexo.
               </h1>
               <p className="text-body-serif text-navy/75 max-w-[52ch] mt-7">
-                Precedente real do acervo do CNJ, com link para o tribunal. Quando a decisão não existe, a resposta diz que não encontrou.
+                Precedente real do acervo do CNJ, com o número CNJ e link para o tribunal quando disponível. Quando a decisão não existe, a resposta diz que não encontrou.
               </p>
               <form
                 onSubmit={(e) => {
@@ -339,7 +339,7 @@ export default function LandingPage() {
                 className={`relative p-7 md:p-8 ${p.highlight ? "bg-cream text-navy" : "bg-navy-medium text-cream"}`}
               >
                 {p.highlight && (
-                  <span className="absolute top-4 right-4 bg-gold text-navy text-xs font-medium rounded-md px-2 py-0.5">Mais popular</span>
+                  <span className="absolute top-4 right-4 bg-gold text-navy text-xs font-medium rounded-md px-2 py-0.5">Mais escolhido</span>
                 )}
                 <h3 className="text-h3">{p.name}</h3>
                 <p className={`text-reading mt-1 mb-4 ${p.highlight ? "text-navy/70" : "text-cream/50"}`}>{p.desc}</p>

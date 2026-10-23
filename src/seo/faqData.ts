@@ -51,7 +51,7 @@ export const FAQ_PLANOS: FaqItem[] = [
   {
     question: "Quanto custa o plano Profissional?",
     answer:
-      "R$ 49 por mês, cobrados em reais. Há também a opção anual por R$ 409 à vista no cartão, equivalente a R$ 34,08 por mês. Como o processamento é internacional, o seu banco pode aplicar IOF sobre a compra.",
+      "R$ 49 por mês, cobrados em reais. Há também a opção anual por R$ 409 à vista no cartão, equivalente a R$ 34,08 por mês. A cobrança é processada no Brasil pelo Asaas.",
   },
   {
     question: "O plano anual renova sozinho?",

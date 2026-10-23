@@ -4,7 +4,7 @@ export default function Reembolso() {
   return (
     <LegalPageLayout
       title="Política de Reembolso"
-      description="Política de reembolso da plataforma Honorífico — garantia de 30 dias."
+      description="Política de reembolso da plataforma Honorífico, com garantia de 30 dias."
       path="/reembolso"
       updatedAt="10 de julho de 2026"
     >
@@ -43,7 +43,7 @@ export default function Reembolso() {
         </li>
         <li>
           Envie um e-mail para <a href="mailto:contato@honorifico.com.br">contato@honorifico.com.br</a> com o comprovante
-          da compra que retornaremos em até 2 dias úteis.
+          da compra. Respondemos em até 2 dias úteis.
         </li>
       </ol>
       <p>
@@ -61,7 +61,7 @@ export default function Reembolso() {
 
       <h2>Após o prazo de 30 dias</h2>
       <p>
-        Assinaturas mensais podem ser canceladas a qualquer momento a partir do portal do assinante — o
+        Assinaturas mensais podem ser canceladas a qualquer momento a partir do portal do assinante. O
         cancelamento evita cobranças futuras, e você mantém o acesso aos recursos pagos até o final do
         período já pago. Não há reembolso proporcional do período não utilizado após 30 dias da compra,
         salvo obrigação legal.
@@ -71,7 +71,7 @@ export default function Reembolso() {
       <ul>
         <li><strong>Cobrança duplicada ou não reconhecida:</strong> reembolso integral, independentemente do prazo. Escreva imediatamente para <a href="mailto:contato@honorifico.com.br">contato@honorifico.com.br</a>.</li>
         <li><strong>Falha do Serviço:</strong> se o Serviço estiver indisponível por período prolongado, avalie reembolso proporcional junto ao suporte.</li>
-        <li><strong>Estorno (<em>chargeback</em>):</strong> incentivamos o contato prévio conosco antes de abrir estorno no cartão — resolvemos com mais rapidez.</li>
+        <li><strong>Estorno (<em>chargeback</em>):</strong> incentivamos o contato prévio conosco antes de abrir estorno no cartão: resolvemos com mais rapidez.</li>
       </ul>
 
       <h2>Contato</h2>

@@ -21,7 +21,7 @@ export default function CpfCnpjLanding() {
         "Formatação automática",
         "CPF e CNPJ no mesmo lugar",
         "Cópia rápida para a área de transferência",
-        "Sem consulta à Receita Federal, privacidade garantida",
+        "Sem consulta à Receita Federal: o número não sai do seu navegador",
       ]}
       content={
         <>

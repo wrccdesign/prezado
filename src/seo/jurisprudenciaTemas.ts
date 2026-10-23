@@ -423,7 +423,7 @@ export const JURISPRUDENCIA_TEMAS: JurisprudenciaTema[] = [
     legislacao: [
       { norma: "CDC, art. 14", conteudo: "Responsabilidade objetiva do fornecedor por defeito na prestação do serviço, independente de culpa." },
       { norma: "Resolução 400/2016 da ANAC", conteudo: "Dever de informar a alteração e de prestar assistência material a partir de 1 hora (comunicação), 2 horas (alimentação) e 4 horas (hospedagem e traslado) de espera." },
-      { norma: "Código Brasileiro de Aeronáutica, art. 251-A", conteudo: "O dano moral em atraso de voo depende de prova do prejuízo, salvo presunção legal." },
+      { norma: "Código Brasileiro de Aeronáutica, art. 251-A", conteudo: "O dano moral em atraso de voo não é presumido: a indenização exige demonstração do efetivo prejuízo extrapatrimonial." },
       { norma: "Convenção de Montreal", conteudo: "Aplicada ao transporte internacional, prevalece sobre o CDC nos danos materiais, conforme o Tema 210 do STF." },
       { norma: "Código Civil, art. 393", conteudo: "Exclusão da responsabilidade por caso fortuito ou força maior, base do debate entre fortuito interno e externo." },
     ],

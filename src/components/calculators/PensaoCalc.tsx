@@ -213,7 +213,7 @@ export function PensaoCalc() {
             <div className="p-5 text-reading text-navy/70 space-y-2">
               <p className="font-medium text-foreground">Como o juiz calcula a pensão?</p>
               <p>O valor da pensão alimentícia é definido pelo juiz com base no <strong>binômio necessidade × possibilidade</strong> (art. 1.694 do Código Civil).</p>
-              <p>Na prática, a jurisprudência do STJ costuma fixar entre <strong>15% e 30%</strong> da renda líquida por filho.</p>
+              <p>Não há percentual fixado em lei. As faixas desta calculadora são uma referência de partida, aplicadas sobre a renda total para todos os filhos, e o juiz decide caso a caso.</p>
             </div>
           </div>
 
