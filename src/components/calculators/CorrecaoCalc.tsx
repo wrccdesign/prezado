@@ -136,10 +136,12 @@ export function CorrecaoCalc({ onUsarValor, usarValorLabel = "Usar este valor", 
   ]);
 
   const calcular = useCallback(async () => {
-    if (!valor || !dataInicial || !dataFinal) {
-      toast({ title: "Preencha valor e datas", variant: "destructive" });
-      return;
-    }
+    const faltas: string[] = [];
+    if (!valor || !(parseFloat(valor) > 0)) faltas.push("Informe um valor positivo");
+    if (!dataInicial || !dataFinal) faltas.push("Informe as datas inicial e final");
+    else if (dataFinal <= dataInicial) faltas.push("A data final deve ser posterior à data inicial");
+    setErroForm(faltas.length ? faltas.join(". ") + "." : null);
+    if (faltas.length) return;
     setLoading(true);
     setResult(null);
     try {
@@ -331,7 +333,7 @@ export function CorrecaoCalc({ onUsarValor, usarValorLabel = "Usar este valor", 
         <div className="space-y-2">
           <Label>Cálculo pro rata die</Label>
           <div className="flex items-center gap-3 pt-1">
-            <Switch checked={proRata} onCheckedChange={setProRata} />
+            <Switch aria-label="Cálculo pro rata die" checked={proRata} onCheckedChange={setProRata} />
             <span className="text-reading text-navy/70">
               {proRata ? "Proporcional nos meses parciais" : "Meses inteiros"}
             </span>
@@ -341,7 +343,7 @@ export function CorrecaoCalc({ onUsarValor, usarValorLabel = "Usar este valor", 
           <div className="space-y-2">
             <Label>Manter o índice escolhido após 30/08/2024</Label>
             <div className="flex items-center gap-3 pt-1">
-              <Switch checked={manterIndiceContratual} onCheckedChange={setManterIndiceContratual} />
+              <Switch aria-label="Manter o índice escolhido após 30/08/2024" checked={manterIndiceContratual} onCheckedChange={setManterIndiceContratual} />
               <span className="text-reading text-navy/70">
                 {manterIndiceContratual
                   ? "Índice contratual mantido (art. 389, § único, CC, norma supletiva)"
@@ -358,7 +360,7 @@ export function CorrecaoCalc({ onUsarValor, usarValorLabel = "Usar este valor", 
         <div className="space-y-2">
           <Label>A multa incide também sobre os juros?</Label>
           <div className="flex items-center gap-3 pt-1">
-            <Switch checked={multaSobreJuros} onCheckedChange={setMultaSobreJuros} />
+            <Switch aria-label="A multa incide também sobre os juros?" checked={multaSobreJuros} onCheckedChange={setMultaSobreJuros} />
             <span className="text-reading text-navy/70">{multaSobreJuros ? "Sim" : "Não"}</span>
           </div>
         </div>
