@@ -278,30 +278,30 @@ export function CorrecaoCalc({ onUsarValor, usarValorLabel = "Usar este valor", 
     <div className="space-y-6">
       <div className="grid gap-4 sm:grid-cols-2">
         <div className="space-y-2">
-          <Label>Valor Original (R$)</Label>
-          <Input className="h-11" type="number" inputMode="decimal" placeholder="10000" value={valor} onChange={e => setValor(e.target.value)} />
+          <Label htmlFor="correcao-valor-original-r">Valor Original (R$)</Label>
+          <Input id="correcao-valor-original-r" className="h-11" type="number" inputMode="decimal" placeholder="10000" value={valor} onChange={e => setValor(e.target.value)} />
         </div>
         <div className="space-y-2">
-          <Label>Índice de Correção</Label>
+          <Label htmlFor="correcao-indice-de-correcao">Índice de Correção</Label>
           <Select value={indice} onValueChange={setIndice}>
-            <SelectTrigger><SelectValue /></SelectTrigger>
+            <SelectTrigger id="correcao-indice-de-correcao"><SelectValue /></SelectTrigger>
             <SelectContent>
               {INDICES.map(i => <SelectItem key={i.id} value={i.id}>{i.label}</SelectItem>)}
             </SelectContent>
           </Select>
         </div>
         <div className="space-y-2">
-          <Label>Data Inicial</Label>
-          <Input className="h-11" type="date" value={dataInicial} onChange={e => setDataInicial(e.target.value)} />
+          <Label htmlFor="correcao-data-inicial">Data Inicial</Label>
+          <Input id="correcao-data-inicial" className="h-11" type="date" value={dataInicial} onChange={e => setDataInicial(e.target.value)} />
         </div>
         <div className="space-y-2">
-          <Label>Data Final</Label>
-          <Input className="h-11" type="date" value={dataFinal} onChange={e => setDataFinal(e.target.value)} />
+          <Label htmlFor="correcao-data-final">Data Final</Label>
+          <Input id="correcao-data-final" className="h-11" type="date" value={dataFinal} onChange={e => setDataFinal(e.target.value)} />
         </div>
         <div className="space-y-2">
-          <Label>Regime de Juros de Mora</Label>
+          <Label htmlFor="correcao-regime-de-juros-de-mora">Regime de Juros de Mora</Label>
           <Select value={regimeJuros} onValueChange={setRegimeJuros}>
-            <SelectTrigger><SelectValue /></SelectTrigger>
+            <SelectTrigger id="correcao-regime-de-juros-de-mora"><SelectValue /></SelectTrigger>
             <SelectContent>
               <SelectItem value="legal_14905">Juros legais (Lei 14.905/2024)</SelectItem>
               <SelectItem value="taxa_fixa">Taxa fixa mensal</SelectItem>
@@ -311,9 +311,9 @@ export function CorrecaoCalc({ onUsarValor, usarValorLabel = "Usar este valor", 
         </div>
         {regimeJuros !== "nenhum" && (
           <div className="space-y-2">
-            <Label>Tipo de juros</Label>
+            <Label htmlFor="correcao-tipo-de-juros">Tipo de juros</Label>
             <Select value={tipoJuros} onValueChange={setTipoJuros}>
-              <SelectTrigger><SelectValue /></SelectTrigger>
+              <SelectTrigger id="correcao-tipo-de-juros"><SelectValue /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="simples">Simples (sobre saldo corrigido)</SelectItem>
                 <SelectItem value="compostos">Compostos (capitalizados mês a mês)</SelectItem>
@@ -324,8 +324,8 @@ export function CorrecaoCalc({ onUsarValor, usarValorLabel = "Usar este valor", 
         {regimeJuros === "taxa_fixa" && (
 
           <div className="space-y-2">
-            <Label>Taxa de juros mensal (%)</Label>
-            <Input className="h-11" type="number" inputMode="decimal" step="0.1" value={taxaFixa} onChange={e => setTaxaFixa(e.target.value)} />
+            <Label htmlFor="correcao-taxa-de-juros-mensal">Taxa de juros mensal (%)</Label>
+            <Input id="correcao-taxa-de-juros-mensal" className="h-11" type="number" inputMode="decimal" step="0.1" value={taxaFixa} onChange={e => setTaxaFixa(e.target.value)} />
           </div>
         )}
         <div className="space-y-2">
@@ -352,8 +352,8 @@ export function CorrecaoCalc({ onUsarValor, usarValorLabel = "Usar este valor", 
         )}
 
         <div className="space-y-2">
-          <Label>Multa (%)</Label>
-          <Input className="h-11" type="number" inputMode="decimal" step="0.1" placeholder="2" value={multa} onChange={e => setMulta(e.target.value)} />
+          <Label htmlFor="correcao-multa">Multa (%)</Label>
+          <Input id="correcao-multa" className="h-11" type="number" inputMode="decimal" step="0.1" placeholder="2" value={multa} onChange={e => setMulta(e.target.value)} />
         </div>
         <div className="space-y-2">
           <Label>A multa incide também sobre os juros?</Label>
@@ -363,8 +363,8 @@ export function CorrecaoCalc({ onUsarValor, usarValorLabel = "Usar este valor", 
           </div>
         </div>
         <div className="space-y-2">
-          <Label>Honorários (%)</Label>
-          <Input className="h-11" type="number" inputMode="decimal" step="0.1" placeholder="10" value={honorarios} onChange={e => setHonorarios(e.target.value)} />
+          <Label htmlFor="correcao-honorarios">Honorários (%)</Label>
+          <Input id="correcao-honorarios" className="h-11" type="number" inputMode="decimal" step="0.1" placeholder="10" value={honorarios} onChange={e => setHonorarios(e.target.value)} />
         </div>
       </div>
 
@@ -377,12 +377,12 @@ export function CorrecaoCalc({ onUsarValor, usarValorLabel = "Usar este valor", 
         </CollapsibleTrigger>
         <CollapsibleContent className="grid gap-4 sm:grid-cols-2 pt-3">
           <div className="space-y-2">
-            <Label>Início dos juros</Label>
-            <Input className="h-11" type="date" value={jurosInicio} onChange={e => setJurosInicio(e.target.value)} />
+            <Label htmlFor="correcao-inicio-dos-juros">Início dos juros</Label>
+            <Input id="correcao-inicio-dos-juros" className="h-11" type="date" value={jurosInicio} onChange={e => setJurosInicio(e.target.value)} />
           </div>
           <div className="space-y-2">
-            <Label>Fim dos juros</Label>
-            <Input className="h-11" type="date" value={jurosFim} onChange={e => setJurosFim(e.target.value)} />
+            <Label htmlFor="correcao-fim-dos-juros">Fim dos juros</Label>
+            <Input id="correcao-fim-dos-juros" className="h-11" type="date" value={jurosFim} onChange={e => setJurosFim(e.target.value)} />
           </div>
         </CollapsibleContent>
       </Collapsible>
