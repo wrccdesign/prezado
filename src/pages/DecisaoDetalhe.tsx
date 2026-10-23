@@ -14,6 +14,7 @@ import { Send, Loader2, Check } from "lucide-react";
 import { formatCitation } from "@/lib/citation";
 import { SEO } from "@/components/SEO";
 import { SITE_URL } from "@/seo/routeMeta";
+import { instanciaLabel as instanciaLabelFn, linkFonteConfiavel, relatorExibivel } from "@/lib/jurisprudencia";
 import { formatDateBR } from "@/lib/date";
 
 type Msg = { role: "user" | "assistant"; content: string };
@@ -277,7 +278,8 @@ export default function DecisaoDetalhe() {
     );
   }
 
-  const instanciaLabel = decision.instancia === "1grau" ? "1º Grau" : decision.instancia === "2grau" ? "2º Grau" : decision.instancia === "superior" ? "Superior" : decision.instancia;
+  const instanciaLabel = instanciaLabelFn(decision.instancia, decision.tribunal);
+  const fonteConfiavel = linkFonteConfiavel(decision.source_url, decision.tribunal, decision.numero_processo);
 
   const handleCopyCitation = async () => {
     const citation = formatCitation(decision);
@@ -319,7 +321,7 @@ export default function DecisaoDetalhe() {
       ...(decision.legislacao_citada?.length
         ? { citation: decision.legislacao_citada.map((l) => ({ "@type": "Legislation", name: l })) }
         : {}),
-      ...(decision.source_url ? { isBasedOn: decision.source_url } : {}),
+      ...(fonteConfiavel ? { isBasedOn: fonteConfiavel } : {}),
     },
     {
       "@context": "https://schema.org",
@@ -371,9 +373,9 @@ export default function DecisaoDetalhe() {
                 {copied ? <Check className="h-3.5 w-3.5" /> : null}
                 {copied ? "Copiado" : "Copiar citação"}
               </button>
-              {decision.source_url && (
+              {fonteConfiavel && (
                 <a
-                  href={decision.source_url}
+                  href={fonteConfiavel}
                   target="_blank"
                   rel="noopener noreferrer"
                   title="Abrir a decisão na fonte oficial"
@@ -386,7 +388,7 @@ export default function DecisaoDetalhe() {
 
             <p className="text-note text-navy/60 mt-3">
               {[
-                decision.relator ? `Rel. ${decision.relator}` : null,
+                relatorExibivel(decision.relator) ? `Rel. ${relatorExibivel(decision.relator)}` : null,
                 decision.orgao_julgador,
                 decision.comarca && decision.uf ? `${decision.comarca}/${decision.uf}` : null,
                 decision.numero_processo ? "Consulte pelo nº CNJ no portal do tribunal de origem" : null,
