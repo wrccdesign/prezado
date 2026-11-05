@@ -93,6 +93,7 @@ const plans: { name: string; price: string; period: string; desc: string; featur
 
 export default function LandingPage() {
   const navigate = useNavigate();
+  const [duvida, setDuvida] = useState("");
   const [heroQuery, setHeroQuery] = useState("");
 
   return (
@@ -162,6 +163,32 @@ export default function LandingPage() {
                   );
                 })}
               </div>
+              <form
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  const q = duvida.trim();
+                  if (q) navigate(`/chat?q=${encodeURIComponent(q)}`);
+                }}
+                className="mt-8 max-w-[580px] space-y-2"
+              >
+                <label htmlFor="hero-duvida" className="block text-sm font-medium text-navy">
+                  Tem uma dúvida jurídica? Pergunte sem criar conta.
+                </label>
+                <div className="flex items-stretch gap-2">
+                  <Input
+                    id="hero-duvida"
+                    value={duvida}
+                    onChange={(e) => setDuvida(e.target.value)}
+                    maxLength={2000}
+                    placeholder="Ex.: fui demitido e a empresa não pagou a rescisão em 10 dias"
+                    className="h-12 flex-1 rounded border-navy/30 bg-white text-navy placeholder:text-navy/45"
+                  />
+                  <Button type="submit" variant="outline" className="h-12 rounded border-navy text-navy hover:bg-navy hover:text-cream font-medium">
+                    Perguntar
+                  </Button>
+                </div>
+                <p className="text-note text-navy/55">1 pergunta por dia sem conta. A resposta abre no chat jurídico.</p>
+              </form>
               <p className="text-note text-navy/60 mt-8 max-w-[60ch] border-t border-cream-dark pt-4">
                 Sem conta, cada busca mostra até 3 decisões. A conta grátis começa com 7 dias do plano Profissional, sem cartão.
               </p>

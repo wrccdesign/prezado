@@ -50,6 +50,8 @@ export default function Chat() {
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const diagnosticoConsumed = useRef(false);
+  const perguntaConsumed = useRef(false);
+  const [guestDone, setGuestDone] = useState(false);
 
   // Pre-populate messages from Diagnóstico navigation
   useEffect(() => {
@@ -69,6 +71,16 @@ export default function Chat() {
       navigate(location.pathname, { replace: true, state: null });
     }
   }, [location.state, navigate, location.pathname]);
+
+  // Pergunta vinda da caixa da home (?q=): envia uma vez.
+  useEffect(() => {
+    const q = new URLSearchParams(location.search).get("q")?.trim();
+    if (!q || perguntaConsumed.current) return;
+    perguntaConsumed.current = true;
+    navigate(location.pathname, { replace: true });
+    handleSend(q);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [location.search]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -92,9 +104,9 @@ export default function Chat() {
     }
   };
 
-  const handleSend = async () => {
-    const trimmed = input.trim();
-    if (!trimmed || isLoading) return;
+  const handleSend = async (texto?: string) => {
+    const trimmed = (texto ?? input).trim();
+    if (!trimmed || isLoading || (!user && guestDone)) return;
 
     const userMsg: Message = { role: "user", content: trimmed };
     const newMessages = [...messages, userMsg];
@@ -128,7 +140,9 @@ export default function Chat() {
 
       if (!resp.ok) {
         const errData = await resp.json().catch(() => null);
-        if (resp.status === 429 && errData?.limit_reached) {
+        if (resp.status === 429 && errData?.guest_limit) {
+          setGuestDone(true);
+        } else if (resp.status === 429 && errData?.limit_reached) {
           toast({
             title: "Limite mensal atingido",
             description: errData.error || "Você atingiu o limite de mensagens do plano gratuito.",
@@ -194,6 +208,7 @@ export default function Chat() {
         }
       }
 
+      if (!user) setGuestDone(true);
       saveConversationMetadata([...newMessages, { role: "assistant", content: assistantSoFar }]);
     } catch (err: any) {
       toast({ title: "Erro", description: err.message || "Falha na conexão.", variant: "destructive" });
@@ -276,12 +291,27 @@ export default function Chat() {
         </div>
 
         <div className="sticky bottom-0 border-t bg-background pt-4">
+          {!user && guestDone ? (
+            <div className="rounded-lg border border-border bg-card p-4 space-y-3">
+              <p className="text-sm text-foreground">
+                Esta foi sua pergunta de demonstração. Crie sua conta grátis para continuar a conversa e usar as outras ferramentas. A conta nova começa com 7 dias do plano Profissional, sem cartão.
+              </p>
+              <div className="flex flex-wrap gap-2">
+                <Button onClick={() => navigate("/auth?mode=signup")}>Criar conta grátis</Button>
+                <Button variant="outline" onClick={() => navigate("/auth")}>Entrar</Button>
+              </div>
+            </div>
+          ) : (
           <div className="flex gap-2">
             <Textarea placeholder="Digite sua dúvida jurídica..." value={input} onChange={(e) => setInput(e.target.value)} onKeyDown={handleKeyDown} disabled={isLoading} className="min-h-[48px] max-h-[120px] resize-none" rows={1} />
-            <Button size="icon" onClick={handleSend} disabled={isLoading || !input.trim()} className="h-12 w-12 shrink-0">
+            <Button size="icon" aria-label="Enviar pergunta" onClick={() => handleSend()} disabled={isLoading || !input.trim()} className="h-12 w-12 shrink-0">
               {isLoading ? <Loader2 className="h-5 w-5 animate-spin" /> : <Send className="h-5 w-5" />}
             </Button>
           </div>
+          )}
+          {!user && !guestDone && (
+            <p className="mt-2 text-xs text-muted-foreground">Sem conta, você pode fazer 1 pergunta por dia.</p>
+          )}
         </div>
       </main>
       <AppFooter />
