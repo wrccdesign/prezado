@@ -1,6 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { requireUser } from "../_shared/auth.ts";
-import { burstLimitMessage, checkRateLimit, extractEnv, monthlyLimitMessage } from "../_shared/rate-limit.ts";
+import { requireQuotaOrGuest } from "../_shared/calculo-guard.ts";
+import { extractEnv } from "../_shared/rate-limit.ts";
 import { fetchGroundingContext, buildGroundingBlock, fetchGroundingSumulas, buildSumulasBlock } from "../_shared/grounding.ts";
 import { aiChatStream, AIError } from "../_shared/ai.ts";
 import { sanitizeChatMessages } from "../_shared/chat-messages.ts";
@@ -101,31 +101,31 @@ Responda sempre em português brasileiro.`;
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
-  const auth = await requireUser(req);
+  // Logado: cota mensal do plano. Visitante: 1 pergunta de demonstração por IP a cada 24h.
+  const auth = await requireQuotaOrGuest(req, "chat", corsHeaders, 1, 24 * 60 * 60 * 1000);
   if (auth instanceof Response) return auth;
-  const _userId = auth.userId;
+  const _userId = auth.userId ?? undefined;
+  const isGuest = auth.guest;
 
   try {
     const { messages: rawMessages, isLawyer } = await req.json();
 
     // Só papéis "user" e "assistant" passam: a instrução do sistema é do servidor.
-    const messages = sanitizeChatMessages(rawMessages);
+    let messages = sanitizeChatMessages(rawMessages);
+    if (isGuest) {
+      // Demonstração: só a última pergunta, com tamanho limitado.
+      const last = [...messages].reverse().find((m: any) => m.role === "user");
+      const content = typeof last?.content === "string" ? last.content.slice(0, 2000) : "";
+      if (!content.trim()) {
+        return new Response(JSON.stringify({ error: "Escreva sua pergunta." }), {
+          status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+      messages = [{ role: "user", content }] as typeof messages;
+    }
 
     const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
     const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-
-    // Toda chamada é autenticada (requireUser acima); a cota vale sempre.
-    const env = extractEnv(req);
-    const { allowed, used, limit, plan, renewsAt, burstLimited } = await checkRateLimit(
-      _userId, "chat", SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, env,
-    );
-    if (!allowed) {
-      return new Response(JSON.stringify({
-        error: burstLimited ? burstLimitMessage() : monthlyLimitMessage("chat", limit, plan),
-        limit_reached: !burstLimited, burst_limit: burstLimited === true, used, limit, plan, renews_at: renewsAt, upgrade_url: "/planos",
-      }), { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } });
-    }
-
 
     const disclaimerInstruction = isLawyer
       ? ""
