@@ -50,6 +50,8 @@ export default function Chat() {
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const diagnosticoConsumed = useRef(false);
+  const perguntaConsumed = useRef(false);
+  const [guestDone, setGuestDone] = useState(false);
 
   // Pre-populate messages from Diagnóstico navigation
   useEffect(() => {
@@ -69,6 +71,16 @@ export default function Chat() {
       navigate(location.pathname, { replace: true, state: null });
     }
   }, [location.state, navigate, location.pathname]);
+
+  // Pergunta vinda da caixa da home (?q=): envia uma vez.
+  useEffect(() => {
+    const q = new URLSearchParams(location.search).get("q")?.trim();
+    if (!q || perguntaConsumed.current) return;
+    perguntaConsumed.current = true;
+    navigate(location.pathname, { replace: true });
+    handleSend(q);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [location.search]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -92,9 +104,9 @@ export default function Chat() {
     }
   };
 
-  const handleSend = async () => {
-    const trimmed = input.trim();
-    if (!trimmed || isLoading) return;
+  const handleSend = async (texto?: string) => {
+    const trimmed = (texto ?? input).trim();
+    if (!trimmed || isLoading || (!user && guestDone)) return;
 
     const userMsg: Message = { role: "user", content: trimmed };
     const newMessages = [...messages, userMsg];
@@ -128,7 +140,9 @@ export default function Chat() {
 
       if (!resp.ok) {
         const errData = await resp.json().catch(() => null);
-        if (resp.status === 429 && errData?.limit_reached) {
+        if (resp.status === 429 && errData?.guest_limit) {
+          setGuestDone(true);
+        } else if (resp.status === 429 && errData?.limit_reached) {
           toast({
             title: "Limite mensal atingido",
             description: errData.error || "Você atingiu o limite de mensagens do plano gratuito.",
@@ -194,6 +208,7 @@ export default function Chat() {
         }
       }
 
+      if (!user) setGuestDone(true);
       saveConversationMetadata([...newMessages, { role: "assistant", content: assistantSoFar }]);
     } catch (err: any) {
       toast({ title: "Erro", description: err.message || "Falha na conexão.", variant: "destructive" });
