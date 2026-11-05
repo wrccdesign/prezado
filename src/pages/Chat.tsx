@@ -291,12 +291,27 @@ export default function Chat() {
         </div>
 
         <div className="sticky bottom-0 border-t bg-background pt-4">
+          {!user && guestDone ? (
+            <div className="rounded-lg border border-border bg-card p-4 space-y-3">
+              <p className="text-sm text-foreground">
+                Esta foi sua pergunta de demonstração. Crie sua conta grátis para continuar a conversa e usar as outras ferramentas. A conta nova começa com 7 dias do plano Profissional, sem cartão.
+              </p>
+              <div className="flex flex-wrap gap-2">
+                <Button onClick={() => navigate("/auth?mode=signup")}>Criar conta grátis</Button>
+                <Button variant="outline" onClick={() => navigate("/auth")}>Entrar</Button>
+              </div>
+            </div>
+          ) : (
           <div className="flex gap-2">
             <Textarea placeholder="Digite sua dúvida jurídica..." value={input} onChange={(e) => setInput(e.target.value)} onKeyDown={handleKeyDown} disabled={isLoading} className="min-h-[48px] max-h-[120px] resize-none" rows={1} />
-            <Button size="icon" onClick={handleSend} disabled={isLoading || !input.trim()} className="h-12 w-12 shrink-0">
+            <Button size="icon" aria-label="Enviar pergunta" onClick={() => handleSend()} disabled={isLoading || !input.trim()} className="h-12 w-12 shrink-0">
               {isLoading ? <Loader2 className="h-5 w-5 animate-spin" /> : <Send className="h-5 w-5" />}
             </Button>
           </div>
+          )}
+          {!user && !guestDone && (
+            <p className="mt-2 text-xs text-muted-foreground">Sem conta, você pode fazer 1 pergunta por dia.</p>
+          )}
         </div>
       </main>
       <AppFooter />

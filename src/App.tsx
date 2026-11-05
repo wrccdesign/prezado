@@ -97,7 +97,7 @@ const App = () => (
               <Route path="/" element={<HomeRoute />} />
               <Route path="/analise" element={<ProtectedRoute><MeuCaso /></ProtectedRoute>} />
               <Route path="/peticao" element={<ProtectedRoute><Petition /></ProtectedRoute>} />
-              <Route path="/chat" element={<ProtectedRoute><Chat /></ProtectedRoute>} />
+              <Route path="/chat" element={<Chat />} />
               <Route path="/historico" element={<ProtectedRoute><History /></ProtectedRoute>} />
               <Route path="/calculadoras" element={<Calculators />} />
               <Route path="/calculadoras/correcao-monetaria-juros-lei-14905" element={<CorrecaoMonetariaLanding />} />
