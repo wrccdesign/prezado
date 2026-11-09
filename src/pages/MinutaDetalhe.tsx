@@ -234,6 +234,22 @@ export default function MinutaDetalhe() {
               </Card>
             )}
 
+            {minuta.slug === "notificacao-extrajudicial" && (
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-lg">Jurisprudência relacionada</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-2">
+                  <Link
+                    to="/jurisprudencia/tema/contratos-agrarios"
+                    className="block text-sm text-primary hover:underline"
+                  >
+                    Notificação de retomada no arrendamento rural
+                  </Link>
+                </CardContent>
+              </Card>
+            )}
+
             {tools.length > 0 && (
               <Card>
                 <CardHeader>

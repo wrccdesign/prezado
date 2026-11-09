@@ -87,6 +87,10 @@ const RELATED_MINUTAS: Record<string, { to: string; label: string }[]> = {
       label: "Modelo de notificação extrajudicial",
     },
     { to: "/modelos-de-minutas/contestacao-civel", label: "Modelo de contestação cível" },
+    {
+      to: "/jurisprudencia/tema/contratos-agrarios",
+      label: "Prazo de seis meses para notificar no arrendamento rural",
+    },
   ],
 };
 
