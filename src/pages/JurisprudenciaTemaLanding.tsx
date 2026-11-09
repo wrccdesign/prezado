@@ -32,6 +32,18 @@ export default function JurisprudenciaTemaLanding() {
             </nav>
             <h1 className="text-h1 max-w-[22ch]">{tema.title}</h1>
             <p className="text-body-serif text-navy/80 max-w-[68ch] mt-6">{tema.description}</p>
+            {tema.respostaDireta?.length ? (
+              <div className="mt-10 max-w-[68ch]">
+                <h2 className="text-h3">Resposta direta</h2>
+                <ol className="mt-4">
+                  {tema.respostaDireta.map((r, i) => (
+                    <li key={i} className="border-t border-cream-dark py-4 text-body-serif text-navy/80">
+                      {r}
+                    </li>
+                  ))}
+                </ol>
+              </div>
+            ) : null}
           </div>
         </section>
 

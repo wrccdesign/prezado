@@ -27,6 +27,8 @@ export type JurisprudenciaTema = {
   decisoes: DecisaoTema[];
   ferramentas: { to: string; label: string }[];
   faq: FaqItem[];
+  /** Resposta direta exibida logo abaixo do título. */
+  respostaDireta?: string[];
 };
 
 export const JURIS_TEMA_BASE = "/jurisprudencia/tema";
@@ -766,11 +768,18 @@ export const JURISPRUDENCIA_TEMAS: JurisprudenciaTema[] = [
     seoDescription:
       "Acórdãos reais do TJMG e do TJPR sobre arrendamento rural, notificação de retomada, despejo, preço em sacas e cédula de produto rural, com número do processo, relator e link para a fonte oficial.",
     query: "arrendamento rural cédula de produto rural",
+    respostaDireta: [
+      "Para retomar o imóvel no fim do arrendamento, o arrendador precisa notificar o arrendatário até seis meses antes do vencimento. Sem essa notificação, o contrato se renova automaticamente (art. 95, IV, do Estatuto da Terra).",
+      "O preço do arrendamento deve ser fixado em dinheiro (art. 18 do Decreto 59.566/66). Mesmo assim, há decisões que garantem a cobrança das prestações fixadas em sacas quando o arrendatário usou a terra e não pagou.",
+      "A cédula de produto rural é título executivo não causal (Lei 8.929/94). Nos embargos, a defesa precisa provar um vício concreto, como pagamento, excesso ou nulidade formal.",
+    ],
     legislacao: [
       { norma: "Estatuto da Terra, art. 95, IV e V", conteudo: "Renovação automática do arrendamento se o arrendador não notificar o arrendatário até seis meses antes do fim do contrato; direito de preferência do arrendatário na renovação." },
       { norma: "Decreto 59.566/66, art. 22", conteudo: "Disciplina a notificação de retomada e o prazo de seis meses antes do vencimento do contrato." },
       { norma: "Decreto 59.566/66, art. 32", conteudo: "Lista as hipóteses de despejo, entre elas o término do prazo após notificação e a falta de pagamento, com possibilidade de purgação da mora." },
       { norma: "Decreto 59.566/66, art. 18", conteudo: "O preço do arrendamento deve ser ajustado em quantia fixa de dinheiro; a fixação em produtos é vedada, embora o pagamento em frutos seja admitido pelo equivalente." },
+      { norma: "Estatuto da Terra, art. 92, §3º", conteudo: "Na venda do imóvel arrendado, o arrendatário tem preferência para comprar em igualdade de condições; preterido, pode depositar o preço e haver o imóvel em até seis meses do registro da venda." },
+      { norma: "Súmula 298 do STJ", conteudo: "O alongamento de dívida originada de crédito rural não é faculdade da instituição financeira, mas direito do devedor nos termos da lei." },
       { norma: "Lei 8.929/94 (com alterações da Lei 13.986/2020)", conteudo: "Institui a cédula de produto rural, física e financeira, como título líquido, certo e exigível pela quantidade e qualidade do produto ou pelo valor nela previsto." },
     ],
     paragraphs: [
@@ -892,6 +901,18 @@ export const JURISPRUDENCIA_TEMAS: JurisprudenciaTema[] = [
       {
         question: "Como se defender de uma execução de CPR?",
         answer: "Por embargos à execução. Como a CPR é título não causal, a defesa precisa provar o vício concreto, como pagamento, excesso ou nulidade formal. Na CPR financeira, também se discute a exigência do título original nos autos.",
+      },
+      {
+        question: "Como contar os seis meses da notificação?",
+        answer: "Conte para trás a partir da data de término prevista no contrato. A notificação precisa chegar ao arrendatário antes desse marco, por isso convém enviá-la com folga e por meio que comprove o recebimento, como cartório de títulos e documentos ou carta com aviso de recebimento.",
+      },
+      {
+        question: "O dono pode vender a terra durante o arrendamento?",
+        answer: "Pode, mas o arrendatário tem preferência para comprar em igualdade de condições (art. 92, §3º, do Estatuto da Terra). Se não for notificado da venda, pode depositar o preço e haver o imóvel para si em até seis meses do registro da escritura.",
+      },
+      {
+        question: "O banco pode recusar o alongamento da dívida rural?",
+        answer: "Pela Súmula 298 do STJ, o alongamento é direito do devedor quando preenchidos os requisitos legais. Na prática, as decisões exigem prova de que o pedido foi feito ao banco antes da execução.",
       },
     ],
   },
