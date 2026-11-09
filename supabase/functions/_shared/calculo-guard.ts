@@ -1,4 +1,4 @@
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { createClient, type SupabaseClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { requireUser } from "./auth.ts";
 import {
   BURST_LIMIT_PER_HOUR,
@@ -123,7 +123,7 @@ export async function requireQuotaOrGuest(
 
 /** A cota da demonstração é por ação; a trava horária continua global. */
 export async function consumeGuestQuota(
-  supabase: Pick<ReturnType<typeof createClient>, "from">,
+  supabase: Pick<SupabaseClient, "from">,
   ipHash: string,
   action: string,
   corsHeaders: Record<string, string>,
