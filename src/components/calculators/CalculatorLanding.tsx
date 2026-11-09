@@ -23,6 +23,8 @@ interface CalculatorLandingProps {
   content?: React.ReactNode;
   /** Perguntas frequentes: renderizadas na página e marcadas como FAQPage. */
   faq?: CalculatorFaq[];
+  /** Resposta curta exibida logo abaixo do título, para quem chega pela busca. */
+  respostaDireta?: React.ReactNode;
   children: React.ReactNode;
 }
 
@@ -38,6 +40,10 @@ const RELATED_MINUTAS: Record<string, { to: string; label: string }[]> = {
     {
       to: "/modelos-de-minutas/acordo-extrajudicial-homologacao",
       label: "Modelo de acordo extrajudicial",
+    },
+    {
+      to: "/calculadoras/correcao-monetaria-juros-lei-14905",
+      label: "Corrigir verbas atrasadas pelo IPCA",
     },
   ],
   "/calculadoras/correcao-monetaria-juros-lei-14905": [
@@ -60,6 +66,10 @@ const RELATED_MINUTAS: Record<string, { to: string; label: string }[]> = {
       label: "Modelo de petição inicial de cobrança",
     },
     { to: "/modelos-de-minutas/recurso-apelacao", label: "Modelo de recurso de apelação" },
+    {
+      to: "/calculadoras/correcao-monetaria-juros-lei-14905",
+      label: "Atualizar o valor da causa pela Lei 14.905/2024",
+    },
   ],
   "/calculadoras/pensao-alimenticia": [
     {
@@ -104,6 +114,7 @@ export function CalculatorLanding({
   seoDescription,
   content,
   faq,
+  respostaDireta,
   children,
 }: CalculatorLandingProps) {
   const jsonLd: Record<string, unknown>[] = [
@@ -153,6 +164,16 @@ export function CalculatorLanding({
           <p className="text-body-serif text-navy/80">{description}</p>
           <p className="text-note text-navy/60">{keywords.join(", ")}</p>
         </div>
+
+        {respostaDireta ? (
+          <section
+            aria-labelledby="resposta-direta"
+            className="mt-10 max-w-[68ch] rounded-lg border border-cream-dark bg-white p-5 sm:p-6"
+          >
+            <h2 id="resposta-direta" className="text-h3 text-navy">Resposta direta</h2>
+            <div className="mt-3 space-y-3 text-body-serif text-navy/80">{respostaDireta}</div>
+          </section>
+        ) : null}
 
         <div className="mt-12 grid gap-12 lg:grid-cols-3">
           <div className="min-w-0 space-y-12 lg:col-span-2">

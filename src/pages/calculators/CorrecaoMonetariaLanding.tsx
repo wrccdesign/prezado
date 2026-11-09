@@ -43,6 +43,40 @@ export default function CorrecaoMonetariaLanding() {
             (art. 406, §3º, do CC) e o índice contratual pode ser mantido quando for o caso (art. 389, parágrafo
             único, do CC).
           </p>
+          <h2 className="text-h3 text-navy">Base legal</h2>
+          <div className="overflow-x-auto rounded-lg border border-cream-dark bg-white">
+            <table className="w-full text-left text-sm tabular-nums">
+              <thead>
+                <tr className="border-b border-cream-dark font-sans font-medium text-navy">
+                  <th className="p-3 font-medium">Parcela</th>
+                  <th className="p-3 font-medium">Regra desde 30/08/2024</th>
+                  <th className="p-3 font-medium">Fonte</th>
+                </tr>
+              </thead>
+              <tbody className="font-sans text-navy/80">
+                <tr className="border-b border-cream-dark">
+                  <td className="p-3">Correção monetária</td>
+                  <td className="p-3">IPCA, salvo índice convencionado ou previsto em lei</td>
+                  <td className="p-3">CC, art. 389, parágrafo único</td>
+                </tr>
+                <tr className="border-b border-cream-dark">
+                  <td className="p-3">Juros de mora</td>
+                  <td className="p-3">Selic deduzido o IPCA (Taxa Legal)</td>
+                  <td className="p-3">CC, art. 406, §1º</td>
+                </tr>
+                <tr className="border-b border-cream-dark">
+                  <td className="p-3">Resultado negativo</td>
+                  <td className="p-3">Juros zero no período</td>
+                  <td className="p-3">CC, art. 406, §3º</td>
+                </tr>
+                <tr>
+                  <td className="p-3">Metodologia da taxa</td>
+                  <td className="p-3">Divulgada pelo Banco Central, série 29543</td>
+                  <td className="p-3">Res. CMN 5.171/2024</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
           <h2 className="text-h3 text-navy">Cálculo por índice</h2>
           <ul>
             {CORRECAO_INDICES.map((i) => (
@@ -59,6 +93,19 @@ export default function CorrecaoMonetariaLanding() {
         </>
       }
       faq={FAQ_CORRECAO_MONETARIA}
+      respostaDireta={
+        <>
+          <p>
+            Desde 30/08/2024, quando o contrato ou a sentença não fixam outro critério, a dívida civil é
+            corrigida pelo IPCA e recebe juros de mora pela Taxa Legal, que é a Selic menos o IPCA.
+          </p>
+          <p>
+            Se a Selic menos o IPCA der negativo no mês, os juros daquele mês são zero. Para o período
+            anterior a 30/08/2024 vale o critério antigo, e a calculadora aplica os dois regimes no mesmo
+            cálculo.
+          </p>
+        </>
+      }
 
     >
 

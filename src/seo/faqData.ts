@@ -67,6 +67,21 @@ export const FAQ_PLANOS: FaqItem[] = [
 
 export const FAQ_CORRECAO_MONETARIA: FaqItem[] = [
         {
+          question: "Quais artigos do Código Civil a Lei 14.905/2024 alterou?",
+          answer:
+            "O art. 389, parágrafo único, que fixa o IPCA como índice de correção quando não houver índice convencionado ou previsto em lei, e o art. 406, que define os juros legais como a Selic deduzido o IPCA (§1º) e manda considerar juros zero quando essa conta for negativa (§3º).",
+        },
+        {
+          question: "Juros e índice previstos no contrato continuam valendo?",
+          answer:
+            "Sim. O IPCA e a Taxa Legal são a regra para quando as partes não convencionaram índice ou taxa, ou quando a lei não prevê outro critério. Havendo índice no contrato, a calculadora permite aplicá-lo (art. 389, parágrafo único, do Código Civil).",
+        },
+        {
+          question: "Onde o Banco Central publica a Taxa Legal?",
+          answer:
+            "A metodologia foi definida pela Resolução CMN 5.171/2024 e a taxa é divulgada no Sistema Gerenciador de Séries Temporais do Banco Central, série 29543. É essa série que a calculadora usa a partir de 30/08/2024.",
+        },
+        {
           question: "O que mudou com a Lei 14.905/2024?",
           answer:
             "Desde 30/08/2024, na ausência de índice convencionado, a correção monetária é feita pelo IPCA e os juros de mora correspondem à Selic menos o IPCA (Taxa Legal). Se o resultado dessa conta for negativo, considera-se juros zero (art. 406, §3º, do Código Civil).",
