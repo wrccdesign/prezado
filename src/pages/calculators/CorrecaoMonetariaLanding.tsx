@@ -45,7 +45,7 @@ export default function CorrecaoMonetariaLanding() {
           </p>
           <h2 className="text-h3 text-navy">Base legal</h2>
           <div className="overflow-x-auto rounded-lg border border-cream-dark bg-white">
-            <table className="w-full text-left text-sm tabular-nums">
+            <table className="w-full text-left text-sm tabular-nums" style={{ fontFamily: "\"Source Sans 3\", system-ui, sans-serif" }}>
               <thead>
                 <tr className="border-b border-cream-dark font-sans font-medium text-navy">
                   <th className="p-3 font-medium">Parcela</th>
