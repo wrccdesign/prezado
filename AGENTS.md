@@ -4,3 +4,4 @@
 - Recent analysis titles derive from saved result metadata, leaving filenames as secondary context; storage names remain untouched.
 - All Petição/Análise/Diagnóstico output passes through `_shared/output-review.ts` before reaching the user: it fixes only code-verifiable issues (valor por extenso, guarded grammar pass) and flags the rest; never rewrites legal content.
 - Keep the creator's full-name constant at the top of the Sobre page and reuse it in the landing team section, so both presentations stay synchronized; team portraits are optional and render no fallback.
+- Guest quotas count usage by action while the hourly abuse limit counts all actions, so searches and calculations cannot consume the chat demonstration.
