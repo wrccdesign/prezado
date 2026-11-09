@@ -240,6 +240,14 @@ async function handleWebhook(event: any, env: AsaasEnv) {
       }
       break;
     case "PAYMENT_DELETED":
+      // Remover uma fatura de assinatura (ex.: mês de cortesia) não encerra
+      // a assinatura. Só SUBSCRIPTION_DELETED/INACTIVATED cancelam o plano.
+      if (payment?.subscription) {
+        console.log("Subscription payment deleted, plan kept:", payment.id);
+      } else if (payment?.id) {
+        await markPaymentFailed(payment.id, env);
+      }
+      break;
     case "PAYMENT_REFUNDED":
       if (payment?.subscription) {
         await markSubscriptionCanceled(payment.subscription, env);
