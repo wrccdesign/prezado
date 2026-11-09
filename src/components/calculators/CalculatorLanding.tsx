@@ -43,7 +43,7 @@ const RELATED_MINUTAS: Record<string, { to: string; label: string }[]> = {
     },
     {
       to: "/calculadoras/correcao-monetaria-juros-lei-14905",
-      label: "Corrigir verbas atrasadas pelo IPCA",
+      label: "Atualizar parcelas de pensão em atraso",
     },
   ],
   "/calculadoras/correcao-monetaria-juros-lei-14905": [
