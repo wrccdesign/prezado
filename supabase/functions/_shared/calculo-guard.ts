@@ -118,14 +118,50 @@ export async function requireQuotaOrGuest(
   );
 
   const ipHash = await hashIp(guestIp(req));
-  const since = new Date(Date.now() - windowMs).toISOString();
+  return consumeGuestQuota(supabase, ipHash, action, corsHeaders, guestLimit, windowMs);
+}
 
-  const { count } = await supabase
+/** A cota da demonstração é por ação; a trava horária continua global. */
+export async function consumeGuestQuota(
+  supabase: Pick<ReturnType<typeof createClient>, "from">,
+  ipHash: string,
+  action: string,
+  corsHeaders: Record<string, string>,
+  guestLimit = GUEST_LIMIT_PER_HOUR,
+  windowMs = GUEST_WINDOW_MS,
+  now = Date.now(),
+): Promise<{ userId: null; guest: true } | Response> {
+  const { count: burstCount, error: burstError } = await supabase
     .from("anon_usage")
     .select("*", { count: "exact", head: true })
     .eq("ip_hash", ipHash)
+    .gte("created_at", new Date(now - GUEST_WINDOW_MS).toISOString());
+
+  if (burstError) {
+    return new Response(JSON.stringify({ error: "Não foi possível verificar o limite. Tente novamente." }), {
+      status: 503, headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
+  }
+  if ((burstCount ?? 0) >= GUEST_LIMIT_PER_HOUR) {
+    return new Response(JSON.stringify({ error: burstLimitMessage(), burst_limit: true }), {
+      status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
+  }
+
+  const since = new Date(now - windowMs).toISOString();
+
+  const { count, error } = await supabase
+    .from("anon_usage")
+    .select("*", { count: "exact", head: true })
+    .eq("ip_hash", ipHash)
+    .eq("action", action)
     .gte("created_at", since);
 
+  if (error) {
+    return new Response(JSON.stringify({ error: "Não foi possível verificar o limite. Tente novamente." }), {
+      status: 503, headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
+  }
   if ((count ?? 0) >= guestLimit) {
     return new Response(
       JSON.stringify({
