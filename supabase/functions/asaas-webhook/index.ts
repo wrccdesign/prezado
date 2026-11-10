@@ -108,7 +108,7 @@ async function activateRecurringSubscription(
   // Localiza a linha local pela assinatura e, na falta dela, pelo cliente.
   const { data: bySub } = await getSupabase()
     .from("subscriptions")
-    .select("id, user_id, pending_plan_id, price_id")
+    .select("id, user_id, plan_id, pending_plan_id, price_id")
     .eq("provider_subscription_id", sub.id)
     .eq("provider", "asaas")
     .eq("environment", env)
@@ -117,7 +117,7 @@ async function activateRecurringSubscription(
   if (!local) {
     const { data: byCustomer } = await getSupabase()
       .from("subscriptions")
-      .select("id, user_id, pending_plan_id, price_id")
+      .select("id, user_id, plan_id, pending_plan_id, price_id")
       .eq("provider_customer_id", sub.customer)
       .eq("provider", "asaas")
       .eq("environment", env)
@@ -131,10 +131,17 @@ async function activateRecurringSubscription(
 
   // Troca de plano pendente: só vale quando o pagamento seguinte é confirmado.
   const pendingPlan = local?.pending_plan_id as string | null | undefined;
-  const finalPlanId = pendingPlan || planId;
+  // Pagamento confirmado nunca rebaixa: se a referência do Asaas não indica
+  // o plano, mantém o plano pago já gravado na linha local.
+  const localPlan = local?.plan_id as string | undefined;
+  const finalPlanId = pendingPlan ||
+    (planId !== "free" ? planId : (localPlan && localPlan !== "free" ? localPlan : null));
+  if (!finalPlanId) {
+    throw new Error(`Paid plan not resolvable for Asaas subscription ${sub.id}`);
+  }
   const finalPriceId = pendingPlan
     ? ((local?.price_id as string | null) ?? priceId ?? null)
-    : (priceId ?? null);
+    : (priceId ?? (local?.price_id as string | null) ?? null);
 
   const start = new Date().toISOString();
   const end = sub.nextDueDate
