@@ -83,6 +83,18 @@ async function markEventProcessed(eventId: string): Promise<void> {
   }
 }
 
+/**
+ * Grava a assinatura sem depender de ON CONFLICT: os índices únicos da tabela
+ * são parciais e o upsert não consegue usá-los. Atualiza a linha encontrada
+ * ou insere uma nova.
+ */
+async function saveSubscriptionRow(existingId: string | undefined, row: Record<string, unknown>) {
+  if (existingId) {
+    return await getSupabase().from("subscriptions").update(row).eq("id", existingId);
+  }
+  return await getSupabase().from("subscriptions").insert(row);
+}
+
 async function activateRecurringSubscription(
   subscriptionId: string,
   env: AsaasEnv,
@@ -96,7 +108,7 @@ async function activateRecurringSubscription(
   // Localiza a linha local pela assinatura e, na falta dela, pelo cliente.
   const { data: bySub } = await getSupabase()
     .from("subscriptions")
-    .select("user_id, pending_plan_id, price_id")
+    .select("id, user_id, pending_plan_id, price_id")
     .eq("provider_subscription_id", sub.id)
     .eq("provider", "asaas")
     .eq("environment", env)
@@ -105,7 +117,7 @@ async function activateRecurringSubscription(
   if (!local) {
     const { data: byCustomer } = await getSupabase()
       .from("subscriptions")
-      .select("user_id, pending_plan_id, price_id")
+      .select("id, user_id, pending_plan_id, price_id")
       .eq("provider_customer_id", sub.customer)
       .eq("provider", "asaas")
       .eq("environment", env)
@@ -129,7 +141,7 @@ async function activateRecurringSubscription(
     ? new Date(sub.nextDueDate + "T23:59:59").toISOString()
     : new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString();
 
-  const { error } = await getSupabase().from("subscriptions").upsert({
+  const { error } = await saveSubscriptionRow(local?.id as string | undefined, {
     user_id: userId,
     provider: "asaas",
     provider_customer_id: sub.customer,
@@ -144,7 +156,7 @@ async function activateRecurringSubscription(
     cancel_at_period_end: false,
     environment: env,
     updated_at: new Date().toISOString(),
-  }, { onConflict: "provider_subscription_id,provider,environment" });
+  });
   if (error) throw new Error(`recurring subscription update failed: ${error.message}`);
 }
 
@@ -156,7 +168,7 @@ async function activateOneTimePayment(paymentId: string, env: AsaasEnv) {
 
   const { data: rows } = await getSupabase()
     .from("subscriptions")
-    .select("user_id")
+    .select("id, user_id, payment_provider_ref")
     .eq("provider_customer_id", payment.customer)
     .eq("provider", "asaas")
     .eq("environment", env)
@@ -169,7 +181,17 @@ async function activateOneTimePayment(paymentId: string, env: AsaasEnv) {
   const start = new Date().toISOString();
   const end = new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString();
 
-  const { error } = await getSupabase().from("subscriptions").upsert({
+  const { data: sameRef } = await getSupabase()
+    .from("subscriptions")
+    .select("id")
+    .eq("payment_provider_ref", payment.id)
+    .eq("environment", env)
+    .limit(1);
+  const existingId = (sameRef?.[0]?.id ?? (rows?.[0] && !rows[0].payment_provider_ref ? rows[0].id : undefined)) as
+    | string
+    | undefined;
+
+  const { error } = await saveSubscriptionRow(existingId, {
     user_id: userId,
     provider: "asaas",
     provider_customer_id: payment.customer,
@@ -184,7 +206,7 @@ async function activateOneTimePayment(paymentId: string, env: AsaasEnv) {
     cancel_at_period_end: false,
     environment: env,
     updated_at: new Date().toISOString(),
-  }, { onConflict: "payment_provider_ref,environment" });
+  });
   if (error) throw new Error(`one-time subscription update failed: ${error.message}`);
 }
 
