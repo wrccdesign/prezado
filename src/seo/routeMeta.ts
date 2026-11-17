@@ -28,7 +28,7 @@ export type RouteMeta = {
 
 export const SITE_URL = "https://honorifico.com.br";
 
-const OG_DEFAULT = "/og/home.jpg";
+const OG_DEFAULT = `${SITE_URL}/og/home.jpg`;
 
 export const ROUTE_META: RouteMeta[] = [
   {
@@ -175,7 +175,7 @@ export const ROUTE_META: RouteMeta[] = [
     title: "Consulta processual e jurisprudência | Honorífico",
     description:
       "Consulte processos nos dados oficiais do CNJ, com link para a fonte no tribunal. Acervo de jurisprudência com ementa em expansão e resumo por IA.",
-    ogImage: "/og/jurisprudencia.jpg",
+    ogImage: `${SITE_URL}/og/jurisprudencia.jpg`,
   },
 
   {
@@ -287,7 +287,7 @@ export const ROUTE_META: RouteMeta[] = [
     title: "Planos e preços | Honorífico",
     description:
       "Gratuito, Profissional a R$ 49/mês e Escritório. Sete dias de teste no Profissional, sem cartão, cobrança em reais e cancelamento a qualquer momento.",
-    ogImage: "/og/planos.jpg",
+    ogImage: `${SITE_URL}/og/planos.jpg`,
     jsonLd: [
       {
         "@context": "https://schema.org",
@@ -422,7 +422,7 @@ export const ROUTE_META: RouteMeta[] = [
     path: jurisTemaPath(t.slug),
     title: `${t.seoTitle} | Honorífico`,
     description: t.seoDescription,
-    ogImage: "/og/jurisprudencia.jpg",
+    ogImage: `${SITE_URL}/og/jurisprudencia.jpg`,
     ogType: "article",
     jsonLd: [
       {

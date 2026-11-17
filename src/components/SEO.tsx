@@ -8,7 +8,7 @@ interface SEOProps {
   title: string;
   description: string;
   path: string;
-  /** Path (relative to the site root) of a 1200x630 social share image. */
+  /** Absolute URL or site-root path of a social share image. */
   image?: string;
   imageAlt?: string;
   /** Open Graph type; "article" em páginas de conteúdo (temas e minutas). */
@@ -23,7 +23,7 @@ export function SEO({ title, description, path, image, imageAlt, ogType, jsonLd 
   const finalTitle = routeMeta?.title ?? title;
   const finalDescription = routeMeta?.description ?? description;
   const url = `${SITE_URL}${path}`;
-  const imageUrl = `${SITE_URL}${routeMeta?.ogImage || image || DEFAULT_IMAGE}`;
+  const imageUrl = new URL(routeMeta?.ogImage || image || DEFAULT_IMAGE, SITE_URL).href;
   const finalOgType = ogType ?? routeMeta?.ogType ?? "website";
   // O HTML estático já traz o JSON-LD da rota; ao hidratar, o Helmet assume
   // a emissão para que a navegação client-side continue correta.
