@@ -82,7 +82,37 @@ export default function RescisaoTrabalhistaLanding() {
           </ul>
         </>
       }
+      respostaDireta={
+        <>
+          <p>
+            Na dispensa sem justa causa, o trabalhador recebe saldo de salário, aviso prévio
+            proporcional, 13º proporcional, férias proporcionais e vencidas com 1/3, FGTS do mês e
+            multa de 40% sobre o saldo do FGTS. O aviso prévio é de 30 dias, mais 3 por ano completo
+            de serviço, até 90 dias (Lei 12.506/2011).
+          </p>
+          <p>
+            No pedido de demissão não há aviso prévio indenizado a favor do empregado nem multa do
+            FGTS. No acordo mútuo (art. 484-A da CLT), o aviso prévio indenizado e a multa do FGTS
+            caem pela metade: a multa passa a 20%.
+          </p>
+        </>
+      }
       faq={[
+        {
+          question: "Como calcular o valor do aviso prévio proporcional por tempo de serviço?",
+          answer:
+            "Divida o salário por 30 e multiplique pelos dias de aviso. São 30 dias, mais 3 dias por ano completo de serviço, com limite de 90 dias (Lei 12.506/2011). Quem tem 4 anos completos, por exemplo, tem 42 dias de aviso.",
+        },
+        {
+          question: "Qual a porcentagem da multa do FGTS em demissão por acordo mútuo?",
+          answer:
+            "No acordo do art. 484-A da CLT a multa é de 20% sobre o saldo do FGTS, metade dos 40% da dispensa sem justa causa. O trabalhador pode sacar até 80% do saldo e não tem direito ao seguro-desemprego.",
+        },
+        {
+          question: "Quem pede demissão tem direito a receber o décimo terceiro salário proporcional?",
+          answer:
+            "Sim. No pedido de demissão o empregado recebe o 13º proporcional aos meses trabalhados no ano, além do saldo de salário e das férias proporcionais e vencidas com 1/3. Não recebe multa do FGTS nem aviso prévio indenizado.",
+        },
         {
           question: "O cálculo substitui a homologação ou o TRCT?",
           answer:
