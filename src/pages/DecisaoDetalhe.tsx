@@ -280,6 +280,15 @@ export default function DecisaoDetalhe() {
 
   const instanciaLabel = instanciaLabelFn(decision.instancia, decision.tribunal);
   const fonteConfiavel = linkFonteConfiavel(decision.source_url, decision.tribunal, decision.numero_processo);
+  const tipo = decision.tipo_decisao?.trim() || "Registro judicial";
+  const assunto = decision.temas_juridicos?.find((tema) => tema.trim())?.trim()
+    || decision.ramos_direito?.find((ramo) => ramo.trim())?.trim();
+  const contexto = decision.tribunal?.trim() || decision.orgao_julgador?.trim();
+  const tituloDecisao = assunto
+    ? `${tipo}: ${assunto}`
+    : contexto
+      ? `${tipo}: ${contexto}`
+      : `${tipo}: registro ${decision.id}`;
 
   const handleCopyCitation = async () => {
     const citation = formatCitation(decision);
@@ -301,9 +310,7 @@ export default function DecisaoDetalhe() {
     {
       "@context": "https://schema.org",
       "@type": "Article",
-      headline:
-        [decision.tribunal, decision.tipo_decisao, decision.numero_processo].filter(Boolean).join(", ") ||
-        "Decisão judicial",
+      headline: tituloDecisao,
       description:
         (decision.ementa || decision.resumo_ia || "").replace(/\s+/g, " ").slice(0, 300) || undefined,
       datePublished: decision.data_decisao ?? undefined,
@@ -343,7 +350,7 @@ export default function DecisaoDetalhe() {
     <div className="min-h-screen flex flex-col bg-cream text-navy font-sans">
       <AppHeader />
       <SEO
-        title={`${decision.numero_processo || "Decisão"}${decision.tribunal ? `, ${decision.tribunal}` : ""} | Honorífico`}
+        title={`${tituloDecisao} | Honorífico`}
         description={
           (decision.ementa || decision.resumo_ia || "Decisão judicial com ementa, metadados e análise por IA no Honorífico.")
             .replace(/\s+/g, " ")
@@ -361,9 +368,14 @@ export default function DecisaoDetalhe() {
 
             <p className="text-sm font-medium text-navy mt-6">{linhaMeta}</p>
 
-            <h1 className={`text-xl text-navy mt-2 ${decision.numero_processo ? "font-mono" : ""}`}>
-              {decision.numero_processo || "Decisão judicial"}
+            <h1 className="text-h2 font-serif text-navy mt-2 break-words">
+              {tituloDecisao}
             </h1>
+            {decision.numero_processo && (
+              <p className="text-note font-mono text-navy/70 mt-3 break-all">
+                Processo {decision.numero_processo}
+              </p>
+            )}
 
             <div className="flex flex-wrap items-center gap-x-5 gap-y-2 mt-3 text-note">
               <button
