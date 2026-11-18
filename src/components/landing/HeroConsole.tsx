@@ -5,6 +5,7 @@ import { Link } from "react-router-dom";
 const casos = [
   {
     id: "software",
+    fato: "A empresa vendeu a licença do software, o sistema não funcionou e ela ainda cobrou a multa contratual.",
     label: "Contrato de software",
     tribunal: "TJPR, 1ª Turma Recursal",
     tipo: "Acórdão",
@@ -19,6 +20,7 @@ const casos = [
   },
   {
     id: "agro",
+    fato: "O dono vendeu a terra arrendada sem oferecer antes ao arrendatário, que só tinha um acordo verbal.",
     label: "Arrendamento rural",
     tribunal: "TJPR, 20ª Câmara Cível",
     tipo: "Acórdão",
@@ -33,6 +35,7 @@ const casos = [
   },
   {
     id: "rmc",
+    fato: "Uma aposentada que não sabe ler descobriu descontos de um cartão consignado que diz não ter contratado.",
     label: "Cartão consignado RMC",
     tribunal: "TJPR, 14ª Câmara Cível",
     tipo: "Acórdão",
@@ -47,6 +50,7 @@ const casos = [
   },
   {
     id: "exec",
+    fato: "O devedor não paga a dívida e a única renda encontrada é o salário dele.",
     label: "Penhora de salário",
     tribunal: "TJPR, 16ª Câmara Cível",
     tipo: "Acórdão",
@@ -126,71 +130,74 @@ export function HeroConsole() {
         className="bg-white text-navy border border-cream-dark border-t-[3px] border-t-gold rounded-lg overflow-hidden"
       >
         <div className="flex items-center justify-between gap-3 px-6 md:px-7 py-2 border-b border-cream-dark bg-cream/50 text-note text-navy/60">
-          <span>Registro público do Judiciário, CNJ/DataJud</span>
+          <span>Como o Honorífico responde</span>
           <span className="shrink-0 whitespace-nowrap inline-flex items-center gap-1.5 rounded border border-success/30 px-1.5 py-0.5 text-success">
             <svg viewBox="0 0 12 12" className="h-3 w-3" aria-hidden="true"><path d="M2.5 6.2l2.2 2.2 4.8-4.9" fill="none" stroke="currentColor" strokeWidth="1.5" /></svg>
             Fonte verificada
           </span>
         </div>
-        <header className="px-6 md:px-7 pt-5 pb-4 border-b border-cream-dark">
-          <div className="flex items-start justify-between gap-4 text-sm font-medium">
-            <span className="font-serif text-lg font-semibold leading-tight">{caso.tribunal}</span>
-            <span className="text-navy/60 font-normal">{caso.tipo}</span>
-          </div>
-          <div className="mt-1 flex items-center gap-3">
-            <span className="font-mono text-sm text-navy/70">{caso.numeroCnj}</span>
-            <button
-              type="button"
-              onClick={copiar}
-              className="rounded border border-cream-dark px-1.5 py-0.5 text-note text-navy/65 hover:border-navy/40 hover:text-navy transition-colors duration-150"
-            >
-              {copiado ? "Copiado" : "Copiar"}
-            </button>
-          </div>
-        </header>
 
-        <div className="px-6 md:px-7 py-5">
-          <p className="text-note text-navy/60 mb-2">Trecho da ementa</p>
-          <p key={caso.id} className="font-serif text-[1.0625rem] leading-[1.6] line-clamp-5 border-l-2 border-cream-dark pl-4 animate-in fade-in duration-150 motion-reduce:animate-none">
-            <Ementa texto={caso.ementa} destaque={caso.destaque} />
-          </p>
-          <p className="text-note text-navy/60 mt-3">{caso.relatoria}</p>
-        </div>
+        <ol className="relative px-6 md:px-7 py-6 space-y-6">
+          <span aria-hidden="true" className="absolute left-[2.45rem] md:left-[2.7rem] top-10 bottom-10 w-px bg-navy/20" />
 
-        <div className="px-6 md:px-7 py-4 border-t border-cream-dark bg-cream/40">
-          <p className="text-note text-navy/60 mb-2">Exemplo de memória de cálculo anexada</p>
-          <table className="w-full text-sm tabular-nums">
-            <thead>
-              <tr className="text-left text-navy/60">
-                <th className="font-medium pb-1">Mês</th>
-                <th className="font-medium pb-1">Índice</th>
-                <th className="font-medium pb-1 text-right">Variação</th>
-                <th className="font-medium pb-1 text-right">Saldo</th>
-              </tr>
-            </thead>
-            <tbody>
-              {memoria.map((r) => (
-                <tr key={r.mes} className="border-t border-cream-dark">
-                  <td className="py-1.5">{r.mes}</td>
-                  <td className="py-1.5">{r.indice}</td>
-                  <td className="py-1.5 text-right">{r.variacao}</td>
-                  <td className="py-1.5 text-right">{r.saldo}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+          <li className="relative grid grid-cols-[2rem_1fr] gap-4">
+            <span className="relative z-10 flex h-8 w-8 items-center justify-center rounded-full bg-navy text-cream text-sm font-medium tabular-nums">1</span>
+            <div>
+              <h3 className="font-serif text-lg font-semibold leading-tight">Fato</h3>
+              <p key={caso.id + "f"} className="font-serif text-[1.0625rem] leading-[1.55] text-navy/80 mt-1">{caso.fato}</p>
+              <p className="text-note text-navy/50 mt-1">Situação de exemplo, descrita em linguagem comum.</p>
+            </div>
+          </li>
 
-        <footer className="px-6 md:px-7 py-4 border-t border-cream-dark flex flex-wrap items-center justify-between gap-3 text-note">
-          <a href={caso.sourceUrl} target="_blank" rel="noopener" className={ferramentaClass}>
-            Abrir acórdão no tribunal
-          </a>
-          {caso.ferramenta.href.startsWith("#") ? (
-            <a href={caso.ferramenta.href} className={ferramentaClass}>{caso.ferramenta.label}</a>
-          ) : (
-            <Link to={caso.ferramenta.href} className={ferramentaClass}>{caso.ferramenta.label}</Link>
-          )}
-        </footer>
+          <li className="relative grid grid-cols-[2rem_1fr] gap-4">
+            <span className="relative z-10 flex h-8 w-8 items-center justify-center rounded-full bg-navy text-cream text-sm font-medium tabular-nums">2</span>
+            <div className="min-w-0">
+              <h3 className="font-serif text-lg font-semibold leading-tight">Precedente</h3>
+              <p className="text-sm font-medium mt-1">{caso.tribunal}, {caso.tipo}</p>
+              <div className="mt-0.5 flex flex-wrap items-center gap-3">
+                <span className="font-mono text-sm text-navy/70">{caso.numeroCnj}</span>
+                <button
+                  type="button"
+                  onClick={copiar}
+                  className="rounded border border-cream-dark px-1.5 py-0.5 text-note text-navy/65 hover:border-navy/40 hover:text-navy transition-colors duration-150"
+                >
+                  {copiado ? "Copiado" : "Copiar"}
+                </button>
+              </div>
+              <p key={caso.id} className="font-serif text-[1rem] leading-[1.55] line-clamp-3 border-l-2 border-cream-dark pl-3 mt-2">
+                <Ementa texto={caso.ementa} destaque={caso.destaque} />
+              </p>
+              <a href={caso.sourceUrl} target="_blank" rel="noopener" className={`${ferramentaClass} text-note inline-block mt-2`}>
+                Abrir acórdão no tribunal
+              </a>
+            </div>
+          </li>
+
+          <li className="relative grid grid-cols-[2rem_1fr] gap-4">
+            <span className="relative z-10 flex h-8 w-8 items-center justify-center rounded-full bg-navy text-cream text-sm font-medium tabular-nums">3</span>
+            <div className="min-w-0">
+              <h3 className="font-serif text-lg font-semibold leading-tight">Cálculo</h3>
+              <p className="text-note text-navy/60 mt-1 mb-1">Exemplo de memória de cálculo anexada, IPCA e Taxa Legal</p>
+              <table className="w-full text-sm tabular-nums">
+                <tbody>
+                  {memoria.map((r) => (
+                    <tr key={r.mes} className="border-t border-cream-dark">
+                      <td className="py-1">{r.mes}</td>
+                      <td className="py-1">{r.indice}</td>
+                      <td className="py-1 text-right">{r.variacao}</td>
+                      <td className="py-1 text-right">{r.saldo}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+              {caso.ferramenta.href.startsWith("#") ? (
+                <a href={caso.ferramenta.href} className={`${ferramentaClass} text-note inline-block mt-2`}>{caso.ferramenta.label}</a>
+              ) : (
+                <Link to={caso.ferramenta.href} className={`${ferramentaClass} text-note inline-block mt-2`}>{caso.ferramenta.label}</Link>
+              )}
+            </div>
+          </li>
+        </ol>
       </article>
     </div>
   );
