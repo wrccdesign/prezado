@@ -33,9 +33,9 @@ const OG_DEFAULT = `${SITE_URL}/og/home.jpg`;
 export const ROUTE_META: RouteMeta[] = [
   {
     path: "/",
-    title: "Do caso à petição, com fonte | Honorífico",
+    title: "Honorífico | Calculadoras jurídicas grátis e IA para petições",
     description:
-      "Plataforma jurídica com diagnóstico do caso, consulta processual no acervo do CNJ, análise de peças, petições e cálculos pelas séries do Banco Central.",
+      "Sete calculadoras jurídicas gratuitas pelas séries do Banco Central e Código Civil. IA jurídica para análise de casos, consulta ao acervo do CNJ e redação de petições.",
     ogImage: OG_DEFAULT,
   },
   {

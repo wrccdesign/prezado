@@ -28,7 +28,7 @@ export type RouteContent = {
 
 export const ROUTE_CONTENT: Record<string, RouteContent> = {
   "/": {
-    heading: "Do caso à petição, com fonte",
+    heading: "Cálculos jurídicos prontos para a petição.",
     intro:
       "O Honorífico reúne calculadoras jurídicas gratuitas com índices oficiais do Banco Central, consulta processual nos dados do CNJ, modelos de minutas e recursos de IA para diagnóstico do caso, análise de documentos e geração de petições. Todo precedente citado vem do acervo consultável, com link para a fonte no tribunal; quando não há decisão localizada, a resposta diz isso.",
     bullets: [

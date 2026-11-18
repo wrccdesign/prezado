@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Calculator, Check, FileDown, FileSignature, MessageSquareText, Scale } from "lucide-react";
+import { Check, FileDown } from "lucide-react";
 import { AppHeader } from "@/components/AppHeader";
 import { AppFooter } from "@/components/AppFooter";
 import { SEO } from "@/components/SEO";
@@ -61,28 +61,6 @@ const etapas = [
   },
 ];
 
-const heroShortcuts = [
-  {
-    label: "Consultar um processo",
-    href: "/jurisprudencia",
-    icon: Scale,
-  },
-  {
-    label: "Calcular correção e juros",
-    href: "#calcular",
-    icon: Calculator,
-  },
-  {
-    label: "Descrever um caso",
-    href: "/diagnostico",
-    icon: MessageSquareText,
-  },
-  {
-    label: "Gerar uma petição",
-    href: "/peticao",
-    icon: FileSignature,
-  },
-];
 
 
 const plans: { name: string; price: string; period: string; desc: string; features: string[]; cta: string; highlight: boolean; annualNote?: string; limitationNote?: string }[] = [
@@ -99,8 +77,8 @@ export default function LandingPage() {
   return (
     <div className="min-h-screen font-sans">
       <SEO
-        title="Honorífico: do caso à petição, com fonte rastreável"
-        description="Plataforma jurídica para o advogado autônomo: diagnóstico, consulta processual no acervo do CNJ, análise de peças e petições. Cálculos pelas séries do Banco Central, com memória de cálculo em PDF ou Word."
+        title="Honorífico | Calculadoras jurídicas grátis e IA para petições"
+        description="Sete calculadoras jurídicas gratuitas pelas séries do Banco Central e Código Civil. IA jurídica para análise de casos, consulta ao acervo do CNJ e redação de petições."
         path="/"
         image="/og/home.jpg"
         imageAlt="Honorífico: cálculos e prazos jurídicos com fonte oficial"
@@ -118,81 +96,62 @@ export default function LandingPage() {
       <AppHeader />
 
       {/* HERO */}
-      <section className="bg-cream text-navy py-12 md:py-20 lg:py-24 border-b border-cream-dark">
+      <section className="bg-cream text-navy py-12 md:py-24 lg:py-28 border-b border-cream-dark">
         <div className="container max-w-[1120px] mx-auto px-4 sm:px-6">
-          <div className="grid gap-12 lg:grid-cols-12 lg:items-start lg:gap-x-10">
+          <div className="grid gap-10 lg:grid-cols-12 lg:items-center lg:gap-x-12">
             <div className="lg:col-span-7">
-              <h1 className="text-display-hero text-navy max-w-[18ch]">
-                Do fato ao fundamento,<br className="hidden md:block" /> com a fonte oficial<br className="hidden md:block" /> e o cálculo em anexo.
+              <p className="font-sans text-sm font-medium text-navy/60">Para advogados no Brasil</p>
+              <h1 className="text-display-hero text-navy max-w-[22ch] mt-4">
+                Cálculos jurídicos prontos para a petição.
               </h1>
-              <p className="text-body-serif text-navy/75 max-w-[52ch] mt-6">
-                Precedente real do acervo do CNJ, com o número CNJ e link para o tribunal quando disponível. Quando a decisão não existe, a resposta diz que não encontrou.
+              <p className="font-sans text-lg md:text-xl leading-relaxed text-navy/75 max-w-[54ch] mt-6">
+                Sete calculadoras grátis, sem cadastro, com base legal citada. No plano pago, a IA jurídica analisa o caso com precedentes do CNJ e redige a petição.
               </p>
-              <form
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  const q = heroQuery.trim();
-                  if (!q) return;
-                  navigate(heroMode === "chat" ? `/chat?q=${encodeURIComponent(q)}` : `/jurisprudencia?q=${encodeURIComponent(q)}`);
-                }}
-                className="mt-8 flex max-w-[600px] flex-col sm:flex-row items-stretch rounded border border-navy/30 bg-white focus-within:border-navy transition-colors duration-150"
-              >
-                <label htmlFor="hero-modo" className="sr-only">Tipo de consulta</label>
-                <div className="relative shrink-0 border-b sm:border-b-0 sm:border-r border-cream-dark">
-                <select
-                  id="hero-modo"
-                  value={heroMode}
-                  onChange={(e) => setHeroMode(e.target.value as "fonte" | "chat")}
-                  className="h-12 sm:h-14 w-full sm:w-auto appearance-none bg-transparent pl-4 pr-10 text-sm leading-none font-medium text-navy focus:outline-none cursor-pointer"
-                >
-                  <option value="fonte">Consulta com fonte</option>
-                  <option value="chat">Dúvida sem conta</option>
-                </select>
-                <svg aria-hidden="true" viewBox="0 0 12 12" className="pointer-events-none absolute right-4 top-1/2 h-3 w-3 -translate-y-1/2 text-navy/60"><path d="M2.5 4.5l3.5 3.5 3.5-3.5" fill="none" stroke="currentColor" strokeWidth="1.5" /></svg>
-                </div>
-                <div className="flex flex-1 items-stretch">
-                  <Input
-                    value={heroQuery}
-                    onChange={(e) => setHeroQuery(e.target.value)}
-                    maxLength={2000}
-                    placeholder={heroMode === "chat" ? "Ex.: fui demitido e não recebi a rescisão" : "Descreva a situação ou cole o número CNJ"}
-                    aria-label={heroMode === "chat" ? "Escreva sua dúvida jurídica" : "Buscar processo ou decisão"}
-                    className="h-14 flex-1 min-w-0 border-0 bg-transparent rounded-none px-4 text-base text-navy placeholder:text-navy/45 font-sans focus-visible:ring-0 focus-visible:ring-offset-0"
-                  />
-                  <Button
-                    type="submit"
-                    size="lg"
-                    className="my-1.5 mr-1.5 h-auto bg-gold text-navy hover:bg-gold-light font-medium rounded px-6"
-                  >
-                    {heroMode === "chat" ? "Perguntar" : "Buscar"}
-                  </Button>
-                </div>
-              </form>
-              <p className="text-note text-navy/55 mt-3">
-                {heroMode === "chat"
-                  ? "1 pergunta por dia sem conta. A resposta abre no chat jurídico."
-                  : "Sem conta, cada busca mostra até 3 decisões, com link para o tribunal."}
-              </p>
-              <p className="text-note text-navy/55 mt-8 mb-3">Ou comece por</p>
-              <div className="grid max-w-[600px] grid-cols-1 sm:grid-cols-2 gap-2">
-                {heroShortcuts.map(({ label, href }) => {
-                  const chip =
-                    "inline-flex items-center justify-start rounded border border-navy/20 bg-cream px-3.5 py-2 text-sm font-medium text-navy/85 transition-colors duration-150 hover:border-navy hover:bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 focus-visible:ring-offset-cream";
-                  return href.startsWith("#") ? (
-                    <a key={href} href={href} className={chip}>{label}</a>
-                  ) : (
-                    <Link key={href} to={href} className={chip}>{label}</Link>
-                  );
-                })}
+              <div className="mt-8 flex flex-col sm:flex-row gap-3">
+                <Button asChild size="lg" className="h-12 w-full sm:w-auto bg-gold text-navy hover:bg-gold-light font-medium rounded px-7">
+                  <Link to="/calculadoras">Calcular grátis</Link>
+                </Button>
+                <Button asChild size="lg" variant="outline" className="h-12 w-full sm:w-auto border-navy text-navy bg-transparent hover:bg-navy hover:text-cream font-medium rounded px-7">
+                  <Link to="/planos">Conhecer a IA jurídica</Link>
+                </Button>
               </div>
-              <p className="text-note text-navy/60 mt-8 max-w-[60ch] border-t border-cream-dark pt-4">
-                A conta grátis começa com 7 dias do plano Profissional, sem cartão.
+              <p className="text-note text-navy/60 mt-4">
+                Calculadoras: grátis e sem cadastro. IA: planos pagos a partir de R$ 49/mês.
               </p>
-
+              <ul className="mt-8 pt-5 border-t border-cream-dark flex flex-col sm:flex-row sm:flex-wrap gap-x-8 gap-y-2 text-note text-navy/70">
+                <li>Índices do Banco Central</li>
+                <li>Precedentes do CNJ/DataJud</li>
+                <li>Memória de cálculo mês a mês</li>
+              </ul>
             </div>
 
-            <div className="lg:col-span-5 lg:pt-3">
-              <HeroConsole />
+            <div className="lg:col-span-5">
+              <div className="rounded-lg border border-cream-dark border-t-[3px] border-t-gold bg-white p-6 md:p-7">
+                <p className="text-note text-navy/60">Correção monetária e juros, Lei 14.905/2024</p>
+                <p className="mt-4 font-sans text-4xl font-medium text-navy tabular-nums">R$ 10.330,53</p>
+                <p className="text-note text-navy/60 mt-1">Saldo corrigido em 09/2024, a partir de R$ 10.000,00 em 01/2024</p>
+                <table className="mt-6 w-full text-sm tabular-nums">
+                  <thead>
+                    <tr className="text-left text-navy/60 border-b border-cream-dark">
+                      <th className="py-2 font-medium">Mês</th>
+                      <th className="py-2 font-medium">Índice</th>
+                      <th className="py-2 font-medium text-right">Variação</th>
+                      <th className="py-2 font-medium text-right">Saldo</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {memoriaSample.slice(0, 2).map((r) => (
+                      <tr key={r.mes} className="border-b border-cream-dark text-navy">
+                        <td className="py-2">{r.mes}</td>
+                        <td className="py-2">{r.indice}</td>
+                        <td className="py-2 text-right">{r.variacao}</td>
+                        <td className="py-2 text-right">{r.saldo}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+                <p className="text-note text-navy/55 mt-4">Fonte: séries do Banco Central (SGS 433 e 29543)</p>
+              </div>
             </div>
           </div>
         </div>
@@ -240,6 +199,63 @@ export default function LandingPage() {
             linkLabel="Consultar processos"
             linkTo="/jurisprudencia"
           />
+          <div className="mt-14 grid gap-10 lg:grid-cols-12 lg:items-start lg:gap-x-10">
+            <div className="lg:col-span-6">
+              <h3 className="text-h3 text-navy">Teste com um caso seu</h3>
+              <p className="text-body text-navy/70 mt-2 max-w-[52ch]">Busque decisões com fonte ou faça uma pergunta ao chat jurídico, sem criar conta.</p>
+              <form
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  const q = heroQuery.trim();
+                  if (!q) return;
+                  navigate(heroMode === "chat" ? `/chat?q=${encodeURIComponent(q)}` : `/jurisprudencia?q=${encodeURIComponent(q)}`);
+                }}
+                className="mt-6 flex max-w-[600px] flex-col sm:flex-row items-stretch rounded border border-navy/30 bg-white focus-within:border-navy transition-colors duration-150"
+              >
+                <label htmlFor="hero-modo" className="sr-only">Tipo de consulta</label>
+                <div className="relative shrink-0 border-b sm:border-b-0 sm:border-r border-cream-dark">
+                <select
+                  id="hero-modo"
+                  value={heroMode}
+                  onChange={(e) => setHeroMode(e.target.value as "fonte" | "chat")}
+                  className="h-12 sm:h-14 w-full sm:w-auto appearance-none bg-transparent pl-4 pr-10 text-sm leading-none font-medium text-navy focus:outline-none cursor-pointer"
+                >
+                  <option value="fonte">Consulta com fonte</option>
+                  <option value="chat">Dúvida sem conta</option>
+                </select>
+                <svg aria-hidden="true" viewBox="0 0 12 12" className="pointer-events-none absolute right-4 top-1/2 h-3 w-3 -translate-y-1/2 text-navy/60"><path d="M2.5 4.5l3.5 3.5 3.5-3.5" fill="none" stroke="currentColor" strokeWidth="1.5" /></svg>
+                </div>
+                <div className="flex flex-1 items-stretch">
+                  <Input
+                    value={heroQuery}
+                    onChange={(e) => setHeroQuery(e.target.value)}
+                    maxLength={2000}
+                    placeholder={heroMode === "chat" ? "Ex.: fui demitido e não recebi a rescisão" : "Descreva a situação ou cole o número CNJ"}
+                    aria-label={heroMode === "chat" ? "Escreva sua dúvida jurídica" : "Buscar processo ou decisão"}
+                    className="h-14 flex-1 min-w-0 border-0 bg-transparent rounded-none px-4 text-base text-navy placeholder:text-navy/45 font-sans focus-visible:ring-0 focus-visible:ring-offset-0"
+                  />
+                  <Button
+                    type="submit"
+                    size="lg"
+                    className="my-1.5 mr-1.5 h-auto bg-gold text-navy hover:bg-gold-light font-medium rounded px-6"
+                  >
+                    {heroMode === "chat" ? "Perguntar" : "Buscar"}
+                  </Button>
+                </div>
+              </form>
+              <p className="text-note text-navy/55 mt-3">
+                {heroMode === "chat"
+                  ? "1 pergunta por dia sem conta. A resposta abre no chat jurídico."
+                  : "Sem conta, cada busca mostra até 3 decisões, com link para o tribunal."}
+              </p>
+              <p className="text-note text-navy/60 mt-6 max-w-[60ch] border-t border-cream-dark pt-4">
+                A conta grátis começa com 7 dias do plano Profissional, sem cartão.
+              </p>
+            </div>
+            <div className="lg:col-span-6">
+              <HeroConsole />
+            </div>
+          </div>
         </div>
       </section>
 
