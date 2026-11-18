@@ -1,3 +1,4 @@
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { requireQuotaOrGuest } from "../_shared/calculo-guard.ts";
 import { extractEnv } from "../_shared/rate-limit.ts";
@@ -98,6 +99,8 @@ Ao final absoluto de TODA resposta, após o indicador de confiabilidade, adicion
 ## IDIOMA
 Responda sempre em português brasileiro.`;
 
+const GUEST_CHAT_DAILY_CAP = 150;
+
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
@@ -106,6 +109,22 @@ serve(async (req) => {
   if (auth instanceof Response) return auth;
   const _userId = auth.userId ?? undefined;
   const isGuest = auth.guest;
+
+  // Teto global diário da demonstração: troca de IP não multiplica o custo da IA.
+  if (isGuest) {
+    const admin = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
+    const { count, error } = await admin
+      .from("anon_usage")
+      .select("*", { count: "exact", head: true })
+      .eq("action", "chat")
+      .gte("created_at", new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString());
+    if (error || (count ?? 0) > GUEST_CHAT_DAILY_CAP) {
+      return new Response(
+        JSON.stringify({ error: "As perguntas de demonstração de hoje acabaram. Crie sua conta grátis para continuar." }),
+        { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+      );
+    }
+  }
 
   try {
     const { messages: rawMessages, isLawyer } = await req.json();
