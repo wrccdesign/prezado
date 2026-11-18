@@ -3,6 +3,7 @@ import { FAQ_CORRECAO_MONETARIA } from "@/seo/faqData";
 import { CalculatorLanding } from "@/components/calculators/CalculatorLanding";
 import { CorrecaoCalc } from "@/components/calculators/CorrecaoCalc";
 import { CORRECAO_INDICES, correcaoPath } from "@/seo/correcaoIndices";
+import { GUIAS } from "@/seo/guias";
 
 export default function CorrecaoMonetariaLanding() {
   return (
@@ -86,6 +87,16 @@ export default function CorrecaoMonetariaLanding() {
                   className="text-navy underline underline-offset-4 hover:text-gold"
                 >
                   {i.title}
+                </Link>
+              </li>
+            ))}
+          </ul>
+          <h2 className="text-h3 text-navy">Guias relacionados</h2>
+          <ul>
+            {GUIAS.map((g) => (
+              <li key={g.path} className="border-t border-cream-dark py-3">
+                <Link to={g.path} className="text-navy underline underline-offset-4 hover:text-gold">
+                  {g.h1}
                 </Link>
               </li>
             ))}

@@ -98,6 +98,7 @@ const calculadoras = [
 const plataforma = [
   { to: "/", label: "Início" },
   { to: "/sobre", label: "Quem faz o Honorífico" },
+  { to: "/guias", label: "Guias de correção monetária e juros" },
   { to: "/jurisprudencia", label: "Jurisprudência" },
   { to: "/jurisprudencia/tema/dano-moral", label: "Jurisprudência sobre dano moral" },
   { to: "/jurisprudencia/tema/dano-material", label: "Jurisprudência sobre dano material" },

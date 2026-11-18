@@ -14,6 +14,7 @@ import {
 import { RESCISAO_SITUACOES, rescisaoPath } from "./rescisaoSituacoes";
 import { CORRECAO_INDICES, correcaoPath } from "./correcaoIndices";
 import { JURISPRUDENCIA_TEMAS, jurisTemaPath } from "./jurisprudenciaTemas";
+import { renderGuiaHtml } from "./guias";
 
 export type RouteContent = {
   /** Título principal em texto, equivalente ao H1 da página. */
@@ -714,6 +715,8 @@ function escapeHtml(value: string) {
  * pelo React na hidratação; serve apenas a quem não executa JavaScript.
  */
 export function renderRouteContent(path: string): string | null {
+  const guia = renderGuiaHtml(path);
+  if (guia) return guia;
   const content = ROUTE_CONTENT[path];
   if (!content) return null;
 

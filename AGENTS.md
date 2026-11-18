@@ -6,3 +6,5 @@
 - Keep the creator's full-name constant at the top of the Sobre page and reuse it in the landing team section, so both presentations stay synchronized; team portraits are optional and render no fallback.
 - Guest quotas count usage by action while the hourly abuse limit counts all actions, so searches and calculations cannot consume the chat demonstration.
 - Document integrity checks live in `supabase/functions/_shared/integrity-check.ts` and only report objective signals (hidden AI commands, invisible chars, microscopic font); never claim a check the PDF reader cannot guarantee, and never conclude bad faith.
+
+- Guide pages (/guias/*) read approved content from `src/seo/guiasData.ts` via a minimal Markdown parser shared by React and the static prerender, so page, JSON-LD FAQ and crawler HTML never diverge.

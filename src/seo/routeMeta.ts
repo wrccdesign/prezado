@@ -14,6 +14,7 @@ import {
 import { RESCISAO_SITUACOES, rescisaoPath } from "./rescisaoSituacoes";
 import { CORRECAO_INDICES, CORRECAO_BASE_PATH, correcaoPath } from "./correcaoIndices";
 import { JURISPRUDENCIA_TEMAS, jurisTemaPath } from "./jurisprudenciaTemas";
+import { GUIAS, guiaJsonLd } from "./guias";
 
 export type RouteMeta = {
   path: string;
@@ -313,6 +314,21 @@ export const ROUTE_META: RouteMeta[] = [
       buildFaqJsonLd(FAQ_PLANOS),
     ],
   },
+  {
+    path: "/guias",
+    title: "Guias de correção monetária e juros | Honorífico",
+    description:
+      "Guias sobre taxa legal da Lei 14.905/2024, índice de correção em ação cível e termo inicial de correção e juros, com base legal e exemplos.",
+    ogImage: OG_DEFAULT,
+  },
+  ...GUIAS.map((g) => ({
+    path: g.path,
+    title: g.title,
+    description: g.description,
+    ogImage: OG_DEFAULT,
+    ogType: "article" as const,
+    jsonLd: guiaJsonLd(g.path),
+  })),
   {
     path: "/mapa-do-site",
     title: "Mapa do site | Honorífico",
