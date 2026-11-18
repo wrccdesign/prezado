@@ -2,6 +2,7 @@ import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { getDocumentProxy } from "https://esm.sh/unpdf@0.12.1";
 import { requireQuota } from "../_shared/calculo-guard.ts";
 import { aiChatText } from "../_shared/ai.ts";
+import { buildReport, checkPdfItems, checkTextSignals, type IntegritySignal, type PdfTextItem } from "../_shared/integrity-check.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -51,6 +52,7 @@ type PdfExtraction = {
   pagesRead: number;
   pagesTotal: number;
   encrypted?: boolean;
+  layoutSignals?: IntegritySignal[];
 };
 
 /**
@@ -63,10 +65,15 @@ async function extractPdfText(bytes: Uint8Array): Promise<PdfExtraction> {
     const pagesTotal = doc.numPages;
     const pagesRead = Math.min(pagesTotal, MAX_PDF_PAGES);
     const pages: string[] = [];
+    const layoutSignals: IntegritySignal[] = [];
 
     for (let i = 1; i <= pagesRead; i++) {
       const page = await doc.getPage(i);
       const content = await page.getTextContent();
+      try {
+        const view = (page as unknown as { view?: number[] }).view ?? [0, 0, 595, 842];
+        layoutSignals.push(...checkPdfItems(content.items as PdfTextItem[], view, i));
+      } catch (_) { /* verificação de layout nunca bloqueia a leitura */ }
       let pageText = "";
       for (const item of content.items as Array<{ str?: string; hasEOL?: boolean }>) {
         if (typeof item.str !== "string") continue;
@@ -76,7 +83,7 @@ async function extractPdfText(bytes: Uint8Array): Promise<PdfExtraction> {
       pages.push(pageText.trim());
     }
 
-    return { text: pages.join("\n\n"), pagesRead, pagesTotal };
+    return { text: pages.join("\n\n"), pagesRead, pagesTotal, layoutSignals };
   } catch (e) {
     const name = (e as { name?: string })?.name ?? "";
     const message = e instanceof Error ? e.message : String(e);
@@ -186,6 +193,8 @@ serve(async (req) => {
     let partialExtraction = false;
     let pagesRead: number | undefined;
     let pagesTotal: number | undefined;
+    let layoutSignals: IntegritySignal[] = [];
+    let layoutChecked = false;
 
     if (fileName.endsWith(".txt")) {
       extractedText = sanitizeText(await file.text());
@@ -206,6 +215,8 @@ serve(async (req) => {
         }
 
         extractedText = sanitizeText(extraction.text);
+        layoutSignals = extraction.layoutSignals ?? [];
+        layoutChecked = true;
         pagesRead = extraction.pagesRead || undefined;
         pagesTotal = extraction.pagesTotal || undefined;
         if (extraction.pagesTotal > extraction.pagesRead) partialExtraction = true;
@@ -234,6 +245,8 @@ serve(async (req) => {
           if (ocrResult.text && ocrResult.text.length > 20) {
             extractedText = sanitizeText(ocrResult.text);
             usedOcr = true;
+            layoutSignals = [];
+            layoutChecked = false;
             pagesRead = undefined;
             pagesTotal = undefined;
             partialExtraction = false;
@@ -281,8 +294,20 @@ serve(async (req) => {
     const truncated = extractedText.length > MAX_TEXT_LENGTH;
     if (truncated) partialExtraction = true;
 
+    // Varredura de integridade: sinais de layout (só PDF com camada de texto) e comandos no texto.
+    // Texto fora da página não é afirmado como verificado: o leitor de PDF descarta parte dele antes de chegar aqui.
+    const integrity = extractedText.startsWith("[Não foi possível")
+      ? null
+      : buildReport(
+          [...layoutSignals, ...checkTextSignals(extractedText)],
+          layoutChecked
+            ? ["comandos dirigidos a IA", "caracteres invisíveis", "fonte microscópica"]
+            : ["comandos dirigidos a IA", "caracteres invisíveis"],
+        );
+
     return new Response(
       JSON.stringify({
+        integrity,
         text: extractedText.slice(0, MAX_TEXT_LENGTH),
         ocr: usedOcr,
         partial: partialExtraction,

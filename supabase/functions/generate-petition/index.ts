@@ -6,6 +6,7 @@ import { searchLegislation, type NormaResumo } from "../_shared/legislation-sear
 import { aiChatText, AIError } from "../_shared/ai.ts";
 import { buildCitationReport } from "../_shared/citation-check.ts";
 import { revisarSaida } from "../_shared/output-review.ts";
+import { checkTextSignals } from "../_shared/integrity-check.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -314,6 +315,12 @@ INSTRUÇÕES: Com base nos fatos acima, INFIRA e SUGIRA toda a fundamentação j
     if (insertError) console.error("Insert error:", insertError);
 
     const citationReport = await buildCitationReport(textoRevisado, supabase);
+
+    // A petição nunca sai com comando oculto para IA: se o texto (vindo dos fatos do usuário ou do modelo)
+    // tiver um, o trecho é sinalizado para remoção antes do protocolo.
+    for (const sinal of checkTextSignals(textoRevisado)) {
+      review.pontos_a_conferir.push(`Possível comando dirigido a IA no texto, remova antes de protocolar: "${sinal.trecho}"`);
+    }
 
     return new Response(JSON.stringify({ generated_text: textoRevisado, citation_report: citationReport, review }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },

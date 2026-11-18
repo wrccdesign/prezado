@@ -6,7 +6,7 @@ export default function Termos() {
       title="Termos e Condições"
       description="Termos e condições de uso da plataforma Honorífico, IA jurídica brasileira."
       path="/termos"
-      updatedAt="10 de julho de 2026"
+      updatedAt="18 de novembro de 2026"
     >
       <p>
         Estes Termos e Condições ("Termos") regem o uso da plataforma <strong>Honorífico</strong> ("Serviço",
@@ -73,7 +73,8 @@ export default function Termos() {
         <li>Enviar spam, malware, tentar acesso não autorizado, sondar vulnerabilidades ou realizar scraping massivo;</li>
         <li>Reproduzir, revender, sublicenciar ou redistribuir o Serviço sem autorização escrita;</li>
         <li>Fazer engenharia reversa, contornar limites técnicos, criar produtos concorrentes com base no Serviço;</li>
-        <li>Utilizar o Serviço para gerar conteúdo enganoso, deepfakes, discurso de ódio, ou material que induza terceiros ao erro sobre a autoria por advogado.</li>
+        <li>Utilizar o Serviço para gerar conteúdo enganoso, deepfakes, discurso de ódio, ou material que induza terceiros ao erro sobre a autoria por advogado;</li>
+        <li>Inserir, gerar ou ocultar em documentos, inclusive peças processuais, comandos destinados a manipular sistemas de inteligência artificial, do Honorífico, do Poder Judiciário ou de terceiros, por meio de texto invisível, fonte microscópica, texto fora da página, caracteres ocultos ou instruções dirigidas a uma IA.</li>
       </ul>
 
       <h2>6. Uso de inteligência artificial generativa</h2>
@@ -89,6 +90,19 @@ export default function Termos() {
       <p>
         <strong>O conteúdo gerado não constitui parecer jurídico</strong>. Consulte sempre um advogado
         habilitado para seu caso concreto.
+      </p>
+
+      <h3>Integridade de documentos</h3>
+      <p>
+        Os documentos enviados ao Serviço passam por verificação automática de integridade, que procura sinais de
+        comando oculto destinado a induzir uma IA ou o julgador a erro. Quando encontra um sinal, o Serviço mostra
+        o trecho e sua localização ao usuário. A verificação aponta indícios objetivos e não constitui conclusão
+        sobre a conduta de ninguém; pode deixar de detectar técnicas novas e pode apontar trechos legítimos.
+      </p>
+      <p>
+        O uso de comandos ocultos em processo judicial pode configurar litigância de má-fé (arts. 79 a 81 do Código
+        de Processo Civil), com multa e indenização, sem prejuízo de responsabilização disciplinar e penal. Contas
+        que usem o Serviço para criar ou ocultar esse tipo de comando podem ser suspensas, nos termos da seção 9.
       </p>
 
       <h2>7. Propriedade intelectual</h2>

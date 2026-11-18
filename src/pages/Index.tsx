@@ -17,6 +17,7 @@ import { AppFooter } from "@/components/AppFooter";
 import { SEO } from "@/components/SEO";
 import type { LegalAnalysis } from "@/types/analysis";
 import type { OutputReview } from "@/components/ReviewBlock";
+import { IntegrityBlock, mergeIntegrity, type IntegrityReport } from "@/components/IntegrityBlock";
 
 const SESSION_KEY = "honorifico:analise-em-andamento";
 
@@ -33,6 +34,8 @@ export default function Index({ embedded = false }: { embedded?: boolean }) {
   const [parseStage, setParseStage] = useState("");
   const [result, setResult] = useState<LegalAnalysis | null>(null);
   const [review, setReview] = useState<OutputReview | null>(null);
+  const [fileIntegrity, setFileIntegrity] = useState<IntegrityReport | null>(null);
+  const [analysisIntegrity, setAnalysisIntegrity] = useState<IntegrityReport | null>(null);
   const [analyzedText, setAnalyzedText] = useState("");
   const [saveState, setSaveState] = useState<"idle" | "saving" | "saved">("idle");
   const [showPreview, setShowPreview] = useState(false);
@@ -217,6 +220,7 @@ export default function Index({ embedded = false }: { embedded?: boolean }) {
       setParseProgress(100);
       setParseStage("Concluído!");
       setText(extracted);
+      setFileIntegrity((data.integrity as IntegrityReport) ?? null);
       setShowPreview(true);
       notifyUsageConsumed();
       const ocrNote = data.ocr && !isImage ? " (via OCR, documento escaneado)" : "";
@@ -299,6 +303,7 @@ export default function Index({ embedded = false }: { embedded?: boolean }) {
     if (!refine) {
       setResult(null);
       setReview(null);
+      setAnalysisIntegrity(null);
       setEsclarecimentos({});
       setEsclarecimentoResumo("");
       setEsclarecimentoDirecionamentos("");
@@ -338,6 +343,7 @@ export default function Index({ embedded = false }: { embedded?: boolean }) {
       setAnalyzedText((data.input_text as string) ?? currentText);
       setResult(data.result as LegalAnalysis);
       setReview((data.review as OutputReview) ?? null);
+      setAnalysisIntegrity((data.integrity as IntegrityReport) ?? null);
       setRodada((data.rodada as number) ?? (refine ? rodada + 1 : 1));
       if (typeof data.rodadas_incluidas === "number") setRodadasIncluidas(data.rodadas_incluidas);
 
@@ -387,6 +393,8 @@ export default function Index({ embedded = false }: { embedded?: boolean }) {
     setFileName(null);
     setResult(null);
     setReview(null);
+    setFileIntegrity(null);
+    setAnalysisIntegrity(null);
     setAnalyzedText("");
     setSaveState("idle");
     setShowPreview(false);
@@ -428,6 +436,9 @@ export default function Index({ embedded = false }: { embedded?: boolean }) {
         {!embedded && (
           <h1 className="mb-6 sm:mb-8 text-2xl sm:text-3xl lg:text-4xl font-bold text-foreground">Resultado da Análise</h1>
         )}
+        <div className="mb-6">
+          <IntegrityBlock report={mergeIntegrity(fileIntegrity, analysisIntegrity)} />
+        </div>
         <AnalysisResult
           result={result}
           review={review}
@@ -511,6 +522,12 @@ export default function Index({ embedded = false }: { embedded?: boolean }) {
               onChange={(e) => setText(e.target.value)}
               disabled={loading || parsing}
             />
+
+            <p className="text-xs leading-relaxed text-muted-foreground">
+              Todo documento passa por verificação de integridade: procuramos comandos ocultos escritos para enganar uma IA ou o julgador.
+            </p>
+
+            {fileIntegrity?.status === "suspeito" && <IntegrityBlock report={fileIntegrity} />}
 
             {/* Text Preview after PDF extraction */}
             {fileName && text && (
