@@ -14,7 +14,7 @@ import {
 import { RESCISAO_SITUACOES, rescisaoPath } from "./rescisaoSituacoes";
 import { CORRECAO_INDICES, correcaoPath } from "./correcaoIndices";
 import { JURISPRUDENCIA_TEMAS, jurisTemaPath } from "./jurisprudenciaTemas";
-import { renderGuiaHtml } from "./guias";
+import { renderGuiaHtml, GUIAS } from "./guias";
 
 export type RouteContent = {
   /** Título principal em texto, equivalente ao H1 da página. */
@@ -25,6 +25,8 @@ export type RouteContent = {
   bullets?: string[];
   /** Perguntas e respostas exibidas na página. */
   faq?: FaqItem[];
+  /** Links internos exibidos na página, como "Guias relacionados". */
+  links?: { title: string; items: { label: string; to: string }[] };
 };
 
 export const ROUTE_CONTENT: Record<string, RouteContent> = {
@@ -65,6 +67,7 @@ export const ROUTE_CONTENT: Record<string, RouteContent> = {
       "Memória mês a mês com índice, variação, fator acumulado, saldo corrigido e juros, exportável em PDF e Word.",
     ],
     faq: FAQ_CORRECAO_MONETARIA,
+    links: { title: "Guias relacionados", items: GUIAS.map((g) => ({ label: g.h1, to: g.path })) },
   },
   "/calculadoras/prazo-processual": {
     heading: "Calculadora de prazo processual",
@@ -728,6 +731,14 @@ export function renderRouteContent(path: string): string | null {
   if (content.bullets?.length) {
     parts.push(
       `<ul>${content.bullets.map((b) => `<li>${escapeHtml(b)}</li>`).join("")}</ul>`,
+    );
+  }
+
+  if (content.links?.items.length) {
+    parts.push(
+      `<h2>${escapeHtml(content.links.title)}</h2><ul>${content.links.items
+        .map((l) => `<li><a href="${escapeHtml(l.to)}">${escapeHtml(l.label)}</a></li>`)
+        .join("")}</ul>`,
     );
   }
 
