@@ -9,6 +9,7 @@ import { SEO } from "@/components/SEO";
 import { CorrecaoCalc } from "@/components/calculators/CorrecaoCalc";
 import { savePeticaoPrefill } from "@/lib/peticaoPrefill";
 import { FonteTable } from "@/components/FonteTable";
+import { HeroMiniCorrecao } from "@/components/landing/HeroMiniCorrecao";
 import { HeroConsole } from "@/components/landing/HeroConsole";
 import { WAGNER_FULL_NAME } from "@/pages/Sobre";
 import antonioPhoto from "@/assets/equipe/antonio-paulo-da-costa-carvalho.webp";
@@ -126,32 +127,7 @@ export default function LandingPage() {
             </div>
 
             <div className="lg:col-span-5">
-              <div className="rounded-lg border border-cream-dark border-t-[3px] border-t-gold bg-white p-6 md:p-7">
-                <p className="text-note text-navy/60">Correção monetária e juros, Lei 14.905/2024</p>
-                <p className="mt-4 font-sans text-4xl font-medium text-navy tabular-nums">R$ 10.330,53</p>
-                <p className="text-note text-navy/60 mt-1">Saldo corrigido em 09/2024, a partir de R$ 10.000,00 em 01/2024</p>
-                <table className="mt-6 w-full text-sm tabular-nums">
-                  <thead>
-                    <tr className="text-left text-navy/60 border-b border-cream-dark">
-                      <th className="py-2 font-medium">Mês</th>
-                      <th className="py-2 font-medium">Índice</th>
-                      <th className="py-2 font-medium text-right">Variação</th>
-                      <th className="py-2 font-medium text-right">Saldo</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {memoriaSample.slice(0, 2).map((r) => (
-                      <tr key={r.mes} className="border-b border-cream-dark text-navy">
-                        <td className="py-2">{r.mes}</td>
-                        <td className="py-2">{r.indice}</td>
-                        <td className="py-2 text-right">{r.variacao}</td>
-                        <td className="py-2 text-right">{r.saldo}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-                <p className="text-note text-navy/55 mt-4">Fonte: séries do Banco Central (SGS 433 e 29543)</p>
-              </div>
+              <HeroMiniCorrecao />
             </div>
           </div>
         </div>
