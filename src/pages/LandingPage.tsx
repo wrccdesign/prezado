@@ -97,10 +97,14 @@ export default function LandingPage() {
       <AppHeader />
 
       {/* HERO */}
-      <section className="bg-cream text-navy pt-12 pb-14 md:pt-[120px] md:pb-24 border-b border-cream-dark">
+      <section className="bg-cream text-navy pt-16 pb-14 md:pt-[128px] md:pb-24 border-b border-cream-dark">
         <div className="mx-auto max-w-[880px] px-4 sm:px-6 text-center">
-          <p className="font-sans text-sm font-medium text-navy/60">Para advogados no Brasil</p>
-          <h1 className="text-display-hero text-navy mx-auto max-w-[26ch] mt-4">
+          <p>
+            <span className="inline-flex items-center rounded-full border border-navy/20 px-3.5 py-1 font-sans text-sm font-medium text-navy/70">
+              Para advogados no Brasil
+            </span>
+          </p>
+          <h1 className="text-display-hero text-navy mx-auto max-w-[26ch] mt-5">
             Pergunte, calcule e fundamente com fonte oficial.
           </h1>
           <p className="font-sans text-lg leading-relaxed text-navy/75 mx-auto max-w-[58ch] mt-5">
