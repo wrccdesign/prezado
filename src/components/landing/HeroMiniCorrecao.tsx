@@ -22,7 +22,7 @@ const EXEMPLO = {
   ] as Linha[],
 };
 
-export function HeroMiniCorrecao() {
+export function HeroMiniCorrecao({ bare = false }: { bare?: boolean } = {}) {
   const [valor, setValor] = useState("10000");
   const [ini, setIni] = useState("2024-01");
   const [fim, setFim] = useState("2024-09");
@@ -74,8 +74,8 @@ export function HeroMiniCorrecao() {
   const [yf, mf] = calc.fim.split("-");
 
   return (
-    <div className="rounded-lg border border-cream-dark border-t-[3px] border-t-gold bg-white p-6 md:p-7">
-      <h2 className="font-sans text-sm font-medium text-navy">Correção monetária e juros, Lei 14.905/2024</h2>
+    <div className={bare ? "" : "rounded-lg border border-cream-dark border-t-[3px] border-t-gold bg-white p-6 md:p-7"}>
+      <h2 className={bare ? "sr-only" : "font-sans text-sm font-medium text-navy"}>Correção monetária e juros, Lei 14.905/2024</h2>
       <form onSubmit={calcular} className="mt-4 grid grid-cols-2 gap-3">
         <div className="col-span-2 space-y-1">
           <Label htmlFor="mini-valor" className="text-note text-navy/70">Valor (R$)</Label>

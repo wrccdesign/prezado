@@ -9,7 +9,7 @@ import { SEO } from "@/components/SEO";
 import { CorrecaoCalc } from "@/components/calculators/CorrecaoCalc";
 import { savePeticaoPrefill } from "@/lib/peticaoPrefill";
 import { FonteTable } from "@/components/FonteTable";
-import { HeroMiniCorrecao } from "@/components/landing/HeroMiniCorrecao";
+import { HeroAskConsole } from "@/components/landing/HeroAskConsole";
 import { HeroConsole } from "@/components/landing/HeroConsole";
 import { WAGNER_FULL_NAME } from "@/pages/Sobre";
 import antonioPhoto from "@/assets/equipe/antonio-paulo-da-costa-carvalho.webp";
@@ -78,7 +78,7 @@ export default function LandingPage() {
   return (
     <div className="min-h-screen font-sans">
       <SEO
-        title="Honorífico | Calculadoras jurídicas grátis e IA para petições"
+        title="Honorífico | IA jurídica com fonte oficial e calculadoras grátis"
         description="Sete calculadoras jurídicas gratuitas pelas séries do Banco Central e Código Civil. IA jurídica para análise de casos, consulta ao acervo do CNJ e redação de petições."
         path="/"
         image="/og/home.jpg"
@@ -97,39 +97,23 @@ export default function LandingPage() {
       <AppHeader />
 
       {/* HERO */}
-      <section className="bg-cream text-navy py-12 md:py-24 lg:py-28 border-b border-cream-dark">
-        <div className="container max-w-[1120px] mx-auto px-4 sm:px-6">
-          <div className="grid gap-10 lg:grid-cols-12 lg:items-center lg:gap-x-12">
-            <div className="lg:col-span-7">
-              <p className="font-sans text-sm font-medium text-navy/60">Para advogados no Brasil</p>
-              <h1 className="text-display-hero text-navy max-w-[22ch] mt-4">
-                Cálculos jurídicos prontos para a petição.
-              </h1>
-              <p className="font-sans text-lg md:text-xl leading-relaxed text-navy/75 max-w-[54ch] mt-6">
-                Sete calculadoras grátis, sem cadastro, com base legal citada. No plano pago, a IA jurídica analisa o caso com precedentes do CNJ e redige a petição.
-              </p>
-              <div className="mt-8 flex flex-col sm:flex-row gap-3">
-                <Button asChild size="lg" className="h-12 w-full sm:w-auto bg-gold text-navy hover:bg-gold-light font-medium rounded px-7">
-                  <Link to="/calculadoras">Calcular grátis</Link>
-                </Button>
-                <Button asChild size="lg" variant="outline" className="h-12 w-full sm:w-auto border-navy text-navy bg-transparent hover:bg-navy hover:text-cream font-medium rounded px-7">
-                  <Link to="/planos">Conhecer a IA jurídica</Link>
-                </Button>
-              </div>
-              <p className="text-note text-navy/60 mt-4">
-                Calculadoras: grátis e sem cadastro. IA: planos pagos a partir de R$ 49/mês.
-              </p>
-              <ul className="mt-8 pt-5 border-t border-cream-dark flex flex-col sm:flex-row sm:flex-wrap gap-x-8 gap-y-2 text-note text-navy/70">
-                <li>Índices do Banco Central</li>
-                <li>Precedentes do CNJ/DataJud</li>
-                <li>Memória de cálculo mês a mês</li>
-              </ul>
-            </div>
-
-            <div className="lg:col-span-5">
-              <HeroMiniCorrecao />
-            </div>
+      <section className="bg-cream text-navy pt-12 pb-14 md:pt-[120px] md:pb-24 border-b border-cream-dark">
+        <div className="mx-auto max-w-[880px] px-4 sm:px-6 text-center">
+          <p className="font-sans text-sm font-medium text-navy/60">Para advogados no Brasil</p>
+          <h1 className="text-display-hero text-navy mx-auto max-w-[26ch] mt-4">
+            Pergunte, calcule e fundamente com fonte oficial.
+          </h1>
+          <p className="font-sans text-lg leading-relaxed text-navy/75 mx-auto max-w-[58ch] mt-5">
+            Respostas com precedentes reais do CNJ, cálculos pelas séries do Banco Central e petições prontas para revisar.
+          </p>
+          <div className="mt-8 md:mt-10">
+            <HeroAskConsole />
           </div>
+          <ul className="mt-6 flex flex-col sm:flex-row sm:flex-wrap sm:justify-center gap-x-8 gap-y-1.5 text-note text-navy/65">
+            <li>Precedentes do CNJ/DataJud</li>
+            <li>Índices do Banco Central</li>
+            <li>Memória de cálculo mês a mês</li>
+          </ul>
         </div>
       </section>
 

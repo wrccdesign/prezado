@@ -33,7 +33,7 @@ const OG_DEFAULT = `${SITE_URL}/og/home.jpg`;
 export const ROUTE_META: RouteMeta[] = [
   {
     path: "/",
-    title: "Honorífico | Calculadoras jurídicas grátis e IA para petições",
+    title: "Honorífico | IA jurídica com fonte oficial e calculadoras grátis",
     description:
       "Sete calculadoras jurídicas gratuitas pelas séries do Banco Central e Código Civil. IA jurídica para análise de casos, consulta ao acervo do CNJ e redação de petições.",
     ogImage: OG_DEFAULT,
