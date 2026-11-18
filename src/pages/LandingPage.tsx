@@ -93,7 +93,7 @@ const plans: { name: string; price: string; period: string; desc: string; featur
 
 export default function LandingPage() {
   const navigate = useNavigate();
-  const [duvida, setDuvida] = useState("");
+  const [heroMode, setHeroMode] = useState<"fonte" | "chat">("fonte");
   const [heroQuery, setHeroQuery] = useState("");
 
   return (
@@ -132,25 +132,44 @@ export default function LandingPage() {
                 onSubmit={(e) => {
                   e.preventDefault();
                   const q = heroQuery.trim();
-                  if (q) navigate(`/jurisprudencia?q=${encodeURIComponent(q)}`);
+                  if (!q) return;
+                  navigate(heroMode === "chat" ? `/chat?q=${encodeURIComponent(q)}` : `/jurisprudencia?q=${encodeURIComponent(q)}`);
                 }}
-                className="mt-9 flex max-w-[580px] items-stretch rounded border border-navy/30 bg-white focus-within:border-navy transition-colors duration-150"
+                className="mt-9 flex max-w-[600px] flex-col sm:flex-row items-stretch rounded border border-navy/30 bg-white focus-within:border-navy transition-colors duration-150"
               >
-                <Input
-                  value={heroQuery}
-                  onChange={(e) => setHeroQuery(e.target.value)}
-                  placeholder="Descreva a situação ou cole o número CNJ"
-                  aria-label="Buscar processo ou decisão"
-                  className="h-14 flex-1 border-0 bg-transparent rounded-none px-4 text-base text-navy placeholder:text-navy/45 font-sans focus-visible:ring-0 focus-visible:ring-offset-0"
-                />
-                <Button
-                  type="submit"
-                  size="lg"
-                  className="m-1.5 h-auto bg-gold text-navy hover:bg-gold-light font-medium rounded px-6"
+                <label htmlFor="hero-modo" className="sr-only">Tipo de consulta</label>
+                <select
+                  id="hero-modo"
+                  value={heroMode}
+                  onChange={(e) => setHeroMode(e.target.value as "fonte" | "chat")}
+                  className="h-12 sm:h-14 shrink-0 bg-transparent px-4 text-sm font-medium text-navy border-b sm:border-b-0 sm:border-r border-cream-dark focus:outline-none cursor-pointer"
                 >
-                  Buscar
-                </Button>
+                  <option value="fonte">Consulta com fonte</option>
+                  <option value="chat">Dúvida sem conta</option>
+                </select>
+                <div className="flex flex-1 items-stretch">
+                  <Input
+                    value={heroQuery}
+                    onChange={(e) => setHeroQuery(e.target.value)}
+                    maxLength={2000}
+                    placeholder={heroMode === "chat" ? "Ex.: fui demitido e não recebi a rescisão" : "Descreva a situação ou cole o número CNJ"}
+                    aria-label={heroMode === "chat" ? "Escreva sua dúvida jurídica" : "Buscar processo ou decisão"}
+                    className="h-14 flex-1 min-w-0 border-0 bg-transparent rounded-none px-4 text-base text-navy placeholder:text-navy/45 font-sans focus-visible:ring-0 focus-visible:ring-offset-0"
+                  />
+                  <Button
+                    type="submit"
+                    size="lg"
+                    className="m-1.5 h-auto bg-gold text-navy hover:bg-gold-light font-medium rounded px-6"
+                  >
+                    {heroMode === "chat" ? "Perguntar" : "Buscar"}
+                  </Button>
+                </div>
               </form>
+              <p className="text-note text-navy/55 mt-3">
+                {heroMode === "chat"
+                  ? "1 pergunta por dia sem conta. A resposta abre no chat jurídico."
+                  : "Sem conta, cada busca mostra até 3 decisões, com link para o tribunal."}
+              </p>
               <p className="text-note text-navy/55 mt-6 mb-2">Ou comece por</p>
               <div className="flex max-w-[600px] flex-wrap gap-2">
                 {heroShortcuts.map(({ label, href }) => {
@@ -163,34 +182,8 @@ export default function LandingPage() {
                   );
                 })}
               </div>
-              <form
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  const q = duvida.trim();
-                  if (q) navigate(`/chat?q=${encodeURIComponent(q)}`);
-                }}
-                className="mt-8 max-w-[580px] space-y-2"
-              >
-                <label htmlFor="hero-duvida" className="block text-sm font-medium text-navy">
-                  Tem uma dúvida jurídica? Pergunte sem criar conta.
-                </label>
-                <div className="flex items-stretch gap-2">
-                  <Input
-                    id="hero-duvida"
-                    value={duvida}
-                    onChange={(e) => setDuvida(e.target.value)}
-                    maxLength={2000}
-                    placeholder="Ex.: fui demitido e a empresa não pagou a rescisão em 10 dias"
-                    className="h-12 flex-1 rounded border-navy/30 bg-white text-navy placeholder:text-navy/45"
-                  />
-                  <Button type="submit" variant="outline" className="h-12 rounded border-navy text-navy hover:bg-navy hover:text-cream font-medium">
-                    Perguntar
-                  </Button>
-                </div>
-                <p className="text-note text-navy/55">1 pergunta por dia sem conta. A resposta abre no chat jurídico.</p>
-              </form>
               <p className="text-note text-navy/60 mt-8 max-w-[60ch] border-t border-cream-dark pt-4">
-                Sem conta, cada busca mostra até 3 decisões. A conta grátis começa com 7 dias do plano Profissional, sem cartão.
+                A conta grátis começa com 7 dias do plano Profissional, sem cartão.
               </p>
 
             </div>
