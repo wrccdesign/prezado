@@ -120,12 +120,12 @@ export default function LandingPage() {
       {/* HERO */}
       <section className="bg-cream text-navy py-12 md:py-20 lg:py-24 border-b border-cream-dark">
         <div className="container max-w-[1120px] mx-auto px-4 sm:px-6">
-          <div className="grid gap-12 lg:grid-cols-12 lg:items-center">
+          <div className="grid gap-12 lg:grid-cols-12 lg:items-start lg:gap-x-10">
             <div className="lg:col-span-7">
               <h1 className="text-display-hero text-navy max-w-[18ch]">
                 Do fato ao fundamento,<br className="hidden md:block" /> com a fonte oficial<br className="hidden md:block" /> e o cálculo em anexo.
               </h1>
-              <p className="text-body-serif text-navy/75 max-w-[52ch] mt-7">
+              <p className="text-body-serif text-navy/75 max-w-[52ch] mt-6">
                 Precedente real do acervo do CNJ, com o número CNJ e link para o tribunal quando disponível. Quando a decisão não existe, a resposta diz que não encontrou.
               </p>
               <form
@@ -135,18 +135,21 @@ export default function LandingPage() {
                   if (!q) return;
                   navigate(heroMode === "chat" ? `/chat?q=${encodeURIComponent(q)}` : `/jurisprudencia?q=${encodeURIComponent(q)}`);
                 }}
-                className="mt-9 flex max-w-[600px] flex-col sm:flex-row items-stretch rounded border border-navy/30 bg-white focus-within:border-navy transition-colors duration-150"
+                className="mt-8 flex max-w-[600px] flex-col sm:flex-row items-stretch rounded border border-navy/30 bg-white focus-within:border-navy transition-colors duration-150"
               >
                 <label htmlFor="hero-modo" className="sr-only">Tipo de consulta</label>
+                <div className="relative shrink-0 border-b sm:border-b-0 sm:border-r border-cream-dark">
                 <select
                   id="hero-modo"
                   value={heroMode}
                   onChange={(e) => setHeroMode(e.target.value as "fonte" | "chat")}
-                  className="h-12 sm:h-14 shrink-0 bg-transparent px-4 text-sm font-medium text-navy border-b sm:border-b-0 sm:border-r border-cream-dark focus:outline-none cursor-pointer"
+                  className="h-12 sm:h-14 w-full sm:w-auto appearance-none bg-transparent pl-4 pr-10 text-sm leading-none font-medium text-navy focus:outline-none cursor-pointer"
                 >
                   <option value="fonte">Consulta com fonte</option>
                   <option value="chat">Dúvida sem conta</option>
                 </select>
+                <svg aria-hidden="true" viewBox="0 0 12 12" className="pointer-events-none absolute right-4 top-1/2 h-3 w-3 -translate-y-1/2 text-navy/60"><path d="M2.5 4.5l3.5 3.5 3.5-3.5" fill="none" stroke="currentColor" strokeWidth="1.5" /></svg>
+                </div>
                 <div className="flex flex-1 items-stretch">
                   <Input
                     value={heroQuery}
@@ -159,7 +162,7 @@ export default function LandingPage() {
                   <Button
                     type="submit"
                     size="lg"
-                    className="m-1.5 h-auto bg-gold text-navy hover:bg-gold-light font-medium rounded px-6"
+                    className="my-1.5 mr-1.5 h-auto bg-gold text-navy hover:bg-gold-light font-medium rounded px-6"
                   >
                     {heroMode === "chat" ? "Perguntar" : "Buscar"}
                   </Button>
@@ -170,11 +173,11 @@ export default function LandingPage() {
                   ? "1 pergunta por dia sem conta. A resposta abre no chat jurídico."
                   : "Sem conta, cada busca mostra até 3 decisões, com link para o tribunal."}
               </p>
-              <p className="text-note text-navy/55 mt-6 mb-2">Ou comece por</p>
-              <div className="flex max-w-[600px] flex-wrap gap-2">
+              <p className="text-note text-navy/55 mt-8 mb-3">Ou comece por</p>
+              <div className="grid max-w-[600px] grid-cols-1 sm:grid-cols-2 gap-2">
                 {heroShortcuts.map(({ label, href }) => {
                   const chip =
-                    "inline-flex items-center rounded border border-navy/20 bg-cream px-3 py-1.5 text-sm font-medium text-navy/85 transition-colors duration-150 hover:border-navy hover:bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 focus-visible:ring-offset-cream";
+                    "inline-flex items-center justify-start rounded border border-navy/20 bg-cream px-3.5 py-2 text-sm font-medium text-navy/85 transition-colors duration-150 hover:border-navy hover:bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 focus-visible:ring-offset-cream";
                   return href.startsWith("#") ? (
                     <a key={href} href={href} className={chip}>{label}</a>
                   ) : (
@@ -188,7 +191,7 @@ export default function LandingPage() {
 
             </div>
 
-            <div className="lg:col-span-5 lg:pl-4">
+            <div className="lg:col-span-5 lg:pt-3">
               <HeroConsole />
             </div>
           </div>

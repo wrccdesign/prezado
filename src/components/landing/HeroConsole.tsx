@@ -104,7 +104,7 @@ export function HeroConsole() {
 
   return (
     <div className="lg:-mr-6">
-      <div role="tablist" aria-label="Exemplos de decisões reais" className="flex flex-wrap gap-x-5 gap-y-2 mb-4 text-sm">
+      <div role="tablist" aria-label="Exemplos de decisões reais" className="grid grid-cols-2 gap-x-5 gap-y-2 mb-5 text-sm">
         {casos.map((c, n) => {
           const sel = c.id === ativo;
           return (
@@ -113,8 +113,8 @@ export function HeroConsole() {
               role="tab"
               aria-selected={sel}
               onClick={() => setAtivo(c.id)}
-              className={`pb-1 border-b-2 transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold ${
-                sel ? "border-navy text-navy font-medium" : "border-transparent text-navy/60 hover:text-navy"
+              className={`text-left truncate pb-1.5 border-b-2 transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold ${
+                sel ? "border-navy text-navy font-medium" : "border-cream-dark text-navy/60 hover:text-navy"
               }`}
             >
               <span className="tabular-nums text-navy/50 mr-1.5">{String(n + 1).padStart(2, "0")}</span>
@@ -129,7 +129,7 @@ export function HeroConsole() {
         aria-live="polite"
         className="bg-white text-navy border border-cream-dark border-t-[3px] border-t-gold rounded-lg overflow-hidden"
       >
-        <div className="flex items-center justify-between gap-3 px-6 md:px-7 py-2 border-b border-cream-dark bg-cream/50 text-note text-navy/60">
+        <div className="flex items-center justify-between gap-3 px-6 md:px-7 py-2.5 border-b border-cream-dark bg-cream/50 text-note text-navy/60">
           <span>Como o Honorífico responde</span>
           <span className="shrink-0 whitespace-nowrap inline-flex items-center gap-1.5 rounded border border-success/30 px-1.5 py-0.5 text-success">
             <svg viewBox="0 0 12 12" className="h-3 w-3" aria-hidden="true"><path d="M2.5 6.2l2.2 2.2 4.8-4.9" fill="none" stroke="currentColor" strokeWidth="1.5" /></svg>
