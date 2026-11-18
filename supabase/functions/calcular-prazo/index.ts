@@ -1,6 +1,7 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { requireQuotaOrGuest } from "../_shared/calculo-guard.ts";
+import { filtroPostgrest, normalizarFiltros, rotuloFeriado } from "../_shared/feriados-filtro.ts";
 
 
 const corsHeaders = {
@@ -77,28 +78,61 @@ serve(async (req) => {
   const materia: Materia = body.materia ?? "civel";
   const tipoData: TipoData = body.tipo_data ?? "publicacao";
   const contagem = body.contagem ?? (materia === "penal" ? "corridos" : "uteis");
-  const uf = body.uf || null;
-  const codigoIbge = body.codigo_ibge || null;
-  const tribunal = body.tribunal || null;
+  // Só entram no filtro estado, código IBGE e tribunal verdadeiros.
+  const filtros = normalizarFiltros(body);
+  const { uf, codigoIbge, tribunal } = filtros;
 
   const supabase = createClient(
     Deno.env.get("SUPABASE_URL")!,
     Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
   );
 
+  /** Há alguma linha desse tipo cadastrada para o lugar escolhido? */
+  async function temCalendario(tipo: string, coluna: string, valor: string): Promise<boolean> {
+    const { count, error } = await supabase
+      .from("feriados")
+      .select("data", { count: "exact", head: true })
+      .eq("tipo", tipo)
+      .eq(coluna, valor);
+    if (error) {
+      console.error("calcular-prazo: falha ao conferir cobertura", { tipo, coluna, error });
+      return false;
+    }
+    return (count ?? 0) > 0;
+  }
+
   const inicioBusca = iso(addDays(dataRef, -5));
   const fimBusca = iso(addDays(dataRef, Math.max(400, dias * 3)));
 
+  // O filtro vai ao banco: a tabela tem dezenas de milhares de linhas municipais
+  // e uma leitura da janela inteira voltaria cortada no limite padrão de linhas.
+  const LIMITE_LINHAS = 5000;
   const { data: feriadosRows, error } = await supabase
     .from("feriados")
     .select("data, tipo, uf, codigo_ibge, tribunal, descricao")
     .gte("data", inicioBusca)
-    .lte("data", fimBusca);
+    .lte("data", fimBusca)
+    .or(filtroPostgrest(filtros))
+    .range(0, LIMITE_LINHAS - 1);
 
   if (error) {
     console.error("calcular-prazo: falha ao ler feriados", error);
     return bad("Não foi possível consultar o calendário de feriados agora. Tente de novo em instantes.", 500);
   }
+
+  if ((feriadosRows ?? []).length >= LIMITE_LINHAS) {
+    console.error("calcular-prazo: calendário excedeu o limite de linhas", { inicioBusca, fimBusca });
+    return bad("O calendário dessa consulta ficou grande demais para um cálculo seguro. Tente um prazo menor.", 500);
+  }
+
+  // O que a pessoa escolheu pode não ter calendário cadastrado. Melhor avisar
+  // do que deixar a impressão de que o feriado local entrou na conta.
+  const [temEstadual, temMunicipal, temForense] = await Promise.all([
+    uf ? temCalendario("estadual", "uf", uf) : Promise.resolve(true),
+    codigoIbge ? temCalendario("municipal", "codigo_ibge", codigoIbge) : Promise.resolve(true),
+    tribunal ? temCalendario("forense", "tribunal", tribunal) : Promise.resolve(true),
+  ]);
+  const cobertura = { estadual: temEstadual, municipal: temMunicipal, forense: temForense };
 
   const aplicaveis = (feriadosRows ?? []).filter((f) => {
     if (f.tipo === "nacional") return true;
@@ -114,19 +148,12 @@ serve(async (req) => {
     if (!feriadoMap.has(key)) feriadoMap.set(key, { tipo: f.tipo, descricao: f.descricao });
   }
 
-  const rotuloTipo: Record<string, string> = {
-    nacional: "Feriado nacional",
-    estadual: "Feriado estadual",
-    municipal: "Feriado municipal",
-    forense: "Suspensão forense",
-  };
-
   function motivoNaoUtil(d: Date): string | null {
     const dow = d.getUTCDay();
     if (dow === 0) return "Domingo";
     if (dow === 6) return "Sábado";
     const f = feriadoMap.get(iso(d));
-    if (f) return `${rotuloTipo[f.tipo] ?? "Feriado"}: ${f.descricao}`;
+    if (f) return rotuloFeriado(f.tipo, f.descricao);
     if (materia !== "penal" && noRecesso(d)) {
       return "Recesso forense (art. 220 do CPC)";
     }
@@ -208,6 +235,7 @@ serve(async (req) => {
       materia,
       contagem,
       dias_excluidos: diasExcluidos,
+      cobertura,
       base_legal: [
         "CPC, art. 219: contagem em dias úteis (matéria cível); CLT, art. 775 (trabalhista).",
         "CPC, art. 224, §1º: exclui-se o dia do começo e inclui-se o do vencimento; prorrogação para o primeiro dia útil.",

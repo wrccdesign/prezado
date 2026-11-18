@@ -54,6 +54,7 @@ interface Resultado {
   materia: string;
   contagem: string;
   dias_excluidos: DiaExcluido[];
+  cobertura?: { estadual: boolean; municipal: boolean; forense: boolean };
   base_legal: string[];
 }
 
@@ -379,6 +380,32 @@ export function PrazoCalc() {
                   {tribunal && tribunal !== "__nenhum__" && `Tribunal: ${tribunalLabel}`}
                 </div>
               ) : null}
+
+              {result.cobertura && (
+                <div className="grid gap-1 pt-1 text-note text-navy/60">
+                  {result.cobertura.forense === false && (
+                    <span>
+                      Sem calendário de suspensão forense cadastrado para {tribunalLabel}. A conta usou
+                      feriados nacionais, estaduais, municipais e o recesso do art. 220 do CPC.
+                    </span>
+                  )}
+                  {result.cobertura.estadual === false && (
+                    <span>Sem feriado estadual cadastrado para {uf}.</span>
+                  )}
+                  {result.cobertura.municipal === false && (
+                    <span>
+                      Sem feriado municipal cadastrado para{" "}
+                      {municipios.find(m => String(m.id) === codigoIbge)?.nome || codigoIbge}.
+                    </span>
+                  )}
+                  {codigoIbge && codigoIbge !== "__todos__" && (
+                    <span>
+                      Feriados municipais vêm de base aberta e podem estar incompletos. Confira o
+                      calendário oficial do município.
+                    </span>
+                  )}
+                </div>
+              )}
 
               <Button variant="outline" size="sm" onClick={baixarICS} className="mt-2">
                 Adicionar ao calendário (.ics)
