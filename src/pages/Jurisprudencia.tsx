@@ -583,6 +583,16 @@ if (!res.ok) {
               <p className="text-navy/70 max-w-[60ch] mt-3">
                 A busca localiza processos nos dados oficiais do CNJ e decisões com ementa já indexadas. Todo resultado traz tribunal, número e link para a fonte.
               </p>
+              <p className="text-note text-navy/70 max-w-[60ch] mt-4">
+                Para decisões já reunidas sobre arrendamento rural e cédula de produto rural, veja a{" "}
+                <Link
+                  to="/jurisprudencia/tema/contratos-agrarios"
+                  className="text-navy underline underline-offset-4 hover:text-gold"
+                >
+                  página de jurisprudência sobre contratos agrários
+                </Link>
+                .
+              </p>
             </div>
           )}
         </div>

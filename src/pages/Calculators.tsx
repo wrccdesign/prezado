@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import { AppHeader } from "@/components/AppHeader";
 import { SEO } from "@/components/SEO";
 import { Button } from "@/components/ui/button";
@@ -51,6 +52,17 @@ export default function Calculators() {
           <p className="text-body-serif text-navy/80">
             O cálculo é livre, sem conta. Todo resultado vem com memória de cálculo ou com a lista
             dos dias descartados, para conferência e anexo ao processo.
+          </p>
+          <p className="text-note text-navy/70">
+            Se o cálculo envolve arrendamento rural ou cédula de produto rural, as decisões sobre o
+            tema estão na{" "}
+            <Link
+              to="/jurisprudencia/tema/contratos-agrarios"
+              className="text-navy underline underline-offset-4 hover:text-gold"
+            >
+              página de jurisprudência sobre contratos agrários
+            </Link>
+            .
           </p>
         </div>
 
