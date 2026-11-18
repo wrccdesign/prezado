@@ -100,7 +100,8 @@ export default function LandingPage() {
       <section className="bg-cream text-navy pt-16 pb-14 md:pt-[128px] md:pb-24 border-b border-cream-dark">
         <div className="mx-auto max-w-[880px] px-4 sm:px-6 text-center">
           <p>
-            <span className="inline-flex items-center rounded-full border border-navy/20 px-3.5 py-1 font-sans text-sm font-medium text-navy/70">
+            <span className="inline-flex items-center gap-2.5 rounded-full border border-cream-dark bg-white px-4 py-1.5 font-sans text-sm font-medium text-navy">
+              <span aria-hidden="true" className="h-1.5 w-1.5 rounded-full bg-gold" />
               Para advogados no Brasil
             </span>
           </p>
