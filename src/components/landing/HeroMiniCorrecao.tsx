@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { supabase } from "@/integrations/supabase/client";
 import { readFunctionError } from "@/lib/usageLimit";
+import { parseValorBR } from "@/lib/currency";
 
 interface Linha { mes: string; indice: string; variacao: string; saldo: string }
 
@@ -35,7 +36,7 @@ export function HeroMiniCorrecao({ bare = false }: { bare?: boolean } = {}) {
 
   const calcular = async (e: React.FormEvent) => {
     e.preventDefault();
-    const v = parseFloat(valor.replace(/\./g, "").replace(",", "."));
+    const v = parseValorBR(valor);
     if (!(v > 0)) return setErro("Informe um valor positivo.");
     if (!ini || !fim) return setErro("Informe as datas inicial e final.");
     if (fim <= ini) return setErro("A data final deve ser posterior à data inicial.");

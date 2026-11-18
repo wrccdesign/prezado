@@ -22,6 +22,14 @@ export const formatCents = (raw: string) =>
       })
     : "";
 
+/**
+ * Lê um valor monetário digitado livremente.
+ * "1.500,50" (padrão BR) e "1500.50" (ponto decimal) valem 1500.5.
+ * Com vírgula, o ponto é separador de milhar; sem vírgula, o ponto é decimal.
+ */
+export const parseValorBR = (raw: string) =>
+  parseFloat(raw.includes(",") ? raw.replace(/\./g, "").replace(",", ".") : raw);
+
 export const todayISO = () => new Date().toISOString().slice(0, 10);
 
 export { formatDateBR } from "./date";
