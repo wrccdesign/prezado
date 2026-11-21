@@ -118,7 +118,7 @@ serve(async (req) => {
       .select("*", { count: "exact", head: true })
       .eq("action", "chat")
       .gte("created_at", new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString());
-    if (error || (count ?? 0) > GUEST_CHAT_DAILY_CAP) {
+    if (error || (count ?? 0) >= GUEST_CHAT_DAILY_CAP) {
       return new Response(
         JSON.stringify({ error: "As perguntas de demonstração de hoje acabaram. Crie sua conta grátis para continuar." }),
         { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } },
