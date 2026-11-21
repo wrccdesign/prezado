@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { track } from "@/lib/track";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -67,6 +68,7 @@ export function HeroMiniCorrecao({ bare = false }: { bare?: boolean } = {}) {
       }));
       setCalc({ valor: v, ini, fim });
       setExemplo(false);
+      track("calc_completed", { calculadora: "correcao", regime: "legal_14905", origem: "hero" });
     } catch (err) {
       setErro(err instanceof Error ? err.message : "Falha ao calcular");
     } finally {

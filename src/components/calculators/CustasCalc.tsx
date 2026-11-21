@@ -1,4 +1,6 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { useSearchParams } from "react-router-dom";
+import { track } from "@/lib/track";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -13,7 +15,7 @@ import {
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
-import { exportToPDF, exportToDOCX, slugify, type ExportSection } from "@/lib/exportDocument";
+import { exportToPDF, exportToDOCX, slugify, urlConferencia, type ExportSection } from "@/lib/exportDocument";
 import { readFunctionError } from "@/lib/usageLimit";
 import { notifyUsageConsumed } from "@/hooks/useUsage";
 import { CorrecaoCalc } from "@/components/calculators/CorrecaoCalc";
@@ -128,17 +130,21 @@ const PASSOS = [
 
 
 export function CustasCalc() {
-  const { isAuthenticated, requireAccount } = useGuestExportGate();
-  const [etapa, setEtapa] = useState<1 | 2 | 3>(1);
+  const { isAuthenticated, requireAccount } = useGuestExportGate("custas");
+  const [sp] = useSearchParams();
+  const atoUrl = ATOS.find(a => a.id === sp.get("ato"))?.id ?? null;
+  const isoOk = (v: string | null) => (v && /^\d{4}-\d{2}-\d{2}$/.test(v) ? v : "");
+  const [etapa, setEtapa] = useState<1 | 2 | 3>(atoUrl ? 2 : 1);
 
-  const [ato, setAto] = useState<AtoId | null>(null);
-  const [valorBase, setValorBase] = useState("");
-  const [dataAto, setDataAto] = useState(hoje());
-  const [dataRecolhimento, setDataRecolhimento] = useState("");
-  const [qtdAutores, setQtdAutores] = useState("1");
-  const [justicaGratuita, setJusticaGratuita] = useState(false);
-  const [parteIsenta, setParteIsenta] = useState(false);
-  const [naturezaIsenta, setNaturezaIsenta] = useState(false);
+  const [ato, setAto] = useState<AtoId | null>(atoUrl);
+  const [valorBase, setValorBase] = useState(/^\d+$/.test(sp.get("valor_base_centavos") ?? "") ? sp.get("valor_base_centavos")! : "");
+  const [dataAto, setDataAto] = useState(isoOk(sp.get("data_ato")) || hoje());
+  const [dataRecolhimento, setDataRecolhimento] = useState(isoOk(sp.get("data_recolhimento")));
+  const [qtdAutores, setQtdAutores] = useState(/^\d+$/.test(sp.get("autores") ?? "") ? sp.get("autores")! : "1");
+  const [justicaGratuita, setJusticaGratuita] = useState(sp.get("justica_gratuita") === "1");
+  const [parteIsenta, setParteIsenta] = useState(sp.get("parte_isenta") === "1");
+  const [naturezaIsenta, setNaturezaIsenta] = useState(sp.get("natureza_isenta") === "1");
+  const autoCalcFeito = useRef(false);
   const [loading, setLoading] = useState(false);
   const [salvando, setSalvando] = useState(false);
   const [result, setResult] = useState<Resultado | null>(null);
@@ -192,6 +198,7 @@ export function CustasCalc() {
       if ((data as { error?: string })?.error) throw new Error((data as { error: string }).error);
       setResult(data as Resultado);
       setEtapa(3);
+      track("calc_completed", { calculadora: "custas" });
       notifyUsageConsumed();
     } catch (e) {
       const msg = e instanceof Error ? e.message : "Falha ao calcular";
@@ -199,6 +206,24 @@ export function CustasCalc() {
     } finally {
       setLoading(false);
     }
+  };
+
+  useEffect(() => {
+    if (autoCalcFeito.current) return;
+    autoCalcFeito.current = true;
+    if (sp.get("ref") === "pdf") track("verify_link_opened", { calculadora: "custas" });
+    if (atoUrl) void calcular();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const paramsCalculo = (): Record<string, string> => {
+    const p: Record<string, string> = { ato: ato ?? "", data_ato: dataAto, autores: qtdAutores };
+    if (valorBase) p.valor_base_centavos = valorBase;
+    if (dataRecolhimento) p.data_recolhimento = dataRecolhimento;
+    if (justicaGratuita) p.justica_gratuita = "1";
+    if (parteIsenta) p.parte_isenta = "1";
+    if (naturezaIsenta) p.natureza_isenta = "1";
+    return p;
   };
 
   const buildSections = (r: Resultado): ExportSection[] => [
@@ -245,8 +270,14 @@ export function CustasCalc() {
     const title = `Cálculo de Custas, ${result.tribunal}`;
     const filename = slugify(`custas-${result.tribunal}-${result.tipo_ato}-${dataAto}`);
     const sections = buildSections(result);
-    if (tipo === "pdf") exportToPDF(title, sections, `${filename}.pdf`);
-    else exportToDOCX(title, sections, `${filename}.docx`);
+    const verificacao = {
+      url: urlConferencia(window.location.pathname, paramsCalculo()),
+      geradoEm: new Date().toISOString(),
+      fonte: result.fonte_normativa || `a tabela de custas do ${result.tribunal} usada na calculadora`,
+    };
+    if (tipo === "pdf") void exportToPDF(title, sections, `${filename}.pdf`, { verificacao });
+    else void exportToDOCX(title, sections, `${filename}.docx`, { verificacao });
+    track("export_pdf", { calculadora: "custas", formato: tipo, logado: true });
   };
 
   const salvar = async () => {

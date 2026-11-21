@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -7,7 +8,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { AlertTriangle } from "lucide-react";
 import { toast } from "sonner";
-import jsPDF from "jspdf";
+import { exportToPDF, urlConferencia, type ExportSection } from "@/lib/exportDocument";
+import { track } from "@/lib/track";
 import { useGuestExportGate } from "@/components/calculators/shared/GuestExportGate";
 import { UsarNaPeticaoButton } from "@/components/calculators/shared/UsarNaPeticaoButton";
 
@@ -35,12 +37,19 @@ interface Resultado {
 }
 
 export function PensaoCalc() {
-  const { requireAccount } = useGuestExportGate();
-  const [renda, setRenda] = useState("");
-  const [filhos, setFilhos] = useState("1");
-  const [moradia, setMoradia] = useState<Moradia>("nao");
-  const [outrasObrigacoes, setOutrasObrigacoes] = useState(false);
-  const [padrao, setPadrao] = useState<Padrao>("medio");
+  const { requireAccount } = useGuestExportGate("pensao");
+  const [sp] = useSearchParams();
+  const numP = (v: string | null) => (v && /^\d+(\.\d+)?$/.test(v) ? v : "");
+  const [renda, setRenda] = useState(numP(sp.get("renda")));
+  const [filhos, setFilhos] = useState(numP(sp.get("filhos")) || "1");
+  const [moradia, setMoradia] = useState<Moradia>(
+    (["nao", "sim", "parcial"] as string[]).includes(sp.get("moradia") ?? "") ? (sp.get("moradia") as Moradia) : "nao",
+  );
+  const [outrasObrigacoes, setOutrasObrigacoes] = useState(sp.get("outras") === "1");
+  const [padrao, setPadrao] = useState<Padrao>(
+    (["baixa", "medio", "alto"] as string[]).includes(sp.get("padrao") ?? "") ? (sp.get("padrao") as Padrao) : "medio",
+  );
+  const autoCalcFeito = useRef(false);
   const [result, setResult] = useState<Resultado | null>(null);
   const [erros, setErros] = useState<Record<string, string>>({});
 
@@ -80,60 +89,56 @@ export function PensaoCalc() {
       porFilhoMin: minimo / f, porFilhoSug: sugerido / f, porFilhoMax: maximo / f,
       percentualMin: baseMin * 100, percentualSug: baseSug * 100, percentualMax: baseMax * 100,
     });
+    track("calc_completed", { calculadora: "pensao" });
   };
+
+  useEffect(() => {
+    if (autoCalcFeito.current) return;
+    autoCalcFeito.current = true;
+    if (sp.get("ref") === "pdf") track("verify_link_opened", { calculadora: "pensao" });
+    if (renda) calcular();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const gerarPDF = () => {
     if (!result) return;
-    const doc = new jsPDF();
     const r = parseFloat(renda) || 0;
     const f = parseInt(filhos) || 1;
-
-    doc.setFontSize(16);
-    doc.text("Relatório de Pensão Alimentícia, Honorífico", 14, 20);
-    doc.setFontSize(10);
-    doc.text(`Data: ${new Date().toLocaleDateString("pt-BR")}`, 14, 28);
-
-    doc.setFontSize(11);
-    doc.text("Dados Informados:", 14, 40);
-    doc.setFontSize(10);
-    const dados = [
-      `Renda líquida: ${fmt(r)}`,
-      `Nº de filhos: ${f}`,
-      `Filhos moram com alimentante: ${moradia === "nao" ? "Não" : moradia === "sim" ? "Sim" : "Parcialmente"}`,
-      `Outras obrigações alimentares: ${outrasObrigacoes ? "Sim" : "Não"}`,
-      `Padrão de vida: ${padrao === "baixa" ? "Baixa renda" : padrao === "medio" ? "Médio" : "Alto padrão"}`,
+    const sections: ExportSection[] = [
+      {
+        heading: "Dados informados",
+        body: [
+          `Renda líquida: ${fmt(r)}`,
+          `Nº de filhos: ${f}`,
+          `Filhos moram com alimentante: ${moradia === "nao" ? "Não" : moradia === "sim" ? "Sim" : "Parcialmente"}`,
+          `Outras obrigações alimentares: ${outrasObrigacoes ? "Sim" : "Não"}`,
+          `Padrão de vida: ${padrao === "baixa" ? "Baixa renda" : padrao === "medio" ? "Médio" : "Alto padrão"}`,
+        ].join("\n"),
+      },
+      {
+        heading: "Faixa de valores",
+        body: [
+          `Valor mínimo: ${fmt(result.minimo)} (${pct(result.percentualMin)} da renda)`,
+          `Valor sugerido: ${fmt(result.sugerido)} (${pct(result.percentualSug)} da renda)`,
+          `Valor máximo: ${fmt(result.maximo)} (${pct(result.percentualMax)} da renda)`,
+          `Por filho (sugerido): ${fmt(result.porFilhoSug)}`,
+        ].join("\n"),
+      },
+      {
+        heading: "Base legal",
+        body: "Art. 1.694 CC: a pensão deve atender às necessidades do alimentando, na proporção das possibilidades do alimentante.\nEste é um valor de referência. O juiz decidirá com base nas necessidades e possibilidades das partes.",
+      },
     ];
-    dados.forEach((t, i) => doc.text(t, 14, 48 + i * 6));
-
-    let y = 82;
-    doc.setFontSize(11);
-    doc.text("Faixa de Valores:", 14, y);
-    y += 8;
-
-    doc.setFontSize(10);
-    const linhas = [
-      ["Descrição", "Valor", "% da Renda"],
-      ["Valor Mínimo", fmt(result.minimo), `${pct(result.percentualMin)}`],
-      ["Valor Sugerido", fmt(result.sugerido), `${pct(result.percentualSug)}`],
-      ["Valor Máximo", fmt(result.maximo), `${pct(result.percentualMax)}`],
-      ["Por Filho (sugerido)", fmt(result.porFilhoSug), ""],
-    ];
-
-    linhas.forEach((row, i) => {
-      if (i === 0) doc.setFont("helvetica", "bold");
-      else doc.setFont("helvetica", "normal");
-      doc.text(row[0], 14, y); doc.text(row[1], 100, y); doc.text(row[2], 155, y); y += 7;
+    const params: Record<string, string> = { renda, filhos, moradia, padrao };
+    if (outrasObrigacoes) params.outras = "1";
+    void exportToPDF("Memória de cálculo, pensão alimentícia", sections, "pensao-alimenticia-honorifico.pdf", {
+      verificacao: {
+        url: urlConferencia(window.location.pathname, params),
+        geradoEm: new Date().toISOString(),
+        fonte: "os parâmetros de referência do art. 1.694 do Código Civil usados na calculadora",
+      },
     });
-
-    y += 8;
-    doc.setFontSize(9); doc.setFont("helvetica", "italic");
-    doc.text("Art. 1.694 CC: A pensão deve atender às necessidades do alimentando,", 14, y);
-    doc.text("na proporção das possibilidades do alimentante.", 14, y + 5);
-    y += 14;
-    doc.text("Este é um valor de referência. O juiz decidirá com base nas necessidades", 14, y);
-    doc.text("e possibilidades das partes.", 14, y + 5);
-
-    doc.save("pensao-alimenticia-honorifico.pdf");
+    track("export_pdf", { calculadora: "pensao", formato: "pdf", logado: true });
     toast.success("PDF gerado com sucesso!");
   };
 

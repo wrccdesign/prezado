@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { track } from "@/lib/track";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -52,6 +53,7 @@ export function DateCalc() {
       const info = feriado ? `feriado nacional (${feriado})` : ehDiaUtil(d1) ? "dia útil" : "fim de semana";
       setResultado(`${format(d1, "dd/MM/yyyy (EEEE)", { locale: ptBR })}, ${info}`);
     }
+    track("calc_completed", { calculadora: "datas", modo });
   };
 
   const copiar = () => {

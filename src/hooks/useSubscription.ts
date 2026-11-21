@@ -2,6 +2,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
+import { trackOnce } from "@/lib/track";
 import { getPaymentEnvironmentSafe, type PaymentEnv } from "@/lib/payment-env";
 
 export type PlanId = "free" | "profissional" | "escritorio";
@@ -85,6 +86,13 @@ export function useSubscription() {
   // Só é "trial puro" quando não há assinatura paga por trás.
   const paidActive = active.some((r) => r.access_type !== "trial");
   const trialEndsAt = trialActive ? trialRow!.access_expires_at : null;
+
+  // trial_started: linha de trial recém-criada (ainda com quase 7 dias pela frente).
+  useEffect(() => {
+    if (!user?.id || !trialEndsAt) return;
+    if (new Date(trialEndsAt).getTime() - Date.now() < 6.9 * 86_400_000) return;
+    trackOnce(`trial_${user.id}`, "trial_started", { plano: "profissional" });
+  }, [user?.id, trialEndsAt]);
   const trialDaysLeft = trialEndsAt
     ? Math.max(
         0,

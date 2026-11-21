@@ -1,4 +1,5 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
+import { takeSignupOrigem, trackOnce } from "@/lib/track";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable/index";
 import { setPendingRedirect } from "@/lib/authRedirect";
@@ -24,6 +25,18 @@ interface LawyerSignUpData {
   office_name: string | null;
 }
 
+/** sign_up: primeira sessão de uma conta criada há poucos minutos (e-mail confirmado ou Google). */
+function trackSignUpIfNew(u: User | null | undefined) {
+  if (!u?.created_at) return;
+  if (Date.now() - new Date(u.created_at).getTime() > 30 * 60 * 1000) return;
+  const { origem, calculadora } = takeSignupOrigem();
+  trackOnce(`signup_${u.id}`, "sign_up", {
+    method: (u.app_metadata?.provider as string) || "email",
+    origem,
+    calculadora,
+  });
+}
+
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
@@ -32,7 +45,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === "SIGNED_IN") trackSignUpIfNew(session?.user);
       setSession(session);
       setUser(session?.user ?? null);
       setLoading(false);

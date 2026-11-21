@@ -1,5 +1,6 @@
 import jsPDF from "jspdf";
-import { Document, Packer, Paragraph, TextRun, HeadingLevel } from "docx";
+import { Document, Packer, Paragraph, TextRun, HeadingLevel, Footer } from "docx";
+import QRCode from "qrcode";
 import { cleanDocumentText } from "./documentText";
 
 export interface ExportSection {
@@ -10,8 +11,52 @@ export interface ExportSection {
 export const TRANSPARENCY_NOTE =
   "Nota de transparência: documento elaborado com apoio de inteligência artificial. Precedentes e normas citados foram conferidos em fontes oficiais (DataJud/CNJ, tribunais e legislação compilada) e o texto passou por revisão humana integral, sob responsabilidade técnica do subscritor.";
 
+export interface VerificacaoInfo {
+  /** URL que abre a calculadora gratuita com os mesmos parâmetros. */
+  url: string;
+  /** Data/hora ISO da geração. */
+  geradoEm: string;
+  /** Data/hora ISO da última sincronização dos índices (quando houver). */
+  sincronizadoEm?: string;
+  /** Fonte dos dados, como a calculadora mostra na tela. */
+  fonte?: string;
+}
+
 export interface ExportOptions {
   transparencyNote?: boolean;
+  verificacao?: VerificacaoInfo;
+}
+
+const FONTE_PADRAO = "séries oficiais do Banco Central (SGS)";
+const CABECALHO_DIREITA = "Honorífico, calculadoras jurídicas gratuitas";
+
+function dataBR(iso: string) {
+  return new Date(iso).toLocaleDateString("pt-BR", { timeZone: "America/Sao_Paulo" });
+}
+function dataHoraBR(iso: string) {
+  return new Date(iso).toLocaleString("pt-BR", {
+    timeZone: "America/Sao_Paulo", day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit",
+  });
+}
+
+/** Linhas exatas do rodapé de verificação (sem a numeração de página). */
+export function linhasRodapeVerificacao(v: VerificacaoInfo): [string, string] {
+  const sinc = v.sincronizadoEm ? ` Índices sincronizados em ${dataHoraBR(v.sincronizadoEm)}.` : "";
+  return [
+    `Memória de cálculo gerada em ${dataBR(v.geradoEm)} no Honorífico (https://www.honorifico.com.br), com ${v.fonte || FONTE_PADRAO}.${sinc}`,
+    `Conferir este cálculo: ${v.url}. O link abre a calculadora gratuita com os mesmos parâmetros, sem cadastro.`,
+  ];
+}
+
+/** Monta a URL de conferência: só parâmetros numéricos do cálculo + atribuição do documento. */
+export function urlConferencia(path: string, params: Record<string, string>) {
+  const u = new URL(path, "https://www.honorifico.com.br");
+  for (const [k, v] of Object.entries(params)) if (v !== "" && v != null) u.searchParams.set(k, v);
+  u.searchParams.set("ref", "pdf");
+  u.searchParams.set("utm_source", "memoria");
+  u.searchParams.set("utm_medium", "documento");
+  u.searchParams.set("utm_campaign", "conferir-calculo");
+  return u.toString();
 }
 
 export function slugify(s: string) {
@@ -33,7 +78,7 @@ function triggerDownload(blob: Blob, filename: string) {
   URL.revokeObjectURL(url);
 }
 
-export function exportToPDF(title: string, sections: ExportSection[], filename: string, options: ExportOptions = {}) {
+export async function exportToPDF(title: string, sections: ExportSection[], filename: string, options: ExportOptions = {}) {
   title = cleanDocumentText(title);
   sections = sections.map((s) => ({ heading: cleanDocumentText(s.heading), body: cleanDocumentText(s.body) }));
   const doc = new jsPDF({ unit: "pt", format: "a4" });
@@ -41,11 +86,13 @@ export function exportToPDF(title: string, sections: ExportSection[], filename: 
   const pageHeight = doc.internal.pageSize.getHeight();
   const marginX = 48;
   const marginY = 56;
+  const v = options.verificacao;
+  const bottomReserve = v ? 70 : 0;
   const contentWidth = pageWidth - marginX * 2;
   let y = marginY;
 
   const ensureSpace = (needed: number) => {
-    if (y + needed > pageHeight - marginY) {
+    if (y + needed > pageHeight - marginY - bottomReserve) {
       doc.addPage();
       y = marginY;
     }
@@ -104,6 +151,37 @@ export function exportToPDF(title: string, sections: ExportSection[], filename: 
     doc.setTextColor(0);
   }
 
+  if (v) {
+    const [l1, l2] = linhasRodapeVerificacao(v);
+    const qrSize = 62; // ~22 mm
+    const total = doc.getNumberOfPages();
+    let qr: string | null = null;
+    try {
+      qr = await QRCode.toDataURL(v.url, { margin: 0, width: 300, errorCorrectionLevel: "M" });
+    } catch { qr = null; }
+    for (let i = 1; i <= total; i++) {
+      doc.setPage(i);
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(8);
+      doc.setTextColor(120);
+      doc.text(doc.splitTextToSize(title, contentWidth * 0.55)[0], marginX, 30);
+      doc.text(CABECALHO_DIREITA, pageWidth - marginX, 30, { align: "right" });
+      const isLast = i === total && !!qr;
+      const fw = isLast ? contentWidth - qrSize - 12 : contentWidth;
+      const lines = [...doc.splitTextToSize(l1, fw), ...doc.splitTextToSize(l2, fw), `Página ${i} de ${total}`];
+      let fy = pageHeight - 24 - (lines.length - 1) * 10;
+      for (const line of lines) { doc.text(line, marginX, fy); fy += 10; }
+      if (isLast) {
+        const qx = pageWidth - marginX - qrSize;
+        const qy = pageHeight - 24 - qrSize - 4;
+        doc.addImage(qr!, "PNG", qx, qy, qrSize, qrSize);
+        doc.setFontSize(7);
+        doc.text("Conferir este cálculo", qx + qrSize / 2, qy + qrSize + 9, { align: "center" });
+      }
+    }
+    doc.setTextColor(0);
+  }
+
   doc.save(filename);
 }
 
@@ -152,7 +230,16 @@ export async function exportToDOCX(title: string, sections: ExportSection[], fil
     );
   }
 
-  const doc = new Document({ sections: [{ children }] });
+  const footers = options.verificacao
+    ? {
+        default: new Footer({
+          children: linhasRodapeVerificacao(options.verificacao).map(
+            (t) => new Paragraph({ children: [new TextRun({ text: t, size: 16, color: "777777" })] }),
+          ),
+        }),
+      }
+    : undefined;
+  const doc = new Document({ sections: [{ footers, children }] });
   const blob = await Packer.toBlob(doc);
   triggerDownload(blob, filename);
 }

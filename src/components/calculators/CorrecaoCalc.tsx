@@ -13,6 +13,8 @@ import { toast } from "@/hooks/use-toast";
 import { exportToPDF, exportToDOCX, slugify, type ExportSection } from "@/lib/exportDocument";
 import { readFunctionError } from "@/lib/usageLimit";
 import { notifyUsageConsumed } from "@/hooks/useUsage";
+import { track, withAttribution, ATTR_KEYS } from "@/lib/track";
+import { urlConferencia } from "@/lib/exportDocument";
 import { useGuestExportGate } from "@/components/calculators/shared/GuestExportGate";
 import { generateShareCard, downloadBlob } from "@/lib/shareCard";
 import { formatDateBR } from "@/lib/date";
@@ -119,10 +121,10 @@ export function CorrecaoCalc({ onUsarValor, usarValorLabel = "Usar este valor", 
   const [result, setResult] = useState<Resultado | null>(null);
   const [memoriaAberta, setMemoriaAberta] = useState(false);
   const [gerandoImagem, setGerandoImagem] = useState(false);
-  const { isAuthenticated, requireAccount } = useGuestExportGate();
+  const { isAuthenticated, requireAccount } = useGuestExportGate("correcao");
   const autoCalcFeito = useRef(false);
 
-  const syncUrl = useCallback(() => {
+  const buildParams = useCallback(() => {
     const params: Record<string, string> = {
       valor,
       data_inicial: dataInicial,
@@ -137,11 +139,20 @@ export function CorrecaoCalc({ onUsarValor, usarValorLabel = "Usar este valor", 
     if (multa) params.multa = multa;
     if (multaSobreJuros) params.multa_sobre_juros = "1";
     if (honorarios) params.honorarios = honorarios;
-    setSearchParams(params, { replace: true });
+    return params;
   }, [
     valor, dataInicial, dataFinal, indice, proRata, manterIndiceContratual,
-    regimeJuros, tipoJuros, taxaFixa, multa, multaSobreJuros, honorarios, setSearchParams,
+    regimeJuros, tipoJuros, taxaFixa, multa, multaSobreJuros, honorarios,
   ]);
+
+  const syncUrl = useCallback(() => {
+    // Mantém utm_* e ref que já estiverem na barra.
+    setSearchParams((prev) => {
+      const params = buildParams();
+      for (const k of ATTR_KEYS) { const v = prev.get(k); if (v) params[k] = v; }
+      return params;
+    }, { replace: true });
+  }, [buildParams, setSearchParams]);
 
   const calcular = useCallback(async () => {
     const faltas: string[] = [];
@@ -183,6 +194,7 @@ export function CorrecaoCalc({ onUsarValor, usarValorLabel = "Usar este valor", 
       }
       if ((data as { error?: string })?.error) throw new Error((data as { error: string }).error);
       setResult(data as Resultado);
+      track("calc_completed", { calculadora: "correcao", regime: regimeJuros });
       syncUrl();
       notifyUsageConsumed();
     } catch (e) {
@@ -201,6 +213,7 @@ export function CorrecaoCalc({ onUsarValor, usarValorLabel = "Usar este valor", 
   useEffect(() => {
     if (autoCalcFeito.current) return;
     autoCalcFeito.current = true;
+    if (searchParams.get("ref") === "pdf") track("verify_link_opened", { calculadora: "correcao" });
     if (valor && dataInicial && dataFinal) void calcular();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -208,7 +221,12 @@ export function CorrecaoCalc({ onUsarValor, usarValorLabel = "Usar este valor", 
   const copiarLink = async () => {
     syncUrl();
     try {
-      await navigator.clipboard.writeText(window.location.href);
+      const url = withAttribution(
+        `${window.location.origin}${window.location.pathname}?${new URLSearchParams(buildParams())}`,
+        { utm_source: "compartilhado", utm_medium: "link", utm_campaign: "calculo-compartilhado", ref: "link" },
+      );
+      await navigator.clipboard.writeText(url);
+      track("calc_link_copied", { calculadora: "correcao" });
       toast({ title: "Link copiado", description: "Quem abrir o link vê este mesmo cálculo." });
     } catch {
       toast({ title: "Não foi possível copiar", description: "Copie o endereço da barra do navegador.", variant: "destructive" });
@@ -229,6 +247,7 @@ export function CorrecaoCalc({ onUsarValor, usarValorLabel = "Usar este valor", 
         rodape: "honorifico.com.br/calculadoras/correcao-monetaria-juros-lei-14905",
       });
       downloadBlob(blob, `correcao-monetaria-${dataFinal}.png`);
+      track("calc_image_downloaded", { calculadora: "correcao" });
     } catch (e) {
       const msg = e instanceof Error ? e.message : "Falha ao gerar a imagem";
       toast({ title: "Não foi possível gerar a imagem", description: msg, variant: "destructive" });
@@ -280,8 +299,14 @@ export function CorrecaoCalc({ onUsarValor, usarValorLabel = "Usar este valor", 
     const title = "Memória de Cálculo, Atualização Monetária";
     const filename = slugify(`memoria-calculo-${dataInicial}-${dataFinal}`);
     const sections = buildSections(result);
-    if (tipo === "pdf") exportToPDF(title, sections, `${filename}.pdf`);
-    else exportToDOCX(title, sections, `${filename}.docx`);
+    const verificacao = {
+      url: urlConferencia(window.location.pathname, buildParams()),
+      geradoEm: new Date().toISOString(),
+      sincronizadoEm: result.ultima_sincronizacao ?? undefined,
+    };
+    if (tipo === "pdf") void exportToPDF(title, sections, `${filename}.pdf`, { verificacao });
+    else void exportToDOCX(title, sections, `${filename}.docx`, { verificacao });
+    track("export_pdf", { calculadora: "correcao", formato: tipo, logado: true });
   };
 
   return (

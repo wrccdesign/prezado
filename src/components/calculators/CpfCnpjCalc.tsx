@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { track } from "@/lib/track";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -65,6 +66,7 @@ export function CpfCnpjCalc() {
     setValor(cortado);
     if (cortado.length === max) {
       setValido(tipo === "cpf" ? validarCpf(cortado) : validarCnpj(cortado));
+      track("calc_completed", { calculadora: "cpf_cnpj", tipo });
     } else {
       setValido(null);
     }

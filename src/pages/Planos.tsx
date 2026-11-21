@@ -1,4 +1,5 @@
 import { useNavigate, useSearchParams } from "react-router-dom";
+import { trackOnce, setSignupOrigem } from "@/lib/track";
 import { useEffect, useState } from "react";
 import { AppHeader } from "@/components/AppHeader";
 import { getPaymentEnvironmentSafe } from "@/lib/payment-env";
@@ -137,6 +138,13 @@ export default function Planos() {
       window.location.pathname === "/planos/pagamento/sucesso";
     if (returned) {
       toast.success("Pagamento realizado! Ativando seu plano...");
+      try {
+        const pend = JSON.parse(sessionStorage.getItem("hon_checkout") || localStorage.getItem("hon_checkout") || "null");
+        if (pend?.priceId) {
+          trackOnce(`purchase_${pend.priceId}_${pend.at}`, "purchase", { value: pend.value, currency: "BRL", plano: pend.priceId });
+        }
+        localStorage.removeItem("hon_checkout");
+      } catch { /* ignore */ }
       // Webhook can take a few seconds, poll the subscription query.
       let attempts = 0;
       const interval = setInterval(() => {
@@ -152,6 +160,7 @@ export default function Planos() {
 
   const handleSubscribe = async (plan: typeof plans[number]) => {
     if (!user) {
+      setSignupOrigem("planos");
       navigate("/auth", { state: { redirectTo: "/planos" } });
       return;
     }
@@ -196,6 +205,15 @@ export default function Planos() {
       return;
     }
     setIsCheckoutLoading(true);
+    try {
+      const valor = Number(
+        (plans.flatMap((pl) => [
+          [pl.priceId, pl.price],
+          [pl.annualPriceId, pl.annualPrice],
+        ]).find(([id]) => id === pendingPriceId)?.[1] ?? "0").replace(/[^\d,]/g, "").replace(",", "."),
+      );
+      localStorage.setItem("hon_checkout", JSON.stringify({ priceId: pendingPriceId, value: valor, at: Date.now() }));
+    } catch { /* ignore */ }
     try {
       const { data, error } = await supabase.functions.invoke("asaas-create-checkout", {
         body: {

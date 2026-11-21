@@ -1,7 +1,9 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import { format } from "date-fns";
 import { CalendarIcon, AlertTriangle } from "lucide-react";
-import { jsPDF } from "jspdf";
+import { exportToPDF, urlConferencia, type ExportSection } from "@/lib/exportDocument";
+import { track } from "@/lib/track";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
@@ -29,18 +31,30 @@ const TIPO_LABEL: Record<TipoDemissao, string> = {
 };
 
 
+const TIPOS: TipoDemissao[] = ["sem_justa_causa", "com_justa_causa", "pedido_demissao", "acordo_mutuo"];
+const num = (v: string | null) => (v && /^\d+(\.\d+)?$/.test(v) ? v : "");
+function isoParaData(v: string | null): Date | undefined {
+  if (!v || !/^\d{4}-\d{2}-\d{2}$/.test(v)) return undefined;
+  const [y, m, d] = v.split("-").map(Number);
+  return new Date(y, m - 1, d);
+}
+
 export function RescisaoCalc() {
-  const { requireAccount } = useGuestExportGate();
-  const [salario, setSalario] = useState("");
-  const [admissao, setAdmissao] = useState<Date>();
-  const [demissao, setDemissao] = useState<Date>();
-  const [tipo, setTipo] = useState<TipoDemissao>("sem_justa_causa");
-  const [possuiFgts, setPossuiFgts] = useState(false);
-  const [saldoFgts, setSaldoFgts] = useState("");
-  const [horasExtras, setHorasExtras] = useState("");
-  const [possuiComissoes, setPossuiComissoes] = useState(false);
-  const [comissoes, setComissoes] = useState("");
-  const [periodosVencidos, setPeriodosVencidos] = useState("0");
+  const { requireAccount } = useGuestExportGate("rescisao");
+  const [sp] = useSearchParams();
+  const [salario, setSalario] = useState(num(sp.get("salario")));
+  const [admissao, setAdmissao] = useState<Date | undefined>(isoParaData(sp.get("admissao")));
+  const [demissao, setDemissao] = useState<Date | undefined>(isoParaData(sp.get("demissao")));
+  const [tipo, setTipo] = useState<TipoDemissao>(
+    TIPOS.includes(sp.get("tipo") as TipoDemissao) ? (sp.get("tipo") as TipoDemissao) : "sem_justa_causa",
+  );
+  const [possuiFgts, setPossuiFgts] = useState(!!num(sp.get("fgts")));
+  const [saldoFgts, setSaldoFgts] = useState(num(sp.get("fgts")));
+  const [horasExtras, setHorasExtras] = useState(num(sp.get("horas_extras")));
+  const [possuiComissoes, setPossuiComissoes] = useState(!!num(sp.get("comissoes")));
+  const [comissoes, setComissoes] = useState(num(sp.get("comissoes")));
+  const [periodosVencidos, setPeriodosVencidos] = useState(num(sp.get("ferias_vencidas")) || "0");
+  const autoCalcFeito = useRef(false);
   const [res, setRes] = useState<ResultadoRescisao | null>(null);
 
   const calcular = () => {
@@ -55,32 +69,55 @@ export function RescisaoCalc() {
       saldoFgts: possuiFgts && saldoFgts !== "" ? (parseFloat(saldoFgts) || 0) : null,
       periodosVencidosNaoGozados: parseInt(periodosVencidos, 10) || 0,
     }));
+    track("calc_completed", { calculadora: "rescisao" });
+  };
+
+  // Link de conferência (PDF): calcula sozinho ao abrir já preenchido.
+  useEffect(() => {
+    if (autoCalcFeito.current) return;
+    autoCalcFeito.current = true;
+    if (sp.get("ref") === "pdf") track("verify_link_opened", { calculadora: "rescisao" });
+    if (salario && admissao && demissao) calcular();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const iso = (d?: Date) => (d ? format(d, "yyyy-MM-dd") : "");
+  const paramsCalculo = (): Record<string, string> => {
+    const p: Record<string, string> = { salario, admissao: iso(admissao), demissao: iso(demissao), tipo };
+    if (possuiFgts && saldoFgts) p.fgts = saldoFgts;
+    if (horasExtras) p.horas_extras = horasExtras;
+    if (possuiComissoes && comissoes) p.comissoes = comissoes;
+    if (periodosVencidos && periodosVencidos !== "0") p.ferias_vencidas = periodosVencidos;
+    return p;
   };
 
   const verbas = res?.verbas ?? null;
   const total = res?.totalBruto ?? 0;
 
   const gerarPDF = () => {
-    if (!verbas) return;
-    const doc = new jsPDF();
-    doc.setFontSize(16); doc.text("Relatório de Rescisão Trabalhista, Honorífico", 14, 20);
-    doc.setFontSize(10); doc.text(`Data: ${format(new Date(), "dd/MM/yyyy")}`, 14, 28);
-    if (admissao) doc.text(`Admissão: ${format(admissao, "dd/MM/yyyy")}`, 14, 34);
-    if (demissao) doc.text(`Demissão: ${format(demissao, "dd/MM/yyyy")}`, 14, 40);
-    doc.text(`Tipo: ${tipo.replace(/_/g, " ")}`, 14, 46);
-
-    let y = 56;
-    doc.setFontSize(11); doc.text("Verba", 14, y); doc.text("Valor (R$)", 140, y);
-    y += 2; doc.line(14, y, 196, y); y += 6;
-    doc.setFontSize(10);
-    verbas.forEach((v) => { doc.text(v.label, 14, y); doc.text(fmt(v.valor), 140, y); y += 5; doc.setFontSize(7); doc.text(doc.splitTextToSize(v.formula, 180), 14, y); doc.setFontSize(10); y += 7; });
-    y += 2; doc.line(14, y, 196, y); y += 7;
-    doc.setFontSize(12); doc.text("TOTAL BRUTO ESTIMADO", 14, y); doc.text(fmt(total), 140, y);
-    y += 10; doc.setFontSize(10); doc.text("Depósitos na conta do FGTS", 14, y); y += 7;
-    res!.fgts.forEach((v) => { doc.text(v.label, 14, y); doc.text(fmt(v.valor), 140, y); y += 7; });
-    y += 14; doc.setFontSize(8); doc.text("Cálculo estimado. Consulte um advogado trabalhista para valores exatos.", 14, y);
-
-    doc.save("rescisao-trabalhista-honorifico.pdf");
+    if (!verbas || !res) return;
+    const sections: ExportSection[] = [
+      {
+        heading: "Dados informados",
+        body: [
+          admissao ? `Admissão: ${format(admissao, "dd/MM/yyyy")}` : "",
+          demissao ? `Demissão: ${format(demissao, "dd/MM/yyyy")}` : "",
+          `Tipo: ${TIPO_LABEL[tipo]}`,
+        ].filter(Boolean).join("\n"),
+      },
+      { heading: "Verbas rescisórias", body: verbas.map((v) => `${v.label}: ${fmt(v.valor)}\n  ${v.formula}`).join("\n") },
+      { heading: "Total bruto estimado", body: fmt(total) },
+      { heading: "Depósitos na conta do FGTS", body: res.fgts.map((v) => `${v.label}: ${fmt(v.valor)}`).join("\n") },
+      { heading: "Observação", body: "Valores brutos, sem desconto de INSS e IRRF. Cálculo estimado." },
+    ];
+    void exportToPDF("Memória de cálculo, rescisão trabalhista", sections, "rescisao-trabalhista-honorifico.pdf", {
+      verificacao: {
+        url: urlConferencia(window.location.pathname, paramsCalculo()),
+        geradoEm: new Date().toISOString(),
+        fonte: "as regras da CLT (arts. 477 a 487) e da Lei 8.036/1990 usadas na calculadora",
+      },
+    });
+    track("export_pdf", { calculadora: "rescisao", formato: "pdf", logado: true });
     toast.success("PDF gerado com sucesso!");
   };
 

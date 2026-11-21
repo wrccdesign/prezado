@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { track } from "@/lib/track";
 import { useEffect, useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -198,6 +199,7 @@ export function PrazoCalc() {
       }
       if ((data as { error?: string })?.error) throw new Error((data as { error: string }).error);
       setResult(data as Resultado);
+      track("calc_completed", { calculadora: "prazo" });
       notifyUsageConsumed();
 
     } catch (e) {
