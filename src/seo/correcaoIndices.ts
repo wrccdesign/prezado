@@ -302,7 +302,7 @@ export const CORRECAO_INDICES: CorrecaoIndice[] = [
     ],
     features: [
       "Série oficial da Taxa Legal (SGS 29543), sincronizada diariamente",
-      "Corte de 30 de agosto de 2024, com regime anterior antes e Taxa Legal depois",
+      "Corte de 30 de agosto de 2024, com Selic do Tema 1.368 antes e Taxa Legal depois",
       "Mês de transição em pro rata die, conforme a Res. CMN 5.171/2024",
       "Resultado negativo desconsiderado, conforme o art. 406, §3º",
       "Memória de cálculo exportável em PDF e Word",
@@ -310,11 +310,11 @@ export const CORRECAO_INDICES: CorrecaoIndice[] = [
     paragraphs: [
       {
         heading: "O que mudou",
-        body: "Antes da Lei 14.905/2024 os juros legais eram de 1% ao mês, pela leitura consolidada do art. 406 combinado com o art. 161 do Código Tributário Nacional, e a correção seguia o índice do tribunal. Agora a correção é pelo IPCA e os juros são a Selic deduzido o IPCA, ambos em parcelas separadas e com fonte oficial.",
+        body: "Até 29 de agosto de 2024, o STJ fixou no Tema 1.368 (REsp 2.199.164/PR) que a taxa do art. 406 do Código Civil é a Selic. Ela já engloba juros e correção e não se cumula com outro índice. A partir de 30 de agosto de 2024, a Lei 14.905/2024 separou as parcelas: correção pelo IPCA e juros pela Taxa Legal, que é a Selic deduzido o IPCA, com piso zero.",
       },
       {
         heading: "O mês de transição",
-        body: "A lei entrou em vigor em 30 de agosto de 2024, no meio do mês. O cálculo correto aplica o regime anterior até 29 de agosto e a Taxa Legal nos dias 30 e 31, em pro rata die, conforme a metodologia da Resolução CMN 5.171/2024. A calculadora faz esse corte automaticamente.",
+        body: "A lei entrou em vigor em 30 de agosto de 2024, no meio do mês. O cálculo correto aplica a Selic do Tema 1.368 até 29 de agosto e, nos dias 30 e 31, o IPCA com a Taxa Legal, em pro rata die, conforme a metodologia da Resolução CMN 5.171/2024. A calculadora faz esse corte automaticamente.",
       },
       {
         heading: "Quando o resultado é negativo",
@@ -329,17 +329,17 @@ export const CORRECAO_INDICES: CorrecaoIndice[] = [
       {
         question: "A Taxa Legal vale para dívidas anteriores à lei?",
         answer:
-          "A lei vale a partir de 30 de agosto de 2024. Períodos anteriores seguem o regime antigo, e a calculadora divide o cálculo nos dois trechos.",
+          "A lei vale a partir de 30 de agosto de 2024. No período anterior, em dívidas civis sem taxa pactuada, aplica-se a Selic do Tema 1.368 do STJ. A calculadora divide o cálculo nos dois trechos.",
       },
       {
         question: "Ainda posso pedir 1% ao mês?",
         answer:
-          "Para o período anterior a 30 de agosto de 2024, sim, conforme o entendimento aplicado ao caso. Depois dessa data, os juros legais são os da Taxa Legal, salvo taxa pactuada.",
+          "Só se a taxa tiver sido pactuada ou se o título judicial já tiver fixado esse critério. Sem isso, o padrão legal não é mais 1% ao mês: até 29 de agosto de 2024 vale a Selic do Tema 1.368 e, depois, a Taxa Legal.",
       },
       {
         question: "Correção e juros são somados?",
         answer:
-          "Sim, em parcelas separadas: correção pelo IPCA e juros pela Taxa Legal. A separação é justamente o que evita contar a inflação duas vezes.",
+          "No período da Lei 14.905/2024, sim, em parcelas separadas: correção pelo IPCA e juros pela Taxa Legal. No período do Tema 1.368, não: a Selic já cumpre as duas funções, e somar outro índice contaria a inflação duas vezes.",
       },
       {
         question: "De onde vem a taxa?",

@@ -89,7 +89,7 @@ export const FAQ_CORRECAO_MONETARIA: FaqItem[] = [
         {
           question: "Qual índice usar para atualizar uma condenação?",
           answer:
-            "Prevalece o índice fixado na sentença ou no contrato. Sem previsão, aplica-se o IPCA a partir de 30/08/2024 e, no período anterior, o índice usual do juízo (em geral a Tabela Prática ou o INPC). A calculadora aplica os dois regimes no mesmo cálculo.",
+            "Prevalece o índice fixado na sentença ou no contrato. Sem previsão, aplica-se o IPCA a partir de 30/08/2024, com juros pela Taxa Legal. No período anterior, enquanto correm os juros legais, a Selic do Tema 1.368 do STJ é o encargo único, sem somar outro índice; antes do início dos juros, só o índice de correção. A calculadora aplica os dois regimes no mesmo cálculo.",
         },
         {
           question: "De onde vêm os índices?",

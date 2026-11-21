@@ -29,7 +29,7 @@ interface LinhaMemoria {
   saldo_corrigido: number;
   juros_do_mes: number;
   juros_acumulados: number;
-  regime: "pre_14905" | "transicao_14905" | "pos_14905";
+  regime: "pre_14905" | "tema_1368" | "transicao_14905" | "pos_14905";
 }
 
 interface Resultado {
@@ -45,6 +45,8 @@ interface Resultado {
   fonte: string;
   ultima_sincronizacao: string | null;
   base_legal: string[];
+  criterios?: string[];
+  avisos?: string[];
 }
 
 import { UsarNaPeticaoButton } from "@/components/calculators/shared/UsarNaPeticaoButton";
@@ -52,8 +54,13 @@ import { UsarNaPeticaoButton } from "@/components/calculators/shared/UsarNaPetic
 const pctBR = (v: number) => `${v.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}%`;
 const fatorBR = (v: number) => v.toLocaleString("pt-BR", { minimumFractionDigits: 6, maximumFractionDigits: 6 });
 
+/** Códigos de série em maiúsculas; o restante do rótulo fica como está. */
+const rotuloIndice = (s: string) =>
+  s.replace(/\b(ipca_e|ipca|inpc|igpm|selic_mensal|selic|tr|poupanca)\b/g, (x) => x.toUpperCase());
+
 const REGIME_LABEL: Record<LinhaMemoria["regime"], string> = {
   pre_14905: "regime anterior",
+  tema_1368: "Tema 1.368 do STJ (Selic, até 29/08/2024)",
   transicao_14905: "transição (Lei 14.905/2024 em 30 e 31/08/2024)",
   pos_14905: "Lei 14.905/2024",
 };
@@ -251,7 +258,7 @@ export function CorrecaoCalc({ onUsarValor, usarValorLabel = "Usar este valor", 
       body: r.memoria
         .map(
           l =>
-            `${mesLabel(l.mes_ref)} | ${l.indice_utilizado.toUpperCase()} ${pctBR(l.variacao_percentual)} | fator acum. ${fatorBR(l.fator_acumulado)} | saldo ${fmt(l.saldo_corrigido)} | juros do mês ${fmt(l.juros_do_mes)} | juros acum. ${fmt(l.juros_acumulados)} | ${REGIME_LABEL[l.regime]}`,
+            `${mesLabel(l.mes_ref)} | ${rotuloIndice(l.indice_utilizado)} ${pctBR(l.variacao_percentual)} | fator acum. ${fatorBR(l.fator_acumulado)} | saldo ${fmt(l.saldo_corrigido)} | juros do mês ${fmt(l.juros_do_mes)} | juros acum. ${fmt(l.juros_acumulados)} | ${REGIME_LABEL[l.regime]}`,
         )
         .join("\n"),
     },
@@ -306,7 +313,7 @@ export function CorrecaoCalc({ onUsarValor, usarValorLabel = "Usar este valor", 
           <Select value={regimeJuros} onValueChange={setRegimeJuros}>
             <SelectTrigger id="correcao-regime-de-juros-de-mora"><SelectValue /></SelectTrigger>
             <SelectContent>
-              <SelectItem value="legal_14905">Juros legais (Lei 14.905/2024)</SelectItem>
+              <SelectItem value="legal_14905">Juros legais (Tema 1.368 até 29/08/2024, Lei 14.905/2024 depois)</SelectItem>
               <SelectItem value="taxa_fixa">Taxa fixa mensal</SelectItem>
               <SelectItem value="nenhum">Sem juros</SelectItem>
             </SelectContent>
@@ -501,7 +508,7 @@ export function CorrecaoCalc({ onUsarValor, usarValorLabel = "Usar este valor", 
                     {result.memoria.map(l => (
                       <TableRow key={l.mes_ref}>
                         <TableCell className="font-medium">{mesLabel(l.mes_ref)}</TableCell>
-                        <TableCell className="text-note">{l.indice_utilizado.toUpperCase()}</TableCell>
+                        <TableCell className="text-note">{rotuloIndice(l.indice_utilizado)}</TableCell>
                         <TableCell className="text-right">{pctBR(l.variacao_percentual)}</TableCell>
                         <TableCell className="text-right">{fatorBR(l.fator_acumulado)}</TableCell>
                         <TableCell className="text-right">{fmt(l.saldo_corrigido)}</TableCell>
@@ -519,6 +526,18 @@ export function CorrecaoCalc({ onUsarValor, usarValorLabel = "Usar este valor", 
             </CollapsibleContent>
           </Collapsible>
 
+          {(result.criterios?.length || result.avisos?.length) ? (
+            <div className="rounded-lg border border-cream-dark bg-white p-5 space-y-2">
+              <h3 className="font-sans font-medium text-navy">Critério usado em cada trecho</h3>
+              <ul className="list-disc space-y-1 pl-4 text-note text-navy/80">
+                {result.criterios?.map(c => <li key={c}>{c}</li>)}
+              </ul>
+              {result.avisos?.map(a => (
+                <p key={a} className="text-note text-navy">{a}</p>
+              ))}
+            </div>
+          ) : null}
+
           <div className="rounded-lg border border-cream-dark bg-white border-muted">
             <div className="p-5 space-y-1 text-note text-navy/60">
               <p><strong className="text-foreground">Fonte:</strong> {result.fonte}</p>
@@ -531,11 +550,11 @@ export function CorrecaoCalc({ onUsarValor, usarValorLabel = "Usar este valor", 
               <div>
                 <strong className="text-foreground">Base legal:</strong>
                 <ul className="mt-1 list-disc space-y-1 pl-4">
-                  {result.base_legal.map(b => <li key={b}>{b}</li>)}
+                  {result.base_legal.filter(b => !result.criterios?.includes(b) && !result.avisos?.includes(b)).map(b => <li key={b}>{b}</li>)}
                 </ul>
               </div>
               <p>
-                Agosto/2024 é mês de transição, calculado pro rata die: regime anterior até 29/08 e
+                Agosto/2024 é mês de transição, calculado pro rata die: no regime de juros legais, Selic (Tema 1.368 do STJ) até 29/08 e
                 Lei 14.905/2024 nos dias 30 e 31 (Res. CMN 5.171/2024). A partir daí a correção segue o
                 {result.manter_indice_contratual
                   ? " índice contratual mantido"

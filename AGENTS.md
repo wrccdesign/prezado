@@ -8,3 +8,4 @@
 - Document integrity checks live in `supabase/functions/_shared/integrity-check.ts` and only report objective signals (hidden AI commands, invisible chars, microscopic font); never claim a check the PDF reader cannot guarantee, and never conclude bad faith.
 
 - Guide pages (/guias/*) read approved content from `src/seo/guiasData.ts` via a minimal Markdown parser shared by React and the static prerender, so page, JSON-LD FAQ and crawler HTML never diverge.
+- Correction/interest rules live in pure `supabase/functions/calcular-atualizacao/calculo.ts` (tested with mocked series in `calculo_test.ts`); `index.ts` only reads series and quota, so legal period rules stay testable offline.
