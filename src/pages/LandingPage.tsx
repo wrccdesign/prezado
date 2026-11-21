@@ -27,12 +27,12 @@ const heroDecision = {
     "https://portal.tjpr.jus.br/jurisprudencia/j/2100000036785951/Ac%C3%B3rd%C3%A3o-0035130-32.2024.8.16.0182",
 };
 
-// Linhas reais geradas pela calculadora: R$ 10.000,00 de 15/01/2024 a 30/09/2026, IPCA (SGS 433)
-// e juros pela Taxa Legal (SGS 29543) a partir da Lei 14.905/2024.
+// Linhas reais da função publicada calcular-atualizacao: R$ 10.000,00 a partir de 15/01/2024,
+// IPCA (SGS 433) e Taxa Legal (SGS 29543). Até 29/08/2024 vale a Selic do Tema 1.368 STJ.
 const memoriaSample = [
-  { mes: "08/2024", indice: "IPCA", variacao: "-0,02%", fator: "1,028528", saldo: "R$ 10.285,28", juros: "R$ 100,23" },
-  { mes: "09/2024", indice: "IPCA", variacao: "0,44%", fator: "1,033053", saldo: "R$ 10.330,53", juros: "R$ 69,86" },
-  { mes: "10/2024", indice: "IPCA", variacao: "0,56%", fator: "1,038838", saldo: "R$ 10.388,38", juros: "R$ 73,16" },
+  { mes: "07/2024", indice: "Selic (Tema 1.368)", variacao: "0,91%", fator: "1,061774", saldo: "R$ 10.617,74", juros: "R$ 0,00" },
+  { mes: "08/2024", indice: "Selic até 29/08, IPCA + Taxa Legal desde 30/08", variacao: "0,81%", fator: "1,070402", saldo: "R$ 10.704,02", juros: "R$ 4,18" },
+  { mes: "09/2024", indice: "IPCA + Taxa Legal", variacao: "0,44%", fator: "1,075112", saldo: "R$ 10.751,12", juros: "R$ 72,70" },
 ];
 
 const etapas = [
