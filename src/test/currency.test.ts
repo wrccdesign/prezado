@@ -17,4 +17,17 @@ describe("parseValorBR", () => {
   it("lê vírgula decimal sem milhar", () => {
     expect(parseValorBR("99,90")).toBe(99.9);
   });
+
+  it("lê ponto com 3 dígitos como milhar", () => {
+    expect(parseValorBR("10.000")).toBe(10000);
+    expect(parseValorBR("1.500")).toBe(1500);
+  });
+
+  it("lê vários pontos como milhares", () => {
+    expect(parseValorBR("1.500.000")).toBe(1500000);
+  });
+
+  it("lê milhar brasileiro com centavos", () => {
+    expect(parseValorBR("1.000.000,00")).toBe(1000000);
+  });
 });
