@@ -11,15 +11,18 @@ interface Linha { mes: string; indice: string; variacao: string; saldo: string }
 
 const brl = (v: number) => v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 const pct = (v: number) => `${v.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}%`;
-const indiceLabel = (s: string) => (/ipca/i.test(s) ? "IPCA" : /legal/i.test(s) ? "Taxa Legal" : s);
+const indiceLabel = (s: string) => (/selic/i.test(s) && /ipca/i.test(s) ? "Selic + IPCA" : /selic/i.test(s) ? "Selic" : /ipca/i.test(s) ? "IPCA" : /legal/i.test(s) ? "Taxa Legal" : s);
 const mesAtual = () => new Date().toISOString().slice(0, 7);
 
-// Linhas reais da calculadora: R$ 10.000,00 de 01/2024 a 09/2024, IPCA (SGS 433)
-const EXEMPLO = {
-  total: 10330.53,
+// Conferido na função publicada em 21/11/2026, de 01/01/2024 a 01/09/2024.
+// Meses nos campos representam o primeiro dia de cada mês, com pro rata.
+export const EXEMPLO = {
+  total: 10712.18,
+  corrigido: 10705.59,
+  juros: 6.59,
   linhas: [
-    { mes: "08/2024", indice: "IPCA", variacao: "-0,02%", saldo: "R$ 10.285,28" },
-    { mes: "09/2024", indice: "IPCA", variacao: "0,44%", saldo: "R$ 10.330,53" },
+    { mes: "08/2024", indice: "Selic + IPCA", variacao: "0,81%", saldo: "R$ 10.704,02" },
+    { mes: "09/2024", indice: "IPCA", variacao: "0,01%", saldo: "R$ 10.705,59" },
   ] as Linha[],
 };
 
@@ -28,6 +31,8 @@ export function HeroMiniCorrecao({ bare = false }: { bare?: boolean } = {}) {
   const [ini, setIni] = useState("2024-01");
   const [fim, setFim] = useState("2024-09");
   const [total, setTotal] = useState(EXEMPLO.total);
+  const [corrigido, setCorrigido] = useState(EXEMPLO.corrigido);
+  const [juros, setJuros] = useState(EXEMPLO.juros);
   const [linhas, setLinhas] = useState<Linha[]>(EXEMPLO.linhas);
   const [calc, setCalc] = useState({ valor: 10000, ini: "2024-01", fim: "2024-09" });
   const [exemplo, setExemplo] = useState(true);
@@ -51,9 +56,11 @@ export function HeroMiniCorrecao({ bare = false }: { bare?: boolean } = {}) {
         },
       });
       if (error) { setErro((await readFunctionError(error, "Falha ao calcular")).message); return; }
-      const r = data as { error?: string; valor_corrigido: number; memoria: Array<{ mes_ref: string; indice_utilizado: string; variacao_percentual: number; saldo_corrigido: number }> };
+      const r = data as { error?: string; total: number; juros: number; valor_corrigido: number; memoria: Array<{ mes_ref: string; indice_utilizado: string; variacao_percentual: number; saldo_corrigido: number }> };
       if (r?.error) throw new Error(r.error);
-      setTotal(r.valor_corrigido);
+      setTotal(r.total);
+      setCorrigido(r.valor_corrigido);
+      setJuros(r.juros);
       setLinhas(r.memoria.slice(-2).map((l) => {
         const [y, m] = l.mes_ref.split("-");
         return { mes: `${m}/${y}`, indice: indiceLabel(l.indice_utilizado), variacao: pct(l.variacao_percentual), saldo: brl(l.saldo_corrigido) };
@@ -99,8 +106,10 @@ export function HeroMiniCorrecao({ bare = false }: { bare?: boolean } = {}) {
       <div aria-live="polite" className="mt-5">
         <p className="font-sans text-3xl font-medium text-navy tabular-nums">{brl(total)}</p>
         <p className="text-note text-navy/60 mt-1">
-          {exemplo ? "Exemplo: " : ""}saldo corrigido em {mf}/{yf}, a partir de {brl(calc.valor)} em {mi}/{yi}
+          {exemplo ? "Exemplo: " : ""}total com juros até 01/{mf}/{yf}, a partir de {brl(calc.valor)} em 01/{mi}/{yi}
         </p>
+        <p className="text-note text-navy/60 mt-1">Saldo corrigido: {brl(corrigido)}. Juros separados: {brl(juros)}.</p>
+        <p className="text-note text-navy/60 mt-2">Selic como encargo único até 29/08/2024 (Tema 1.368). A partir de 30/08/2024, IPCA + Taxa Legal.</p>
         <table className="mt-4 w-full text-sm tabular-nums">
           <thead>
             <tr className="text-left text-navy/60 border-b border-cream-dark">
@@ -123,7 +132,7 @@ export function HeroMiniCorrecao({ bare = false }: { bare?: boolean } = {}) {
           Ver memória completa
         </Link>
       </div>
-      <p className="text-note text-navy/55 mt-4">Fonte: séries do Banco Central (SGS 433 e 29543). Grátis e sem cadastro.</p>
+      <p className="text-note text-navy/55 mt-4">Fonte: séries do Banco Central (SGS 4390, 433 e 29543). Grátis e sem cadastro.</p>
     </div>
   );
 }
