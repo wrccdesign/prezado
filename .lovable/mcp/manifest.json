@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "sdk_version": "2.0.3",
+  "sdk_version": "3.6.0",
   "path": "/functions/v1/mcp",
   "auth": {
     "type": "oauth",
@@ -26,6 +26,7 @@
           "openWorldHint": false
         },
         "inputSchema": {
+          "$schema": "https://json-schema.org/draft/2020-12/schema",
           "type": "object",
           "properties": {
             "consulta": {
@@ -34,32 +35,31 @@
               "description": "Termos da busca, por exemplo: dano moral negativação indevida"
             },
             "tribunal": {
-              "type": "string",
-              "description": "Sigla do tribunal, por exemplo TJSP"
+              "description": "Sigla do tribunal, por exemplo TJSP",
+              "type": "string"
             },
             "uf": {
+              "description": "UF de duas letras, por exemplo SP",
               "type": "string",
               "minLength": 2,
-              "maxLength": 2,
-              "description": "UF de duas letras, por exemplo SP"
+              "maxLength": 2
             },
             "instancia": {
-              "type": "string",
-              "description": "Instância da decisão"
+              "description": "Instância da decisão",
+              "type": "string"
             },
             "limite": {
+              "default": 10,
+              "description": "Quantidade de resultados",
               "type": "integer",
               "minimum": 1,
-              "maximum": 20,
-              "default": 10,
-              "description": "Quantidade de resultados"
+              "maximum": 20
             }
           },
           "required": [
             "consulta"
           ],
-          "additionalProperties": false,
-          "$schema": "http://json-schema.org/draft-07/schema#"
+          "additionalProperties": false
         },
         "outputSchema": null
       },
@@ -73,19 +73,20 @@
           "openWorldHint": false
         },
         "inputSchema": {
+          "$schema": "https://json-schema.org/draft/2020-12/schema",
           "type": "object",
           "properties": {
             "id": {
               "type": "string",
               "format": "uuid",
+              "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
               "description": "Identificador da decisão, obtido em buscar_jurisprudencia"
             }
           },
           "required": [
             "id"
           ],
-          "additionalProperties": false,
-          "$schema": "http://json-schema.org/draft-07/schema#"
+          "additionalProperties": false
         },
         "outputSchema": null
       },
@@ -99,6 +100,7 @@
           "openWorldHint": false
         },
         "inputSchema": {
+          "$schema": "https://json-schema.org/draft/2020-12/schema",
           "type": "object",
           "properties": {
             "consulta": {
@@ -107,26 +109,25 @@
               "description": "Termos da busca, por exemplo: prescrição consumidor"
             },
             "tribunal": {
-              "type": "string",
-              "description": "Sigla do tribunal, por exemplo STJ"
+              "description": "Sigla do tribunal, por exemplo STJ",
+              "type": "string"
             },
             "area": {
-              "type": "string",
-              "description": "Área do direito"
+              "description": "Área do direito",
+              "type": "string"
             },
             "limite": {
+              "default": 10,
+              "description": "Quantidade de resultados",
               "type": "integer",
               "minimum": 1,
-              "maximum": 20,
-              "default": 10,
-              "description": "Quantidade de resultados"
+              "maximum": 20
             }
           },
           "required": [
             "consulta"
           ],
-          "additionalProperties": false,
-          "$schema": "http://json-schema.org/draft-07/schema#"
+          "additionalProperties": false
         },
         "outputSchema": null
       },
@@ -140,28 +141,28 @@
           "openWorldHint": false
         },
         "inputSchema": {
+          "$schema": "https://json-schema.org/draft/2020-12/schema",
           "type": "object",
           "properties": {
             "tipo": {
+              "default": "analises",
+              "description": "Tipo de item do histórico",
               "type": "string",
               "enum": [
                 "analises",
                 "peticoes",
                 "calculos"
-              ],
-              "default": "analises",
-              "description": "Tipo de item do histórico"
+              ]
             },
             "limite": {
+              "default": 10,
+              "description": "Quantidade de itens",
               "type": "integer",
               "minimum": 1,
-              "maximum": 50,
-              "default": 10,
-              "description": "Quantidade de itens"
+              "maximum": 50
             }
           },
-          "additionalProperties": false,
-          "$schema": "http://json-schema.org/draft-07/schema#"
+          "additionalProperties": false
         },
         "outputSchema": null
       }

@@ -3,14 +3,14 @@
 // supabase function: mcp
 // Bundled from src/lib/mcp/index.ts by @lovable.dev/mcp-js.
 // src/lib/mcp/index.ts
-import { auth, defineMcp } from "npm:@lovable.dev/mcp-js@2.0.3";
+import { auth, defineMcp } from "npm:@lovable.dev/mcp-js@3.6.0";
 
 // src/lib/mcp/tools/buscar-jurisprudencia.ts
-import { defineTool } from "npm:@lovable.dev/mcp-js@2.0.3";
-import { z } from "npm:zod@^3.25.76";
+import { defineTool } from "npm:@lovable.dev/mcp-js@3.6.0";
+import { z } from "npm:zod@^4.6.7";
 
 // src/lib/mcp/supabase.ts
-import { createClient } from "npm:@supabase/supabase-js@^2.112.4";
+import { createClient } from "npm:@supabase/supabase-js@^2.119.2";
 function runtimeEnv(name) {
   const runtime = globalThis;
   return runtime.Deno?.env?.get?.(name) ?? runtime.process?.env?.[name];
@@ -103,8 +103,8 @@ var buscar_jurisprudencia_default = defineTool({
 });
 
 // src/lib/mcp/tools/ver-decisao.ts
-import { defineTool as defineTool2 } from "npm:@lovable.dev/mcp-js@2.0.3";
-import { z as z2 } from "npm:zod@^3.25.76";
+import { defineTool as defineTool2 } from "npm:@lovable.dev/mcp-js@3.6.0";
+import { z as z2 } from "npm:zod@^4.6.7";
 var ver_decisao_default = defineTool2({
   name: "ver_decisao",
   title: "Ver decis\xE3o",
@@ -131,8 +131,8 @@ var ver_decisao_default = defineTool2({
 });
 
 // src/lib/mcp/tools/buscar-sumulas.ts
-import { defineTool as defineTool3 } from "npm:@lovable.dev/mcp-js@2.0.3";
-import { z as z3 } from "npm:zod@^3.25.76";
+import { defineTool as defineTool3 } from "npm:@lovable.dev/mcp-js@3.6.0";
+import { z as z3 } from "npm:zod@^4.6.7";
 var buscar_sumulas_default = defineTool3({
   name: "buscar_sumulas",
   title: "Buscar s\xFAmulas",
@@ -165,8 +165,8 @@ var buscar_sumulas_default = defineTool3({
 });
 
 // src/lib/mcp/tools/meu-historico.ts
-import { defineTool as defineTool4 } from "npm:@lovable.dev/mcp-js@2.0.3";
-import { z as z4 } from "npm:zod@^3.25.76";
+import { defineTool as defineTool4 } from "npm:@lovable.dev/mcp-js@3.6.0";
+import { z as z4 } from "npm:zod@^4.6.7";
 var meu_historico_default = defineTool4({
   name: "meu_historico",
   title: "Meu hist\xF3rico",
@@ -208,5 +208,5 @@ var mcp_default = defineMcp({
 });
 
 // lovable-mcp-supabase-entry.ts
-import { createSupabaseHandler } from "npm:@lovable.dev/mcp-js@2.0.3/stacks/supabase";
+import { createSupabaseHandler } from "npm:@lovable.dev/mcp-js@3.6.0/stacks/supabase";
 Deno.serve(createSupabaseHandler(mcp_default, { functionName: "mcp" }));
