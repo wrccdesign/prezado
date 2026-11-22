@@ -1,24 +1,26 @@
-# Bloco A: pendências restantes da auditoria (padrão recomendado)
+# Correções no Word e no PDF da memória de cálculo
 
-Decisões adotadas pelo padrão recomendado:
-- Cobrança: texto único em todo o site: "cobrança em reais, processada pelo Asaas no Brasil; vendedor Honorífico". Sem menção a IOF ou processamento internacional.
-- Credenciais do Antônio: a versão da página /sobre é a oficial; a home passa a usar o mesmo texto.
-- Limite do Juizado Especial Cível: manter 40 salários mínimos (Lei 9.099/95, art. 3º, I) e citar a lei junto ao número.
+## 1. Mesmo total no Word e no PDF (pro rata)
+- O botão de exportar usa os mesmos parâmetros nos dois formatos, incluindo o pro rata. A diferença veio do exemplo: o Word foi gerado com pro rata desligado e o PDF com ele ligado.
+- Gerar de novo o PDF e o Word da Correção a partir do mesmo cálculo (R$ 10.000, 15/01/2024 a 31/10/2025, pro rata ligado), conferir que os dois mostram o mesmo TOTAL e que o link e o QR trazem pro_rata=1.
+- Adicionar um teste para garantir que o link de conferência mantém o pro rata.
 
-## Itens do Bloco A
+## 2. Período no formato brasileiro
+- No resumo da Correção, trocar "2024-01-15 a 2025-10-31" por "15/01/2024 a 31/10/2025" (vale para Word e PDF, que usam o mesmo texto).
+- Conferir as outras calculadoras exportadas e corrigir se alguma mostrar data no formato do sistema.
 
-1. Cobrança coerente em /planos, FAQ, /termos e /reembolso (mesma frase nos quatro).
-2. Credenciais do Antônio iguais na home e em /sobre.
-3. Número do processo: na lista e na página de decisão, exibir o número CNJ (20 dígitos) quando existir; número interno do tribunal (caso TJMG) aparece só como dado secundário.
-4. Página de decisão sem ementa repetida: se o inteiro teor começar igual à ementa, não repetir o trecho.
-5. Menu para leitor de tela: o menu do celular fica fora da leitura quando fechado, evitando links lidos duas vezes.
-6. Alvos de toque: chips, links do rodapé e botões pequenos com área mínima de 44px no celular.
-7. Fotos da equipe: mesmo enquadramento e fundo neutro uniforme via moldura cream (sem editar as fotos originais).
+## 3. Mesma data no cabeçalho e no rodapé
+- O cabeçalho usa o fuso do computador; o rodapé usa o de São Paulo. Os dois passam a usar a mesma data de geração, no fuso America/Sao_Paulo.
 
-## Verificação (critério cético)
+## Entrega
+- Mostrar o DOCX novo e o PDF correspondente em Files, com o total dos dois.
+- Rodar os testes. Não publicar sem sua aprovação. Pedido de indicação continua parado.
 
-- Testes novos: número CNJ preferido ao interno; ementa não duplicada; texto de cobrança idêntico nos quatro lugares.
-- Navegador a 390px e 1280px: busca uma decisão do TJMG, abre a página da decisão, mede alvos de toque, lê o menu com leitor de tela (árvore de acessibilidade).
-- Relatório final separado em: testado na tela, verificado só no código, ainda fraco.
+## Sobre o purchase
+- Sim: está no webhook do Asaas, enviado pelo Measurement Protocol só após o pagamento confirmado, sem repetir (registro por id do pagamento).
+- Secret a criar: GA4_API_SECRET. No GA4: Administrador, Fluxos de dados, fluxo G-BYDBC1Q8MD, Chaves secretas da API do Measurement Protocol, Criar. Depois eu abro o formulário seguro para você colar o valor.
 
-Fora do Bloco A (próximos): textos jurídicos dos temas (Bloco C) e limpeza dos links antigos no banco (Bloco D).
+## Detalhes técnicos
+- `CorrecaoCalc.tsx`: `buildSections` usa `formatDateBR` no período.
+- `exportDocument.ts`: cabeçalho de `exportToPDF`/`exportToDOCX` usa `dataBR(verificacao.geradoEm)` (ou agora, em São Paulo) em vez de `toLocaleDateString` sem fuso.
+- Teste em `urlConferencia` com `pro_rata`.
