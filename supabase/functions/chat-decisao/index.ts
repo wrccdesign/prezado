@@ -1,4 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { isPublishableDecision } from "../_shared/decision-visibility.ts";
 import { requireQuota } from "../_shared/calculo-guard.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { aiChatStream, AIError } from "../_shared/ai.ts";
@@ -40,7 +41,7 @@ serve(async (req) => {
       .eq("id", decisionId)
       .single();
 
-    if (dbError || !decision) {
+    if (dbError || !decision || !isPublishableDecision(decision)) {
       return new Response(JSON.stringify({ error: "Decisão não encontrada" }), {
         status: 404,
         headers: { ...corsHeaders, "Content-Type": "application/json" },

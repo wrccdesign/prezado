@@ -1,4 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { isPublishableDecision } from "../_shared/decision-visibility.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { burstLimitMessage, checkRateLimit, extractEnv, monthlyLimitMessage } from "../_shared/rate-limit.ts";
 import { fetchGroundingContext, describeDecision, fetchGroundingSumulas, buildSumulasBlock, classifyNatureza, isUsableSource, type GroundingDecision } from "../_shared/grounding.ts";
@@ -186,7 +187,7 @@ serve(async (req) => {
           .from("decisions")
           .select("id, tribunal, numero_processo, comarca, data_decisao, ementa, resumo_ia, resultado, resultado_descricao, temas_juridicos, tipo_decisao, orgao_julgador, source_url")
           .in("id", approvedPrecedentIds);
-        precedents = ((data ?? []) as Array<Record<string, unknown>>).map((d) => ({
+        precedents = ((data ?? []) as Array<Record<string, unknown>>).filter(isPublishableDecision).map((d) => ({
           ...d,
           natureza: classifyNatureza(d.ementa as string | null, d.resultado as string | null, d.tipo_decisao as string | null),
         })) as GroundingDecision[];
