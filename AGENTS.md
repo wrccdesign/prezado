@@ -9,3 +9,4 @@
 
 - Guide pages (/guias/*) read approved content from `src/seo/guiasData.ts` via a minimal Markdown parser shared by React and the static prerender, so page, JSON-LD FAQ and crawler HTML never diverge.
 - Correction/interest rules live in pure `supabase/functions/calcular-atualizacao/calculo.ts` (tested with mocked series in `calculo_test.ts`); `index.ts` only reads series and quota, so legal period rules stay testable offline.
+- GA4 `purchase` is sent only server-side from `asaas-webhook` via Measurement Protocol, deduplicated by Asaas payment id in `ga4_purchases_enviados`; `trial_started` is claimed atomically via `profiles.trial_started_tracked_at`, so neither repeats across devices or reloads.

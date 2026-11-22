@@ -15,6 +15,13 @@
       "when": 1795286849693,
       "tag": "0001_gate_petition_templates_by_plan",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1795305340815,
+      "tag": "0002_migration",
+      "breakpoints": true
     }
   ]
 }

@@ -91,3 +91,13 @@ export function withAttribution(url: string, attr: Record<string, string>) {
   for (const [k, v] of Object.entries(attr)) u.searchParams.set(k, v);
   return u.toString();
 }
+
+/** client_id do GA4 lido do cookie _ga (formato GA1.1.<id>.<ts>). */
+export function getGa4ClientId(): string | null {
+  try {
+    const m = document.cookie.match(/(?:^|;\s*)_ga=GA\d\.\d\.(\d+\.\d+)/);
+    return m ? m[1] : null;
+  } catch {
+    return null;
+  }
+}

@@ -21,6 +21,9 @@ function fmt(v: number) {
   return v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 }
 
+/** Norma que a tela cita junto ao resultado. */
+export const FONTE_PENSAO = "art. 1.694 do Código Civil (binômio necessidade × possibilidade)";
+
 type Moradia = "nao" | "sim" | "parcial";
 type Padrao = "baixa" | "medio" | "alto";
 
@@ -135,7 +138,7 @@ export function PensaoCalc() {
       verificacao: {
         url: urlConferencia(window.location.pathname, params),
         geradoEm: new Date().toISOString(),
-        fonte: "os parâmetros de referência do art. 1.694 do Código Civil usados na calculadora",
+        fonte: FONTE_PENSAO,
       },
     });
     track("export_pdf", { calculadora: "pensao", formato: "pdf", logado: true });

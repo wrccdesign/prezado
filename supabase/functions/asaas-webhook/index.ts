@@ -35,6 +35,51 @@ function parsePriceRef(ref?: string | null): { userId?: string; priceId?: string
   return { priceId: ref };
 }
 
+
+const GA4_MEASUREMENT_ID = "G-BYDBC1Q8MD";
+
+/**
+ * Envia purchase ao GA4 (Measurement Protocol) uma vez por pagamento.
+ * O id do pagamento é reservado em ga4_purchases_enviados antes do envio;
+ * se já existir, nada é enviado. Falha de envio nunca derruba o webhook.
+ */
+async function sendGa4Purchase(payment: any, userId: string, plano: string | null | undefined) {
+  try {
+    const apiSecret = Deno.env.get("GA4_API_SECRET");
+    if (!payment?.id || !apiSecret) return;
+    const value = Number(payment.originalValue ?? payment.value ?? 0);
+    const { data: claimed, error } = await getSupabase()
+      .from("ga4_purchases_enviados")
+      .upsert({ payment_id: payment.id, user_id: userId, plano, valor: value }, { onConflict: "payment_id", ignoreDuplicates: true })
+      .select("payment_id");
+    if (error || !claimed || claimed.length === 0) return;
+    const { data: prof } = await getSupabase()
+      .from("profiles").select("ga4_client_id").eq("user_id", userId).maybeSingle();
+    const clientId = (prof?.ga4_client_id as string | null) || `srv.${userId}`;
+    const res = await fetch(
+      `https://www.google-analytics.com/mp/collect?measurement_id=${GA4_MEASUREMENT_ID}&api_secret=${apiSecret}`,
+      {
+        method: "POST",
+        body: JSON.stringify({
+          client_id: clientId,
+          user_id: userId,
+          events: [{
+            name: "purchase",
+            params: { transaction_id: payment.id, value, currency: "BRL", plano: plano ?? undefined },
+          }],
+        }),
+      },
+    );
+    if (res.ok) {
+      await getSupabase().from("ga4_purchases_enviados").update({ enviado: true }).eq("payment_id", payment.id);
+    } else {
+      console.error("GA4 purchase failed", res.status, await res.text());
+    }
+  } catch (e) {
+    console.error("GA4 purchase error", e);
+  }
+}
+
 type LogResult = "new" | "duplicate";
 
 async function logEvent(event: any, env: AsaasEnv, eventId: string): Promise<LogResult> {
@@ -165,6 +210,7 @@ async function activateRecurringSubscription(
     updated_at: new Date().toISOString(),
   });
   if (error) throw new Error(`recurring subscription update failed: ${error.message}`);
+  if (payment?.id) await sendGa4Purchase(payment, userId, finalPriceId ?? finalPlanId);
 }
 
 async function activateOneTimePayment(paymentId: string, env: AsaasEnv) {
@@ -215,6 +261,7 @@ async function activateOneTimePayment(paymentId: string, env: AsaasEnv) {
     updated_at: new Date().toISOString(),
   });
   if (error) throw new Error(`one-time subscription update failed: ${error.message}`);
+  await sendGa4Purchase(payment, userId, priceId ?? planId);
 }
 
 async function markSubscriptionCanceled(subscriptionId: string, env: AsaasEnv) {

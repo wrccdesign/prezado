@@ -509,6 +509,33 @@ export type Database = {
         }
         Relationships: []
       }
+      ga4_purchases_enviados: {
+        Row: {
+          created_at: string
+          enviado: boolean
+          payment_id: string
+          plano: string | null
+          user_id: string | null
+          valor: number | null
+        }
+        Insert: {
+          created_at?: string
+          enviado?: boolean
+          payment_id: string
+          plano?: string | null
+          user_id?: string | null
+          valor?: number | null
+        }
+        Update: {
+          created_at?: string
+          enviado?: boolean
+          payment_id?: string
+          plano?: string | null
+          user_id?: string | null
+          valor?: number | null
+        }
+        Relationships: []
+      }
       indices_economicos: {
         Row: {
           codigo_indice: string
@@ -657,6 +684,7 @@ export type Database = {
           created_at: string | null
           formatting_preferences: Json | null
           full_name: string | null
+          ga4_client_id: string | null
           id: string
           oab_number: string | null
           oab_state: string | null
@@ -668,6 +696,7 @@ export type Database = {
           onboarding_completed: boolean
           profile_type: string
           specialties: string[] | null
+          trial_started_tracked_at: string | null
           updated_at: string | null
           user_id: string
         }
@@ -675,6 +704,7 @@ export type Database = {
           created_at?: string | null
           formatting_preferences?: Json | null
           full_name?: string | null
+          ga4_client_id?: string | null
           id?: string
           oab_number?: string | null
           oab_state?: string | null
@@ -686,6 +716,7 @@ export type Database = {
           onboarding_completed?: boolean
           profile_type?: string
           specialties?: string[] | null
+          trial_started_tracked_at?: string | null
           updated_at?: string | null
           user_id: string
         }
@@ -693,6 +724,7 @@ export type Database = {
           created_at?: string | null
           formatting_preferences?: Json | null
           full_name?: string | null
+          ga4_client_id?: string | null
           id?: string
           oab_number?: string | null
           oab_state?: string | null
@@ -704,6 +736,7 @@ export type Database = {
           onboarding_completed?: boolean
           profile_type?: string
           specialties?: string[] | null
+          trial_started_tracked_at?: string | null
           updated_at?: string | null
           user_id?: string
         }

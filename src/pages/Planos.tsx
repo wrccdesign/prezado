@@ -1,5 +1,5 @@
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { trackOnce, setSignupOrigem } from "@/lib/track";
+import { setSignupOrigem, getGa4ClientId } from "@/lib/track";
 import { useEffect, useState } from "react";
 import { AppHeader } from "@/components/AppHeader";
 import { getPaymentEnvironmentSafe } from "@/lib/payment-env";
@@ -138,13 +138,7 @@ export default function Planos() {
       window.location.pathname === "/planos/pagamento/sucesso";
     if (returned) {
       toast.success("Pagamento realizado! Ativando seu plano...");
-      try {
-        const pend = JSON.parse(sessionStorage.getItem("hon_checkout") || localStorage.getItem("hon_checkout") || "null");
-        if (pend?.priceId) {
-          trackOnce(`purchase_${pend.priceId}_${pend.at}`, "purchase", { value: pend.value, currency: "BRL", plano: pend.priceId });
-        }
-        localStorage.removeItem("hon_checkout");
-      } catch { /* ignore */ }
+      // purchase é enviado pelo servidor quando o Asaas confirma o pagamento.
       // Webhook can take a few seconds, poll the subscription query.
       let attempts = 0;
       const interval = setInterval(() => {
@@ -212,7 +206,12 @@ export default function Planos() {
           [pl.annualPriceId, pl.annualPrice],
         ]).find(([id]) => id === pendingPriceId)?.[1] ?? "0").replace(/[^\d,]/g, "").replace(",", "."),
       );
-      localStorage.setItem("hon_checkout", JSON.stringify({ priceId: pendingPriceId, value: valor, at: Date.now() }));
+      void valor;
+      // Liga o pagamento futuro ao visitante do GA4 (purchase enviado pelo servidor).
+      const cid = getGa4ClientId();
+      if (cid && user?.id) {
+        await supabase.from("profiles").update({ ga4_client_id: cid }).eq("user_id", user.id);
+      }
     } catch { /* ignore */ }
     try {
       const { data, error } = await supabase.functions.invoke("asaas-create-checkout", {

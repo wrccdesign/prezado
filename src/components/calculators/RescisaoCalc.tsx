@@ -31,6 +31,9 @@ const TIPO_LABEL: Record<TipoDemissao, string> = {
 };
 
 
+/** Normas que a tela da calculadora cita junto ao resultado. */
+export const FONTE_RESCISAO = "Lei 12.506/2011 e arts. 484-A e 487, § 1º, da CLT";
+
 const TIPOS: TipoDemissao[] = ["sem_justa_causa", "com_justa_causa", "pedido_demissao", "acordo_mutuo"];
 const num = (v: string | null) => (v && /^\d+(\.\d+)?$/.test(v) ? v : "");
 function isoParaData(v: string | null): Date | undefined {
@@ -114,7 +117,7 @@ export function RescisaoCalc() {
       verificacao: {
         url: urlConferencia(window.location.pathname, paramsCalculo()),
         geradoEm: new Date().toISOString(),
-        fonte: "as regras da CLT (arts. 477 a 487) e da Lei 8.036/1990 usadas na calculadora",
+        fonte: FONTE_RESCISAO,
       },
     });
     track("export_pdf", { calculadora: "rescisao", formato: "pdf", logado: true });

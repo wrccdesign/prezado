@@ -303,6 +303,7 @@ export function CorrecaoCalc({ onUsarValor, usarValorLabel = "Usar este valor", 
       url: urlConferencia(window.location.pathname, buildParams()),
       geradoEm: new Date().toISOString(),
       sincronizadoEm: result.ultima_sincronizacao ?? undefined,
+      fonte: result.fonte || undefined,
     };
     if (tipo === "pdf") void exportToPDF(title, sections, `${filename}.pdf`, { verificacao });
     else void exportToDOCX(title, sections, `${filename}.docx`, { verificacao });

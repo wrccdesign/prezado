@@ -2,7 +2,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
-import { trackOnce } from "@/lib/track";
+import { track } from "@/lib/track";
 import { getPaymentEnvironmentSafe, type PaymentEnv } from "@/lib/payment-env";
 
 export type PlanId = "free" | "profissional" | "escritorio";
@@ -91,7 +91,17 @@ export function useSubscription() {
   useEffect(() => {
     if (!user?.id || !trialEndsAt) return;
     if (new Date(trialEndsAt).getTime() - Date.now() < 6.9 * 86_400_000) return;
-    trackOnce(`trial_${user.id}`, "trial_started", { plano: "profissional" });
+    // Marca no banco de forma atômica: só quem gravar a data primeiro dispara.
+    // Assim o evento sai uma vez por conta, em qualquer aparelho ou login.
+    void supabase
+      .from("profiles")
+      .update({ trial_started_tracked_at: new Date().toISOString() })
+      .eq("user_id", user.id)
+      .is("trial_started_tracked_at", null)
+      .select("user_id")
+      .then(({ data }) => {
+        if (data && data.length > 0) track("trial_started", { plano: "profissional" });
+      });
   }, [user?.id, trialEndsAt]);
   const trialDaysLeft = trialEndsAt
     ? Math.max(

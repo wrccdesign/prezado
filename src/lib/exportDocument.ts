@@ -1,5 +1,5 @@
 import jsPDF from "jspdf";
-import { Document, Packer, Paragraph, TextRun, HeadingLevel, Footer } from "docx";
+import { Document, Packer, Paragraph, TextRun, HeadingLevel, Footer, ExternalHyperlink, ImageRun } from "docx";
 import QRCode from "qrcode";
 import { cleanDocumentText } from "./documentText";
 
@@ -79,6 +79,12 @@ function triggerDownload(blob: Blob, filename: string) {
 }
 
 export async function exportToPDF(title: string, sections: ExportSection[], filename: string, options: ExportOptions = {}) {
+  const doc = await buildPDF(title, sections, options);
+  doc.save(filename);
+}
+
+/** Monta o PDF sem baixar (usado também para gerar exemplos). */
+export async function buildPDF(title: string, sections: ExportSection[], options: ExportOptions = {}) {
   title = cleanDocumentText(title);
   sections = sections.map((s) => ({ heading: cleanDocumentText(s.heading), body: cleanDocumentText(s.body) }));
   const doc = new jsPDF({ unit: "pt", format: "a4" });
@@ -168,13 +174,23 @@ export async function exportToPDF(title: string, sections: ExportSection[], file
       doc.text(CABECALHO_DIREITA, pageWidth - marginX, 30, { align: "right" });
       const isLast = i === total && !!qr;
       const fw = isLast ? contentWidth - qrSize - 12 : contentWidth;
-      const lines = [...doc.splitTextToSize(l1, fw), ...doc.splitTextToSize(l2, fw), `Página ${i} de ${total}`];
+      const l2Lines: string[] = doc.splitTextToSize(l2, fw);
+      const lines = [...doc.splitTextToSize(l1, fw), ...l2Lines, `Página ${i} de ${total}`];
       let fy = pageHeight - 24 - (lines.length - 1) * 10;
-      for (const line of lines) { doc.text(line, marginX, fy); fy += 10; }
+      for (const line of lines) {
+        doc.text(line, marginX, fy);
+        // Torna clicável qualquer linha que carrega parte do link de conferência.
+        const w = doc.getTextWidth(line);
+        if (l2Lines.includes(line)) {
+          doc.link(marginX, fy - 8, w, 10, { url: v.url });
+        }
+        fy += 10;
+      }
       if (isLast) {
         const qx = pageWidth - marginX - qrSize;
         const qy = pageHeight - 24 - qrSize - 4;
         doc.addImage(qr!, "PNG", qx, qy, qrSize, qrSize);
+        doc.link(qx, qy, qrSize, qrSize, { url: v.url });
         doc.setFontSize(7);
         doc.text("Conferir este cálculo", qx + qrSize / 2, qy + qrSize + 9, { align: "center" });
       }
@@ -182,10 +198,11 @@ export async function exportToPDF(title: string, sections: ExportSection[], file
     doc.setTextColor(0);
   }
 
-  doc.save(filename);
+  return doc;
 }
 
-export async function exportToDOCX(title: string, sections: ExportSection[], filename: string, options: ExportOptions = {}) {
+/** Monta o Word sem baixar. */
+export async function buildDOCX(title: string, sections: ExportSection[], options: ExportOptions = {}) {
   title = cleanDocumentText(title);
   sections = sections.map((s) => ({ heading: cleanDocumentText(s.heading), body: cleanDocumentText(s.body) }));
   const children: Paragraph[] = [];
@@ -230,16 +247,57 @@ export async function exportToDOCX(title: string, sections: ExportSection[], fil
     );
   }
 
+  let qrBytes: Uint8Array | null = null;
+  if (options.verificacao) {
+    try {
+      const dataUrl = await QRCode.toDataURL(options.verificacao.url, { margin: 0, width: 300, errorCorrectionLevel: "M" });
+      const bin = atob(dataUrl.split(",")[1]);
+      qrBytes = Uint8Array.from(bin, (c) => c.charCodeAt(0));
+    } catch { qrBytes = null; }
+  }
   const footers = options.verificacao
-    ? {
-        default: new Footer({
-          children: linhasRodapeVerificacao(options.verificacao).map(
-            (t) => new Paragraph({ children: [new TextRun({ text: t, size: 16, color: "777777" })] }),
-          ),
-        }),
-      }
+    ? (() => {
+        const [l1, l2] = linhasRodapeVerificacao(options.verificacao!);
+        const url = options.verificacao!.url;
+        const [antes, depois] = l2.split(url);
+        const run = (text: string) => new TextRun({ text, size: 16, color: "777777" });
+        return {
+          default: new Footer({
+            children: [
+              new Paragraph({ children: [run(l1)] }),
+              new Paragraph({
+                children: [
+                  run(antes),
+                  new ExternalHyperlink({ link: url, children: [new TextRun({ text: url, size: 16, color: "0563C1", underline: {} })] }),
+                  run(depois ?? ""),
+                ],
+              }),
+              ...(qrBytes
+                ? [new Paragraph({
+                    children: [
+                      new ExternalHyperlink({
+                        link: url,
+                        children: [new ImageRun({
+                          type: "png",
+                          data: qrBytes,
+                          transformation: { width: 70, height: 70 },
+                          altText: { title: "Conferir este cálculo", description: url, name: "QR de conferência" },
+                        })],
+                      }),
+                      run("  Conferir este cálculo"),
+                    ],
+                  })]
+                : []),
+            ],
+          }),
+        };
+      })()
     : undefined;
-  const doc = new Document({ sections: [{ footers, children }] });
+  return new Document({ sections: [{ footers, children }] });
+}
+
+export async function exportToDOCX(title: string, sections: ExportSection[], filename: string, options: ExportOptions = {}) {
+  const doc = await buildDOCX(title, sections, options);
   const blob = await Packer.toBlob(doc);
   triggerDownload(blob, filename);
 }
