@@ -263,7 +263,7 @@ export function CorrecaoCalc({ onUsarValor, usarValorLabel = "Usar este valor", 
       heading: "Resumo do cálculo",
       body: [
         `Valor original: ${fmt(r.valor_original)}`,
-        `Período: ${dataInicial} a ${dataFinal}`,
+        `Período: ${formatDateBR(dataInicial)} a ${formatDateBR(dataFinal)}`,
         `Índice de correção: ${INDICES.find(i => i.id === indice)?.label ?? indice}`,
         `Valor corrigido: ${fmt(r.valor_corrigido)}`,
         `Juros de mora: ${fmt(r.juros)}`,

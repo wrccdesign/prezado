@@ -116,7 +116,7 @@ export async function buildPDF(title: string, sections: ExportSection[], options
   doc.setFont("helvetica", "normal");
   doc.setFontSize(9);
   doc.setTextColor(120);
-  doc.text(new Date().toLocaleDateString("pt-BR"), marginX, y);
+  doc.text(dataBR(options.verificacao?.geradoEm ?? new Date().toISOString()), marginX, y);
   doc.setTextColor(0);
   y += 18;
 
@@ -215,7 +215,7 @@ export async function buildDOCX(title: string, sections: ExportSection[], option
     new Paragraph({
       children: [
         new TextRun({
-          text: new Date().toLocaleDateString("pt-BR"),
+          text: dataBR(options.verificacao?.geradoEm ?? new Date().toISOString()),
           italics: true,
           color: "666666",
           size: 18,
