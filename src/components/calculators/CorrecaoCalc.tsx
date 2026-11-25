@@ -18,6 +18,7 @@ import { urlConferencia } from "@/lib/exportDocument";
 import { useGuestExportGate } from "@/components/calculators/shared/GuestExportGate";
 import { generateShareCard, downloadBlob } from "@/lib/shareCard";
 import { formatDateBR } from "@/lib/date";
+import { CORRECAO_BASE_PATH } from "@/seo/correcaoIndices";
 
 
 
@@ -111,9 +112,9 @@ export function CorrecaoCalc({ onUsarValor, usarValorLabel = "Usar este valor", 
   const [regimeJuros, setRegimeJuros] = useState(p("regime_juros") || "legal_14905");
   const [tipoJuros, setTipoJuros] = useState(p("tipo_juros") || "simples");
   const [taxaFixa, setTaxaFixa] = useState(p("taxa_fixa") || "1");
-  const [usarDatasJuros, setUsarDatasJuros] = useState(false);
-  const [jurosInicio, setJurosInicio] = useState("");
-  const [jurosFim, setJurosFim] = useState("");
+  const [usarDatasJuros, setUsarDatasJuros] = useState(Boolean(p("juros_data_inicial") || p("juros_data_final")));
+  const [jurosInicio, setJurosInicio] = useState(p("juros_data_inicial"));
+  const [jurosFim, setJurosFim] = useState(p("juros_data_final"));
   const [multa, setMulta] = useState(p("multa"));
   const [multaSobreJuros, setMultaSobreJuros] = useState(p("multa_sobre_juros") === "1");
   const [honorarios, setHonorarios] = useState(p("honorarios"));
@@ -136,13 +137,16 @@ export function CorrecaoCalc({ onUsarValor, usarValorLabel = "Usar este valor", 
     };
     if (manterIndiceContratual) params.manter_indice_contratual = "1";
     if (regimeJuros === "taxa_fixa") params.taxa_fixa = taxaFixa;
+    if (usarDatasJuros && jurosInicio) params.juros_data_inicial = jurosInicio;
+    if (usarDatasJuros && jurosFim) params.juros_data_final = jurosFim;
     if (multa) params.multa = multa;
     if (multaSobreJuros) params.multa_sobre_juros = "1";
     if (honorarios) params.honorarios = honorarios;
     return params;
   }, [
     valor, dataInicial, dataFinal, indice, proRata, manterIndiceContratual,
-    regimeJuros, tipoJuros, taxaFixa, multa, multaSobreJuros, honorarios,
+    regimeJuros, tipoJuros, taxaFixa, usarDatasJuros, jurosInicio, jurosFim,
+    multa, multaSobreJuros, honorarios,
   ]);
 
   const syncUrl = useCallback(() => {
@@ -222,7 +226,7 @@ export function CorrecaoCalc({ onUsarValor, usarValorLabel = "Usar este valor", 
     syncUrl();
     try {
       const url = withAttribution(
-        `${window.location.origin}${window.location.pathname}?${new URLSearchParams(buildParams())}`,
+        `${window.location.origin}${CORRECAO_BASE_PATH}?${new URLSearchParams(buildParams())}`,
         { utm_source: "compartilhado", utm_medium: "link", utm_campaign: "calculo-compartilhado", ref: "link" },
       );
       await navigator.clipboard.writeText(url);
@@ -300,7 +304,7 @@ export function CorrecaoCalc({ onUsarValor, usarValorLabel = "Usar este valor", 
     const filename = slugify(`memoria-calculo-${dataInicial}-${dataFinal}`);
     const sections = buildSections(result);
     const verificacao = {
-      url: urlConferencia(window.location.pathname, buildParams()),
+      url: urlConferencia(CORRECAO_BASE_PATH, buildParams()),
       geradoEm: new Date().toISOString(),
       sincronizadoEm: result.ultima_sincronizacao ?? undefined,
       fonte: result.fonte || undefined,
