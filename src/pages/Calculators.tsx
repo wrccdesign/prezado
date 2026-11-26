@@ -48,7 +48,7 @@ export default function Calculators() {
       <SEO title="Calculadoras Jurídicas | Honorífico" description="Sete ferramentas grátis do Honorífico: custas processuais do TJSP, correção monetária e juros (Lei 14.905/2024), prazos processuais, rescisão trabalhista, pensão alimentícia, validador de CPF/CNPJ e operações com datas." path="/calculadoras" />
       <main className="container px-4 py-12 sm:px-6 md:py-16">
         <div className="max-w-[60ch] space-y-4">
-          <h1 className="text-h1 text-navy">Calculadoras jurídicas</h1>
+          <h1 className="text-h1 text-navy">Calculadoras de correção, juros, prazos e verbas jurídicas</h1>
           <p className="text-body-serif text-navy/80">
             O cálculo é livre, sem conta. Todo resultado vem com memória de cálculo ou com a lista
             dos dias descartados, para conferência e anexo ao processo.

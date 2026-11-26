@@ -43,7 +43,7 @@ export const ROUTE_CONTENT: Record<string, RouteContent> = {
     ],
   },
   "/calculadoras": {
-    heading: "Calculadoras jurídicas gratuitas",
+    heading: "Calculadoras de correção, juros, prazos e verbas jurídicas",
     intro:
       "Sete calculadoras jurídicas gratuitas, ilimitadas e sem cadastro, cada uma com base legal citada e memória de cálculo exportável em PDF e Word.",
     bullets: [
@@ -652,17 +652,17 @@ export const ROUTE_CONTENT: Record<string, RouteContent> = {
       "Todas as páginas públicas do Honorífico reunidas: calculadoras, consulta processual, modelos de minutas, comparativo, planos e documentos legais.",
   },
   "/termos": {
-    heading: "Termos e condições de uso",
+    heading: "Termos e Condições",
     intro:
       "Condições de uso do Honorífico: contratação e planos, cotas de uso, responsabilidades das partes, propriedade intelectual e encerramento da conta. A plataforma é fornecida pela entidade Honorífico e a cobrança é feita em reais.",
   },
   "/reembolso": {
-    heading: "Política de reembolso",
+    heading: "Política de Reembolso",
     intro:
       "Reembolso integral em até 30 dias da compra ou renovação, sem necessidade de justificar, além do direito de arrependimento de 7 dias do art. 49 do CDC. O pedido é feito por e-mail e o valor volta pelo mesmo meio de pagamento.",
   },
   "/privacidade": {
-    heading: "Aviso de privacidade",
+    heading: "Aviso de Privacidade",
     intro:
       "Como o Honorífico trata dados pessoais: base legal conforme a LGPD, finalidades de uso, compartilhamento com operadores, prazo de retenção e direitos do titular, incluindo acesso, correção e exclusão.",
   },

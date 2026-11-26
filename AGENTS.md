@@ -8,5 +8,6 @@
 - Document integrity checks live in `supabase/functions/_shared/integrity-check.ts` and only report objective signals (hidden AI commands, invisible chars, microscopic font); never claim a check the PDF reader cannot guarantee, and never conclude bad faith.
 
 - Guide pages (/guias/*) read approved content from `src/seo/guiasData.ts` via a minimal Markdown parser shared by React and the static prerender, so page, JSON-LD FAQ and crawler HTML never diverge.
+- Keep public page H1 titles consistent between React layouts and static route content so visitors and crawlers identify the same page; the guide index shares its heading through `guias.ts`.
 - Correction/interest rules live in pure `supabase/functions/calcular-atualizacao/calculo.ts` (tested with mocked series in `calculo_test.ts`); `index.ts` only reads series and quota, so legal period rules stay testable offline.
 - GA4 `purchase` is sent only server-side from `asaas-webhook` via Measurement Protocol, deduplicated by Asaas payment id in `ga4_purchases_enviados`; `trial_started` is claimed atomically via `profiles.trial_started_tracked_at`, so neither repeats across devices or reloads.

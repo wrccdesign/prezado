@@ -3,6 +3,7 @@ import { blocksHtml, escapeGuiaHtml as esc, parseBlocks } from "./guiasMarkdown"
 
 export { GUIAS };
 export const GUIAS_PATH = "/guias";
+export const GUIAS_HEADING = "Guias de correção monetária e juros após a Lei 14.905/2024";
 export const GUIAS_SITE_URL = "https://honorifico.com.br";
 export const getGuia = (path: string) => GUIAS.find((g) => g.path === path);
 
@@ -34,7 +35,7 @@ export function guiaJsonLd(path: string): Record<string, unknown>[] {
 /** HTML estático de pré-renderização (texto completo do guia). */
 export function renderGuiaHtml(path: string): string | null {
   if (path === GUIAS_PATH) {
-    return `<div data-static-content><h1>Guias</h1><ul>${GUIAS.map((g) => `<li><a href="${g.path}">${esc(g.h1)}</a></li>`).join("")}</ul></div>`;
+    return `<div data-static-content><h1>${esc(GUIAS_HEADING)}</h1><ul>${GUIAS.map((g) => `<li><a href="${g.path}">${esc(g.h1)}</a></li>`).join("")}</ul></div>`;
   }
   const g = getGuia(path);
   if (!g) return null;
